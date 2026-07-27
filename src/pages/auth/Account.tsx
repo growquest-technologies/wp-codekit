@@ -1,7 +1,10 @@
 import { useAuth } from '../../lib/auth/AuthContext';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 /** Placeholder account screen behind ProtectedRoute — see CLAUDE.md for the auth seam. */
 export function Account() {
+  usePageMeta('Account', 'Your WP CodeKit account.', '/account', { noindex: true });
+
   const { user, signOut } = useAuth();
 
   return (

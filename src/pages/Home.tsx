@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Icon, GLYPH } from '../components/ui/Icon';
 import { CATS, CAT_MAP, TOOLS, TOOL_ROUTES, toolsHref } from '../data/tools';
 import { usePageMeta } from '../lib/usePageMeta';
+import { useJsonLd } from '../lib/useJsonLd';
 
 const VALUE_PROPS = [
   { num: '01', title: 'See it before you ship it', body: "Generators render a live preview of the result — a WordPress.org listing, an admin screen, a query result set — next to the code, so you catch mistakes here instead of in staging." },
@@ -14,6 +15,33 @@ const FEATURED_IDS = ['readme', 'post-type', 'wp-query', 'shortcode', 'meta-box'
 
 const ABOUT_STATS_POPULAR = ['register_post_type', 'taxonomy', 'WP_Query', 'shortcode', 'cron'];
 
+const HOME_FAQ = [
+  {
+    q: 'Is WP CodeKit really free?',
+    a: "Yes — every generator is free and anonymous. There's no account, no plan and no paywall on the copy or download step.",
+  },
+  {
+    q: 'Is the generated code production-ready?',
+    a: "Nonces and sanitisation are added wherever WordPress expects them, and defaults match WordPress core's own choices instead of our opinions. As with any generated code, review it before shipping.",
+  },
+  {
+    q: 'Do I need to install a plugin to use it?',
+    a: 'No. Everything runs in your browser — paste the generated PHP straight into your own plugin or theme.',
+  },
+  {
+    q: 'Does WP CodeKit store or upload my code?',
+    a: 'No. Nothing you type is sent anywhere — every generator runs entirely client-side, in your browser.',
+  },
+  {
+    q: 'Which WordPress version does the generated code target?',
+    a: "Current WordPress core APIs. Where a function needs a specific minimum version — WooCommerce's Blocks Checkout API, for instance — the generator notes it.",
+  },
+  {
+    q: "Can I request a generator that doesn't exist yet?",
+    a: 'Yes — use the contact form and tell us which function or workflow you keep writing by hand.',
+  },
+];
+
 export function Home() {
   const navigate = useNavigate();
   const [heroQuery, setHeroQuery] = useState('');
@@ -23,6 +51,16 @@ export function Home() {
     "Fill in a form, get production-ready WordPress PHP. Post types, taxonomies, queries, hooks, readme.txt and more. Live previews, no signup.",
     '/',
   );
+
+  useJsonLd('ld-faq', {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: HOME_FAQ.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  });
 
   const featuredTools = FEATURED_IDS.map((id) => TOOLS.find((t) => t.id === id)).filter((t): t is NonNullable<typeof t> => !!t);
 
@@ -269,7 +307,7 @@ export function Home() {
           {CATS.map((c) => (
             <Link
               key={c.id}
-              to={toolsHref('', c.id)}
+              to={`/category/${c.id}`}
               className="card-link"
               style={{ minHeight: 150, borderRadius: 11, border: '1px solid var(--gfw-border)', background: '#fff', padding: '20px 18px 18px' }}
             >
@@ -279,6 +317,33 @@ export function Home() {
               <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--gfw-text-strong)' }}>{c.label}</div>
               <div style={{ fontSize: 12.5, lineHeight: 1.6, color: 'var(--gfw-text-mutest)' }}>{c.blurb}</div>
             </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="gfw-container" style={{ paddingTop: 64 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 22 }}>
+          <h2 className="gfw-eyebrow">Frequently asked</h2>
+          <div className="gfw-rule" />
+        </div>
+        <div style={{ maxWidth: 760, borderTop: '1px solid var(--gfw-border-muted)' }}>
+          {HOME_FAQ.map((f) => (
+            <details key={f.q} style={{ borderBottom: '1px solid var(--gfw-border-muted)', padding: '18px 0' }}>
+              <summary
+                style={{
+                  cursor: 'pointer',
+                  listStyle: 'none',
+                  fontSize: 15.5,
+                  fontWeight: 650,
+                  letterSpacing: '-0.01em',
+                  color: 'var(--gfw-text-strong)',
+                }}
+              >
+                {f.q}
+              </summary>
+              <p style={{ margin: '10px 0 0', fontSize: 14, lineHeight: 1.65, color: 'var(--gfw-text-muted)' }}>{f.a}</p>
+            </details>
           ))}
         </div>
       </section>

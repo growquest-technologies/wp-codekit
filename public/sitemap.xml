@@ -21,6 +21,36 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://www.wpcodekit.com/category/content</loc>
+    <lastmod>2026-07-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.wpcodekit.com/category/admin</loc>
+    <lastmod>2026-07-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.wpcodekit.com/category/query</loc>
+    <lastmod>2026-07-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.wpcodekit.com/category/design</loc>
+    <lastmod>2026-07-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.wpcodekit.com/category/core</loc>
+    <lastmod>2026-07-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.wpcodekit.com/category/woocommerce</loc>
+    <lastmod>2026-07-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.wpcodekit.com/tools/readme</loc>
     <lastmod>2026-07-27</lastmod>
     <priority>0.8</priority>

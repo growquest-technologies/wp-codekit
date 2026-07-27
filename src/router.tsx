@@ -5,6 +5,7 @@ import { ToolsIndex } from './pages/ToolsIndex';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
 import { GeneratorRoute } from './pages/generators/GeneratorRoute';
+import { CategoryHub } from './pages/CategoryHub';
 import { Login } from './pages/auth/Login';
 import { Account } from './pages/auth/Account';
 import { Pricing } from './pages/auth/Pricing';
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'tools', element: <ToolsIndex /> },
       { path: 'tools/:toolId', element: <GeneratorRoute /> },
+      { path: 'category/:cat', element: <CategoryHub /> },
       { path: 'about', element: <About /> },
       { path: 'contact', element: <Contact /> },
       { path: 'login', element: <Login /> },

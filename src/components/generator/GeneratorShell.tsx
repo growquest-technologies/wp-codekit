@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { CAT_MAP, toolsHref, type ToolCategory } from '../../data/tools';
+import { CAT_MAP, type ToolCategory } from '../../data/tools';
 import { Icon } from '../ui/Icon';
 import { CodePreview } from './CodePreview';
 import { ValidationList } from './ValidationList';
@@ -174,7 +174,7 @@ export function GeneratorShell({
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 11.5, color: 'var(--gfw-text-faint)', marginBottom: 5, flexWrap: 'wrap' }}>
               <Link to="/tools" style={{ color: 'var(--gfw-text-mutest)', fontWeight: 600 }}>Generators</Link>
               <span aria-hidden="true">/</span>
-              <Link to={toolsHref('', category)} style={{ color: 'var(--gfw-text-mutest)', fontWeight: 600 }}>{cat.label}</Link>
+              <Link to={`/category/${category}`} style={{ color: 'var(--gfw-text-mutest)', fontWeight: 600 }}>{cat.label}</Link>
               <span aria-hidden="true">/</span>
               <span style={{ color: 'var(--gfw-text-muted)', fontWeight: 600 }}>{title.replace(/ Generator$/, '')}</span>
             </div>

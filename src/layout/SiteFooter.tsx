@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Icon, GLYPH } from '../components/ui/Icon';
-import { CATS, toolsHref } from '../data/tools';
+import { CATS } from '../data/tools';
 
 const GROWQUEST_SERVICES = [
   { name: 'WordPress', body: 'Migration, custom development, and support & maintenance you can rely on.' },
@@ -59,7 +59,7 @@ export function SiteFooter({ showBrowseRow = true }: SiteFooterProps) {
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             {CATS.map((c) => (
-              <Link key={c.id} to={toolsHref('', c.id)} className="footer-pill">
+              <Link key={c.id} to={`/category/${c.id}`} className="footer-pill">
                 {c.label}
               </Link>
             ))}

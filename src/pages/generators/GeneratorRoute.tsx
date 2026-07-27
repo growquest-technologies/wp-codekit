@@ -1,8 +1,11 @@
 import { Suspense } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getGeneratorComponent } from '../../generators/registry';
-import { TOOLS } from '../../data/tools';
+import { CAT_MAP, TOOLS } from '../../data/tools';
 import { usePageMeta } from '../../lib/usePageMeta';
+import { useJsonLd } from '../../lib/useJsonLd';
+
+const BASE_URL = 'https://www.wpcodekit.com';
 
 export function GeneratorRoute() {
   const { toolId = '' } = useParams();
@@ -14,6 +17,22 @@ export function GeneratorRoute() {
     tool ? `${tool.desc} Free, client-side, no signup — generate the ${tool.fn} code and copy it straight into your plugin.` : "That generator doesn't exist.",
     `/tools/${toolId}`,
     { noindex: !Comp },
+  );
+
+  useJsonLd(
+    'ld-breadcrumb',
+    tool
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: `${BASE_URL}/` },
+            { '@type': 'ListItem', position: 2, name: 'Generators', item: `${BASE_URL}/tools` },
+            { '@type': 'ListItem', position: 3, name: CAT_MAP[tool.cat].label, item: `${BASE_URL}/category/${tool.cat}` },
+            { '@type': 'ListItem', position: 4, name: `${tool.name} Generator`, item: `${BASE_URL}/tools/${tool.id}` },
+          ],
+        }
+      : null,
   );
 
   if (!Comp) {

@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../lib/auth/AuthContext';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 /** Placeholder sign-in screen. No real auth provider is wired up yet — see CLAUDE.md. */
 export function Login() {
+  usePageMeta('Sign in', 'Sign in to WP CodeKit.', '/login', { noindex: true });
+
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
