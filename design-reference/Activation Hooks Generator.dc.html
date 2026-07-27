@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Activation Hooks Generator — register_activation_hook() — Generator for WP</title>
+  <meta name="description" content="Activation, deactivation and uninstall routines that clean up after themselves — with version-gated upgrades and the flush_rewrite_rules timing that actually works." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=core" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Core</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Activation Hooks</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Activation Hooks Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">The three lifecycle routines, in the order they really run — with the version gate that makes upgrades possible and the uninstall file that keeps the database clean.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The plugin</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+            <input value="{{ ah.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">version</label>
+            <input value="{{ ah.version }}" onChange="{{ onVersionChange }}" spellCheck="false" placeholder="1.2.0" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ versionBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">min PHP</label>
+            <input value="{{ ah.minPhp }}" onChange="{{ onMinPhpChange }}" spellCheck="false" placeholder="7.4" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">min WordPress</label>
+            <input value="{{ ah.minWp }}" onChange="{{ onMinWpChange }}" spellCheck="false" placeholder="6.0" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:12px; padding:11px 13px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:7px; font-size:12px; color:#5C564B; line-height:1.6;">{{ summaryNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:11px;">On activation</div>
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <sc-for list="{{ activationToggles }}" as="bt" hint-placeholder-count="6">
+            <div style="display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-top:1px solid #F0ECE4;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+                <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+              </div>
+              <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+                <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Options and tables to manage</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ dataNote }}</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">options to seed and delete</label>
+            <input value="{{ ah.options }}" onChange="{{ onOptionsChange }}" spellCheck="false" placeholder="acme_settings, acme_version" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">custom table (no prefix)</label>
+            <input value="{{ ah.table }}" onChange="{{ onTableChange }}" spellCheck="false" placeholder="acme_events" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">cron hooks to clear</label>
+            <input value="{{ ah.cronHooks }}" onChange="{{ onCronHooksChange }}" spellCheck="false" placeholder="acme_sync_products" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">roles to remove</label>
+            <input value="{{ ah.roles }}" onChange="{{ onRolesChange }}" spellCheck="false" placeholder="acme_manager" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:11px;">On uninstall</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+          <sc-for list="{{ uninstallChips }}" as="uc" hint-placeholder-count="3">
+            <button onClick="{{ uc.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ uc.borderColor }}; background:{{ uc.bg }}; color:{{ uc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ uc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font-size:12px; color:#5C564B; line-height:1.6;">{{ uninstallNote }}</div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="2">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">register_activation_hook()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Runs once, in a request where almost nothing is loaded</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">What is and is not available</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Activation fires on the plugins.php request, before init on the next load. Your own post types are not registered yet, no other plugin has necessarily loaded, and nothing you hook to init has run. That is why flushing rewrite rules during activation only works if you register the post type first — or defer the flush to the next load, which is what this generates.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The three hooks</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="4">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:3px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Deactivation is not uninstall</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Deactivation happens on every update, every debugging session and every accidental click. Clear scheduled events and transients there — never delete data. Data deletion belongs in uninstall.php, which runs only when someone deliberately deletes the plugin.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Multisite</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">A network activation fires the hook once with $network_wide true — not once per site. Looping over get_sites() is the only way to seed every site, and it is why the generated activation checks that flag.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this lifecycle.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;plugin&quot;,&quot;snippet&quot;,&quot;uninstall&quot;],&quot;default&quot;:&quot;plugin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function list(str) { return String(str || '').split(',').map(function (v) { return fnSlug(v); }).filter(Boolean); }
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+
+function derive(ah) {
+  const pre = fnSlug(ah.prefix) || 'acme';
+  return {
+    pre: pre,
+    options: list(ah.options),
+    table: fnSlug(ah.table),
+    crons: list(ah.cronHooks),
+    roles: list(ah.roles),
+    versionKey: pre + '_version'
+  };
+}
+
+function buildCode(ah, mode) {
+  const d = derive(ah);
+  const pre = d.pre;
+  const version = String(ah.version || '1.0.0').trim();
+
+  if (mode === 'uninstall') {
+    let out = '<?php\n' + CREDIT + '/**\n * Runs only when the plugin is deleted from the Plugins screen.\n *\n * Never called on deactivation, so this is the one safe place to delete data.\n */\n\ndefined( \'WP_UNINSTALL_PLUGIN\' ) || exit;\n\n';
+    if (ah.uninstall === 'none') {
+      return out + '// Data is deliberately left in place, so reinstalling restores everything.\n';
+    }
+    if (d.options.length) {
+      out += '$options = array(\n' + indent(d.options.concat([d.versionKey]).map(function (o) { return "'" + o + "',"; }).join('\n'), 1) + '\n);\n\nforeach ( $options as $option ) {\n\tdelete_option( $option );\n\tdelete_site_option( $option );\n}\n\n';
+    }
+    if (d.crons.length) {
+      out += d.crons.map(function (c) { return "wp_clear_scheduled_hook( '" + c + "' );"; }).join('\n') + '\n\n';
+    }
+    if (d.roles.length) {
+      out += '// Move anyone holding a custom role somewhere safe, then remove it.\nforeach ( array( ' + d.roles.map(function (r) { return "'" + r + "'"; }).join(', ') + ' ) as $role ) {\n\tforeach ( get_users( array( \'role\' => $role, \'fields\' => \'ID\' ) ) as $user_id ) {\n\t\t$user = new WP_User( $user_id );\n\t\t$user->remove_role( $role );\n\n\t\tif ( ! $user->roles ) {\n\t\t\t$user->add_role( \'subscriber\' );\n\t\t}\n\t}\n\n\tremove_role( $role );\n}\n\n';
+    }
+    if (ah.uninstall === 'all' && d.table) {
+      out += 'global $wpdb;\n\n// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange\n$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}' + d.table + '" );\n\n';
+    }
+    if (ah.uninstall === 'all' && ah.postTypeCleanup) {
+      out += '// Delete the plugin’s own content.\n$posts = get_posts(\n\tarray(\n\t\t\'post_type\'      => \'' + pre + "',\n\t\t'post_status'    => 'any',\n\t\t'numberposts'    => -1,\n\t\t'fields'         => 'ids',\n\t)\n);\n\nforeach ( $posts as $post_id ) {\n\twp_delete_post( $post_id, true );\n}\n\n";
+    }
+    out += "// Object caches keep their own copies.\nwp_cache_flush();\n";
+    return out;
+  }
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n' + CREDIT + '/**\n * Plugin Name:       ' + (ah.prefix ? ah.prefix.charAt(0).toUpperCase() + ah.prefix.slice(1) : 'Acme') + ' plugin\n * Description:       Lifecycle routines: activation, deactivation and upgrades.\n * Version:           ' + version + '\n * Requires PHP:      ' + (ah.minPhp || '7.4') + '\n * Requires at least: ' + (ah.minWp || '6.0') + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else {
+    out += '<?php\n' + CREDIT + "\ndefined( 'ABSPATH' ) || exit;\n\n";
+  }
+
+  out += "define( '" + pre.toUpperCase() + "_VERSION', '" + esc(version) + "' );\n\n";
+
+  let act = '';
+  if (ah.requirementChecks) {
+    act += "if ( version_compare( PHP_VERSION, '" + esc(String(ah.minPhp || '7.4').trim()) + "', '<' ) || version_compare( get_bloginfo( 'version' ), '" + esc(String(ah.minWp || '6.0').trim()) + "', '<' ) ) {\n\tdeactivate_plugins( plugin_basename( __FILE__ ) );\n\twp_die(\n\t\tesc_html__( 'This plugin needs PHP " + esc(String(ah.minPhp || '7.4').trim()) + ' and WordPress ' + esc(String(ah.minWp || '6.0').trim()) + " or newer.', '" + pre + "' ),\n\t\t'',\n\t\tarray( 'back_link' => true )\n\t);\n}\n\n";
+  }
+  if (ah.networkAware) {
+    act += "if ( $network_wide && is_multisite() ) {\n\tforeach ( get_sites( array( 'fields' => 'ids' ) ) as $blog_id ) {\n\t\tswitch_to_blog( $blog_id );\n\t\t" + pre + '_install();\n\t\trestore_current_blog();\n\t}\n\n\treturn;\n}\n\n';
+  }
+  act += pre + '_install();';
+
+  let install = '';
+  if (d.options.length) {
+    install += '$defaults = array(\n' + indent(d.options.map(function (o) { return "'" + o + "' => array(),"; }).join('\n'), 1) + '\n);\n\nforeach ( $defaults as $option => $value ) {\n\tadd_option( $option, $value );\n}\n\n';
+  }
+  if (d.table) {
+    install += 'global $wpdb;\n\n$table   = $wpdb->prefix . \'' + d.table + "';\n$charset = $wpdb->get_charset_collate();\n\nrequire_once ABSPATH . 'wp-admin/includes/upgrade.php';\n\ndbDelta(\n\t\"CREATE TABLE {$table} (\n\t\tid bigint(20) unsigned NOT NULL AUTO_INCREMENT,\n\t\tcreated datetime NOT NULL DEFAULT '0000-00-00 00:00:00',\n\t\tpost_id bigint(20) unsigned NOT NULL DEFAULT 0,\n\t\tpayload longtext NOT NULL,\n\t\tPRIMARY KEY  (id),\n\t\tKEY post_id (post_id)\n\t) {$charset}\"\n);\n\n";
+  }
+  if (ah.flushRules) {
+    install += '// Rewrite rules cannot be built here — the post type is not registered yet.\n// Flag it and flush on the next load, once init has run.\nupdate_option( \'' + pre + "_flush_rules', 1 );\n\n";
+  }
+  if (ah.scheduleCron && d.crons.length) {
+    install += d.crons.map(function (c) {
+      return 'if ( ! wp_next_scheduled( \'' + c + "' ) ) {\n\twp_schedule_event( strtotime( 'tomorrow 03:00' ), 'daily', '" + c + "' );\n}";
+    }).join('\n\n') + '\n\n';
+  }
+  install += "update_option( '" + d.versionKey + "', " + pre.toUpperCase() + '_VERSION );';
+
+  let deact = '';
+  if (d.crons.length) deact += d.crons.map(function (c) { return "wp_clear_scheduled_hook( '" + c + "' );"; }).join('\n') + '\n\n';
+  if (ah.flushRules) deact += 'flush_rewrite_rules();\n\n';
+  deact += '// Nothing is deleted here. Deactivation happens on every update.';
+
+  const blocks = [
+    { name: 'activate', params: ah.networkAware ? '$network_wide' : '', doc: '/**\n * Fires once when the plugin is activated.\n' + (ah.networkAware ? ' *\n * @param bool $network_wide Whether this is a network activation.\n' : '') + ' */\n', body: act },
+    { name: 'install', doc: '/**\n * Seed everything this plugin needs. Safe to run more than once.\n */\n', body: install },
+    { name: 'deactivate', doc: '/**\n * Fires when the plugin is deactivated — including on every update.\n */\n', body: deact }
+  ];
+  if (ah.upgradeRoutine) {
+    blocks.push({
+      name: 'maybe_upgrade', hook: 'plugins_loaded',
+      doc: '/**\n * Run install again when the stored version is behind the code.\n */\n',
+      body: "$stored = get_option( '" + d.versionKey + "', '0' );\n\nif ( version_compare( $stored, " + pre.toUpperCase() + "_VERSION, '>=' ) ) {\n\treturn;\n}\n\n" + pre + '_install();'
+    });
+  }
+  if (ah.flushRules) {
+    blocks.push({
+      name: 'maybe_flush_rules', hook: 'wp_loaded',
+      doc: '/**\n * Flush rewrite rules once, after everything is registered.\n */\n',
+      body: "if ( ! get_option( '" + pre + "_flush_rules' ) ) {\n\treturn;\n}\n\ndelete_option( '" + pre + "_flush_rules' );\nflush_rewrite_rules();"
+    });
+  }
+
+  out += blocks.map(function (b) {
+    let s = b.doc + 'function ' + pre + '_' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 1) + '\n}\n';
+    if (b.hook) s += "add_action( '" + b.hook + "', '" + pre + '_' + b.name + "' );\n";
+    return s;
+  }).join('\n');
+
+  out += "\nregister_activation_hook( __FILE__, '" + pre + "_activate' );\nregister_deactivation_hook( __FILE__, '" + pre + "_deactivate' );\n";
+  if (ah.uninstall !== 'none') out += '\n// Deletion is handled by uninstall.php — see the other output mode.\n';
+  return out;
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\$[A-Za-z_]\w*|\{\$[^}]+\})|\b(function|array|true|false|null|return|new|if|else|foreach|global|define|defined|exit|require_once|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(ah) {
+  const d = derive(ah);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!/^\d+\.\d+(\.\d+)?$/.test(String(ah.version || '').trim())) add('error', 'The version must look like 1.2.0 — version_compare() needs a real version string to gate upgrades.');
+  if (!ah.upgradeRoutine) add('warning', 'No upgrade routine. Bumping the plugin version will never re-run install(), so new options and table columns never arrive on existing sites.', 'addUpgrade', 'Add the upgrade check');
+  if (!ah.requirementChecks) add('recommendation', 'No PHP or WordPress version guard. Without one, an old host activates the plugin and gets a fatal error instead of a message.', 'addChecks', 'Add the guard');
+  if (ah.flushRules) add('recommendation', 'Rewrite rules are flagged during activation and flushed on wp_loaded — the only ordering that works, since post types register on init.');
+  if (!ah.flushRules) add('recommendation', 'No rewrite flush. If this plugin registers a post type or taxonomy, its permalinks will 404 until someone visits Settings → Permalinks.', 'addFlush', 'Flush after activation');
+  if (ah.scheduleCron && !d.crons.length) add('error', 'Cron scheduling is on but no hook names are listed.');
+  if (d.crons.length && !ah.scheduleCron) add('recommendation', 'The cron hooks are cleared on deactivation but never scheduled on activation. Deliberate if another file schedules them.');
+  if (!d.options.length) add('warning', 'No options listed, so nothing is seeded on activation and nothing is deleted on uninstall.');
+  if (d.table) {
+    add('recommendation', 'dbDelta() is generated for ' + d.table + '. Its formatting rules are strict: two spaces after PRIMARY KEY, one field per line, no backticks around the table name.');
+    if (!ah.upgradeRoutine) add('warning', 'A custom table with no upgrade routine can never gain a column. dbDelta only runs when install() does.', 'addUpgrade', 'Add the upgrade check');
+  }
+  if (ah.uninstall === 'all' && d.table) add('warning', 'Uninstall drops the ' + d.table + ' table. That is correct and irreversible — make sure the plugin is the sole owner of that data.');
+  if (ah.uninstall === 'none') add('recommendation', 'Nothing is deleted on uninstall. Kind to users who reinstall, untidy for everyone else — the plugin directory guidelines expect cleanup.');
+  if (ah.uninstall === 'all' && ah.postTypeCleanup) add('warning', 'Uninstall deletes every ' + d.pre + ' post permanently, bypassing the trash. A client who deletes the plugin to “tidy up” loses that content.');
+  if (d.roles.length && ah.uninstall === 'none') add('warning', 'Custom roles are listed but uninstall removes nothing, so the role stays in the database forever.');
+  if (ah.networkAware) add('recommendation', 'Network activation loops every site with switch_to_blog(). On a network with hundreds of sites that request can time out — a batched upgrade routine is safer.');
+  if (!ah.networkAware) add('recommendation', 'Not multisite-aware: a network activation would seed only the current site.', 'addNetwork', 'Handle network activation');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'acme', version: '1.2.0', minPhp: '7.4', minWp: '6.0',
+    options: 'acme_settings', table: 'acme_events', cronHooks: 'acme_sync_products', roles: '',
+    requirementChecks: true, flushRules: true, scheduleCron: true, upgradeRoutine: true, networkAware: false,
+    uninstall: 'options', postTypeCleanup: false
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    ah: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('activation-hooks-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.version) this.setState({ ah: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(ah) { try { localStorage.setItem('activation-hooks-generator-v1', JSON.stringify(ah)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.ah));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { ah: next, past: coalesce ? s.past : s.past.concat([s.ah]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.ah));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { ah: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.ah].concat(s.future) }; }, () => this.persist(this.state.ah)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { ah: s.future[0], past: s.past.concat([s.ah]), future: s.future.slice(1) }; }, () => this.persist(this.state.ah)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'addUpgrade') p.upgradeRoutine = true;
+      if (kind === 'addChecks') p.requirementChecks = true;
+      if (kind === 'addFlush') p.flushRules = true;
+      if (kind === 'addNetwork') p.networkAware = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.ah, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const code = buildCode(this.state.ah, this.state.outputMode);
+    const name = this.state.outputMode === 'uninstall' ? 'uninstall.php' : (fnSlug(this.state.ah.prefix) || 'plugin').replace(/_/g, '-') + '.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, ah = s.ah, self = this;
+    const d = derive(ah);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(ah);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    return {
+      toolCount: 38, trueVal: true, ah: ah,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: s.outputMode === 'uninstall' ? 'uninstall.php' : (fnSlug(ah.prefix) || 'plugin').replace(/_/g, '-') + '.php',
+
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onVersionChange: function (ev) { self.set('version', ev.target.value, true); },
+      versionBorder: /^\d+\.\d+(\.\d+)?$/.test(String(ah.version || '').trim()) ? '#E7E2D9' : '#B91C1C',
+      onMinPhpChange: function (ev) { self.set('minPhp', ev.target.value, true); },
+      onMinWpChange: function (ev) { self.set('minWp', ev.target.value, true); },
+      summaryNote: 'Version ' + (ah.version || '1.0.0') + ' is stored in ' + d.versionKey + '. '
+        + (ah.upgradeRoutine ? 'install() re-runs on plugins_loaded whenever the code is ahead of the stored version.' : 'Nothing re-runs install() after the first activation.'),
+
+      activationToggles: [
+        { key: 'requirementChecks', label: 'PHP and WordPress guard', help: 'Deactivates itself with a readable message instead of a fatal error.', on: ah.requirementChecks },
+        { key: 'flushRules', label: 'Deferred rewrite flush', help: 'Flags on activation, flushes on wp_loaded once post types exist.', on: ah.flushRules },
+        { key: 'scheduleCron', label: 'Schedule cron events', help: 'Guarded with wp_next_scheduled so activation cannot double-book.', on: ah.scheduleCron },
+        { key: 'upgradeRoutine', label: 'Version-gated upgrades', help: 'Compares the stored version with the constant and re-runs install().', on: ah.upgradeRoutine },
+        { key: 'networkAware', label: 'Multisite aware', help: 'Loops every site with switch_to_blog on a network activation.', on: ah.networkAware }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      dataNote: d.options.length + ' option' + (d.options.length === 1 ? '' : 's') + (d.table ? ' · 1 table' : '') + (d.crons.length ? ' · ' + d.crons.length + ' cron' : ''),
+      onOptionsChange: function (ev) { self.set('options', ev.target.value, true); },
+      onTableChange: function (ev) { self.set('table', ev.target.value, true); },
+      onCronHooksChange: function (ev) { self.set('cronHooks', ev.target.value, true); },
+      onRolesChange: function (ev) { self.set('roles', ev.target.value, true); },
+
+      uninstallChips: [['none', 'Leave everything'], ['options', 'Options and schedules'], ['all', 'Everything, including tables']].map(function (u) {
+        const on = ah.uninstall === u[0];
+        const danger = u[0] === 'all';
+        return {
+          label: u[1],
+          borderColor: on ? (danger ? '#B91C1C' : '#3858E9') : '#E7E2D9',
+          bg: on ? (danger ? '#FBEBEB' : '#EEF1FE') : '#fff',
+          color: on ? (danger ? '#B91C1C' : '#2A46C4') : '#5C564B',
+          onSelect: function () { self.set('uninstall', u[0]); }
+        };
+      }),
+      uninstallNote: {
+        none: 'uninstall.php exists but deletes nothing, so a reinstall picks up where the user left off.',
+        options: 'Options, site options and scheduled events go. Custom tables and content are left alone — reversible, and usually the right default.',
+        all: 'Options, schedules, roles, the custom table and optionally the plugin’s posts. Irreversible: run it only if this plugin owns that data outright.'
+      }[ah.uninstall],
+
+      codeTokens: tokenizePHP(buildCode(ah, s.outputMode)),
+      outputModes: [['plugin', 'Plugin file'], ['snippet', 'Include'], ['uninstall', 'uninstall.php']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: {
+        plugin: 'The main plugin file — register_activation_hook needs __FILE__ to be this file.',
+        snippet: 'An include. Note that __FILE__ inside an include points at the include, not the plugin — pass the plugin file explicitly.',
+        uninstall: 'Save as uninstall.php beside the plugin file. WordPress runs it only on delete.'
+      }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new lifecycle' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refArgs: [
+        ['register_activation_hook( __FILE__, … )', '__FILE__ must be the main plugin file. Called from an include, the path is wrong and the hook never fires.'],
+        ['register_deactivation_hook( __FILE__, … )', 'Runs on every deactivation, including updates. Clear schedules and caches here; never delete data.'],
+        ['uninstall.php', 'A file beside the plugin, guarded by WP_UNINSTALL_PLUGIN. Runs only on delete, and takes precedence over register_uninstall_hook().'],
+        ['dbDelta()', 'Creates or alters a table by diffing your CREATE TABLE against the real schema. Requires wp-admin/includes/upgrade.php and very particular formatting.']
+      ].map(function (r) { return { name: r[0], description: r[1] }; }),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Lifecycle'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

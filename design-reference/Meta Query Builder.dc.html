@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Meta Query Builder — meta_query clauses — Generator for WP</title>
+  <meta name="description" content="Build meta_query clauses with the right compare and type — the difference between numeric and string comparison, and the JOINs each clause costs." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=query" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Query</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">WP_Meta_Query</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Meta Query Builder</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Meta comparisons that compare what you meant: the cast that makes 9 smaller than 10, the compare that matches your value shape, and honest notes on what it costs.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Clauses</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ clausesNote }}</div>
+        </div>
+        <sc-if value="{{ showRelation }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; align-items:center; gap:9px; margin-bottom:13px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E;">Match</span>
+            <sc-for list="{{ relationChips }}" as="rc" hint-placeholder-count="2">
+              <button onClick="{{ rc.onSelect }}" style="font-size:12px; font-weight:650; font-family:'JetBrains Mono',monospace; border:1px solid {{ rc.borderColor }}; background:{{ rc.bg }}; color:{{ rc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ rc.label }}</button>
+            </sc-for>
+            <span style="font-size:11.5px; color:#948C7E;">{{ relationNote }}</span>
+          </div>
+        </sc-if>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ clauseRows }}" as="cl" hint-placeholder-count="2">
+            <div style="border:1px solid #EDE8DF; border-radius:7px; padding:11px; background:#FFFFFF;">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input value="{{ cl.key }}" onChange="{{ cl.onKeyChange }}" spellCheck="false" placeholder="price" style="flex:1; min-width:120px; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ cl.keyBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <select value="{{ cl.compare }}" onChange="{{ cl.onCompareChange }}" style="width:150px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <sc-for list="{{ compareOptions }}" as="co" hint-placeholder-count="8">
+                    <option value="{{ co.value }}">{{ co.label }}</option>
+                  </sc-for>
+                </select>
+                <select value="{{ cl.type }}" onChange="{{ cl.onTypeChange }}" style="width:130px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid {{ cl.typeBorder }}; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <sc-for list="{{ typeOptions }}" as="to" hint-placeholder-count="6">
+                    <option value="{{ to.value }}">{{ to.label }}</option>
+                  </sc-for>
+                </select>
+                <button aria-label="Remove clause" onClick="{{ cl.onRemove }}" style="width:28px; height:28px; flex-shrink:0; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ cl.iconRemove }}</button>
+              </div>
+              <sc-if value="{{ cl.needsValue }}" hint-placeholder-val="{{ true }}">
+                <div style="margin-top:7px;">
+                  <input value="{{ cl.value }}" onChange="{{ cl.onValueChange }}" spellCheck="false" placeholder="{{ cl.valuePlaceholder }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ cl.valueBorder }};" style-focus="outline:2px solid #3858E9;" />
+                </div>
+              </sc-if>
+              <div style="margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#B3ACA0;">{{ cl.summary }}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noClauses }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No clauses — nothing is filtered by meta.</div>
+          </sc-if>
+        </div>
+        <button onClick="{{ onAddClause }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add clause</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The query around it</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post_type</label>
+            <input value="{{ mq.postType }}" onChange="{{ onPostTypeChange }}" spellCheck="false" placeholder="product" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">posts_per_page</label>
+            <input value="{{ mq.perPage }}" onChange="{{ onPerPageChange }}" spellCheck="false" placeholder="12" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">orderby</label>
+            <select value="{{ mq.orderby }}" onChange="{{ onOrderbyChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="date">date</option>
+              <option value="title">title</option>
+              <option value="meta_value">meta_value — as text</option>
+              <option value="meta_value_num">meta_value_num — as number</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">order</label>
+            <select value="{{ mq.order }}" onChange="{{ onOrderChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="DESC">DESC</option>
+              <option value="ASC">ASC</option>
+            </select>
+          </div>
+          <sc-if value="{{ needsOrderKey }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">order by which key</label>
+              <input value="{{ mq.orderKey }}" onChange="{{ onOrderKeyChange }}" spellCheck="false" placeholder="price" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ orderKeyBorder }};" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </sc-if>
+        </div>
+        <div style="margin-top:13px;">
+          <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="2">
+            <div style="display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-top:1px solid #F0ECE4;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+                <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+              </div>
+              <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+                <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#FBFAF7; border:1px solid #E7E2D9; border-radius:8px; padding:16px 18px; margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">In plain English</div>
+        <div style="font-size:13px; line-height:1.65; color:#3B362D;">{{ plainEnglish }}</div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">meta_query</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Handled by WP_Meta_Query, one JOIN per clause</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Clause keys</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="4">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Why 9 is greater than 10</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Post meta is stored as text. Without a type, MySQL compares strings, so “9” sorts after “10” and a price filter quietly returns the wrong products. NUMERIC casts to a signed integer, DECIMAL(10,2) keeps the pennies, DATE and DATETIME need the value in Y-m-d form.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Compare cheat sheet</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refCompare }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Cost</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">wp_postmeta is indexed on meta_key, not on meta_value. A LIKE with a leading wildcard scans every row for that key. If you filter on a value constantly, the honest fix is a taxonomy term or a custom table — not a bigger meta_query.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this query.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;query&quot;,&quot;args&quot;,&quot;pre&quot;],&quot;default&quot;:&quot;query&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const COMPARES = [
+  ['=', '= equals'], ['!=', '!= not equal'],
+  ['>', '> greater'], ['>=', '>= or equal'], ['<', '< less'], ['<=', '<= or equal'],
+  ['LIKE', 'LIKE contains'], ['NOT LIKE', 'NOT LIKE'],
+  ['IN', 'IN — any of'], ['NOT IN', 'NOT IN'],
+  ['BETWEEN', 'BETWEEN — two values'], ['NOT BETWEEN', 'NOT BETWEEN'],
+  ['EXISTS', 'EXISTS'], ['NOT EXISTS', 'NOT EXISTS']
+];
+const TYPES = [
+  ['CHAR', 'CHAR — text'], ['NUMERIC', 'NUMERIC — integer'], ['DECIMAL(10,2)', 'DECIMAL — money'],
+  ['DATE', 'DATE — Y-m-d'], ['DATETIME', 'DATETIME'], ['TIME', 'TIME'], ['BINARY', 'BINARY — exact case']
+];
+const NUMERIC_COMPARES = ['>', '>=', '<', '<=', 'BETWEEN', 'NOT BETWEEN'];
+const LIST_COMPARES = ['IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN'];
+const NO_VALUE = ['EXISTS', 'NOT EXISTS'];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+function valueList(str) { return String(str || '').split(',').map(function (v) { return v.trim(); }).filter(function (v) { return v !== ''; }); }
+function isNum(v) { return /^-?\d+(\.\d+)?$/.test(v); }
+function valueLiteral(c) {
+  const vals = valueList(c.value);
+  const numericType = c.type === 'NUMERIC' || c.type.indexOf('DECIMAL') === 0;
+  const lit = function (v) { return numericType && isNum(v) ? v : "'" + esc(v) + "'"; };
+  if (LIST_COMPARES.indexOf(c.compare) >= 0 || vals.length > 1) return 'array( ' + vals.map(lit).join(', ') + ' )';
+  return vals.length ? lit(vals[0]) : "''";
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+
+function buildMetaQuery(mq) {
+  const clauses = (mq.clauses || []).map(function (c) {
+    const pairs = [['key', "'" + esc(String(c.key || '').trim()) + "'"]];
+    if (NO_VALUE.indexOf(c.compare) === -1) pairs.push(['value', valueLiteral(c)]);
+    if (c.compare !== '=') pairs.push(['compare', "'" + c.compare + "'"]);
+    if (c.type !== 'CHAR') pairs.push(['type', "'" + c.type + "'"]);
+    return 'array(\n' + indent(aligned(pairs), 1) + '\n),';
+  });
+  if (!clauses.length) return null;
+  let inner = '';
+  if (clauses.length > 1) inner += "'relation' => '" + mq.relation + "',\n";
+  inner += clauses.join('\n');
+  return 'array(\n' + indent(inner, 1) + '\n)';
+}
+
+function buildArgs(mq) {
+  const pairs = [['post_type', "'" + esc(slugify(mq.postType) || 'post') + "'"]];
+  const per = parseInt(mq.perPage, 10);
+  pairs.push(['posts_per_page', isNaN(per) ? '12' : String(per)]);
+  if (mq.orderby !== 'date') pairs.push(['orderby', "'" + mq.orderby + "'"]);
+  if (mq.order !== 'DESC') pairs.push(['order', "'" + mq.order + "'"]);
+  if (mq.orderby === 'meta_value' || mq.orderby === 'meta_value_num') pairs.push(['meta_key', "'" + esc(String(mq.orderKey || '').trim()) + "'"]);
+  if (mq.noFoundRows) pairs.push(['no_found_rows', 'true']);
+  const meta = buildMetaQuery(mq);
+  if (meta) pairs.push(['meta_query', meta]);
+  return 'array(\n' + indent(aligned(pairs), 1) + '\n)';
+}
+
+function buildCode(mq, mode) {
+  const args = buildArgs(mq);
+  let out = CREDIT;
+  if (mode === 'args') return out + '$args = ' + args + ';\n';
+  if (mode === 'pre') {
+    const meta = buildMetaQuery(mq);
+    return out + '/**\n * Filter the main query by meta.\n *\n * @param WP_Query $query The query, by reference.\n */\nfunction mytheme_filter_meta( $query ) {\n\tif ( is_admin() || ! $query->is_main_query() ) {\n\t\treturn;\n\t}\n\n\t$query->set(\n\t\t\'meta_query\',\n' + indent(meta || 'array()', 2) + '\n\t);\n}\nadd_action( \'pre_get_posts\', \'mytheme_filter_meta\' );\n';
+  }
+  out += '$args = ' + args + ';\n\n$query = new WP_Query( $args );\n\nif ( $query->have_posts() ) {\n\techo \'<ul>\';\n\n\twhile ( $query->have_posts() ) {\n\t\t$query->the_post();\n\t\tprintf(\n\t\t\t\'<li><a href="%1$s">%2$s</a> %3$s</li>\',\n\t\t\tesc_url( get_permalink() ),\n\t\t\tesc_html( get_the_title() ),\n\t\t\tesc_html( get_post_meta( get_the_ID(), \'' + esc(String((mq.clauses[0] && mq.clauses[0].key) || 'price').trim()) + '\', true ) )\n\t\t);\n\t}\n\n\techo \'</ul>\';\n\twp_reset_postdata();\n} else {\n\tesc_html_e( \'Nothing matched.\', \'mytheme\' );\n}\n';
+  return out;
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|new|if|else|while|foreach|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(mq) {
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const clauses = mq.clauses || [];
+  if (!clauses.length) add('warning', 'No clauses, so nothing is filtered by meta.');
+  clauses.forEach(function (c, i) {
+    const label = 'Clause ' + (i + 1);
+    const vals = valueList(c.value);
+    const numericType = c.type === 'NUMERIC' || c.type.indexOf('DECIMAL') === 0;
+    if (!String(c.key || '').trim()) add('error', label + ' has no meta key. WP_Meta_Query needs one unless the clause only exists to order results.');
+    if (NO_VALUE.indexOf(c.compare) === -1 && !vals.length) add('error', label + ' has no value, so the comparison matches nothing.');
+    if (NO_VALUE.indexOf(c.compare) >= 0 && vals.length) add('warning', label + ' uses ' + c.compare + ', which ignores the value. Only the key is checked.');
+    if ((c.compare === 'BETWEEN' || c.compare === 'NOT BETWEEN') && vals.length !== 2) add('error', label + ' uses ' + c.compare + ' with ' + vals.length + ' value' + (vals.length === 1 ? '' : 's') + '. It needs exactly two, comma separated.');
+    if (NUMERIC_COMPARES.indexOf(c.compare) >= 0 && !numericType && c.type !== 'DATE' && c.type !== 'DATETIME' && c.type !== 'TIME') {
+      add('error', label + ' compares with ' + c.compare + ' but the type is ' + c.type + ', so MySQL compares text: “9” comes out greater than “10”.', 'castNumeric', 'Cast to NUMERIC');
+    }
+    if (numericType && vals.length && !vals.every(isNum)) add('warning', label + ' is cast to ' + c.type + ' but “' + vals.filter(function (v) { return !isNum(v); })[0] + '” is not a number — it will cast to 0.');
+    if ((c.type === 'DATE' || c.type === 'DATETIME') && vals.length && !vals.every(function (v) { return /^\d{4}-\d{2}-\d{2}/.test(v); })) add('error', label + ' casts to ' + c.type + ', which needs values shaped Y-m-d. Anything else casts to NULL and matches nothing.');
+    if ((c.compare === 'LIKE' || c.compare === 'NOT LIKE') && vals.length) add('recommendation', label + ' uses ' + c.compare + '. WordPress wraps the value in % wildcards for you, so a leading wildcard means MySQL cannot use an index — it scans every row with that key.');
+    if (c.compare === '=' && vals.length > 1) add('warning', label + ' has ' + vals.length + ' values with a plain = comparison. Use IN if you mean any of them.', 'compareIn', 'Use IN');
+    if (c.type === 'BINARY') add('recommendation', label + ' uses BINARY, which makes the comparison case sensitive. Rarely what you want unless you are matching a hash or a token.');
+  });
+  if (clauses.length > 1 && mq.relation === 'AND') add('recommendation', clauses.length + ' AND clauses means ' + clauses.length + ' JOINs against wp_postmeta. Two is normal, four is a query worth timing.');
+  if (clauses.length === 1 && mq.relation === 'OR') add('recommendation', 'relation is ignored with a single clause.');
+  if ((mq.orderby === 'meta_value' || mq.orderby === 'meta_value_num') && !String(mq.orderKey || '').trim()) add('error', 'Ordering by ' + mq.orderby + ' needs a meta_key. Without it WordPress has nothing to sort on and falls back to the post date.');
+  if (mq.orderby === 'meta_value') {
+    const key = String(mq.orderKey || '').trim();
+    const clause = clauses.filter(function (c) { return String(c.key || '').trim() === key; })[0];
+    if (clause && (clause.type === 'NUMERIC' || clause.type.indexOf('DECIMAL') === 0)) add('warning', 'You cast “' + key + '” to a number for filtering but sort it as text. Use meta_value_num so 10 comes after 9.', 'orderNum', 'Sort numerically');
+  }
+  if (mq.orderby === 'meta_value_num' && String(mq.orderKey || '').trim()) {
+    add('recommendation', 'Posts with no “' + String(mq.orderKey).trim() + '” value are excluded entirely when you order by a meta key — the JOIN drops them.');
+  }
+  const per = parseInt(mq.perPage, 10);
+  if (per === -1) add('warning', 'posts_per_page of -1 with a meta query is the classic slow page. Cap it.', 'setHundred', 'Cap at 100');
+  if (!mq.noFoundRows && per > 0 && per <= 5) add('recommendation', 'For a short list that is not paginated, no_found_rows skips the COUNT query.', 'addNoFoundRows', 'Set no_found_rows');
+  return out;
+}
+
+function freshProject() {
+  return {
+    postType: 'product', perPage: '12', orderby: 'meta_value_num', order: 'ASC', orderKey: 'price',
+    relation: 'AND', noFoundRows: false,
+    clauses: [
+      { key: 'price', compare: '<=', value: '5000', type: 'NUMERIC' },
+      { key: 'in_stock', compare: '=', value: '1', type: 'CHAR' }
+    ]
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    mq: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'query', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('meta-query-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.clauses) this.setState({ mq: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(mq) { try { localStorage.setItem('meta-query-generator-v1', JSON.stringify(mq)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.mq));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { mq: next, past: coalesce ? s.past : s.past.concat([s.mq]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.mq));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { mq: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.mq].concat(s.future) }; }, () => this.persist(this.state.mq)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { mq: s.future[0], past: s.past.concat([s.mq]), future: s.future.slice(1) }; }, () => this.persist(this.state.mq)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'castNumeric') p.clauses.forEach(function (c) { if (NUMERIC_COMPARES.indexOf(c.compare) >= 0 && c.type === 'CHAR') c.type = 'NUMERIC'; });
+      if (kind === 'compareIn') p.clauses.forEach(function (c) { if (c.compare === '=' && valueList(c.value).length > 1) c.compare = 'IN'; });
+      if (kind === 'orderNum') p.orderby = 'meta_value_num';
+      if (kind === 'setHundred') p.perPage = '100';
+      if (kind === 'addNoFoundRows') p.noFoundRows = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.mq, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const mq = this.state.mq;
+    const code = '<?php\n\n' + buildCode(mq, this.state.outputMode);
+    const name = (slugify(mq.postType) || 'post') + '-meta-query.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, mq = s.mq, self = this;
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(mq);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const clauses = mq.clauses || [];
+
+    const words = { '=': 'is', '!=': 'is not', '>': 'is above', '>=': 'is at least', '<': 'is below', '<=': 'is at most', LIKE: 'contains', 'NOT LIKE': 'does not contain', IN: 'is any of', 'NOT IN': 'is none of', BETWEEN: 'is between', 'NOT BETWEEN': 'is outside', EXISTS: 'exists', 'NOT EXISTS': 'is missing' };
+    const phrase = clauses.map(function (c) {
+      const key = String(c.key || 'a key').trim();
+      if (NO_VALUE.indexOf(c.compare) >= 0) return key + ' ' + words[c.compare];
+      return key + ' ' + words[c.compare] + ' ' + (valueList(c.value).join(' and ') || '(nothing)');
+    });
+
+    return {
+      toolCount: 38, trueVal: true, mq: mq,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (slugify(mq.postType) || 'post') + '-meta-query.php',
+
+      clausesNote: clauses.length + (clauses.length === 1 ? ' clause · 1 JOIN' : ' clauses · ' + clauses.length + ' JOINs'),
+      noClauses: clauses.length === 0,
+      showRelation: clauses.length > 1,
+      relationChips: [['AND', 'AND'], ['OR', 'OR']].map(function (r) {
+        const on = mq.relation === r[0];
+        return { label: r[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onSelect: function () { self.set('relation', r[0]); } };
+      }),
+      relationNote: mq.relation === 'AND' ? 'every clause must match' : 'any clause may match',
+      compareOptions: COMPARES.map(function (c) { return { value: c[0], label: c[1] }; }),
+      typeOptions: TYPES.map(function (t) { return { value: t[0], label: t[1] }; }),
+      clauseRows: clauses.map(function (c, i) {
+        const vals = valueList(c.value);
+        const numericType = c.type === 'NUMERIC' || c.type.indexOf('DECIMAL') === 0;
+        const mismatch = NUMERIC_COMPARES.indexOf(c.compare) >= 0 && c.type === 'CHAR';
+        const wrongCount = (c.compare === 'BETWEEN' || c.compare === 'NOT BETWEEN') && vals.length !== 2;
+        return {
+          key: c.key, compare: c.compare, type: c.type, value: c.value,
+          needsValue: NO_VALUE.indexOf(c.compare) === -1,
+          keyBorder: String(c.key || '').trim() ? '#E7E2D9' : '#B91C1C',
+          typeBorder: mismatch ? '#B91C1C' : '#E7E2D9',
+          valueBorder: (!vals.length || wrongCount) ? '#B91C1C' : '#E7E2D9',
+          valuePlaceholder: LIST_COMPARES.indexOf(c.compare) >= 0 ? '1000, 5000' : numericType ? '5000' : 'value',
+          summary: 'meta_value' + (numericType ? ' cast to ' + c.type : '') + ' ' + c.compare + ' ' + (vals.length ? vals.join(', ') : '—'),
+          iconRemove: ICON.close,
+          onKeyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.clauses[i].key = v; }, 'c-' + i + '-k'); },
+          onCompareChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.clauses[i].compare = v; }); },
+          onTypeChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.clauses[i].type = v; }); },
+          onValueChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.clauses[i].value = v; }, 'c-' + i + '-v'); },
+          onRemove: function () { self.commit(function (p) { p.clauses.splice(i, 1); }); }
+        };
+      }),
+      onAddClause: function () { self.commit(function (p) { p.clauses.push({ key: '', compare: '=', value: '', type: 'CHAR' }); }); },
+
+      onPostTypeChange: function (ev) { self.set('postType', ev.target.value, true); },
+      onPerPageChange: function (ev) { self.set('perPage', ev.target.value, true); },
+      onOrderbyChange: function (ev) { self.set('orderby', ev.target.value); },
+      onOrderChange: function (ev) { self.set('order', ev.target.value); },
+      needsOrderKey: mq.orderby === 'meta_value' || mq.orderby === 'meta_value_num',
+      onOrderKeyChange: function (ev) { self.set('orderKey', ev.target.value, true); },
+      orderKeyBorder: String(mq.orderKey || '').trim() ? '#E7E2D9' : '#B91C1C',
+      extraToggles: [
+        { key: 'noFoundRows', label: 'no_found_rows', help: 'Skips the COUNT query — right whenever you are not paginating.', on: mq.noFoundRows }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+      plainEnglish: clauses.length
+        ? 'Find ' + (slugify(mq.postType) || 'post') + ' entries where ' + phrase.join(mq.relation === 'AND' ? ', and ' : ', or ') + '. Sorted by ' + (mq.orderby === 'meta_value_num' ? String(mq.orderKey || 'a key').trim() + ' as a number' : mq.orderby === 'meta_value' ? String(mq.orderKey || 'a key').trim() + ' as text' : mq.orderby) + ', ' + (mq.order === 'ASC' ? 'lowest first' : 'highest first') + '.'
+        : 'Find ' + (slugify(mq.postType) || 'post') + ' entries with no meta filter.',
+
+      codeTokens: tokenizePHP(buildCode(mq, s.outputMode)),
+      outputModes: [['query', 'WP_Query + loop'], ['args', 'Args array'], ['pre', 'pre_get_posts']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: {
+        query: 'A secondary query with its own loop and wp_reset_postdata().',
+        args: 'Just the args, for get_posts() or your own WP_Query.',
+        pre: 'Filters the main query instead of running a second one.'
+      }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new meta query' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refArgs: [
+        ['key', 'string', 'The meta key. wp_postmeta is indexed on this column, which is why filtering by key is cheap and filtering by value is not.'],
+        ['value', 'mixed', 'One value, or an array for IN, NOT IN, BETWEEN and NOT BETWEEN. Omit it for EXISTS.'],
+        ['compare', 'string', 'Defaults to =. LIKE gets wildcards added around your value automatically.'],
+        ['type', 'string', 'The cast: CHAR, NUMERIC, DECIMAL(10,2), DATE, DATETIME, TIME or BINARY. This is what makes numeric comparisons behave.'],
+        ['relation', 'string', 'AND or OR between clauses. Ignored with a single clause.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+      refCompare: padTo('=  !=', 16) + 'exact match, any type\n' + padTo('>  >=  <  <=', 16) + 'needs a numeric or date type\n' + padTo('LIKE', 16) + 'wildcards added for you\n' + padTo('IN  NOT IN', 16) + 'array of values\n' + padTo('BETWEEN', 16) + 'exactly two values\n' + padTo('EXISTS', 16) + 'key is present — value ignored\n' + padTo('NOT EXISTS', 16) + 'key is absent',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Clauses'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

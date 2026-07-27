@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Dashboard Widget Generator — wp_add_dashboard_widget() — Generator for WP</title>
+  <meta name="description" content="Generate a dashboard widget with a capability gate, a real content callback, an optional config form, and the remove_meta_box() calls to clear core clutter." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=admin" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Admin</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Dashboard Widget</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Dashboard Widget Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">The widget your client actually looks at: gated by capability, filled by a real callback, and — optionally — the calls that clear the core boxes around it.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The widget</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Title</label>
+            <input value="{{ dw.title }}" onChange="{{ onTitleChange }}" placeholder="Acme Overview" style="width:100%; font-size:14.5px; padding:9px 11px; border-radius:6px; border:1px solid {{ titleBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">widget id</label>
+            <input value="{{ dw.id }}" onChange="{{ onIdChange }}" spellCheck="false" placeholder="acme_overview" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ idBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">capability</label>
+            <select value="{{ dw.capability }}" onChange="{{ onCapabilityChange }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:6px; border:1px solid {{ capBorder }}; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <sc-for list="{{ capabilityOptions }}" as="co" hint-placeholder-count="5">
+                <option value="{{ co.value }}">{{ co.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">context</label>
+            <select value="{{ dw.context }}" onChange="{{ onContextChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="normal">normal — left column</option>
+              <option value="side">side — right column</option>
+              <option value="column3">column3</option>
+              <option value="column4">column4</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">priority</label>
+            <select value="{{ dw.priority }}" onChange="{{ onPriorityChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="high">high — above core boxes</option>
+              <option value="core">core</option>
+              <option value="default">default</option>
+              <option value="low">low</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">prefix</label>
+            <input value="{{ dw.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ dw.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#5C564B; line-height:1.55;">{{ placementNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:11px;">What it shows</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:13px;">
+          <sc-for list="{{ sourceChips }}" as="sc" hint-placeholder-count="4">
+            <button onClick="{{ sc.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ sc.borderColor }}; background:{{ sc.bg }}; color:{{ sc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ sc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font-size:12px; color:#5C564B; line-height:1.6; margin-bottom:13px;">{{ sourceNote }}</div>
+        <sc-if value="{{ isStatic }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Body copy</label>
+            <textarea value="{{ dw.body }}" onChange="{{ onBodyChange }}" rows="3" placeholder="One useful sentence beats a widget nobody reads." style="width:100%; font-size:12.5px; line-height:1.6; padding:9px 10px; border-radius:6px; border:1px solid #E7E2D9; resize:vertical; background:#FCFBF9;" style-focus="outline:2px solid #3858E9;"></textarea>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isQuery }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px;">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post type</label>
+              <input value="{{ dw.postType }}" onChange="{{ onPostTypeChange }}" spellCheck="false" placeholder="post" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">how many</label>
+              <input value="{{ dw.count }}" onChange="{{ onCountChange }}" spellCheck="false" placeholder="5" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">status</label>
+              <select value="{{ dw.postStatus }}" onChange="{{ onPostStatusChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                <option value="publish">publish</option>
+                <option value="draft">draft</option>
+                <option value="pending">pending</option>
+                <option value="future">future</option>
+              </select>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isRemote }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+            <div style="grid-column:1 / -1;">
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">endpoint</label>
+              <input value="{{ dw.endpoint }}" onChange="{{ onEndpointChange }}" spellCheck="false" placeholder="https://api.example.com/stats" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ endpointBorder }};" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">cache (minutes)</label>
+              <input value="{{ dw.cacheMinutes }}" onChange="{{ onCacheChange }}" spellCheck="false" placeholder="15" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Clear core widgets</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ removeNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <sc-for list="{{ coreWidgets }}" as="cw" hint-placeholder-count="6">
+            <button onClick="{{ cw.onToggle }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ cw.borderColor }}; background:{{ cw.bg }}; color:{{ cw.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ cw.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Extras</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="5">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabScreen }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabScreenColor }}; border-bottom:2px solid {{ tabScreenBorder }};" style-focus="outline:2px solid #3858E9;">Dashboard</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showScreenTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; background:#F0F0F1; padding:16px 18px 40px;">
+          <div style="font-size:10.5px; color:#787C82; margin-bottom:10px;">{{ screenNote }}</div>
+          <div style="background:#fff; border:1px solid #C3C4C7; border-radius:2px; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 12px; border-bottom:1px solid #F0F0F1;">
+              <span style="font-size:14px; font-weight:600; color:#1D2327;">{{ dw.title }}</span>
+              <sc-if value="{{ dw.configCallback }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:13px; color:#2271B1;">Configure</span>
+              </sc-if>
+            </div>
+            <div style="padding:12px;">
+              <sc-if value="{{ isStatic }}" hint-placeholder-val="{{ true }}">
+                <p style="margin:0; font-size:13px; line-height:1.6; color:#2C3338;">{{ dw.body }}</p>
+              </sc-if>
+              <sc-if value="{{ isQuery }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; gap:7px;">
+                  <sc-for list="{{ previewRows }}" as="pr" hint-placeholder-count="4">
+                    <div style="display:flex; justify-content:space-between; gap:10px; font-size:13px; border-bottom:1px solid #F0F0F1; padding-bottom:6px;">
+                      <span style="color:#2271B1;">{{ pr.title }}</span>
+                      <span style="color:#646970; white-space:nowrap;">{{ pr.date }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isRemote }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; gap:18px; flex-wrap:wrap;">
+                  <sc-for list="{{ previewStats }}" as="ps" hint-placeholder-count="3">
+                    <div>
+                      <div style="font-size:20px; font-weight:600; color:#1D2327;">{{ ps.value }}</div>
+                      <div style="font-size:12px; color:#646970;">{{ ps.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <p style="margin:10px 0 0; font-size:12px; color:#787C82;">{{ cacheNote }}</p>
+              </sc-if>
+            </div>
+          </div>
+          <sc-for list="{{ previewCoreBoxes }}" as="pb" hint-placeholder-count="3">
+            <div style="background:#fff; border:1px solid #C3C4C7; border-radius:2px; margin-bottom:8px; opacity:{{ pb.opacity }};">
+              <div style="padding:8px 12px; border-bottom:1px solid #F0F0F1; display:flex; justify-content:space-between; gap:8px;">
+                <span style="font-size:14px; font-weight:600; color:#1D2327; text-decoration:{{ pb.strike }};">{{ pb.label }}</span>
+                <span style="font-size:11px; color:#787C82;">{{ pb.state }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">wp_add_dashboard_widget()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Called on wp_dashboard_setup</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refSignature }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Arguments</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Core widget ids</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refCoreIds }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Ordering</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Dashboard order is per user: once someone drags a box, their own arrangement wins and your priority is ignored. Forcing position means rewriting $wp_meta_boxes on every load — visible in the generated code if you turn it on, and worth avoiding unless the client asked.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on this widget.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;snippet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const CAPS = [
+  ['manage_options', 'manage_options — admins'],
+  ['edit_others_posts', 'edit_others_posts — editors'],
+  ['edit_posts', 'edit_posts — contributors and up'],
+  ['publish_posts', 'publish_posts — authors and up'],
+  ['read', 'read — every logged-in user']
+];
+const CORE_WIDGETS = [
+  ['dashboard_activity', 'Activity', 'normal'],
+  ['dashboard_right_now', 'At a Glance', 'normal'],
+  ['dashboard_quick_press', 'Quick Draft', 'side'],
+  ['dashboard_primary', 'WordPress Events and News', 'side'],
+  ['dashboard_site_health', 'Site Health Status', 'normal'],
+  ['dashboard_php_nag', 'PHP Update Required', 'normal']
+];
+const SOURCES = [['static', 'Static copy'], ['query', 'Recent posts'], ['remote', 'Remote stats'], ['option', 'Saved option']];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function pascal(s) { return String(s || '').split(/[^A-Za-z0-9]+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join('_'); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(dw) {
+  const pre = fnSlug(dw.prefix) || 'acme';
+  return {
+    pre: pre, td: slugify(dw.textDomain) || pre.replace(/_/g, '-'),
+    id: fnSlug(dw.id) || pre + '_widget',
+    cls: (pascal(dw.prefix || 'Acme') || 'Acme') + '_Dashboard_Widget',
+    cap: dw.capability || 'edit_posts',
+    isClass: dw.codeStyle === 'class',
+    source: dw.source || 'static'
+  };
+}
+
+function buildCode(dw, mode) {
+  const d = derive(dw);
+  const pre = d.pre, td = d.td, isClass = d.isClass;
+  const t = function (s) { return "__( '" + esc(s) + "', '" + td + "' )"; };
+  const cb = function (m) { return isClass ? "array( $this, '" + m + "' )" : "'" + pre + '_' + m + "'"; };
+  const call = function (m) { return (isClass ? '$this->' + m : pre + '_' + m) + '()'; };
+  const blocks = [];
+  const optName = pre + '_dashboard_options';
+
+  let setup = '';
+  if (dw.capGate) setup += "if ( ! current_user_can( '" + esc(d.cap) + "' ) ) {\n\treturn;\n}\n\n";
+  const addArgs = ["'" + esc(d.id) + "'", t(dw.title || 'Dashboard'), cb('render')];
+  if (dw.configCallback) addArgs.push(cb('configure'));
+  else if (dw.context !== 'normal' || dw.priority !== 'core') addArgs.push('null');
+  if (dw.context !== 'normal' || dw.priority !== 'core') { addArgs.push('array()'); addArgs.push("'" + dw.context + "'"); addArgs.push("'" + dw.priority + "'"); }
+  setup += 'wp_add_dashboard_widget(\n' + indent(addArgs.join(',\n'), 1) + '\n);';
+  const removals = (dw.removeWidgets || []).map(function (id) {
+    const meta = CORE_WIDGETS.filter(function (c) { return c[0] === id; })[0];
+    return "remove_meta_box( '" + id + "', 'dashboard', '" + (meta ? meta[2] : 'normal') + "' );";
+  });
+  if (removals.length) setup += '\n\n// Clear the core boxes the client does not use.\n' + removals.join('\n');
+  if (dw.forceTop) setup += "\n\n// Force this widget to the top for every user, ignoring their own drag order.\nglobal $wp_meta_boxes;\n$widget = $wp_meta_boxes['dashboard']['" + dw.context + "']['" + dw.priority + "'];\n$mine   = array( '" + esc(d.id) + "' => $widget['" + esc(d.id) + "'] );\nunset( $widget['" + esc(d.id) + "'] );\n$wp_meta_boxes['dashboard']['" + dw.context + "']['" + dw.priority + "'] = array_merge( $mine, $widget );";
+  blocks.push({ name: 'setup', params: '', hook: dw.network ? 'wp_network_dashboard_setup' : 'wp_dashboard_setup', doc: '/**\n * Register the dashboard widget.\n */\n', body: setup });
+
+  let render = '';
+  if (d.source === 'static') {
+    render = "echo '<p>' . esc_html__( '" + esc(dw.body || 'Nothing to report.') + "', '" + td + "' ) . '</p>';";
+  } else if (d.source === 'query') {
+    render = '$posts = get_posts(\n' + indent('array(\n' + indent(aligned([
+      ['post_type', "'" + esc(slugify(dw.postType) || 'post') + "'"],
+      ['post_status', "'" + (dw.postStatus || 'publish') + "'"],
+      ['numberposts', String(parseInt(dw.count, 10) || 5)],
+      ['orderby', "'date'"],
+      ['order', "'DESC'"],
+      ['suppress_filters', 'false']
+    ]), 1) + '\n)', 1) + '\n);\n\nif ( ! $posts ) {\n\techo \'<p>\' . esc_html__( \'Nothing here yet.\', \'' + td + "' ) . '</p>';\n\treturn;\n}\n\necho '<ul>';\n\nforeach ( $posts as $post ) {\n\tprintf(\n\t\t'<li><a href=\"%1$s\">%2$s</a> <span class=\"post-date\">%3$s</span></li>',\n\t\tesc_url( get_edit_post_link( $post->ID ) ),\n\t\tesc_html( get_the_title( $post ) ),\n\t\tesc_html( get_the_date( '', $post ) )\n\t);\n}\n\necho '</ul>';";
+  } else if (d.source === 'remote') {
+    const mins = parseInt(dw.cacheMinutes, 10) || 15;
+    render = "$cache_key = '" + pre + "_dashboard_stats';\n$stats     = get_transient( $cache_key );\n\nif ( false === $stats ) {\n\t$response = wp_remote_get(\n" + indent("'" + esc(dw.endpoint || 'https://api.example.com/stats') + "',\narray(\n\t'timeout' => 10,\n)", 2) + '\n\t);\n\n\tif ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {\n\t\techo \'<p>\' . esc_html__( \'Stats are unavailable right now.\', \'' + td + "' ) . '</p>';\n\t\treturn;\n\t}\n\n\t$stats = json_decode( wp_remote_retrieve_body( $response ), true );\n\tset_transient( $cache_key, $stats, " + mins + " * MINUTE_IN_SECONDS );\n}\n\nif ( ! is_array( $stats ) ) {\n\techo '<p>' . esc_html__( 'Unexpected response.', '" + td + "' ) . '</p>';\n\treturn;\n}\n\necho '<ul>';\n\nforeach ( $stats as $label => $value ) {\n\tprintf(\n\t\t'<li><strong>%1$s</strong> %2$s</li>',\n\t\tesc_html( $value ),\n\t\tesc_html( $label )\n\t);\n}\n\necho '</ul>';";
+  } else {
+    render = "$options = (array) get_option( '" + optName + "', array() );\n\nprintf(\n\t'<p>%s</p>',\n\tesc_html( isset( $options['message'] ) ? $options['message'] : __( 'Nothing configured yet.', '" + td + "' ) )\n);";
+  }
+  blocks.push({ name: 'render', params: '', doc: '/**\n * Print the widget body.\n */\n', body: render });
+
+  if (dw.configCallback) {
+    blocks.push({
+      name: 'configure', params: '',
+      doc: '/**\n * The form behind the Configure link.\n */\n',
+      body: "$options = (array) get_option( '" + optName + "', array() );\n\nif ( isset( $_POST['" + pre + "_config_nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['" + pre + "_config_nonce'] ), '" + pre + "_save_config' ) ) {\n\t$options['message'] = isset( $_POST['" + pre + "_message'] ) ? sanitize_text_field( wp_unslash( $_POST['" + pre + "_message'] ) ) : '';\n\tupdate_option( '" + optName + "', $options );\n}\n\nwp_nonce_field( '" + pre + "_save_config', '" + pre + "_config_nonce' );\n\nprintf(\n\t'<p><label for=\"" + pre + "_message\">%1$s</label><br /><input type=\"text\" class=\"widefat\" id=\"" + pre + "_message\" name=\"" + pre + "_message\" value=\"%2$s\" /></p>',\n\tesc_html__( 'Message', '" + td + "' ),\n\tesc_attr( isset( $options['message'] ) ? $options['message'] : '' )\n);"
+    });
+  }
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + (dw.title || 'Dashboard widget') + '\n * Description:       Adds the ' + (dw.title || 'dashboard') + ' widget to the admin dashboard.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Text Domain:       ' + td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+
+  if (isClass) {
+    out += 'final class ' + d.cls + ' {\n\n';
+    const hookLines = blocks.filter(function (b) { return b.hook; }).map(function (b) { return "add_action( '" + b.hook + "', array( $this, '" + b.name + "' ) );"; });
+    out += '\t/**\n\t * Wire the class into WordPress.\n\t */\n\tpublic function hooks() {\n' + indent(hookLines.join('\n'), 2) + '\n\t}\n\n';
+    blocks.forEach(function (b) { out += indent(b.doc, 1) + '\tpublic function ' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 2) + '\n\t}\n\n'; });
+    out += '}\n\n( new ' + d.cls + '() )->hooks();\n';
+  } else {
+    out += blocks.map(function (b) {
+      let s = b.doc + 'function ' + pre + '_' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 1) + '\n}\n';
+      if (b.hook) s += "add_action( '" + b.hook + "', '" + pre + '_' + b.name + "' );\n";
+      return s;
+    }).join('\n');
+  }
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit|static|new|class|final|public|private|if|else|foreach|global|unset|isset|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(dw) {
+  const d = derive(dw);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!String(dw.title || '').trim()) add('error', 'A title is required — the widget renders with an empty header otherwise.');
+  if (!String(dw.id || '').trim()) add('error', 'A widget id is required. It is the handle remove_meta_box() and user hidden-box preferences both use.');
+  else if (fnSlug(dw.id) !== String(dw.id).trim()) add('warning', '“' + dw.id + '” is not a safe id. Stick to lowercase and underscores so the CSS id and the meta box key match.', 'fixId', 'Use ' + fnSlug(dw.id));
+  if (fnSlug(dw.id).indexOf(d.pre) !== 0) add('warning', 'The id is not prefixed with “' + d.pre + '”. Dashboard ids are global; a clash silently replaces someone else’s widget.', 'prefixId', 'Prefix it');
+  if (d.cap === 'read') add('warning', 'A capability of read shows this to every subscriber, including on membership sites where that is everyone.', 'setEditPosts', 'Use edit_posts');
+  if (!dw.capGate) add('warning', 'No current_user_can() gate, so the widget registers for every role that can see the dashboard.', 'addGate', 'Add the check');
+  if (d.source === 'remote') {
+    if (!/^https?:\/\//.test(String(dw.endpoint || ''))) add('error', 'The endpoint needs a full https:// URL — wp_remote_get() will not guess.');
+    const mins = parseInt(dw.cacheMinutes, 10);
+    if (!mins) add('error', 'Set a cache window. An uncached HTTP request in a dashboard widget makes every admin page load wait on someone else’s server.');
+    else if (mins < 5) add('warning', 'A ' + mins + '-minute cache still means a blocking request several times an hour for every admin who loads the dashboard.');
+  }
+  if (d.source === 'query') {
+    const n = parseInt(dw.count, 10);
+    if (!n) add('warning', 'No post count set, so get_posts() falls back to its own default rather than yours.');
+    else if (n > 20) add('recommendation', n + ' rows is more than a dashboard box can show without scrolling. Five to ten reads better.');
+    if (dw.postStatus === 'draft' || dw.postStatus === 'pending') add('recommendation', 'Listing ' + dw.postStatus + ' posts is genuinely useful — pair it with edit links, which the generated code already does.');
+  }
+  if (d.source === 'option' && !dw.configCallback) add('warning', 'The body reads a saved option but there is no Configure form to set it.', 'addConfig', 'Add the config form');
+  if (dw.configCallback && d.source !== 'option') add('recommendation', 'The Configure form saves a message the current content source never reads. Switch the source to “Saved option” or drop the form.');
+  if (dw.forceTop) add('warning', 'Forcing the widget to the top rewrites $wp_meta_boxes on every dashboard load and overrides each user’s own arrangement. Clients ask for it; a week later they ask why they cannot move it.');
+  if ((dw.removeWidgets || []).indexOf('dashboard_activity') >= 0) add('recommendation', 'Removing Activity also removes the only place a client sees scheduled and recently published posts.');
+  if ((dw.removeWidgets || []).indexOf('dashboard_site_health') >= 0) add('recommendation', 'Hiding Site Health hides the warnings you will be asked about later. Consider leaving it for admins only.');
+  if (dw.context !== 'normal' || dw.priority !== 'core') add('recommendation', 'The context and priority arguments need WordPress 5.6 or newer. Below that they are ignored and the widget lands in the normal column.');
+  if (dw.network) add('recommendation', 'wp_network_dashboard_setup only fires on the network admin dashboard. Register on both hooks if the widget should appear in each site too.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'acme', textDomain: 'acme', codeStyle: 'procedural',
+    id: 'acme_overview', title: 'Acme Overview', capability: 'edit_posts',
+    context: 'normal', priority: 'high',
+    source: 'query', body: 'Everything is running. Nothing needs your attention today.',
+    postType: 'post', count: '5', postStatus: 'draft',
+    endpoint: 'https://api.example.com/stats', cacheMinutes: '15',
+    capGate: true, configCallback: false, forceTop: false, network: false,
+    removeWidgets: ['dashboard_primary', 'dashboard_quick_press']
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    dw: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'snippet', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('dashboard-widget-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.id) this.setState({ dw: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(dw) { try { localStorage.setItem('dashboard-widget-generator-v1', JSON.stringify(dw)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.dw));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { dw: next, past: coalesce ? s.past : s.past.concat([s.dw]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.dw));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { dw: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.dw].concat(s.future) }; }, () => this.persist(this.state.dw)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { dw: s.future[0], past: s.past.concat([s.dw]), future: s.future.slice(1) }; }, () => this.persist(this.state.dw)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'fixId') p.id = fnSlug(p.id);
+      if (kind === 'prefixId') p.id = fnSlug(p.prefix) + '_' + fnSlug(p.id).replace(new RegExp('^' + fnSlug(p.prefix) + '_?'), '');
+      if (kind === 'setEditPosts') p.capability = 'edit_posts';
+      if (kind === 'addGate') p.capGate = true;
+      if (kind === 'addConfig') p.configCallback = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.dw, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const dw = this.state.dw, mode = this.state.outputMode;
+    let code = buildCode(dw, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = (fnSlug(dw.id) || 'dashboard-widget').replace(/_/g, '-') + '.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, dw = s.dw, self = this;
+    const d = derive(dw);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(dw);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const removed = dw.removeWidgets || [];
+
+    return {
+      toolCount: 38, trueVal: true, dw: dw,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (fnSlug(dw.id) || 'dashboard-widget').replace(/_/g, '-') + '.php',
+
+      onTitleChange: function (ev) { self.set('title', ev.target.value, true); },
+      titleBorder: String(dw.title || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onIdChange: function (ev) { self.set('id', ev.target.value, true); },
+      idBorder: String(dw.id || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onCapabilityChange: function (ev) { self.set('capability', ev.target.value); },
+      capabilityOptions: CAPS.map(function (c) { return { value: c[0], label: c[1] }; }),
+      capBorder: d.cap === 'read' ? '#B45309' : '#E7E2D9',
+      onContextChange: function (ev) { self.set('context', ev.target.value); },
+      onPriorityChange: function (ev) { self.set('priority', ev.target.value); },
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      placementNote: (dw.context === 'side' ? 'Right column' : dw.context === 'normal' ? 'Left column' : dw.context) + ', ' + dw.priority + ' priority — until a user drags it somewhere else, which their profile then remembers.',
+
+      sourceChips: SOURCES.map(function (src) {
+        const on = d.source === src[0];
+        return { label: src[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onSelect: function () { self.set('source', src[0]); } };
+      }),
+      sourceNote: {
+        static: 'One escaped paragraph. The right answer more often than it looks — a widget that says one true thing beats a chart nobody reads.',
+        query: 'get_posts() with edit links and dates. Drafts and pending posts are the two lists clients actually want.',
+        remote: 'wp_remote_get() behind a transient, with a timeout and both failure branches handled.',
+        option: 'Reads a saved option so the Configure form can drive the content.'
+      }[d.source],
+      isStatic: d.source === 'static', isQuery: d.source === 'query', isRemote: d.source === 'remote',
+      onBodyChange: function (ev) { self.set('body', ev.target.value, true); },
+      onPostTypeChange: function (ev) { self.set('postType', ev.target.value, true); },
+      onCountChange: function (ev) { self.set('count', ev.target.value, true); },
+      onPostStatusChange: function (ev) { self.set('postStatus', ev.target.value); },
+      onEndpointChange: function (ev) { self.set('endpoint', ev.target.value, true); },
+      endpointBorder: /^https?:\/\//.test(String(dw.endpoint || '')) ? '#E7E2D9' : '#B91C1C',
+      onCacheChange: function (ev) { self.set('cacheMinutes', ev.target.value, true); },
+
+      removeNote: removed.length ? removed.length + ' will be removed' : 'nothing removed',
+      coreWidgets: CORE_WIDGETS.map(function (c) {
+        const on = removed.indexOf(c[0]) >= 0;
+        return {
+          label: c[1], borderColor: on ? '#B91C1C' : '#E7E2D9', bg: on ? '#FBEBEB' : '#fff', color: on ? '#B91C1C' : '#5C564B',
+          onToggle: function () { self.commit(function (p) { p.removeWidgets = p.removeWidgets || []; const i = p.removeWidgets.indexOf(c[0]); if (i >= 0) p.removeWidgets.splice(i, 1); else p.removeWidgets.push(c[0]); }); }
+        };
+      }),
+
+      extraToggles: [
+        { key: 'capGate', label: 'Capability gate', help: 'A current_user_can() check before the widget registers at all.', on: dw.capGate },
+        { key: 'configCallback', label: 'Configure form', help: 'The Configure link with a nonced save handler.', on: dw.configCallback },
+        { key: 'forceTop', label: 'Force to the top', help: 'Rewrites $wp_meta_boxes so this box comes first for everyone.', on: dw.forceTop },
+        { key: 'network', label: 'Network dashboard', help: 'Registers on wp_network_dashboard_setup instead of the site dashboard.', on: dw.network }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(dw, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: 'Paste into a plugin, an mu-plugin, or a functionality plugin.', functions: 'Ready for your theme’s functions.php.', plugin: 'A complete single-file plugin with a header.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new dashboard widget' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      screenNote: 'Dashboard · ' + (dw.context === 'side' ? 'right column' : 'left column') + ' · ' + dw.priority + ' priority',
+      previewRows: [
+        { title: 'Spring campaign landing copy', date: 'Yesterday' },
+        { title: 'Pricing page rewrite', date: '3 days ago' },
+        { title: 'Untitled', date: 'Last week' },
+        { title: 'Case study — Northwind', date: 'Last week' }
+      ].slice(0, Math.max(1, Math.min(6, parseInt(dw.count, 10) || 5))),
+      previewStats: [{ value: '1,284', label: 'Sessions' }, { value: '38', label: 'Orders' }, { value: '£4,102', label: 'Revenue' }],
+      cacheNote: 'Cached for ' + (parseInt(dw.cacheMinutes, 10) || 15) + ' minutes.',
+      previewCoreBoxes: CORE_WIDGETS.filter(function (c) { return c[2] === dw.context || removed.indexOf(c[0]) >= 0; }).map(function (c) {
+        const gone = removed.indexOf(c[0]) >= 0;
+        return { label: c[1], opacity: gone ? '0.4' : '1', strike: gone ? 'line-through' : 'none', state: gone ? 'removed' : '' };
+      }),
+
+      refSignature: 'wp_add_dashboard_widget(\n\t$widget_id,\n\t$widget_name,\n\t$callback,\n\t$control_callback = null,\n\t$callback_args = null,\n\t$context = \'normal\',\n\t$priority = \'core\'\n);',
+      refArgs: [
+        ['$widget_id', 'string', 'Becomes the box’s HTML id and the key remove_meta_box() needs. It is also what each user’s hidden-box preference stores, so changing it later un-hides the widget for everyone.'],
+        ['$widget_name', 'string', 'The heading. Translate it.'],
+        ['$callback', 'callable', 'Prints the body. Nothing is escaped for you — every value you echo is yours to escape.'],
+        ['$control_callback', 'callable|null', 'Adds the Configure link. It runs on both render and save, so check your nonce inside it.'],
+        ['$context', 'string', 'normal, side, column3 or column4. WordPress 5.6 and up.'],
+        ['$priority', 'string', 'high, core, default or low — the order within a column, until a user drags things around.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+      refCoreIds: CORE_WIDGETS.map(function (c) { return padTo(c[0], 24) + c[1] + '  (' + c[2] + ')'; }).join('\n'),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showScreenTab: s.rightTab === 'screen', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabScreen: function () { self.setState({ rightTab: 'screen', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabScreenColor: s.rightTab === 'screen' ? '#3858E9' : '#948C7E', tabScreenBorder: s.rightTab === 'screen' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Editor'], ['output', 'PHP & Preview']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>theme.json Generator — block theme settings and styles — Generator for WP</title>
+  <meta name="description" content="Build a valid theme.json: palette, typography scale, spacing, layout widths and style layers — with the settings that actually turn editor controls on and off." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=design" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Design</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">theme.json</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">theme.json Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Palette, type scale, spacing and layout in one file — and the CSS custom properties WordPress generates from them, so you know what to write in your stylesheet.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .json</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Colour palette</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ paletteNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ colorRows }}" as="cr" hint-placeholder-count="4">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <span style="width:30px; height:30px; border-radius:5px; border:1px solid #DCD7CE; background:{{ cr.swatch }}; flex-shrink:0;"></span>
+              <input value="{{ cr.name }}" onChange="{{ cr.onNameChange }}" placeholder="Primary" style="flex:1; min-width:110px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              <input value="{{ cr.slug }}" onChange="{{ cr.onSlugChange }}" spellCheck="false" placeholder="primary" style="width:110px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ cr.slugBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <input value="{{ cr.color }}" onChange="{{ cr.onColorChange }}" spellCheck="false" placeholder="#3858E9" style="width:110px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ cr.colorBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <button aria-label="Remove colour" onClick="{{ cr.onRemove }}" style="width:28px; height:28px; flex-shrink:0; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ cr.iconRemove }}</button>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ onAddColor }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add colour</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Typography</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ typeNote }}</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px; margin-bottom:13px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">body font family</label>
+            <input value="{{ tj.bodyFont }}" onChange="{{ onBodyFontChange }}" spellCheck="false" placeholder="Instrument Sans, sans-serif" style="width:100%; font-size:12.5px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">heading font family</label>
+            <input value="{{ tj.headingFont }}" onChange="{{ onHeadingFontChange }}" spellCheck="false" placeholder="Same as body" style="width:100%; font-size:12.5px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">base size</label>
+            <input value="{{ tj.baseSize }}" onChange="{{ onBaseSizeChange }}" spellCheck="false" placeholder="1rem" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">scale ratio</label>
+            <select value="{{ tj.scale }}" onChange="{{ onScaleChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="1.125">1.125 — major second</option>
+              <option value="1.2">1.2 — minor third</option>
+              <option value="1.25">1.25 — major third</option>
+              <option value="1.333">1.333 — perfect fourth</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; padding:11px 13px; background:#FBFAF7; border:1px solid #EDE8DF; border-radius:7px;">
+          <sc-for list="{{ scalePreview }}" as="sp" hint-placeholder-count="5">
+            <div style="text-align:center;">
+              <div style="font-size:{{ sp.px }}; font-weight:600; color:#26221C; line-height:1.1;">Aa</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#948C7E; margin-top:4px;">{{ sp.slug }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Layout and spacing</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">contentSize</label>
+            <input value="{{ tj.contentSize }}" onChange="{{ onContentSizeChange }}" spellCheck="false" placeholder="720px" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ contentBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">wideSize</label>
+            <input value="{{ tj.wideSize }}" onChange="{{ onWideSizeChange }}" spellCheck="false" placeholder="1200px" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ wideBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">spacing scale steps</label>
+            <select value="{{ tj.spacingSteps }}" onChange="{{ onSpacingStepsChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="0">none — custom values only</option>
+              <option value="5">5 steps</option>
+              <option value="7">7 steps — core default</option>
+              <option value="9">9 steps</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">root padding</label>
+            <input value="{{ tj.rootPadding }}" onChange="{{ onRootPaddingChange }}" spellCheck="false" placeholder="clamp(1rem, 4vw, 2rem)" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Editor controls</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ controlsNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <sc-for list="{{ controlChips }}" as="ct" hint-placeholder-count="8">
+            <button onClick="{{ ct.onToggle }}" title="{{ ct.help }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ ct.borderColor }}; background:{{ ct.bg }}; color:{{ ct.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ ct.label }}</button>
+          </sc-for>
+        </div>
+        <div style="margin-top:11px; font-size:12px; color:#5C564B; line-height:1.55;">Off means the control is hidden from the editor entirely — the fastest way to stop a client changing every colour on the site.</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Style layers</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="4">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">JSON</button>
+        <button onClick="{{ onSetTabVars }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabVarsColor }}; border-bottom:2px solid {{ tabVarsBorder }};" style-focus="outline:2px solid #3858E9;">CSS vars</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap; align-items:center;">
+            <span style="font-size:11.5px; font-weight:600; color:#5C564B;">Schema version 3</span>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">Save at the root of your theme as theme.json.</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:2; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showVarsTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; padding:14px 16px 40px;">
+          <div style="font-size:10.5px; color:#948C7E; margin-bottom:11px;">What WordPress generates from the settings above. Use these in your stylesheet rather than repeating values.</div>
+          <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; color:#3B362D; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none;">{{ cssVars }}</pre>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">theme.json</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Read once, at the theme root. No hook, no PHP.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The four top-level keys</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="4">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:3px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">settings turn controls on, styles set values</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">A colour in settings.color.palette appears as a swatch a user can pick. The same colour under styles.color.background is what the site actually renders by default. Confusing the two is why themes ship palettes that nothing uses.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Custom properties are predictable</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Every preset becomes --wp--preset--{category}--{slug}, and everything under settings.custom becomes --wp--custom--{path}. That naming is stable, which makes theme.json a design-token file you can rely on from plain CSS.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Specificity</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Styles generated from theme.json land in a stylesheet core prints in the head, before your theme’s style.css. That means your CSS wins — but a user’s change in the Site Editor is stored separately and beats both.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this theme.json.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+const CONTROLS = [
+  ['customColor', 'Custom colour picker beyond the palette.'],
+  ['customGradient', 'Custom gradients.'],
+  ['customDuotone', 'Custom duotone filters.'],
+  ['link', 'Link colour control.'],
+  ['customFontSize', 'Arbitrary font sizes beyond the scale.'],
+  ['fontStyle', 'Italic toggle.'],
+  ['fontWeight', 'Weight control.'],
+  ['lineHeight', 'Line height control.'],
+  ['letterSpacing', 'Letter spacing control.'],
+  ['textDecoration', 'Underline and strikethrough.'],
+  ['textTransform', 'Uppercase and capitalise.'],
+  ['customSpacingSize', 'Arbitrary spacing values beyond the scale.'],
+  ['padding', 'Padding controls on blocks.'],
+  ['margin', 'Margin controls on blocks.'],
+  ['blockGap', 'Gap between blocks.']
+];
+const SIZE_SLUGS = ['small', 'medium', 'large', 'x-large', 'xx-large'];
+
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function isHex(s) { return /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(String(s || '').trim()); }
+function isLength(s) { const v = String(s || '').trim(); return /^-?[\d.]+(px|rem|em|%|vw|vh|ch)$/.test(v) || /^(clamp|calc|min|max)\(/.test(v); }
+function round(n) { return Math.round(n * 1000) / 1000; }
+
+function scaleSizes(tj) {
+  const base = parseFloat(tj.baseSize) || 1;
+  const unit = String(tj.baseSize || '1rem').replace(/^[\d.]+/, '') || 'rem';
+  const ratio = parseFloat(tj.scale) || 1.25;
+  return SIZE_SLUGS.map(function (slug, i) {
+    const step = i - 1;
+    const size = round(base * Math.pow(ratio, step));
+    return { slug: slug, name: slug.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); }), size: size + unit, px: Math.round(size * 16) };
+  });
+}
+
+function spacingSizes(steps) {
+  const n = parseInt(steps, 10) || 0;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const step = i - Math.floor(n / 3);
+    const rem = round(1 * Math.pow(1.5, step));
+    out.push({ slug: String((i + 1) * 10), size: rem + 'rem', name: 'Step ' + (i + 1) });
+  }
+  return out;
+}
+
+function buildJSON(tj) {
+  const colors = (tj.colors || []).filter(function (c) { return slugify(c.slug); });
+  const sizes = scaleSizes(tj);
+  const spacing = spacingSizes(tj.spacingSteps);
+  const on = tj.controls || [];
+  const has = function (k) { return on.indexOf(k) >= 0; };
+
+  const settings = {
+    appearanceTools: !!tj.appearanceTools,
+    useRootPaddingAwareAlignments: !!String(tj.rootPadding || '').trim(),
+    layout: {
+      contentSize: String(tj.contentSize || '720px').trim(),
+      wideSize: String(tj.wideSize || '1200px').trim()
+    },
+    color: {
+      custom: has('customColor'),
+      customGradient: has('customGradient'),
+      customDuotone: has('customDuotone'),
+      link: has('link'),
+      defaultPalette: !!tj.keepCorePalette,
+      palette: colors.map(function (c) { return { slug: slugify(c.slug), name: c.name || slugify(c.slug), color: String(c.color || '').trim() }; })
+    },
+    typography: {
+      customFontSize: has('customFontSize'),
+      fontStyle: has('fontStyle'),
+      fontWeight: has('fontWeight'),
+      lineHeight: has('lineHeight'),
+      letterSpacing: has('letterSpacing'),
+      textDecoration: has('textDecoration'),
+      textTransform: has('textTransform'),
+      fluid: !!tj.fluidType,
+      fontSizes: sizes.map(function (s) { return { slug: s.slug, name: s.name, size: s.size }; })
+    },
+    spacing: {
+      customSpacingSize: has('customSpacingSize'),
+      padding: has('padding'),
+      margin: has('margin'),
+      blockGap: has('blockGap'),
+      units: ['px', 'rem', 'em', '%', 'vw']
+    }
+  };
+  if (spacing.length) settings.spacing.spacingSizes = spacing.map(function (s) { return { slug: s.slug, name: s.name, size: s.size }; });
+
+  const fonts = [];
+  if (String(tj.bodyFont || '').trim()) fonts.push({ slug: 'body', name: 'Body', fontFamily: String(tj.bodyFont).trim() });
+  if (String(tj.headingFont || '').trim()) fonts.push({ slug: 'heading', name: 'Heading', fontFamily: String(tj.headingFont).trim() });
+  if (fonts.length) settings.typography.fontFamilies = fonts;
+
+  const styles = {
+    color: {},
+    typography: {
+      fontFamily: fonts.length ? 'var(--wp--preset--font-family--body)' : undefined,
+      fontSize: 'var(--wp--preset--font-size--medium)',
+      lineHeight: '1.6'
+    },
+    spacing: {},
+    elements: {}
+  };
+  const bg = colors.filter(function (c) { return slugify(c.slug) === 'base' || slugify(c.slug) === 'background'; })[0];
+  const text = colors.filter(function (c) { return slugify(c.slug) === 'contrast' || slugify(c.slug) === 'text'; })[0];
+  const accent = colors.filter(function (c) { return slugify(c.slug) === 'primary' || slugify(c.slug) === 'accent'; })[0];
+  if (bg) styles.color.background = 'var(--wp--preset--color--' + slugify(bg.slug) + ')';
+  if (text) styles.color.text = 'var(--wp--preset--color--' + slugify(text.slug) + ')';
+  if (String(tj.rootPadding || '').trim()) {
+    styles.spacing.padding = { left: String(tj.rootPadding).trim(), right: String(tj.rootPadding).trim() };
+  }
+  if (spacing.length) styles.spacing.blockGap = 'var(--wp--preset--spacing--' + spacing[Math.min(2, spacing.length - 1)].slug + ')';
+  if (accent) {
+    styles.elements.link = {
+      color: { text: 'var(--wp--preset--color--' + slugify(accent.slug) + ')' },
+      ':hover': { typography: { textDecoration: 'none' } }
+    };
+    if (tj.buttonStyles) {
+      styles.elements.button = {
+        color: { background: 'var(--wp--preset--color--' + slugify(accent.slug) + ')', text: bg ? 'var(--wp--preset--color--' + slugify(bg.slug) + ')' : '#ffffff' },
+        border: { radius: '4px' },
+        spacing: { padding: { top: '0.7rem', bottom: '0.7rem', left: '1.4rem', right: '1.4rem' } },
+        typography: { fontWeight: '600' }
+      };
+    }
+  }
+  if (tj.headingStyles) {
+    styles.elements.heading = {
+      typography: {
+        fontFamily: fonts.filter(function (f) { return f.slug === 'heading'; }).length ? 'var(--wp--preset--font-family--heading)' : undefined,
+        fontWeight: '700',
+        lineHeight: '1.2'
+      }
+    };
+    styles.elements.h1 = { typography: { fontSize: 'var(--wp--preset--font-size--xx-large)' } };
+    styles.elements.h2 = { typography: { fontSize: 'var(--wp--preset--font-size--x-large)' } };
+    styles.elements.h3 = { typography: { fontSize: 'var(--wp--preset--font-size--large)' } };
+  }
+
+  const doc = {
+    $schema: 'https://schemas.wp.org/trunk/theme.json',
+    version: 3,
+    settings: settings,
+    styles: styles
+  };
+  if (tj.templateParts) {
+    doc.templateParts = [
+      { name: 'header', title: 'Header', area: 'header' },
+      { name: 'footer', title: 'Footer', area: 'footer' }
+    ];
+  }
+  if (tj.customTokens) {
+    doc.settings.custom = { 'transition-fast': '120ms ease', 'shadow-card': '0 1px 3px rgba(0,0,0,0.08)' };
+  }
+  return JSON.stringify(doc, function (k, v) { return v === undefined ? undefined : v; }, 2) + '\n';
+}
+
+function cssVarList(tj) {
+  const colors = (tj.colors || []).filter(function (c) { return slugify(c.slug); });
+  const sizes = scaleSizes(tj);
+  const spacing = spacingSizes(tj.spacingSteps);
+  const lines = [];
+  lines.push('/* Colours */');
+  colors.forEach(function (c) { lines.push('--wp--preset--color--' + slugify(c.slug) + ': ' + String(c.color || '').trim() + ';'); });
+  lines.push('');
+  lines.push('/* Font sizes */');
+  sizes.forEach(function (s) { lines.push('--wp--preset--font-size--' + s.slug + ': ' + s.size + ';'); });
+  if (String(tj.bodyFont || '').trim() || String(tj.headingFont || '').trim()) {
+    lines.push('');
+    lines.push('/* Font families */');
+    if (String(tj.bodyFont || '').trim()) lines.push('--wp--preset--font-family--body: ' + String(tj.bodyFont).trim() + ';');
+    if (String(tj.headingFont || '').trim()) lines.push('--wp--preset--font-family--heading: ' + String(tj.headingFont).trim() + ';');
+  }
+  if (spacing.length) {
+    lines.push('');
+    lines.push('/* Spacing */');
+    spacing.forEach(function (s) { lines.push('--wp--preset--spacing--' + s.slug + ': ' + s.size + ';'); });
+  }
+  if (tj.customTokens) {
+    lines.push('');
+    lines.push('/* settings.custom */');
+    lines.push('--wp--custom--transition-fast: 120ms ease;');
+    lines.push('--wp--custom--shadow-card: 0 1px 3px rgba(0,0,0,0.08);');
+  }
+  lines.push('');
+  lines.push('/* Layout */');
+  lines.push('--wp--style--global--content-size: ' + String(tj.contentSize || '720px').trim() + ';');
+  lines.push('--wp--style--global--wide-size: ' + String(tj.wideSize || '1200px').trim() + ';');
+  return lines.join('\n');
+}
+
+const JSON_RE = /("(?:[^"\\]|\\.)*")(\s*:)?|\b(true|false|null)\b|(-?\d+\.?\d*)|([{}\[\],])/g;
+function tokenizeJSON(code) {
+  const C = { key: '#8A5B00', string: '#1F7A4C', keyword: '#B3439A', number: '#B45309', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color) { if (text) out.push({ text: text, color: color }); };
+  JSON_RE.lastIndex = 0;
+  while ((m = JSON_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) { push(m[1], m[2] ? C.key : C.string); if (m[2]) push(m[2], C.punct); }
+    else if (m[3]) push(m[3], C.keyword);
+    else if (m[4]) push(m[4], C.number);
+    else push(m[5], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(tj) {
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const colors = (tj.colors || []);
+  const on = tj.controls || [];
+  if (!colors.length) add('error', 'An empty palette leaves the editor with no colours to pick — or core’s defaults, if you kept them.');
+  const seen = {};
+  colors.forEach(function (c) {
+    const slug = slugify(c.slug);
+    if (!slug) add('error', 'A colour is missing its slug. The slug becomes the CSS custom property name.');
+    if (seen[slug]) add('error', 'Two colours share the slug “' + slug + '”, so one custom property overwrites the other.');
+    seen[slug] = true;
+    if (!isHex(c.color) && !/^(rgb|hsl|var|oklch)/.test(String(c.color || '').trim())) add('error', '“' + (c.color || '') + '” is not a colour value. Use a hex, an rgb()/hsl() function, or a var().');
+    if (!String(c.name || '').trim()) add('warning', 'The colour “' + slug + '” has no name, so the editor shows the slug in its tooltip.');
+  });
+  const names = colors.map(function (c) { return slugify(c.slug); });
+  if (names.indexOf('base') === -1 && names.indexOf('background') === -1) add('warning', 'No base or background colour, so styles.color.background is left unset and the site falls back to whatever the browser does.');
+  if (names.indexOf('contrast') === -1 && names.indexOf('text') === -1) add('warning', 'No contrast or text colour, so body text has no declared colour.');
+  if (!isLength(tj.contentSize)) add('error', 'contentSize must be a CSS length — 720px, 45rem, or a clamp().');
+  if (!isLength(tj.wideSize)) add('error', 'wideSize must be a CSS length.');
+  const c = parseFloat(tj.contentSize), w = parseFloat(tj.wideSize);
+  if (c && w && /px|rem/.test(String(tj.contentSize)) && /px|rem/.test(String(tj.wideSize)) && c > w) add('error', 'contentSize is larger than wideSize, so wide alignment will look narrower than normal content.', 'swapSizes', 'Swap them');
+  if (!parseFloat(tj.baseSize)) add('error', 'The base font size must be a number with a unit — 1rem or 18px.');
+  if (String(tj.baseSize || '').indexOf('px') >= 0) add('recommendation', 'A px base size ignores the reader’s browser setting. rem respects it.');
+  if (parseInt(tj.spacingSteps, 10) === 0) add('recommendation', 'No spacing scale, so every gap in the editor is an arbitrary value. A scale is what keeps a client’s pages consistent.', 'setSeven', 'Use 7 steps');
+  if (on.indexOf('customColor') >= 0 && colors.length) add('recommendation', 'The custom colour picker is on alongside your palette. If the point of the palette is consistency, turning it off is the enforcement.');
+  if (on.indexOf('customFontSize') >= 0) add('recommendation', 'Arbitrary font sizes are allowed, which undoes the scale you just defined.');
+  if (!tj.appearanceTools && (on.indexOf('padding') === -1 || on.indexOf('margin') === -1)) add('recommendation', 'appearanceTools is a shortcut that turns on border, colour, spacing and typography controls together — simpler than listing them.');
+  if (tj.keepCorePalette && colors.length) add('warning', 'defaultPalette is true, so core’s colours sit alongside yours in the picker. Most themes turn this off.', 'dropCore', 'Use only my palette');
+  if (!String(tj.rootPadding || '').trim()) add('recommendation', 'No root padding, so full-width content touches the viewport edge on phones. A clamp() is the usual fix.', 'setPadding', 'Add a clamp');
+  if (tj.fluidType) add('recommendation', 'Fluid typography is on. WordPress will interpolate every font size between viewports — check your smallest size still reads at 320px.');
+  if (String(tj.headingFont || '').trim() && !tj.headingStyles) add('warning', 'You defined a heading font but no heading style layer, so nothing applies it.', 'addHeadings', 'Style headings');
+  if (!tj.templateParts) add('recommendation', 'No templateParts, which is fine for a hybrid theme. A full block theme usually declares its header and footer parts here.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    colors: [
+      { slug: 'base', name: 'Base', color: '#FAF9F7' },
+      { slug: 'contrast', name: 'Contrast', color: '#26221C' },
+      { slug: 'primary', name: 'Primary', color: '#3858E9' },
+      { slug: 'muted', name: 'Muted', color: '#948C7E' }
+    ],
+    bodyFont: '"Instrument Sans", system-ui, sans-serif', headingFont: '', baseSize: '1rem', scale: '1.25',
+    contentSize: '720px', wideSize: '1200px', spacingSteps: '7', rootPadding: 'clamp(1rem, 4vw, 2rem)',
+    controls: ['link', 'lineHeight', 'padding', 'margin', 'blockGap'],
+    appearanceTools: true, keepCorePalette: false, fluidType: true,
+    headingStyles: true, buttonStyles: true, templateParts: true, customTokens: false
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    tj: freshProject(), past: [], future: [],
+    rightTab: 'code', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('theme-json-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.colors) this.setState({ tj: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(tj) { try { localStorage.setItem('theme-json-generator-v1', JSON.stringify(tj)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.tj));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { tj: next, past: coalesce ? s.past : s.past.concat([s.tj]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.tj));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { tj: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.tj].concat(s.future) }; }, () => this.persist(this.state.tj)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { tj: s.future[0], past: s.past.concat([s.tj]), future: s.future.slice(1) }; }, () => this.persist(this.state.tj)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'swapSizes') { const a = p.contentSize; p.contentSize = p.wideSize; p.wideSize = a; }
+      if (kind === 'setSeven') p.spacingSteps = '7';
+      if (kind === 'dropCore') p.keepCorePalette = false;
+      if (kind === 'setPadding') p.rootPadding = 'clamp(1rem, 4vw, 2rem)';
+      if (kind === 'addHeadings') p.headingStyles = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    const text = this.state.rightTab === 'vars' ? cssVarList(this.state.tj) : buildJSON(this.state.tj);
+    try { navigator.clipboard.writeText(text); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'Copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const code = buildJSON(this.state.tj);
+    try {
+      const blob = new Blob([code], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'theme.json'; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded theme.json' });
+  }
+
+  renderVals() {
+    const s = this.state, tj = s.tj, self = this;
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(tj);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const sizes = scaleSizes(tj);
+    const on = tj.controls || [];
+
+    return {
+      toolCount: 38, trueVal: true, tj: tj,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: 'theme.json',
+
+      paletteNote: (tj.colors || []).length + ' colour' + ((tj.colors || []).length === 1 ? '' : 's') + (tj.keepCorePalette ? ' + core defaults' : ' · core palette off'),
+      colorRows: (tj.colors || []).map(function (c, i) {
+        return {
+          name: c.name, slug: c.slug, color: c.color,
+          swatch: isHex(c.color) || /^(rgb|hsl|oklch)/.test(String(c.color || '').trim()) ? c.color : '#FFFFFF',
+          slugBorder: slugify(c.slug) ? '#E7E2D9' : '#B91C1C',
+          colorBorder: isHex(c.color) || /^(rgb|hsl|var|oklch)/.test(String(c.color || '').trim()) ? '#E7E2D9' : '#B91C1C',
+          iconRemove: ICON.close,
+          onNameChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.colors[i].name = v; }, 'c-' + i + '-n'); },
+          onSlugChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.colors[i].slug = v; }, 'c-' + i + '-s'); },
+          onColorChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.colors[i].color = v; }, 'c-' + i + '-c'); },
+          onRemove: function () { self.commit(function (p) { p.colors.splice(i, 1); }); }
+        };
+      }),
+      onAddColor: function () { self.commit(function (p) { p.colors = p.colors || []; const n = p.colors.length + 1; p.colors.push({ slug: 'colour-' + n, name: 'Colour ' + n, color: '#000000' }); }); },
+
+      typeNote: sizes.length + ' sizes · ratio ' + (tj.scale || '1.25') + (tj.fluidType ? ' · fluid' : ''),
+      onBodyFontChange: function (ev) { self.set('bodyFont', ev.target.value, true); },
+      onHeadingFontChange: function (ev) { self.set('headingFont', ev.target.value, true); },
+      onBaseSizeChange: function (ev) { self.set('baseSize', ev.target.value, true); },
+      onScaleChange: function (ev) { self.set('scale', ev.target.value); },
+      scalePreview: sizes.map(function (sz) { return { slug: sz.slug, px: Math.min(38, Math.max(11, sz.px)) + 'px' }; }),
+
+      onContentSizeChange: function (ev) { self.set('contentSize', ev.target.value, true); },
+      onWideSizeChange: function (ev) { self.set('wideSize', ev.target.value, true); },
+      contentBorder: isLength(tj.contentSize) ? '#E7E2D9' : '#B91C1C',
+      wideBorder: isLength(tj.wideSize) ? '#E7E2D9' : '#B91C1C',
+      onSpacingStepsChange: function (ev) { self.set('spacingSteps', ev.target.value); },
+      onRootPaddingChange: function (ev) { self.set('rootPadding', ev.target.value, true); },
+
+      controlsNote: on.length + ' of ' + CONTROLS.length + ' on',
+      controlChips: CONTROLS.map(function (c) {
+        const isOn = on.indexOf(c[0]) >= 0;
+        return {
+          label: c[0], help: c[1],
+          borderColor: isOn ? '#3858E9' : '#E7E2D9', bg: isOn ? '#EEF1FE' : '#fff', color: isOn ? '#2A46C4' : '#5C564B',
+          onToggle: function () { self.commit(function (p) { p.controls = p.controls || []; const i = p.controls.indexOf(c[0]); if (i >= 0) p.controls.splice(i, 1); else p.controls.push(c[0]); }); }
+        };
+      }),
+
+      extraToggles: [
+        { key: 'appearanceTools', label: 'appearanceTools', help: 'Turns on border, colour, spacing and typography controls in one line.', on: tj.appearanceTools },
+        { key: 'fluidType', label: 'Fluid typography', help: 'Font sizes interpolate between viewports automatically.', on: tj.fluidType },
+        { key: 'keepCorePalette', label: 'Keep core’s palette', help: 'Leaves WordPress’s default colours in the picker alongside yours.', on: tj.keepCorePalette },
+        { key: 'headingStyles', label: 'Heading style layer', help: 'Sets the heading font, weight and per-level sizes from your scale.', on: tj.headingStyles },
+        { key: 'buttonStyles', label: 'Button style layer', help: 'Colours, radius and padding for the button element.', on: tj.buttonStyles },
+        { key: 'templateParts', label: 'Declare template parts', help: 'header and footer parts, as a block theme expects.', on: tj.templateParts },
+        { key: 'customTokens', label: 'settings.custom examples', help: 'Two custom tokens, to show how --wp--custom-- names are built.', on: tj.customTokens }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizeJSON(buildJSON(tj)),
+      cssVars: cssVarList(tj),
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new theme.json' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refArgs: [
+        ['version', 'Schema version. 3 is current; the number changes how some defaults are interpreted, so do not bump it casually.'],
+        ['settings', 'What the editor offers: palettes, font sizes, spacing steps, and which controls appear at all. Presets here become CSS custom properties.'],
+        ['styles', 'What the site actually renders by default — the values, not the options. Supports element and block-level layers.'],
+        ['templateParts / customTemplates', 'Declares the parts and templates a block theme ships, with their areas.']
+      ].map(function (r) { return { name: r[0], description: r[1] }; }),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const isOn = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: isOn ? '#3858E9' : '#E7E2D9', bg: isOn ? '#EEF1FE' : '#fff', color: isOn ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showVarsTab: s.rightTab === 'vars', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabVars: function () { self.setState({ rightTab: 'vars', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabVarsColor: s.rightTab === 'vars' ? '#3858E9' : '#948C7E', tabVarsBorder: s.rightTab === 'vars' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Tokens'], ['output', 'JSON & Checks']].map(function (tb) {
+        const isOn = s.mobilePane === tb[0];
+        return { label: tb[1], bg: isOn ? '#3858E9' : '#fff', color: isOn ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

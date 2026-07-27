@@ -1,0 +1,92 @@
+@import './tokens.css';
+@import './components.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--gfw-bg);
+  color: var(--gfw-text);
+  font-family: var(--gfw-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #DCE3FE;
+}
+
+a {
+  color: var(--gfw-accent);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--gfw-accent-hover);
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: #F3F1EC;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gfw-border-dashed);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C9C2B5;
+}
+
+pre,
+code,
+.gfw-mono {
+  font-family: var(--gfw-font-mono);
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+}
+
+@keyframes gfw-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.gfw-caret {
+  animation: gfw-caret 1.1s steps(1) infinite;
+  color: var(--gfw-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gfw-accent);
+  outline-offset: 2px;
+}

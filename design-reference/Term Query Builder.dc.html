@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Term Query Builder — WP_Term_Query — Generator for WP</title>
+  <meta name="description" content="Fetch terms with hide_empty, hierarchy, meta clauses and ordering — plus the count and object_ids caveats." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=query" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Query</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">WP_Term_Query</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Term Query Builder</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Term lists that behave: hide_empty that means what it says, hierarchy that survives it, and the ordering options that actually exist.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Which terms</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">taxonomy</label>
+            <input value="{{ tq.taxonomy }}" onChange="{{ onTaxonomyChange }}" spellCheck="false" placeholder="category" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ taxBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">parent</label>
+            <input value="{{ tq.parent }}" onChange="{{ onParentChange }}" spellCheck="false" placeholder="0 for top level" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">child_of</label>
+            <input value="{{ tq.childOf }}" onChange="{{ onChildOfChange }}" spellCheck="false" placeholder="term id" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">name / slug contains</label>
+            <input value="{{ tq.search }}" onChange="{{ onSearchChange }}" spellCheck="false" placeholder="guide" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">include ids</label>
+            <input value="{{ tq.include }}" onChange="{{ onIncludeChange }}" spellCheck="false" placeholder="4, 12, 19" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ includeBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">exclude ids</label>
+            <input value="{{ tq.exclude }}" onChange="{{ onExcludeChange }}" spellCheck="false" placeholder="1" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ excludeBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#5C564B; line-height:1.55;">{{ hierarchyNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Order and shape</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">orderby</label>
+            <select value="{{ tq.orderby }}" onChange="{{ onOrderbyChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <sc-for list="{{ orderbyOptions }}" as="oo" hint-placeholder-count="6">
+                <option value="{{ oo.value }}">{{ oo.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">order</label>
+            <select value="{{ tq.order }}" onChange="{{ onOrderChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="ASC">ASC</option>
+              <option value="DESC">DESC</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">number</label>
+            <input value="{{ tq.number }}" onChange="{{ onNumberChange }}" spellCheck="false" placeholder="0 for all" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">fields</label>
+            <select value="{{ tq.fields }}" onChange="{{ onFieldsChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="all">all — WP_Term objects</option>
+              <option value="ids">ids</option>
+              <option value="names">names</option>
+              <option value="slugs">slugs</option>
+              <option value="id=>name">id=&gt;name pairs</option>
+              <option value="count">count — a number</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:13px;">
+          <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="4">
+            <div style="display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-top:1px solid #F0ECE4;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+                <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+              </div>
+              <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+                <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Term meta</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ metaNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ metaRows }}" as="mr" hint-placeholder-count="1">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <input value="{{ mr.key }}" onChange="{{ mr.onKeyChange }}" spellCheck="false" placeholder="featured" style="flex:1; min-width:130px; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ mr.keyBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <select value="{{ mr.compare }}" onChange="{{ mr.onCompareChange }}" style="width:120px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                <sc-for list="{{ compareOptions }}" as="co" hint-placeholder-count="5">
+                  <option value="{{ co.value }}">{{ co.label }}</option>
+                </sc-for>
+              </select>
+              <input value="{{ mr.value }}" onChange="{{ mr.onValueChange }}" spellCheck="false" placeholder="1" style="flex:1; min-width:100px; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ mr.valueBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <button aria-label="Remove clause" onClick="{{ mr.onRemove }}" style="width:28px; height:28px; flex-shrink:0; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ mr.iconRemove }}</button>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noMeta }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:12.5px; color:#948C7E;">No term meta clauses.</div>
+          </sc-if>
+        </div>
+        <button onClick="{{ onAddMeta }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add meta clause</button>
+      </div>
+
+      <div style="background:#FBFAF7; border:1px solid #E7E2D9; border-radius:8px; padding:16px 18px; margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">In plain English</div>
+        <div style="font-size:13px; line-height:1.65; color:#3B362D;">{{ plainEnglish }}</div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">new WP_Term_Query()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">get_terms() is a thin wrapper around this</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Arguments</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">hide_empty and hierarchy</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">A parent category with no posts of its own but plenty in its children counts as empty — so hide_empty drops it and your menu loses a level. Passing pad_counts makes each parent count include its descendants, which fixes exactly this.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">count is not per post type</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">term->count counts every object attached to the term, across every post type sharing that taxonomy, published or not in some cases. If your archive shows “12 posts” and lists 8, this is why.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this query.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;query&quot;,&quot;dropdown&quot;,&quot;args&quot;],&quot;default&quot;:&quot;query&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const ORDERBYS = [
+  ['name', 'name'], ['slug', 'slug'], ['count', 'count'], ['term_order', 'term_order'],
+  ['term_id', 'term_id'], ['include', 'include — your order'], ['meta_value_num', 'meta_value_num'], ['none', 'none']
+];
+const COMPARES = [['=', '='], ['!=', '!='], ['>=', '>='], ['<=', '<='], ['LIKE', 'LIKE'], ['EXISTS', 'EXISTS'], ['NOT EXISTS', 'NOT EXISTS']];
+const HIERARCHICAL = ['category', 'product_cat'];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+function idList(str) { return String(str || '').split(',').map(function (v) { return v.trim(); }).filter(Boolean); }
+function valueList(str) { return String(str || '').split(',').map(function (v) { return v.trim(); }).filter(function (v) { return v !== ''; }); }
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+
+function buildArgs(tq) {
+  const pairs = [['taxonomy', "'" + esc(slugify(tq.taxonomy) || 'category') + "'"], ['hide_empty', tq.hideEmpty ? 'true' : 'false']];
+  if (String(tq.parent || '').trim() !== '') pairs.push(['parent', String(parseInt(tq.parent, 10) || 0)]);
+  if (String(tq.childOf || '').trim() !== '') pairs.push(['child_of', String(parseInt(tq.childOf, 10) || 0)]);
+  if (String(tq.search || '').trim()) pairs.push([tq.searchSlug ? 'slug' : 'search', "'" + esc(String(tq.search).trim()) + "'"]);
+  const inc = idList(tq.include), exc = idList(tq.exclude);
+  if (inc.length) pairs.push(['include', 'array( ' + inc.join(', ') + ' )']);
+  if (exc.length) pairs.push([tq.excludeTree ? 'exclude_tree' : 'exclude', 'array( ' + exc.join(', ') + ' )']);
+  const metas = (tq.meta || []).filter(function (m) { return String(m.key || '').trim(); });
+  if (metas.length) {
+    const clauses = metas.map(function (m) {
+      const p = [['key', "'" + esc(String(m.key).trim()) + "'"]];
+      if (m.compare !== 'EXISTS' && m.compare !== 'NOT EXISTS') p.push(['value', "'" + esc(valueList(m.value)[0] || '') + "'"]);
+      if (m.compare !== '=') p.push(['compare', "'" + m.compare + "'"]);
+      return 'array(\n' + indent(aligned(p), 1) + '\n),';
+    });
+    pairs.push(['meta_query', 'array(\n' + indent(clauses.join('\n'), 1) + '\n)']);
+  }
+  if (tq.orderby === 'meta_value_num' && metas.length) pairs.push(['meta_key', "'" + esc(String(metas[0].key).trim()) + "'"]);
+  pairs.push(['orderby', "'" + tq.orderby + "'"]);
+  if (tq.order !== 'ASC') pairs.push(['order', "'" + tq.order + "'"]);
+  const num = parseInt(tq.number, 10);
+  if (num) pairs.push(['number', String(num)]);
+  if (tq.fields !== 'all') pairs.push(['fields', "'" + tq.fields + "'"]);
+  if (tq.padCounts) pairs.push(['pad_counts', 'true']);
+  if (!tq.updateCache) pairs.push(['update_term_meta_cache', 'false']);
+  return 'array(\n' + indent(aligned(pairs), 1) + '\n)';
+}
+
+function buildCode(tq, mode) {
+  const args = buildArgs(tq);
+  let out = CREDIT;
+  if (mode === 'args') return out + '$args = ' + args + ';\n';
+  if (mode === 'dropdown') {
+    return out + '$terms = get_terms( ' + indent(args, 0) + ' );\n\nif ( ! is_wp_error( $terms ) && $terms ) {\n\techo \'<select name="' + esc(slugify(tq.taxonomy) || 'category') + '">\';\n\techo \'<option value="">\' . esc_html__( \'All\', \'mytheme\' ) . \'</option>\';\n\n\tforeach ( $terms as $term ) {\n\t\tprintf(\n\t\t\t\'<option value="%1$s">%2$s (%3$s)</option>\',\n\t\t\tesc_attr( $term->slug ),\n\t\t\tesc_html( $term->name ),\n\t\t\tesc_html( number_format_i18n( $term->count ) )\n\t\t);\n\t}\n\n\techo \'</select>\';\n}\n';
+  }
+  out += '$query = new WP_Term_Query( ' + indent(args, 0) + ' );\n\n$terms = $query->get_terms();\n\n';
+  if (tq.fields === 'count') {
+    out += 'printf(\n\t\'<p>%s</p>\',\n\tesc_html( number_format_i18n( (int) $terms ) )\n);\n';
+  } else if (tq.fields === 'all') {
+    out += 'if ( $terms ) {\n\techo \'<ul>\';\n\n\tforeach ( $terms as $term ) {\n\t\tprintf(\n\t\t\t\'<li><a href="%1$s">%2$s</a> <span>%3$s</span></li>\',\n\t\t\tesc_url( get_term_link( $term ) ),\n\t\t\tesc_html( $term->name ),\n\t\t\tesc_html( number_format_i18n( $term->count ) )\n\t\t);\n\t}\n\n\techo \'</ul>\';\n}\n';
+  } else {
+    out += 'foreach ( $terms as $term ) {\n\t// Each $term is a single ' + tq.fields + ' value.\n\techo \'<li>\' . esc_html( $term ) . \'</li>\';\n}\n';
+  }
+  return out;
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|new|if|else|foreach|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(tq) {
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const tax = slugify(tq.taxonomy);
+  const inc = idList(tq.include), exc = idList(tq.exclude);
+  const metas = (tq.meta || []).filter(function (m) { return String(m.key || '').trim(); });
+  if (!tax) add('error', 'A taxonomy is required, or WP_Term_Query returns terms from every taxonomy at once.');
+  if (inc.some(function (v) { return !/^\d+$/.test(v); })) add('error', 'include takes term IDs. “' + inc.filter(function (v) { return !/^\d+$/.test(v); })[0] + '” is not one — use the slug argument for slugs.');
+  if (exc.some(function (v) { return !/^\d+$/.test(v); })) add('error', 'exclude takes term IDs, not slugs.');
+  if (inc.length && exc.length) add('warning', 'include and exclude together: exclude is ignored whenever include is set.', 'dropExclude', 'Drop exclude');
+  if (inc.length && String(tq.parent || '').trim() !== '') add('warning', 'include and parent both set. include wins and the parent filter does nothing.');
+  if (tq.hideEmpty && HIERARCHICAL.indexOf(tax) >= 0 && !tq.padCounts) add('warning', 'hide_empty on a hierarchical taxonomy drops parents whose posts all live in child terms — a menu that loses its top level. pad_counts fixes it.', 'addPad', 'Add pad_counts');
+  if (tq.padCounts && !tq.hideEmpty) add('recommendation', 'pad_counts rolls child counts into the parent. Useful for display even with hide_empty off, but it costs an extra pass over the tree.');
+  if (String(tq.childOf || '').trim() !== '' && String(tq.parent || '').trim() !== '') add('warning', 'child_of and parent do different things: parent is direct children only, child_of is the whole subtree. Setting both is usually a mistake.', 'dropParent', 'Keep child_of');
+  if (String(tq.childOf || '').trim() !== '' && HIERARCHICAL.indexOf(tax) === -1 && tax) add('error', 'child_of only works on a hierarchical taxonomy. On “' + tax + '” it will return nothing.');
+  if (tq.orderby === 'include' && !inc.length) add('error', 'orderby include needs an include list to order by.');
+  if (tq.orderby === 'meta_value_num' && !metas.length) add('error', 'Ordering by meta_value_num needs a term meta clause to take the key from.');
+  if (tq.orderby === 'term_order') add('recommendation', 'term_order is only meaningful for taxonomies that maintain it — mostly WooCommerce attributes. Elsewhere it silently falls back.');
+  if (tq.orderby === 'count' && tq.order === 'ASC') add('recommendation', 'Ordering by count ascending puts the emptiest terms first. Usually you want DESC.', 'orderDesc', 'Sort DESC');
+  if (tq.fields === 'count' && parseInt(tq.number, 10)) add('warning', 'fields count returns a single number; number limits the rows counted, which makes that number wrong.', 'clearNumber', 'Clear number');
+  if (tq.fields === 'count' && tq.orderby !== 'none') add('recommendation', 'Ordering is pointless when you are only asking for a count — orderby none skips the sort.');
+  metas.forEach(function (m, i) {
+    const label = 'Meta clause ' + (i + 1);
+    if (m.compare !== 'EXISTS' && m.compare !== 'NOT EXISTS' && !valueList(m.value).length) add('error', label + ' has no value.');
+    if (valueList(m.value).length > 1) add('warning', label + ' has several values but this builder emits a single-value clause. Use IN in a hand-written meta_query if you need a list.');
+  });
+  if (!tq.updateCache && metas.length) add('warning', 'You are filtering on term meta but skipping the term meta cache, so every get_term_meta() call in your loop hits the database again.', 'addCache', 'Keep the cache');
+  const num = parseInt(tq.number, 10);
+  if (!num && tq.fields === 'all' && !tq.hideEmpty) add('recommendation', 'No number and hide_empty false returns every term in the taxonomy. On a site with thousands of tags that is a heavy page.');
+  if (num > 0 && tq.orderby === 'none') add('recommendation', 'A limit with no ordering returns an arbitrary slice — whichever rows MySQL hands back first.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    taxonomy: 'category', parent: '', childOf: '', search: '', searchSlug: false,
+    include: '', exclude: '1', excludeTree: false,
+    orderby: 'count', order: 'DESC', number: '10', fields: 'all',
+    hideEmpty: true, padCounts: true, updateCache: true,
+    meta: []
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    tq: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'query', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('term-query-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.taxonomy) this.setState({ tq: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(tq) { try { localStorage.setItem('term-query-generator-v1', JSON.stringify(tq)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.tq));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { tq: next, past: coalesce ? s.past : s.past.concat([s.tq]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.tq));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { tq: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.tq].concat(s.future) }; }, () => this.persist(this.state.tq)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { tq: s.future[0], past: s.past.concat([s.tq]), future: s.future.slice(1) }; }, () => this.persist(this.state.tq)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'dropExclude') p.exclude = '';
+      if (kind === 'addPad') p.padCounts = true;
+      if (kind === 'dropParent') p.parent = '';
+      if (kind === 'orderDesc') p.order = 'DESC';
+      if (kind === 'clearNumber') p.number = '';
+      if (kind === 'addCache') p.updateCache = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.tq, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const code = '<?php\n\n' + buildCode(this.state.tq, this.state.outputMode);
+    const name = (slugify(this.state.tq.taxonomy) || 'term') + '-query.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, tq = s.tq, self = this;
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(tq);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const inc = idList(tq.include), exc = idList(tq.exclude);
+    const metas = (tq.meta || []).filter(function (m) { return String(m.key || '').trim(); });
+
+    return {
+      toolCount: 38, trueVal: true, tq: tq,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (slugify(tq.taxonomy) || 'term') + '-query.php',
+
+      onTaxonomyChange: function (ev) { self.set('taxonomy', ev.target.value, true); },
+      taxBorder: slugify(tq.taxonomy) ? '#E7E2D9' : '#B91C1C',
+      onParentChange: function (ev) { self.set('parent', ev.target.value, true); },
+      onChildOfChange: function (ev) { self.set('childOf', ev.target.value, true); },
+      onSearchChange: function (ev) { self.set('search', ev.target.value, true); },
+      onIncludeChange: function (ev) { self.set('include', ev.target.value, true); },
+      onExcludeChange: function (ev) { self.set('exclude', ev.target.value, true); },
+      includeBorder: inc.some(function (v) { return !/^\d+$/.test(v); }) ? '#B91C1C' : '#E7E2D9',
+      excludeBorder: exc.some(function (v) { return !/^\d+$/.test(v); }) ? '#B91C1C' : '#E7E2D9',
+      hierarchyNote: String(tq.childOf || '').trim() !== ''
+        ? 'child_of ' + tq.childOf + ' returns the whole subtree below that term, at every depth.'
+        : String(tq.parent || '').trim() !== ''
+          ? 'parent ' + (parseInt(tq.parent, 10) || 0) + (parseInt(tq.parent, 10) === 0 ? ' returns top-level terms only.' : ' returns that term’s direct children only.')
+          : 'No hierarchy filter — every term at every depth, flat.',
+
+      orderbyOptions: ORDERBYS.map(function (o) { return { value: o[0], label: o[1] }; }),
+      onOrderbyChange: function (ev) { self.set('orderby', ev.target.value); },
+      onOrderChange: function (ev) { self.set('order', ev.target.value); },
+      onNumberChange: function (ev) { self.set('number', ev.target.value, true); },
+      onFieldsChange: function (ev) { self.set('fields', ev.target.value); },
+      extraToggles: [
+        { key: 'hideEmpty', label: 'hide_empty', help: 'Skip terms with nothing attached. Watch out for hierarchical parents.', on: tq.hideEmpty },
+        { key: 'padCounts', label: 'pad_counts', help: 'Roll child counts up into the parent, so a parent with only child posts still counts.', on: tq.padCounts },
+        { key: 'searchSlug', label: 'Match the slug exactly', help: 'Use the slug argument instead of a fuzzy name search.', on: tq.searchSlug },
+        { key: 'excludeTree', label: 'exclude_tree', help: 'Exclude the listed terms and everything beneath them.', on: tq.excludeTree },
+        { key: 'updateCache', label: 'Prime the term meta cache', help: 'One query for all term meta instead of one per term in your loop.', on: tq.updateCache }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      metaNote: metas.length ? metas.length + ' clause' + (metas.length === 1 ? '' : 's') : 'none',
+      noMeta: (tq.meta || []).length === 0,
+      compareOptions: COMPARES.map(function (c) { return { value: c[0], label: c[1] }; }),
+      metaRows: (tq.meta || []).map(function (m, i) {
+        const needsValue = m.compare !== 'EXISTS' && m.compare !== 'NOT EXISTS';
+        return {
+          key: m.key, compare: m.compare, value: m.value,
+          keyBorder: String(m.key || '').trim() ? '#E7E2D9' : '#B91C1C',
+          valueBorder: needsValue && !valueList(m.value).length ? '#B91C1C' : '#E7E2D9',
+          iconRemove: ICON.close,
+          onKeyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.meta[i].key = v; }, 'm-' + i + '-k'); },
+          onCompareChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.meta[i].compare = v; }); },
+          onValueChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.meta[i].value = v; }, 'm-' + i + '-v'); },
+          onRemove: function () { self.commit(function (p) { p.meta.splice(i, 1); }); }
+        };
+      }),
+      onAddMeta: function () { self.commit(function (p) { p.meta = p.meta || []; p.meta.push({ key: '', compare: '=', value: '' }); }); },
+
+      plainEnglish: (function () {
+        const tax = slugify(tq.taxonomy) || 'category';
+        const bits = [];
+        if (tq.hideEmpty) bits.push('that have something attached');
+        if (String(tq.parent || '').trim() !== '') bits.push(parseInt(tq.parent, 10) === 0 ? 'at the top level' : 'directly under term ' + parseInt(tq.parent, 10));
+        if (String(tq.childOf || '').trim() !== '') bits.push('anywhere below term ' + parseInt(tq.childOf, 10));
+        if (String(tq.search || '').trim()) bits.push(tq.searchSlug ? 'with the slug ' + String(tq.search).trim() : 'whose name contains “' + String(tq.search).trim() + '”');
+        if (inc.length) bits.push('limited to ids ' + inc.join(', '));
+        if (exc.length && !inc.length) bits.push('excluding ' + (tq.excludeTree ? 'the subtrees under ' : 'ids ') + exc.join(', '));
+        metas.forEach(function (m) { bits.push('with ' + String(m.key).trim() + ' ' + m.compare + ' ' + (valueList(m.value)[0] || '—')); });
+        const num = parseInt(tq.number, 10);
+        return 'List ' + tax + ' terms ' + (bits.length ? bits.join(', ') : 'with no filter') + '. Ordered by ' + tq.orderby + ' ' + tq.order + (num ? ', at most ' + num : ', all of them') + (tq.fields === 'all' ? '.' : ', returning ' + tq.fields + '.');
+      })(),
+
+      codeTokens: tokenizePHP(buildCode(tq, s.outputMode)),
+      outputModes: [['query', 'WP_Term_Query'], ['dropdown', 'Filter dropdown'], ['args', 'Args array']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: {
+        query: 'The class with get_terms(), plus a list that links each term.',
+        dropdown: 'get_terms() feeding a select — the shape a filter UI actually needs.',
+        args: 'Just the args array.'
+      }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new term query' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refArgs: [
+        ['taxonomy', 'string|array', 'One or several taxonomies. Omit it and you get terms from all of them, which is almost never intended.'],
+        ['hide_empty', 'bool', 'Defaults to true. Drops terms with a count of zero — including hierarchical parents whose posts live in children.'],
+        ['parent vs child_of', 'int', 'parent is direct children only. child_of is the entire subtree. Setting both is contradictory.'],
+        ['include / exclude / exclude_tree', 'array', 'Term IDs, never slugs. include silently overrides exclude and parent.'],
+        ['number / offset', 'int', 'number 0 means no limit. With orderby none a limit gives you an arbitrary slice.'],
+        ['fields', 'string', 'all, ids, names, slugs, id=>name, id=>slug or count. count returns a single integer, not a list.'],
+        ['pad_counts', 'bool', 'Adds descendant counts to each parent. The fix for hierarchical menus losing their top level.'],
+        ['meta_query', 'array', 'Term meta clauses, same shape as posts. One JOIN on wp_termmeta per clause.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Filters'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Quicktags Generator — QTags.addButton() — Generator for WP</title>
+  <meta name="description" content="Custom buttons for the Text tab of the classic editor, with access keys, priorities, prompts and core button pruning." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=admin" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Admin</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Quicktags</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Quicktags Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Buttons for the Text tab of the classic editor — wrappers, one-shot inserts and prompts — plus a pass to prune the core buttons you never use.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">{{ downloadLabel }}</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="border:1px solid #DCDCDE; border-radius:8px; overflow:hidden; margin-bottom:16px; background:#fff;">
+        <div style="display:flex; align-items:flex-end; gap:0; background:#F0F0F1; padding:8px 8px 0; border-bottom:1px solid #DCDCDE;">
+          <div style="font-size:12.5px; color:#50575E; background:#F6F7F7; border:1px solid #DCDCDE; border-bottom-color:#F6F7F7; border-radius:4px 4px 0 0; padding:6px 12px; margin-bottom:-1px;">Visual</div>
+          <div style="font-size:12.5px; font-weight:600; color:#1D2327; background:#fff; border:1px solid #DCDCDE; border-bottom-color:#fff; border-radius:4px 4px 0 0; padding:6px 12px; margin-bottom:-1px;">Text</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px; padding:8px; background:#F6F7F7; border-bottom:1px solid #DCDCDE;">
+          <sc-for list="{{ previewCoreButtons }}" as="pb" hint-placeholder-count="13">
+            <button onClick="{{ pb.onClick }}" title="{{ pb.title }}" style="font-size:12px; font-family:'JetBrains Mono',monospace; line-height:1; padding:6px 9px; border:1px solid #DCDCDE; background:#F6F7F7; color:#3C434A; border-radius:3px; cursor:pointer; opacity:{{ pb.opacity }}; text-decoration:{{ pb.strike }};" style-hover="background:#F0F0F1;">{{ pb.label }}</button>
+          </sc-for>
+          <sc-for list="{{ previewCustomButtons }}" as="pc" hint-placeholder-count="3">
+            <button onClick="{{ pc.onClick }}" title="{{ pc.title }}" style="font-size:12px; font-family:'JetBrains Mono',monospace; line-height:1; padding:6px 9px; border:1px solid #3858E9; background:#EEF1FE; color:#2A46C4; border-radius:3px; cursor:pointer; font-weight:600;" style-hover="background:#DCE3FE;">{{ pc.label }}</button>
+          </sc-for>
+        </div>
+        <textarea value="{{ sampleText }}" onChange="{{ onSampleChange }}" spellCheck="false" style="width:100%; min-height:96px; border:none; resize:vertical; padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; color:#2C3338; display:block;" style-focus="outline:2px solid #3858E9; outline-offset:-2px;"></textarea>
+        <div style="padding:6px 12px; background:#F6F7F7; border-top:1px solid #DCDCDE; font-size:11px; color:#787C82;">{{ previewNote }}</div>
+      </div>
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Where the buttons load</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">delivery</label>
+            <select value="{{ qt.delivery }}" onChange="{{ onDeliveryChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="inline">Inline script in the admin footer</option>
+              <option value="file">Separate .js file with a quicktags dependency</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">editor instance</label>
+            <select value="{{ qt.instance }}" onChange="{{ onInstanceChange }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="">every editor</option>
+              <option value="content">content — the main post editor</option>
+              <option value="excerpt">excerpt</option>
+              <option value="comment">comment</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">prefix</label>
+            <input value="{{ qt.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ qt.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:13px;">
+          <div style="font-size:11.5px; font-weight:700; color:#948C7E; margin-bottom:6px;">Limit to post types <span style="font-weight:500;">— {{ postTypeNote }}</span></div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <sc-for list="{{ postTypeChips }}" as="pt" hint-placeholder-count="4">
+              <button onClick="{{ pt.onToggle }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ pt.borderColor }}; background:{{ pt.bg }}; color:{{ pt.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ pt.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Your buttons</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ buttonsNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ buttonRows }}" as="br" hint-placeholder-count="3">
+            <div style="border:1px solid #EDE9E1; border-radius:7px; padding:12px; background:#FCFBF9;">
+              <div style="display:flex; gap:8px; align-items:center; margin-bottom:9px; flex-wrap:wrap;">
+                <input value="{{ br.label }}" onChange="{{ br.onLabelChange }}" placeholder="lead" style="width:110px; font-size:12.5px; font-weight:700; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ br.labelBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ br.id }}" onChange="{{ br.onIdChange }}" spellCheck="false" placeholder="acme_lead" style="width:130px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ br.idBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <select value="{{ br.type }}" onChange="{{ br.onTypeChange }}" style="width:120px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <option value="wrap">Wrap selection</option>
+                  <option value="insert">Insert once</option>
+                  <option value="prompt">Prompt then insert</option>
+                </select>
+                <div style="flex:1; min-width:4px;"></div>
+                <div style="display:flex; gap:3px; flex-shrink:0;">
+                  <button aria-label="Move up" onClick="{{ br.onMoveUp }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ br.iconUp }}</button>
+                  <button aria-label="Move down" onClick="{{ br.onMoveDown }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ br.iconDown }}</button>
+                  <button aria-label="Remove button" onClick="{{ br.onRemove }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ br.iconRemove }}</button>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input value="{{ br.open }}" onChange="{{ br.onOpenChange }}" spellCheck="false" placeholder="{{ br.openPlaceholder }}" style="flex:1.4; min-width:150px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ br.openBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <sc-if value="{{ br.showClose }}" hint-placeholder-val="{{ true }}">
+                  <input value="{{ br.close }}" onChange="{{ br.onCloseChange }}" spellCheck="false" placeholder="&lt;/p&gt;" style="flex:1; min-width:110px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ br.closeBorder }};" style-focus="outline:2px solid #3858E9;" />
+                </sc-if>
+                <sc-if value="{{ br.showPromptLabel }}" hint-placeholder-val="{{ false }}">
+                  <input value="{{ br.promptLabel }}" onChange="{{ br.onPromptLabelChange }}" placeholder="What should the prompt ask?" style="flex:1; min-width:140px; font-size:12px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </sc-if>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+                <label style="font-size:11px; color:#948C7E; font-family:'JetBrains Mono',monospace;">key</label>
+                <input value="{{ br.accessKey }}" onChange="{{ br.onAccessKeyChange }}" maxLength="1" spellCheck="false" placeholder="—" style="width:44px; text-align:center; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 4px; border-radius:5px; border:1px solid {{ br.keyBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <label style="font-size:11px; color:#948C7E; font-family:'JetBrains Mono',monospace;">priority</label>
+                <input value="{{ br.priority }}" onChange="{{ br.onPriorityChange }}" spellCheck="false" placeholder="30" style="width:56px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ br.title }}" onChange="{{ br.onTitleChange }}" placeholder="Tooltip shown on hover" style="flex:1; min-width:140px; font-size:12px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noButtons }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No custom buttons yet — the output is just the core pruning pass.</div>
+          </sc-if>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:11px;">
+          <button onClick="{{ onAddButton }}" style="font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add button</button>
+          <sc-for list="{{ presetButtons }}" as="pb2" hint-placeholder-count="4">
+            <button onClick="{{ pb2.onClick }}" style="font-size:12px; font-weight:600; border:1px solid #E7E2D9; background:#fff; color:#5C564B; border-radius:6px; padding:7px 11px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">+ {{ pb2.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Core buttons</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ coreNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <sc-for list="{{ coreButtons }}" as="cb" hint-placeholder-count="13">
+            <button onClick="{{ cb.onToggle }}" title="{{ cb.help }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ cb.borderColor }}; background:{{ cb.bg }}; color:{{ cb.color }}; border-radius:20px; padding:4px 11px; cursor:pointer; text-decoration:{{ cb.strike }};" style-focus="outline:2px solid #3858E9;">{{ cb.label }}</button>
+          </sc-for>
+        </div>
+        <div style="margin-top:11px; font-size:11.5px; color:#948C7E; line-height:1.55;">{{ coreExplain }}</div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">Code</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="4">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">QTags.addButton()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Global from wp-includes/js/quicktags.js</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refSignature }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Arguments</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="8">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Core buttons and their keys</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refCoreButtons }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The block editor never sees these</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Quicktags are the classic editor's Text tab, the comment reply box, and any wp_editor() field rendered in quicktags mode. If your authors write in the block editor, a custom block or a format is the equivalent — this toolbar will never appear for them.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Priority decides position</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Core numbers its own buttons 10 through 200 in tens. Anything you register lands between them by number, and equal numbers fall back to registration order. Use 1 to sit before b, 205 to sit after close.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on these buttons.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;plugin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const SCRIPT_OPEN = '<' + 'script>';
+const SCRIPT_CLOSE = '<' + '/script>';
+
+const CORE_BUTTONS = [
+  ['strong', 'b', 10, 'Bold — wraps the selection in a strong tag.'],
+  ['em', 'i', 20, 'Italic — wraps the selection in an em tag.'],
+  ['link', 'a', 30, 'Prompts for a URL and wraps the selection in a link.'],
+  ['block', 'q', 40, 'Blockquote.'],
+  ['del', 'd', 50, 'Struck-through text with a timestamp.'],
+  ['ins', 's', 60, 'Inserted text with a timestamp.'],
+  ['img', 'm', 70, 'Prompts for an image URL and alt text.'],
+  ['ul', 'u', 80, 'Unordered list wrapper.'],
+  ['ol', 'o', 90, 'Ordered list wrapper.'],
+  ['li', 'l', 100, 'List item.'],
+  ['code', 'c', 110, 'Inline code.'],
+  ['more', 't', 120, 'The read more separator.'],
+  ['close', '', 130, 'Closes whatever tag is still open. Removing it strands authors mid-tag.']
+];
+const CORE_IDS = CORE_BUTTONS.map(function (b) { return b[0]; });
+const CORE_KEYS = {};
+CORE_BUTTONS.forEach(function (b) { if (b[1]) CORE_KEYS[b[1]] = b[0]; });
+
+const PRESETS = [
+  { label: 'lead paragraph', b: { label: 'lead', id: 'lead', type: 'wrap', open: '<p class="lead">', close: '</p>', accessKey: '', priority: '1', title: 'Lead paragraph' } },
+  { label: 'shortcode', b: { label: 'cta', id: 'cta', type: 'wrap', open: '[cta]', close: '[/cta]', accessKey: '', priority: '205', title: 'Call to action shortcode' } },
+  { label: 'callout', b: { label: 'note', id: 'note', type: 'insert', open: '<div class="callout"></div>', close: '', accessKey: '', priority: '210', title: 'Callout box' } },
+  { label: 'prompt', b: { label: 'ref', id: 'ref', type: 'prompt', open: '<sup><a href="#fn-%s">%s</a></sup>', close: '', promptLabel: 'Footnote number', accessKey: '', priority: '215', title: 'Footnote reference' } }
+];
+
+const POST_TYPES = ['post', 'page', 'product', 'docs'];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function jsId(s) { return String(s || '').trim().replace(/[^A-Za-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(qt) {
+  const pre = fnSlug(qt.prefix) || 'acme';
+  const buttons = (qt.buttons || []).filter(function (b) { return String(b.label || '').trim() || String(b.id || '').trim(); });
+  const kept = CORE_IDS.filter(function (id) { return (qt.removedCore || []).indexOf(id) < 0; });
+  return {
+    pre: pre,
+    td: slugify(qt.textDomain) || pre.replace(/_/g, '-'),
+    handle: pre.replace(/_/g, '-') + '-quicktags',
+    buttons: buttons,
+    kept: kept,
+    prunes: (qt.removedCore || []).slice()
+  };
+}
+
+function buttonId(pre, b) {
+  const raw = jsId(b.id) || jsId(b.label);
+  if (!raw) return '';
+  return raw.indexOf(pre) === 0 ? raw : pre + '_' + raw;
+}
+
+function buildButtonCall(qt, b, depth) {
+  const d = derive(qt);
+  const id = buttonId(d.pre, b);
+  const key = String(b.accessKey || '').slice(0, 1);
+  const title = String(b.title || '').trim();
+  const priority = String(b.priority || '').trim();
+  const instance = String(qt.instance || '');
+
+  if (b.type === 'prompt') {
+    const parts = String(b.open || '').split('%s');
+    const expr = parts.map(function (p) { return "'" + esc(p) + "'"; }).join(' + value + ');
+    const fn = 'function () {\n' +
+      "\tvar value = window.prompt( '" + esc(b.promptLabel || 'Value') + "' );\n\n" +
+      '\tif ( ! value ) {\n\t\treturn;\n\t}\n\n' +
+      '\tQTags.insertContent( ' + expr + ' );\n}';
+    const args = ["'" + id + "'", "'" + esc(b.label) + "'", fn, "''", "'" + esc(key) + "'", "'" + esc(title) + "'", priority || '0'];
+    if (instance) args.push("'" + instance + "'");
+    return indent('QTags.addButton(\n' + indent(args.join(',\n'), 1) + '\n);', depth);
+  }
+
+  const args = ["'" + id + "'", "'" + esc(b.label) + "'", "'" + esc(b.open) + "'", "'" + esc(b.type === 'insert' ? '' : b.close) + "'"];
+  const tail = [key, title, priority, instance];
+  let lastSet = -1;
+  tail.forEach(function (v, i) { if (String(v || '').length) lastSet = i; });
+  if (lastSet >= 0) args.push("'" + esc(key) + "'");
+  if (lastSet >= 1) args.push("'" + esc(title) + "'");
+  if (lastSet >= 2) args.push(priority || '0');
+  if (lastSet >= 3) args.push("'" + instance + "'");
+
+  const oneLine = 'QTags.addButton( ' + args.join(', ') + ' );';
+  if (oneLine.length + depth * 4 <= 96) return indent(oneLine, depth);
+  return indent('QTags.addButton(\n' + indent(args.join(',\n'), 1) + '\n);', depth);
+}
+
+function buildJs(qt, depth) {
+  const d = derive(qt);
+  if (!d.buttons.length) return indent('// No custom buttons registered.', depth);
+  return d.buttons.map(function (b) { return buildButtonCall(qt, b, depth); }).join('\n\n');
+}
+
+function buildJsFile(qt) {
+  return '/**\n * Text tab buttons for the classic editor.\n *\n * Enqueued with quicktags as a dependency, so QTags exists by the time this runs.\n */\n( function () {\n' +
+    "\tif ( typeof window.QTags === 'undefined' ) {\n\t\treturn;\n\t}\n\n" +
+    buildJs(qt, 1) + '\n} )();\n';
+}
+
+function buildPruneBlock(qt) {
+  const d = derive(qt);
+  if (!d.prunes.length) return '';
+  return '\n/**\n * Drop the core buttons this site does not use.\n *\n * @param array  $settings  Quicktags settings.\n * @param string $editor_id The editor being rendered.\n * @return array\n */\nfunction ' + d.pre + '_quicktags_settings( $settings, $editor_id ) {\n' +
+    (qt.instance ? "\tif ( '" + esc(qt.instance) + "' !== $editor_id ) {\n\t\treturn $settings;\n\t}\n\n" : '') +
+    "\t$settings['buttons'] = '" + d.kept.join(',') + "';\n\n\treturn $settings;\n}\nadd_filter( 'quicktags_settings', '" + d.pre + "_quicktags_settings', 10, 2 );\n";
+}
+
+function buildCode(qt, mode) {
+  const d = derive(qt);
+  if (mode === 'js') return buildJsFile(qt);
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + (qt.prefix || 'Acme') + ' quicktags\n * Description:       Adds ' + d.buttons.length + ' button' + (d.buttons.length === 1 ? '' : 's') + ' to the Text tab of the classic editor.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Text Domain:       ' + d.td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+
+  let gate = '';
+  if ((qt.postTypes || []).length) {
+    gate = '$screen = get_current_screen();\n\nif ( ! $screen || ! in_array( $screen->post_type, array( ' + qt.postTypes.map(function (p) { return "'" + esc(p) + "'"; }).join(', ') + " ), true ) ) {\n\treturn;\n}\n";
+  }
+
+  if (qt.delivery === 'file') {
+    const uri = mode === 'functions' ? "get_theme_file_uri( 'js/quicktags.js' )" : "plugins_url( 'js/quicktags.js', __FILE__ )";
+    out += '/**\n * Enqueue the Text tab buttons.\n *\n * quicktags as a dependency guarantees the script loads after QTags exists.\n *\n * @param string $hook_suffix The current admin screen.\n */\nfunction ' + d.pre + '_quicktags_assets( $hook_suffix ) {\n' +
+      "\tif ( ! in_array( $hook_suffix, array( 'post.php', 'post-new.php', 'comment.php' ), true ) ) {\n\t\treturn;\n\t}\n\n" +
+      (gate ? indent(gate, 1) + '\n' : '') +
+      "\twp_enqueue_script(\n\t\t'" + d.handle + "',\n\t\t" + uri + ",\n\t\tarray( 'quicktags' ),\n\t\t'1.0.0',\n\t\ttrue\n\t);\n}\nadd_action( 'admin_enqueue_scripts', '" + d.pre + "_quicktags_assets' );\n";
+  } else {
+    out += '/**\n * Print the Text tab buttons in the admin footer.\n *\n * wp_script_is() keeps this off every screen that never rendered an editor.\n */\nfunction ' + d.pre + '_quicktags_buttons() {\n' +
+      "\tif ( ! wp_script_is( 'quicktags' ) ) {\n\t\treturn;\n\t}\n\n" +
+      (gate ? indent(gate, 1) + '\n' : '') +
+      '\t?>\n\t' + SCRIPT_OPEN + '\n\t( function () {\n\t\tif ( typeof QTags === \'undefined\' ) {\n\t\t\treturn;\n\t\t}\n\n' +
+      buildJs(qt, 2) + '\n\t} )();\n\t' + SCRIPT_CLOSE + '\n\t<?php\n}\n' +
+      "add_action( 'admin_print_footer_scripts', '" + d.pre + "_quicktags_buttons' );\n";
+  }
+
+  out += buildPruneBlock(qt);
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|var|true|false|null|return|if|else|typeof|defined|exit|in_array)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(qt) {
+  const d = derive(qt);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+
+  if (!d.buttons.length && !d.prunes.length) add('error', 'Nothing to generate — add a button or remove a core one.');
+
+  const seenId = {}, seenKey = {}, seenPriority = {};
+  d.buttons.forEach(function (b, i) {
+    const label = 'Button ' + (i + 1) + (b.label ? ' (' + b.label + ')' : '');
+    const id = buttonId(d.pre, b);
+    if (!String(b.label || '').trim()) add('error', label + ' has no display label. Core skips any button registered without one.');
+    if (String(b.label || '').length > 10) add('recommendation', label + '\u2019s label is ' + String(b.label).length + ' characters. The Text tab toolbar wraps early — core keeps its own labels under five.');
+    if (String(b.id || '').trim() && jsId(b.id) !== String(b.id).trim()) add('error', '\u201C' + b.id + '\u201D is not a valid button id. It becomes a DOM id and a JS property — letters, numbers and underscores only.', 'fixIds', 'Clean the ids');
+    if (seenId[id]) add('error', 'Two buttons resolve to the id \u201C' + id + '\u201D. The second silently replaces the first.');
+    seenId[id] = true;
+    if (CORE_IDS.indexOf(id) >= 0) add('warning', label + ' uses the core id \u201C' + id + '\u201D, so it replaces core\u2019s own button rather than adding one.', 'prefixIds', 'Prefix the ids');
+    if (b.type === 'wrap' && !String(b.open || '').trim() && !String(b.close || '').trim()) add('error', label + ' wraps the selection in nothing.');
+    if (b.type === 'insert' && !String(b.open || '').trim()) add('error', label + ' inserts an empty string.');
+    if (b.type === 'prompt' && String(b.open || '').indexOf('%s') < 0) add('warning', label + ' prompts for a value but its template has no %s, so the answer is thrown away.');
+    if (b.type === 'prompt' && String(b.open || '').split('%s').length > 2) add('recommendation', label + ' uses %s ' + (String(b.open).split('%s').length - 1) + ' times, so the answer is inserted at each one — right for a footnote reference, worth a second look otherwise.');
+    if (b.type === 'wrap') {
+      const om = /^<([a-z][a-z0-9]*)/i.exec(String(b.open || ''));
+      const cm = /<\/([a-z][a-z0-9]*)\s*>\s*$/i.exec(String(b.close || ''));
+      if (om && !cm) add('warning', label + ' opens a ' + om[1] + ' tag and never closes it. Authors will be relying on the close button to notice.', 'closeTags', 'Close the tag');
+      else if (om && cm && om[1].toLowerCase() !== cm[1].toLowerCase()) add('error', label + ' opens a ' + om[1] + ' tag but closes ' + cm[1] + '.');
+    }
+    const key = String(b.accessKey || '');
+    if (key.length > 1) add('error', label + '\u2019s access key must be a single character.', 'trimKeys', 'Keep the first character');
+    if (key.length === 1) {
+      if (CORE_KEYS[key.toLowerCase()]) add('warning', label + ' takes access key \u201C' + key + '\u201D, which core already uses for the ' + CORE_KEYS[key.toLowerCase()] + ' button.');
+      if (seenKey[key.toLowerCase()]) add('error', 'Access key \u201C' + key + '\u201D is assigned twice in your own set.');
+      seenKey[key.toLowerCase()] = true;
+    }
+    const p = String(b.priority || '').trim();
+    if (p && !/^\d+$/.test(p)) add('error', label + '\u2019s priority must be a number.');
+    if (p && seenPriority[p]) add('recommendation', 'Two buttons share priority ' + p + '. They fall back to registration order, which works but is not explicit.');
+    if (p) seenPriority[p] = true;
+    if (p && parseInt(p, 10) > 0 && parseInt(p, 10) < 10) add('recommendation', label + ' sits before core\u2019s bold button. Deliberate placement is fine — just check it is what you meant.');
+    if (/onerror=|javascript:|<scr/i.test(String(b.open || '') + String(b.close || ''))) add('error', label + ' inserts script markup into post content. KSES strips it for anyone below an administrator.');
+  });
+
+  if (d.prunes.indexOf('close') >= 0) add('warning', 'Removing the close button leaves authors no way to close an open tag from the toolbar.');
+  if (d.prunes.indexOf('link') >= 0) add('recommendation', 'Without the link button the Text tab has no link helper at all — authors hand-write the anchor.');
+  if (d.prunes.length && !d.kept.length) add('error', 'Every core button is removed, which leaves an empty toolbar strip above the textarea.');
+  if (qt.delivery === 'inline' && (qt.postTypes || []).length === 0) add('recommendation', 'The inline script prints on every admin screen that loaded an editor, including comment replies. Limit it to post types if these buttons only make sense on one.');
+  if (qt.delivery === 'file') add('recommendation', 'Ship js/quicktags.js alongside the PHP — the JavaScript tab has the file contents.');
+  if (qt.instance && qt.delivery === 'inline' && !d.prunes.length) add('recommendation', 'Scoping to the \u201C' + qt.instance + '\u201D instance only affects the buttons; the script itself still prints on every editor screen.');
+  add('recommendation', 'Quicktags only exist in the classic editor. Authors on the block editor see none of this — check which one your site actually uses.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'acme', textDomain: 'acme', delivery: 'inline', instance: '', postTypes: [],
+    removedCore: [],
+    buttons: [
+      { label: 'lead', id: 'lead', type: 'wrap', open: '<p class="lead">', close: '</p>', accessKey: '', priority: '1', title: 'Lead paragraph' },
+      { label: 'cta', id: 'cta', type: 'wrap', open: '[cta]', close: '[/cta]', accessKey: '', priority: '205', title: 'Call to action shortcode' },
+      { label: 'ref', id: 'ref', type: 'prompt', open: '<sup><a href="#fn-%s">%s</a></sup>', close: '', promptLabel: 'Footnote number', accessKey: '', priority: '210', title: 'Footnote reference' }
+    ]
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    qt: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    sampleText: 'The release notes are ready.',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('quicktags-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.buttons) this.setState({ qt: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(qt) { try { localStorage.setItem('quicktags-generator-v1', JSON.stringify(qt)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.qt));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { qt: next, past: coalesce ? s.past : s.past.concat([s.qt]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.qt));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { qt: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.qt].concat(s.future) }; }, () => this.persist(this.state.qt)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { qt: s.future[0], past: s.past.concat([s.qt]), future: s.future.slice(1) }; }, () => this.persist(this.state.qt)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'fixIds') p.buttons.forEach(function (b) { b.id = jsId(b.id) || jsId(b.label); });
+      if (kind === 'prefixIds') { const pre = fnSlug(p.prefix) || 'acme'; p.buttons.forEach(function (b) { const id = jsId(b.id) || jsId(b.label); if (id.indexOf(pre) !== 0) b.id = pre + '_' + id; }); }
+      if (kind === 'trimKeys') p.buttons.forEach(function (b) { b.accessKey = String(b.accessKey || '').slice(0, 1); });
+      if (kind === 'closeTags') p.buttons.forEach(function (b) {
+        if (b.type !== 'wrap') return;
+        const om = /^<([a-z][a-z0-9]*)/i.exec(String(b.open || ''));
+        if (om && !/<\/[a-z]/i.test(String(b.close || ''))) b.close = '</' + om[1].toLowerCase() + '>';
+      });
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  insertSample(open, close) {
+    this.setState(function (s) { return { sampleText: s.sampleText + '\n' + open + (close ? 'selected text' + close : '') }; });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.qt, this.activeMode())); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'Code copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  activeMode() { const s = this.state; return (s.qt.delivery !== 'file' && s.outputMode === 'js') ? 'plugin' : s.outputMode; }
+  download() {
+    const qt = this.state.qt, mode = this.activeMode();
+    let code = buildCode(qt, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = mode === 'js' ? 'quicktags.js' : (fnSlug(qt.prefix) || 'acme').replace(/_/g, '-') + '-quicktags.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, qt = s.qt, self = this;
+    const d = derive(qt);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), up: ic('\ue555', 12), down: ic('\ue54f', 12), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(qt);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    const modes = [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']];
+    if (qt.delivery === 'file') modes.push(['js', 'quicktags.js']);
+    const activeMode = this.activeMode();
+
+    return {
+      toolCount: 38, trueVal: true, qt: qt,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: activeMode === 'js' ? 'quicktags.js' : (fnSlug(qt.prefix) || 'acme').replace(/_/g, '-') + '-quicktags.php',
+      downloadLabel: activeMode === 'js' ? 'Download .js' : 'Download .php',
+
+      sampleText: s.sampleText,
+      onSampleChange: function (ev) { const v = ev.target.value; self.setState({ sampleText: v }); },
+      previewNote: d.buttons.length + ' custom · ' + d.kept.length + ' of ' + CORE_IDS.length + ' core buttons kept · click one to try it',
+      previewCoreButtons: CORE_BUTTONS.map(function (b) {
+        const gone = d.prunes.indexOf(b[0]) >= 0;
+        return {
+          label: b[0], title: gone ? 'Removed by the filter' : b[3],
+          opacity: gone ? '0.35' : '1', strike: gone ? 'line-through' : 'none',
+          onClick: function () { if (!gone) self.insertSample('<' + b[0] + '>', '</' + b[0] + '>'); }
+        };
+      }),
+      previewCustomButtons: d.buttons.map(function (b) {
+        return {
+          label: b.label || buttonId(d.pre, b), title: b.title || '',
+          onClick: function () {
+            if (b.type === 'prompt') self.insertSample(String(b.open || '').replace(/%s/g, '1'), '');
+            else self.insertSample(b.open || '', b.type === 'insert' ? '' : (b.close || ''));
+          }
+        };
+      }),
+
+      onDeliveryChange: function (ev) { const v = ev.target.value; self.set('delivery', v); if (v !== 'file' && s.outputMode === 'js') self.setState({ outputMode: 'plugin' }); },
+      onInstanceChange: function (ev) { self.set('instance', ev.target.value); },
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      postTypeNote: (qt.postTypes || []).length ? 'only on ' + qt.postTypes.join(', ') : 'every editor screen',
+      postTypeChips: POST_TYPES.map(function (p) {
+        const on = (qt.postTypes || []).indexOf(p) >= 0;
+        return {
+          label: p, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B',
+          onToggle: function () { self.commit(function (pr) { pr.postTypes = pr.postTypes || []; const i = pr.postTypes.indexOf(p); if (i >= 0) pr.postTypes.splice(i, 1); else pr.postTypes.push(p); }); }
+        };
+      }),
+
+      buttonsNote: d.buttons.length + (d.buttons.length === 1 ? ' button' : ' buttons'),
+      noButtons: (qt.buttons || []).length === 0,
+      buttonRows: (qt.buttons || []).map(function (b, i) {
+        const id = buttonId(d.pre, b);
+        const dupe = (qt.buttons || []).filter(function (o) { return buttonId(d.pre, o) === id; }).length > 1;
+        const key = String(b.accessKey || '');
+        return {
+          label: b.label, id: b.id, type: b.type, open: b.open, close: b.close, accessKey: b.accessKey, priority: b.priority, title: b.title, promptLabel: b.promptLabel || '',
+          labelBorder: String(b.label || '').trim() ? '#E7E2D9' : '#B91C1C',
+          idBorder: (dupe || (String(b.id || '').trim() && jsId(b.id) !== String(b.id).trim())) ? '#B91C1C' : '#E7E2D9',
+          openBorder: String(b.open || '').trim() ? '#E7E2D9' : (b.type === 'wrap' && String(b.close || '').trim() ? '#E7E2D9' : '#B91C1C'),
+          closeBorder: '#E7E2D9',
+          openPlaceholder: b.type === 'prompt' ? '<sup>%s</sup>' : (b.type === 'insert' ? '[gallery]' : '<p class="lead">'),
+          showClose: b.type === 'wrap',
+          showPromptLabel: b.type === 'prompt',
+          iconUp: ICON.up, iconDown: ICON.down, iconRemove: ICON.close,
+          onLabelChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].label = v; }, 'b-' + i + '-l'); },
+          onIdChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].id = v; }, 'b-' + i + '-i'); },
+          onTypeChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].type = v; }); },
+          onOpenChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].open = v; }, 'b-' + i + '-o'); },
+          onCloseChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].close = v; }, 'b-' + i + '-c'); },
+          onPromptLabelChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].promptLabel = v; }, 'b-' + i + '-p'); },
+          onAccessKeyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].accessKey = v; }, 'b-' + i + '-k'); },
+          onPriorityChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].priority = v; }, 'b-' + i + '-pr'); },
+          onTitleChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.buttons[i].title = v; }, 'b-' + i + '-t'); },
+          onMoveUp: function () { self.commit(function (p) { if (i === 0) return; const t = p.buttons[i - 1]; p.buttons[i - 1] = p.buttons[i]; p.buttons[i] = t; }); },
+          onMoveDown: function () { self.commit(function (p) { if (i >= p.buttons.length - 1) return; const t = p.buttons[i + 1]; p.buttons[i + 1] = p.buttons[i]; p.buttons[i] = t; }); },
+          onRemove: function () { self.commit(function (p) { p.buttons.splice(i, 1); }); }
+        };
+      }),
+      onAddButton: function () { self.commit(function (p) { p.buttons = p.buttons || []; const n = p.buttons.length + 1; p.buttons.push({ label: 'btn' + n, id: 'btn_' + n, type: 'wrap', open: '<span>', close: '</span>', accessKey: '', priority: String(200 + n * 5), title: '' }); }); },
+      presetButtons: PRESETS.map(function (p) {
+        return { label: p.label, onClick: function () { self.commit(function (pr) { pr.buttons = (pr.buttons || []).concat([JSON.parse(JSON.stringify(p.b))]); }); } };
+      }),
+
+      coreNote: d.prunes.length ? d.prunes.length + ' removed' : 'all kept',
+      coreExplain: d.prunes.length ? 'The quicktags_settings filter rewrites the buttons string, so core prints only: ' + d.kept.join(', ') + '.' : 'Click a button to drop it from the toolbar through the quicktags_settings filter.',
+      coreButtons: CORE_BUTTONS.map(function (b) {
+        const gone = d.prunes.indexOf(b[0]) >= 0;
+        return {
+          label: b[0], help: b[3], strike: gone ? 'line-through' : 'none',
+          borderColor: gone ? '#B91C1C' : '#E7E2D9', bg: gone ? '#FBEBEB' : '#fff', color: gone ? '#B91C1C' : '#5C564B',
+          onToggle: function () { self.commit(function (p) { p.removedCore = p.removedCore || []; const i = p.removedCore.indexOf(b[0]); if (i >= 0) p.removedCore.splice(i, 1); else p.removedCore.push(b[0]); }); }
+        };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(qt, activeMode)),
+      outputModes: modes.map(function (m) {
+        const on = activeMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: {
+        snippet: 'The registration function and its hook, nothing else.',
+        functions: 'Theme-side. The script URL resolves through get_theme_file_uri() so child themes still work.',
+        plugin: 'A complete single-file plugin with a header.',
+        js: 'Save this next to the PHP as js/quicktags.js — the enqueue expects that path.'
+      }[activeMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new button set' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refSignature: "QTags.addButton(\n\tid,          // 'acme_lead'\n\tdisplay,     // 'lead'\n\targ1,        // opening tag, or a callback function\n\targ2,        // closing tag, ignored for callbacks\n\taccess_key,  // single character, alt+shift+key\n\ttitle,       // tooltip\n\tpriority,    // core uses 10..200 in tens\n\tinstance     // '' for every editor, or 'content'\n);",
+      refArgs: [
+        ['id', 'string', 'Becomes qt_{editor}_{id} in the DOM. Reusing a core id replaces that button instead of adding one.'],
+        ['display', 'string', 'The visible label. Short — the strip wraps quickly on narrow screens.'],
+        ['arg1', 'string|fn', 'Opening tag, or a function ( element, canvas, editorId ) for custom behaviour.'],
+        ['arg2', 'string', 'Closing tag. Leave empty for a one-shot insert; the button then never toggles.'],
+        ['access_key', 'string', 'One character, fired with alt+shift. Core has already claimed b, i, a, q, d, s, m, u, o, l, c and t.'],
+        ['title', 'string', 'The title attribute on the button, shown as a tooltip.'],
+        ['priority', 'int', 'Sort order. 1–9 lands before bold, 205+ after the close button.'],
+        ['instance', 'string', 'Restricts the button to one editor — content, excerpt, comment. Empty means all of them.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+      refCoreButtons: CORE_BUTTONS.map(function (b) { return padTo(b[0], 10) + padTo(b[1] ? 'alt+shift+' + b[1] : '—', 16) + b[3]; }).join('\n'),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Buttons'], ['output', 'Code & Checks']].map(function (t) {
+        const on = s.mobilePane === t[0];
+        return { label: t[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: t[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

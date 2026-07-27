@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    body { margin: 0; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    a { text-decoration: none; }
+
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    button, select, textarea, input { font-family: inherit; }
+  </style>
+</helmet>
+<header style="position:sticky; top:0; z-index:60; background:rgba(250,249,247,0.94); backdrop-filter:blur(12px); border-bottom:1px solid #E7E2D9; flex-shrink:0;">
+  <div style="max-width:1200px; margin:0 auto; padding:0 28px; height:64px; display:flex; align-items:center; gap:28px;">
+
+    <a href="{{ homeHref }}" style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+      <span style="width:30px; height:30px; border-radius:8px; background:#3858E9; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.4 4.2 3.2 10l4.2 5.8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12.6 4.2 16.8 10l-4.2 5.8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </span>
+      <span style="display:flex; flex-direction:column; line-height:1.05;">
+        <span style="font-size:15.5px; font-weight:700; color:#26221C; letter-spacing:-0.015em;">Generator<span style="color:#3858E9;">forWP</span></span>
+        <span style="font-size:9.5px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; color:#A79F91;">WordPress code generators</span>
+      </span>
+    </a>
+
+    <nav style="display:flex; align-items:center; gap:4px; margin-left:6px;">
+      <sc-for list="{{ navLinks }}" as="nl" hint-placeholder-count="3">
+        <a href="{{ nl.href }}" style="font-size:14px; font-weight:{{ nl.weight }}; color:{{ nl.color }}; padding:7px 12px; border-radius:7px; background:{{ nl.bg }};" style-hover="background:#F0EDE6; color:#26221C;">{{ nl.label }}</a>
+      </sc-for>
+    </nav>
+
+    <div style="flex:1; min-width:8px;"></div>
+
+    <sc-if value="{{ ctaIsBrowse }}" hint-placeholder-val="{{ false }}">
+      <a href="{{ toolsHref }}" style="display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:600; color:#5C564B; flex-shrink:0;" style-hover="color:#3858E9;">
+        <span aria-hidden="true" style="font-family:lineicons; font-size:15px; line-height:1; color:currentColor;">&#xf241;</span>
+        {{ browseLabel }}
+      </a>
+    </sc-if>
+
+    <sc-if value="{{ ctaIsReadme }}" hint-placeholder-val="{{ true }}">
+      <a href="{{ readmeHref }}" style="display:flex; align-items:center; gap:7px; background:#3858E9; color:#fff; font-size:13.5px; font-weight:650; padding:9px 16px; border-radius:8px; flex-shrink:0; box-shadow:0 1px 2px rgba(56,88,233,0.28);" style-hover="background:#213FD4; color:#fff;">
+        Open Readme Studio
+        <span aria-hidden="true" style="font-family:lineicons; font-size:14px; line-height:1; color:currentColor;">&#xe0da;</span>
+      </a>
+    </sc-if>
+  </div>
+</header>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:64},&quot;base&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;./Generator%20for%20WP.dc.html&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;&quot;,&quot;options&quot;:[&quot;&quot;,&quot;tools&quot;,&quot;about&quot;,&quot;contact&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;cta&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;readme&quot;,&quot;options&quot;:[&quot;readme&quot;,&quot;browse&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;toolCount&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:38,&quot;tsType&quot;:&quot;number&quot;},&quot;readmeHref&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;./Readme%20Studio.dc.html&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    // "" = links stay on this page (the site DC's own hash routes);
+    // otherwise a relative path prefix so generator pages can link back.
+    const base = this.props.base != null ? this.props.base : './Generator%20for%20WP.dc.html';
+    const active = this.props.active || '';
+    const cta = this.props.cta || 'readme';
+    const count = this.props.toolCount != null ? this.props.toolCount : 38;
+    return {
+      homeHref: base + '#/',
+      toolsHref: base + '#/tools',
+      readmeHref: (this.props.readmeHref || './Readme%20Studio.dc.html'),
+      browseLabel: 'All ' + count + ' generators',
+      ctaIsBrowse: cta === 'browse',
+      ctaIsReadme: cta === 'readme',
+      navLinks: [
+        { label: 'Generators', key: 'tools' },
+        { label: 'About', key: 'about' },
+        { label: 'Contact', key: 'contact' },
+      ].map(function (n) {
+        const on = active === n.key;
+        return {
+          label: n.label,
+          href: base + '#/' + n.key,
+          weight: on ? 700 : 550,
+          color: on ? '#26221C' : '#5C564B',
+          bg: on ? '#F0EDE6' : 'transparent',
+        };
+      }),
+    };
+  }
+}
+</script>
+</body>
+</html>

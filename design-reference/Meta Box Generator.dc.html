@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Meta Box Generator — add_meta_box() &amp; a save handler that checks everything — Generator for WP</title>
+  <meta name="description" content="Generate an editor meta box with fields, a nonce, the autosave and revision guards, per-type sanitising, and optional register_post_meta for the block editor." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=content" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Content</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Meta Box</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Meta Box Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Fields in the editor, and a save handler that checks the nonce, the autosave, the revision and the capability — in that order, before it writes anything.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The box</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Title</label>
+            <input value="{{ mb.title }}" onChange="{{ onTitleChange }}" placeholder="Event details" style="width:100%; font-size:14.5px; padding:9px 11px; border-radius:6px; border:1px solid {{ titleBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">box id</label>
+            <input value="{{ mb.id }}" onChange="{{ onIdChange }}" spellCheck="false" placeholder="acme_event_details" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ idBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">context</label>
+            <select value="{{ mb.context }}" onChange="{{ onContextChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="normal">normal — under the editor</option>
+              <option value="side">side — sidebar column</option>
+              <option value="advanced">advanced — below normal</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">priority</label>
+            <select value="{{ mb.priority }}" onChange="{{ onPriorityChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="high">high</option>
+              <option value="default">default</option>
+              <option value="low">low</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">meta prefix</label>
+            <input value="{{ mb.metaPrefix }}" onChange="{{ onMetaPrefixChange }}" spellCheck="false" placeholder="_acme_" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+            <input value="{{ mb.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ mb.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:13px;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:7px;">Post types</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+            <sc-for list="{{ postTypeChips }}" as="ptc" hint-placeholder-count="4">
+              <button onClick="{{ ptc.onToggle }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ ptc.borderColor }}; background:{{ ptc.bg }}; color:{{ ptc.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ ptc.label }}</button>
+            </sc-for>
+          </div>
+          <input value="{{ mb.customPostType }}" onChange="{{ onCustomPostTypeChange }}" spellCheck="false" placeholder="Or a custom type: event, listing" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Fields</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ fieldsNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ fieldRows }}" as="fr" hint-placeholder-count="3">
+            <div style="border:1px solid #EDE8DF; border-radius:7px; padding:11px; background:#FCFBF9;">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input value="{{ fr.label }}" onChange="{{ fr.onLabelChange }}" placeholder="Start date" style="flex:1.5; min-width:130px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ fr.id }}" onChange="{{ fr.onIdChange }}" spellCheck="false" placeholder="start_date" style="width:130px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ fr.idBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <select value="{{ fr.type }}" onChange="{{ fr.onTypeChange }}" style="width:118px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <sc-for list="{{ fieldTypeOptions }}" as="fto" hint-placeholder-count="8">
+                    <option value="{{ fto.value }}">{{ fto.label }}</option>
+                  </sc-for>
+                </select>
+                <div style="display:flex; gap:3px; flex-shrink:0;">
+                  <button aria-label="Move field up" onClick="{{ fr.onMoveUp }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ fr.iconUp }}</button>
+                  <button aria-label="Move field down" onClick="{{ fr.onMoveDown }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ fr.iconDown }}</button>
+                  <button aria-label="Remove field" onClick="{{ fr.onRemove }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ fr.iconRemove }}</button>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:7px;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#B3ACA0; white-space:nowrap;">{{ fr.metaKey }}</span>
+                <input value="{{ fr.description }}" onChange="{{ fr.onDescriptionChange }}" placeholder="Help text under the field." style="flex:1; min-width:150px; font-size:12px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              </div>
+              <sc-if value="{{ fr.needsChoices }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:7px;">
+                  <input value="{{ fr.choices }}" onChange="{{ fr.onChoicesChange }}" spellCheck="false" placeholder="online:Online, venue:In person" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ fr.choicesBorder }};" style-focus="outline:2px solid #3858E9;" />
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noFields }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No fields — the box will render an empty panel.</div>
+          </sc-if>
+        </div>
+        <button onClick="{{ onAddField }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add field</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Save handler</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="6">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabScreen }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabScreenColor }}; border-bottom:2px solid {{ tabScreenBorder }};" style-focus="outline:2px solid #3858E9;">Editor</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showScreenTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; background:#F0F0F1; padding:16px 18px 40px;">
+          <div style="font-size:10.5px; color:#787C82; margin-bottom:10px;">{{ screenNote }}</div>
+          <div style="background:#fff; border:1px solid #C3C4C7; border-radius:2px;">
+            <div style="padding:9px 12px; border-bottom:1px solid #F0F0F1; display:flex; justify-content:space-between; gap:8px; align-items:center;">
+              <span style="font-size:14px; font-weight:600; color:#1D2327;">{{ mb.title }}</span>
+              <span style="font-size:14px; color:#787C82;">⌃</span>
+            </div>
+            <div style="padding:14px 12px; display:flex; flex-direction:column; gap:14px;">
+              <sc-for list="{{ previewFields }}" as="pf" hint-placeholder-count="3">
+                <div>
+                  <div style="font-size:13px; font-weight:600; color:#1D2327; margin-bottom:5px;">{{ pf.label }}</div>
+                  <sc-if value="{{ pf.isInput }}" hint-placeholder-val="{{ true }}">
+                    <input value="" placeholder="{{ pf.placeholder }}" readOnly="{{ trueVal }}" style="width:100%; max-width:300px; font-size:13.5px; padding:5px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff;" />
+                  </sc-if>
+                  <sc-if value="{{ pf.isTextarea }}" hint-placeholder-val="{{ false }}">
+                    <textarea value="" rows="3" readOnly="{{ trueVal }}" style="width:100%; font-size:13px; padding:6px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff; resize:vertical;"></textarea>
+                  </sc-if>
+                  <sc-if value="{{ pf.isCheckbox }}" hint-placeholder-val="{{ false }}">
+                    <label style="display:inline-flex; align-items:center; gap:7px; font-size:13.5px; color:#2C3338;">
+                      <input type="checkbox" readOnly="{{ trueVal }}" style="width:16px; height:16px; accent-color:#2271B1;" />
+                      {{ pf.label }}
+                    </label>
+                  </sc-if>
+                  <sc-if value="{{ pf.isSelect }}" hint-placeholder-val="{{ false }}">
+                    <select style="font-size:13.5px; padding:4px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff; min-width:170px;">
+                      <sc-for list="{{ pf.choices }}" as="pfc" hint-placeholder-count="2">
+                        <option value="{{ pfc.value }}">{{ pfc.label }}</option>
+                      </sc-for>
+                    </select>
+                  </sc-if>
+                  <sc-if value="{{ pf.hasDescription }}" hint-placeholder-val="{{ true }}">
+                    <p style="margin:5px 0 0; font-size:12.5px; color:#646970; font-style:italic; line-height:1.5;">{{ pf.description }}</p>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="margin-top:12px; font-size:11.5px; color:#787C82; line-height:1.6;">{{ blockEditorNote }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">add_meta_box()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Registered on add_meta_boxes, saved on save_post</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refSignature }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The save order that matters</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refFlow }}" as="rf" hint-placeholder-count="5">
+              <div style="display:flex; gap:9px; align-items:flex-start;">
+                <span style="flex-shrink:0; width:19px; height:19px; border-radius:50%; background:#EEF1FE; color:#2A46C4; font-size:10.5px; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ rf.n }}</span>
+                <span style="flex:1; font-size:12.5px; line-height:1.55; color:#3B362D;">{{ rf.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Meta keys written</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refKeys }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The leading underscore</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">A meta key starting with _ is protected: it stays out of the Custom Fields panel and cannot be edited by hand. That is what you want for values your box owns. Drop the underscore only if the client should be able to see and change the raw value.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Block editor</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Classic meta boxes still render in the block editor, in a panel below the canvas — unless a block-based sidebar replaces them. What they do not do is participate in the editor’s own save cycle, so register_post_meta() with show_in_rest is what lets a block or a plugin sidebar read and write the same value.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on this meta box.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;snippet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const POST_TYPES = ['post', 'page', 'product', 'event'];
+const FIELD_TYPES = [
+  ['text', 'Text'], ['textarea', 'Textarea'], ['number', 'Number'], ['date', 'Date'],
+  ['checkbox', 'Checkbox'], ['select', 'Select'], ['url', 'URL'], ['email', 'Email']
+];
+const SANITIZE = { text: 'sanitize_text_field', textarea: 'sanitize_textarea_field', number: 'absint', date: 'sanitize_text_field', checkbox: 'rest_sanitize_boolean', select: 'sanitize_key', url: 'esc_url_raw', email: 'sanitize_email' };
+const REST_TYPE = { text: 'string', textarea: 'string', number: 'integer', date: 'string', checkbox: 'boolean', select: 'string', url: 'string', email: 'string' };
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function metaSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_'); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function pascal(s) { return String(s || '').split(/[^A-Za-z0-9]+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join('_'); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+function parseChoices(str) {
+  return String(str || '').split(',').map(function (part) {
+    const p = part.trim();
+    if (!p) return null;
+    const i = p.indexOf(':');
+    const v = slugify(i >= 0 ? p.slice(0, i) : p);
+    const l = i >= 0 ? p.slice(i + 1).trim() : p.charAt(0).toUpperCase() + p.slice(1);
+    return v ? { value: v, label: l || v } : null;
+  }).filter(Boolean);
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(mb) {
+  const pre = fnSlug(mb.prefix) || 'acme';
+  const types = (mb.postTypes || []).slice();
+  String(mb.customPostType || '').split(',').forEach(function (t) { const s = slugify(t); if (s && types.indexOf(s) === -1) types.push(s); });
+  return {
+    pre: pre, td: slugify(mb.textDomain) || pre.replace(/_/g, '-'),
+    id: fnSlug(mb.id) || pre + '_details',
+    cls: (pascal(mb.prefix || 'Acme') || 'Acme') + '_Meta_Box',
+    isClass: mb.codeStyle === 'class',
+    metaPrefix: metaSlug(mb.metaPrefix) || '_' + pre + '_',
+    types: types,
+    fields: (mb.fields || []).map(function (f) { return Object.assign({}, f, { id: fnSlug(f.id) || 'field', parsed: parseChoices(f.choices) }); })
+  };
+}
+
+function buildCode(mb, mode) {
+  const d = derive(mb);
+  const pre = d.pre, td = d.td, isClass = d.isClass;
+  const t = function (s) { return "__( '" + esc(s) + "', '" + td + "' )"; };
+  const cb = function (m) { return isClass ? "array( $this, '" + m + "' )" : "'" + pre + '_' + m + "'"; };
+  const key = function (f) { return d.metaPrefix + f.id; };
+  const input = function (f) { return pre + '_' + f.id; };
+  const nonceField = pre + '_meta_nonce';
+  const nonceAction = pre + '_save_meta';
+  const blocks = [];
+  const usedTypes = {};
+  d.fields.forEach(function (f) { usedTypes[f.type] = true; });
+
+  const typeList = d.types.length ? d.types.map(function (x) { return "'" + esc(x) + "'"; }).join(', ') : "'post'";
+  blocks.push({
+    name: 'add_box', hook: 'add_meta_boxes',
+    doc: '/**\n * Register the meta box.\n */\n',
+    body: 'add_meta_box(\n' + indent(["'" + esc(d.id) + "'", t(mb.title || 'Details'), cb('render'), 'array( ' + typeList + ' )', "'" + mb.context + "'", "'" + mb.priority + "'"].join(',\n'), 1) + '\n);'
+  });
+
+  let render = 'wp_nonce_field( \'' + nonceAction + "', '" + nonceField + "' );\n\n";
+  render += d.fields.map(function (f) {
+    const v = '$' + f.id;
+    const nm = input(f);
+    const help = f.description ? "'<span class=\"description\">' . esc_html( " + t(f.description) + ' ) . \'</span>\'' : "''";
+    let s = v + " = get_post_meta( $post->ID, '" + key(f) + "', true );\n";
+    if (f.type === 'textarea') {
+      s += 'printf(\n\t\'<p><label for="' + nm + '"><strong>%1$s</strong></label><br /><textarea id="' + nm + '" name="' + nm + '" rows="4" class="widefat">%2$s</textarea>%3$s</p>\',\n\tesc_html( ' + t(f.label || f.id) + ' ),\n\tesc_textarea( ' + v + ' ),\n\t' + help + '\n);';
+    } else if (f.type === 'checkbox') {
+      s += 'printf(\n\t\'<p><label for="' + nm + '"><input type="checkbox" id="' + nm + '" name="' + nm + '" value="1"%1$s /> %2$s</label>%3$s</p>\',\n\tchecked( (bool) ' + v + ', true, false ),\n\tesc_html( ' + t(f.label || f.id) + ' ),\n\t' + help + '\n);';
+    } else if (f.type === 'select') {
+      s += 'echo \'<p><label for="' + nm + '"><strong>\' . esc_html( ' + t(f.label || f.id) + ' ) . \'</strong></label><br />\';\necho \'<select id="' + nm + '" name="' + nm + '">\';\n\nforeach ( array(\n' + indent(aligned(f.parsed.map(function (c) { return [c.value, t(c.label)]; })), 1) + '\n) as $value => $label ) {\n\tprintf(\n\t\t\'<option value="%1$s"%2$s>%3$s</option>\',\n\t\tesc_attr( $value ),\n\t\tselected( ' + v + ', $value, false ),\n\t\tesc_html( $label )\n\t);\n}\n\necho \'</select></p>\';';
+    } else {
+      s += 'printf(\n\t\'<p><label for="' + nm + '"><strong>%1$s</strong></label><br /><input type="' + f.type + '" id="' + nm + '" name="' + nm + '" value="%2$s" class="widefat" />%3$s</p>\',\n\tesc_html( ' + t(f.label || f.id) + ' ),\n\tesc_attr( ' + v + ' ),\n\t' + help + '\n);';
+    }
+    return s;
+  }).join('\n\n');
+  if (!d.fields.length) render += '// Add a field to generate the form markup.';
+  blocks.push({ name: 'render', params: '$post', doc: '/**\n * Print the box.\n *\n * @param WP_Post $post Post being edited.\n */\n', body: render });
+
+  let save = '';
+  if (mb.nonceCheck) save += "if ( ! isset( $_POST['" + nonceField + "'] ) || ! wp_verify_nonce( sanitize_key( $_POST['" + nonceField + "'] ), '" + nonceAction + "' ) ) {\n\treturn;\n}\n\n";
+  if (mb.autosaveGuard) save += 'if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) || ( defined( \'DOING_AUTOSAVE\' ) && DOING_AUTOSAVE ) ) {\n\treturn;\n}\n\n';
+  if (mb.capCheck) save += "if ( ! current_user_can( 'edit_post', $post_id ) ) {\n\treturn;\n}\n\n";
+  if (mb.typeCheck && d.types.length) save += 'if ( ! in_array( get_post_type( $post_id ), array( ' + typeList + ' ), true ) ) {\n\treturn;\n}\n\n';
+  save += d.fields.map(function (f) {
+    const post = "$_POST['" + input(f) + "']";
+    if (f.type === 'checkbox') {
+      return 'if ( ! empty( ' + post + " ) ) {\n\tupdate_post_meta( $post_id, '" + key(f) + "', 1 );\n} else {\n\tdelete_post_meta( $post_id, '" + key(f) + "' );\n}";
+    }
+    let sanitized = SANITIZE[f.type] + '( wp_unslash( ' + post + ' ) )';
+    if (f.type === 'select' && f.parsed.length) {
+      return 'if ( isset( ' + post + ' ) && in_array( sanitize_key( ' + post + ' ), array( ' + f.parsed.map(function (c) { return "'" + c.value + "'"; }).join(', ') + " ), true ) ) {\n\tupdate_post_meta( $post_id, '" + key(f) + "', sanitize_key( " + post + ' ) );\n}';
+    }
+    return 'if ( isset( ' + post + ' ) ) {\n\t$value = ' + sanitized + ";\n\n\tif ( '' === $value ) {\n\t\tdelete_post_meta( $post_id, '" + key(f) + "' );\n\t} else {\n\t\tupdate_post_meta( $post_id, '" + key(f) + "', $value );\n\t}\n}";
+  }).join('\n\n');
+  if (!d.fields.length) save += '// Nothing to save yet.';
+  blocks.push({ name: 'save', params: '$post_id', hook: 'save_post', doc: '/**\n * Save the fields.\n *\n * @param int $post_id Post being saved.\n */\n', body: save });
+
+  if (mb.registerMeta) {
+    const regs = d.fields.map(function (f) {
+      const pairs = [['type', "'" + REST_TYPE[f.type] + "'"], ['single', 'true'], ['show_in_rest', 'true'], ['sanitize_callback', "'" + SANITIZE[f.type] + "'"], ['auth_callback', "function () {\n\treturn current_user_can( 'edit_posts' );\n}"]];
+      return 'register_post_meta(\n' + indent("'" + esc(d.types[0] || 'post') + "',\n'" + key(f) + "',\narray(\n" + indent(aligned(pairs), 1) + '\n)', 1) + '\n);';
+    }).join('\n\n');
+    blocks.push({ name: 'register_meta', hook: 'init', doc: '/**\n * Expose the meta to the REST API so blocks and the editor can read it.\n */\n', body: regs || '// Add a field first.' });
+  }
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + (mb.title || 'Meta box') + '\n * Description:       Adds the ' + (mb.title || 'details') + ' meta box to ' + (d.types.join(', ') || 'posts') + '.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Text Domain:       ' + td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+
+  if (isClass) {
+    out += 'final class ' + d.cls + ' {\n\n';
+    const hookLines = blocks.filter(function (b) { return b.hook; }).map(function (b) { return "add_action( '" + b.hook + "', array( $this, '" + b.name + "' ) );"; });
+    out += '\t/**\n\t * Wire the class into WordPress.\n\t */\n\tpublic function hooks() {\n' + indent(hookLines.join('\n'), 2) + '\n\t}\n\n';
+    blocks.forEach(function (b) { out += indent(b.doc, 1) + '\tpublic function ' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 2) + '\n\t}\n\n'; });
+    out += '}\n\n( new ' + d.cls + '() )->hooks();\n';
+  } else {
+    out += blocks.map(function (b) {
+      let s = b.doc + 'function ' + pre + '_' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 1) + '\n}\n';
+      if (b.hook) s += "add_action( '" + b.hook + "', '" + pre + '_' + b.name + "' );\n";
+      return s;
+    }).join('\n');
+  }
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit|static|new|class|final|public|private|if|else|foreach|isset|empty|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(mb) {
+  const d = derive(mb);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!String(mb.title || '').trim()) add('error', 'A title is required — the box renders with an empty header otherwise.');
+  if (!String(mb.id || '').trim()) add('error', 'A box id is required. It is the key for user hidden-box preferences and remove_meta_box().');
+  if (!d.types.length) add('error', 'No post type selected, so the box will not appear on any edit screen.', 'addPost', 'Add post');
+  if (!d.fields.length) add('warning', 'No fields yet, so the box renders an empty panel.');
+  if (!mb.nonceCheck) add('error', 'No nonce check in the save handler. Without it any request that hits save_post can write your meta — this is the one guard you cannot skip.', 'addNonce', 'Add the nonce check');
+  if (!mb.autosaveGuard) add('error', 'No autosave or revision guard. save_post fires for autosaves and for each revision, so your fields will be overwritten with empty values as soon as the editor autosaves.', 'addAutosave', 'Add the guard');
+  if (!mb.capCheck) add('error', 'No current_user_can( \'edit_post\', $post_id ) check. Nonce verification proves the request came from your form, not that this user may edit this post.', 'addCap', 'Add the check');
+  if (!mb.typeCheck && d.types.length > 0) add('recommendation', 'save_post fires for every post type. A get_post_type() check keeps the handler from running on unrelated saves.', 'addTypeCheck', 'Add the check');
+  const seen = {};
+  d.fields.forEach(function (f) {
+    if (seen[f.id]) add('error', 'Two fields share the key “' + f.id + '” — one will overwrite the other on save.');
+    seen[f.id] = true;
+    if (!String(f.label || '').trim()) add('warning', 'The field “' + f.id + '” has no label, so it renders as a bare input.');
+    if (f.type === 'select' && !f.parsed.length) add('error', 'The select “' + f.id + '” has no choices, so it renders empty and never saves.', 'addChoices', 'Add two choices');
+    if (f.type === 'number' && SANITIZE[f.type] === 'absint') add('recommendation', '“' + f.id + '” sanitises with absint(), which drops decimals and negatives. Swap it for floatval() in the generated code if you need either.');
+    if (['content', 'excerpt', 'title', 'post_name', 'order', 'menu_order', 'tags_input', 'status', 'visibility', 'password', 'author'].indexOf(f.id) >= 0) add('recommendation', '“' + f.id + '” is also a core editor field name. The generated inputs post as ' + d.pre + '_' + f.id + ' so nothing collides, but a less overloaded key will read better in six months.');
+  });
+  if (d.metaPrefix.charAt(0) !== '_') add('recommendation', 'The meta prefix does not start with an underscore, so these values appear in the Custom Fields panel and can be edited by hand. Fine if that is deliberate.', 'protectKeys', 'Add the underscore');
+  if (mb.registerMeta && d.types.length > 1) add('recommendation', 'register_post_meta() is generated for “' + d.types[0] + '” only. Repeat the call per post type, or pass an empty string to register for all of them.');
+  if (!mb.registerMeta) add('recommendation', 'Without register_post_meta() the values stay invisible to the REST API and to the block editor — fine for a classic box, a problem the moment a block needs to read them.');
+  if (d.types.indexOf('page') >= 0 && mb.context === 'normal') add('recommendation', 'On pages the normal context sits under the content, where clients scroll past it. side is more visible for one or two fields.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'acme', textDomain: 'acme', codeStyle: 'procedural',
+    id: 'acme_event_details', title: 'Event details',
+    context: 'side', priority: 'default', metaPrefix: '_acme_',
+    postTypes: ['post'], customPostType: 'event',
+    fields: [
+      { id: 'start_date', label: 'Start date', type: 'date', description: 'When the event begins.', choices: '' },
+      { id: 'venue', label: 'Venue', type: 'text', description: '', choices: '' },
+      { id: 'format', label: 'Format', type: 'select', description: '', choices: 'online:Online, venue:In person, hybrid:Hybrid' },
+      { id: 'sold_out', label: 'Sold out', type: 'checkbox', description: 'Hides the booking button on the front end.', choices: '' }
+    ],
+    nonceCheck: true, autosaveGuard: true, capCheck: true, typeCheck: true, registerMeta: true
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    mb: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'snippet', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('meta-box-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.id) this.setState({ mb: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(mb) { try { localStorage.setItem('meta-box-generator-v1', JSON.stringify(mb)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.mb));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { mb: next, past: coalesce ? s.past : s.past.concat([s.mb]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.mb));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { mb: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.mb].concat(s.future) }; }, () => this.persist(this.state.mb)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { mb: s.future[0], past: s.past.concat([s.mb]), future: s.future.slice(1) }; }, () => this.persist(this.state.mb)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'addNonce') p.nonceCheck = true;
+      if (kind === 'addAutosave') p.autosaveGuard = true;
+      if (kind === 'addCap') p.capCheck = true;
+      if (kind === 'addTypeCheck') p.typeCheck = true;
+      if (kind === 'addPost') { p.postTypes = p.postTypes || []; if (p.postTypes.indexOf('post') === -1) p.postTypes.push('post'); }
+      if (kind === 'protectKeys') p.metaPrefix = '_' + metaSlug(p.metaPrefix);
+      if (kind === 'addChoices') p.fields.forEach(function (f) { if (f.type === 'select' && !parseChoices(f.choices).length) f.choices = 'first:First, second:Second'; });
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.mb, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const mb = this.state.mb, mode = this.state.outputMode;
+    let code = buildCode(mb, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = (fnSlug(mb.id) || 'meta-box').replace(/_/g, '-') + '.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, mb = s.mb, self = this;
+    const d = derive(mb);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), up: ic('\ue555', 12), down: ic('\ue54f', 12), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(mb);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    return {
+      toolCount: 38, trueVal: true, mb: mb,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (fnSlug(mb.id) || 'meta-box').replace(/_/g, '-') + '.php',
+
+      onTitleChange: function (ev) { self.set('title', ev.target.value, true); },
+      titleBorder: String(mb.title || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onIdChange: function (ev) { self.set('id', ev.target.value, true); },
+      idBorder: String(mb.id || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onContextChange: function (ev) { self.set('context', ev.target.value); },
+      onPriorityChange: function (ev) { self.set('priority', ev.target.value); },
+      onMetaPrefixChange: function (ev) { self.set('metaPrefix', ev.target.value, true); },
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      postTypeChips: POST_TYPES.map(function (pt) {
+        const on = (mb.postTypes || []).indexOf(pt) >= 0;
+        return {
+          label: pt, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B',
+          onToggle: function () { self.commit(function (p) { p.postTypes = p.postTypes || []; const i = p.postTypes.indexOf(pt); if (i >= 0) p.postTypes.splice(i, 1); else p.postTypes.push(pt); }); }
+        };
+      }),
+      onCustomPostTypeChange: function (ev) { self.set('customPostType', ev.target.value, true); },
+
+      fieldsNote: d.fields.length + (d.fields.length === 1 ? ' field' : ' fields') + ' · keys prefixed ' + d.metaPrefix,
+      noFields: d.fields.length === 0,
+      fieldTypeOptions: FIELD_TYPES.map(function (f) { return { value: f[0], label: f[1] }; }),
+      fieldRows: (mb.fields || []).map(function (f, i) {
+        const needsChoices = f.type === 'select';
+        const dupe = (mb.fields || []).filter(function (o) { return fnSlug(o.id) === fnSlug(f.id); }).length > 1;
+        return {
+          label: f.label, id: f.id, type: f.type, description: f.description, choices: f.choices,
+          metaKey: d.metaPrefix + (fnSlug(f.id) || 'field'),
+          needsChoices: needsChoices,
+          idBorder: (!String(f.id || '').trim() || dupe) ? '#B91C1C' : '#E7E2D9',
+          choicesBorder: needsChoices && !parseChoices(f.choices).length ? '#B91C1C' : '#E7E2D9',
+          iconUp: ICON.up, iconDown: ICON.down, iconRemove: ICON.close,
+          onLabelChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].label = v; }, 'f-' + i + '-l'); },
+          onIdChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].id = v; }, 'f-' + i + '-i'); },
+          onTypeChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].type = v; if (v === 'select' && !p.fields[i].choices) p.fields[i].choices = 'first:First, second:Second'; }); },
+          onDescriptionChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].description = v; }, 'f-' + i + '-d'); },
+          onChoicesChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].choices = v; }, 'f-' + i + '-c'); },
+          onMoveUp: function () { self.commit(function (p) { if (i === 0) return; const t = p.fields[i - 1]; p.fields[i - 1] = p.fields[i]; p.fields[i] = t; }); },
+          onMoveDown: function () { self.commit(function (p) { if (i >= p.fields.length - 1) return; const t = p.fields[i + 1]; p.fields[i + 1] = p.fields[i]; p.fields[i] = t; }); },
+          onRemove: function () { self.commit(function (p) { p.fields.splice(i, 1); }); }
+        };
+      }),
+      onAddField: function () { self.commit(function (p) { const n = p.fields.length + 1; p.fields.push({ id: 'field_' + n, label: 'Field ' + n, type: 'text', description: '', choices: '' }); }); },
+
+      extraToggles: [
+        { key: 'nonceCheck', label: 'Nonce check', help: 'wp_nonce_field() in the box and wp_verify_nonce() before saving.', on: mb.nonceCheck },
+        { key: 'autosaveGuard', label: 'Autosave and revision guard', help: 'Bails on autosaves and revisions, which otherwise blank your fields.', on: mb.autosaveGuard },
+        { key: 'capCheck', label: 'Capability check', help: 'current_user_can( edit_post, $post_id ) before writing.', on: mb.capCheck },
+        { key: 'typeCheck', label: 'Post type check', help: 'Skips the handler on saves of unrelated post types.', on: mb.typeCheck },
+        { key: 'registerMeta', label: 'register_post_meta()', help: 'Registers the keys with show_in_rest so blocks and the editor can read them.', on: mb.registerMeta }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(mb, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: 'Registration, render and save — plus the meta registration if enabled.', functions: 'Ready for your theme’s functions.php.', plugin: 'A complete single-file plugin with a header.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new meta box' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      screenNote: 'Editor · ' + (mb.context === 'side' ? 'sidebar column' : mb.context === 'normal' ? 'below the content' : 'advanced area') + ' · ' + (d.types.join(', ') || 'no post type'),
+      previewFields: d.fields.map(function (f) {
+        return {
+          label: f.label || f.id,
+          placeholder: f.type === 'date' ? 'yyyy-mm-dd' : '',
+          description: f.description, hasDescription: !!f.description,
+          isInput: ['text', 'number', 'date', 'url', 'email'].indexOf(f.type) >= 0,
+          isTextarea: f.type === 'textarea',
+          isCheckbox: f.type === 'checkbox',
+          isSelect: f.type === 'select',
+          choices: f.parsed
+        };
+      }),
+      blockEditorNote: mb.registerMeta
+        ? 'In the block editor this renders in the panel below the canvas, and register_post_meta() means the same values are readable over REST.'
+        : 'In the block editor this renders in the panel below the canvas. Without register_post_meta() nothing else — block, sidebar or API — can read these values.',
+
+      refSignature: "add_meta_box(\n\t'" + d.id + "',\n\t__( '" + esc(mb.title || 'Details') + "', '" + d.td + "' ),\n\t$callback,\n\tarray( " + (d.types.map(function (x) { return "'" + x + "'"; }).join(', ') || "'post'") + " ),\n\t'" + mb.context + "',\n\t'" + mb.priority + "'\n);",
+      refFlow: [
+        'The editor posts the whole form to post.php. save_post fires — for your post type, for autosaves, for revisions and for quick edits alike.',
+        'Verify the nonce. This proves the request came from your form and not from somewhere else.',
+        'Bail on autosaves and revisions. Autosave posts a partial form, so writing on it is how fields mysteriously empty themselves.',
+        'Check the capability against this specific post — current_user_can( edit_post, $post_id ), not a blanket edit_posts.',
+        'Sanitise per field, then update_post_meta() for values and delete_post_meta() for empties. Storing an empty string is not the same as having no value.'
+      ].map(function (text, i) { return { n: String(i + 1), text: text }; }),
+      refKeys: d.fields.length
+        ? d.fields.map(function (f) { return padTo(d.metaPrefix + f.id, 26) + padTo(REST_TYPE[f.type], 9) + padTo(SANITIZE[f.type] + '()', 26) + 'posts as ' + d.pre + '_' + f.id; }).join('\n')
+        : 'No fields yet.',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showScreenTab: s.rightTab === 'screen', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabScreen: function () { self.setState({ rightTab: 'screen', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabScreenColor: s.rightTab === 'screen' ? '#3858E9' : '#948C7E', tabScreenBorder: s.rightTab === 'screen' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Fields'], ['output', 'PHP & Preview']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

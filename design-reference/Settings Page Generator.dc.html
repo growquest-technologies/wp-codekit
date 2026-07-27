@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Settings Page Generator — add_menu_page() &amp; the Settings API — Generator for WP</title>
+  <meta name="description" content="Generate a WordPress admin settings page: menu registration, register_setting, sections, fields, a sanitiser that actually sanitises, and the rendered screen." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=admin" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Admin</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Settings Page</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Settings Page Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Menu registration, the Settings API wiring, a real sanitiser per field type, and the screen it all renders into — laid out the way core expects.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The page</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Page title</label>
+            <input value="{{ sp.pageTitle }}" onChange="{{ onPageTitleChange }}" placeholder="Acme Toolkit Settings" style="width:100%; font-size:14.5px; padding:9px 11px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">menu title</label>
+            <input value="{{ sp.menuTitle }}" onChange="{{ onMenuTitleChange }}" placeholder="Acme Toolkit" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">menu slug</label>
+            <input value="{{ sp.slug }}" onChange="{{ onSlugChange }}" spellCheck="false" placeholder="acme-toolkit" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ slugBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">lives under</label>
+            <select value="{{ sp.parent }}" onChange="{{ onParentChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <sc-for list="{{ parentOptions }}" as="po" hint-placeholder-count="8">
+                <option value="{{ po.value }}">{{ po.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">capability</label>
+            <select value="{{ sp.capability }}" onChange="{{ onCapabilityChange }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:6px; border:1px solid {{ capBorder }}; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <sc-for list="{{ capabilityOptions }}" as="co" hint-placeholder-count="6">
+                <option value="{{ co.value }}">{{ co.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <sc-if value="{{ isCustomParent }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">parent file</label>
+              <input value="{{ sp.customParent }}" onChange="{{ onCustomParentChange }}" spellCheck="false" placeholder="edit.php?post_type=book" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </sc-if>
+          <sc-if value="{{ isTopLevel }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">position</label>
+              <input value="{{ sp.position }}" onChange="{{ onPositionChange }}" spellCheck="false" placeholder="80" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              <div style="font-size:11px; color:#948C7E; margin-top:4px; line-height:1.45;">{{ positionNote }}</div>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ isTopLevel }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:12px;">
+            <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:7px;">Menu icon</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <sc-for list="{{ iconChoices }}" as="ich" hint-placeholder-count="8">
+                <button onClick="{{ ich.onPick }}" style="font-size:11px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ ich.borderColor }}; background:{{ ich.bg }}; color:{{ ich.color }}; border-radius:20px; padding:4px 10px; cursor:pointer;" style-hover="border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ ich.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <div style="margin-top:12px; font-size:12px; color:#5C564B; line-height:1.55;">{{ placementNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Storage &amp; naming</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+            <input value="{{ sp.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ sp.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme-toolkit" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">option name</label>
+            <input value="{{ sp.optionName }}" onChange="{{ onOptionNameChange }}" spellCheck="false" placeholder="acme_toolkit_options" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">option group</label>
+            <input value="{{ sp.optionGroup }}" onChange="{{ onOptionGroupChange }}" spellCheck="false" placeholder="acme_toolkit_group" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E;">Rows</span>
+          <sc-for list="{{ storageChips }}" as="stc" hint-placeholder-count="2">
+            <button onClick="{{ stc.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ stc.borderColor }}; background:{{ stc.bg }}; color:{{ stc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ stc.label }}</button>
+          </sc-for>
+          <span style="width:1px; height:20px; background:#E7E2D9;"></span>
+          <span style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E;">Shape</span>
+          <sc-for list="{{ styleChips }}" as="syc" hint-placeholder-count="2">
+            <button onClick="{{ syc.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ syc.borderColor }}; background:{{ syc.bg }}; color:{{ syc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ syc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="margin-top:11px; font-size:12px; color:#5C564B; line-height:1.55;">{{ storageNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Sections</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ sectionsNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ sectionRows }}" as="sr" hint-placeholder-count="2">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <input value="{{ sr.title }}" onChange="{{ sr.onTitleChange }}" placeholder="General" style="flex:1; min-width:110px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              <input value="{{ sr.id }}" onChange="{{ sr.onIdChange }}" spellCheck="false" placeholder="general" style="width:110px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              <input value="{{ sr.description }}" onChange="{{ sr.onDescriptionChange }}" placeholder="What this group covers." style="flex:1.6; min-width:150px; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              <button aria-label="Remove section" onClick="{{ sr.onRemove }}" style="width:28px; height:28px; flex-shrink:0; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ sr.iconRemove }}</button>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ onAddSection }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add section</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Fields</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ fieldsNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ fieldRows }}" as="fr" hint-placeholder-count="3">
+            <div style="border:1px solid #EDE8DF; border-radius:7px; padding:11px; background:#FCFBF9;">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input value="{{ fr.label }}" onChange="{{ fr.onLabelChange }}" placeholder="API key" style="flex:1.5; min-width:130px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ fr.id }}" onChange="{{ fr.onIdChange }}" spellCheck="false" placeholder="api_key" style="width:120px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ fr.idBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <select value="{{ fr.type }}" onChange="{{ fr.onTypeChange }}" style="width:112px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <sc-for list="{{ fieldTypeOptions }}" as="fto" hint-placeholder-count="9">
+                    <option value="{{ fto.value }}">{{ fto.label }}</option>
+                  </sc-for>
+                </select>
+                <select value="{{ fr.section }}" onChange="{{ fr.onSectionChange }}" style="width:124px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid {{ fr.sectionBorder }}; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <sc-for list="{{ sectionOptions }}" as="so" hint-placeholder-count="2">
+                    <option value="{{ so.value }}">{{ so.label }}</option>
+                  </sc-for>
+                </select>
+                <div style="display:flex; gap:3px; flex-shrink:0;">
+                  <button aria-label="Move field up" onClick="{{ fr.onMoveUp }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ fr.iconUp }}</button>
+                  <button aria-label="Move field down" onClick="{{ fr.onMoveDown }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ fr.iconDown }}</button>
+                  <button aria-label="Remove field" onClick="{{ fr.onRemove }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ fr.iconRemove }}</button>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:7px;">
+                <input value="{{ fr.def }}" onChange="{{ fr.onDefChange }}" spellCheck="false" placeholder="{{ fr.defPlaceholder }}" style="width:120px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ fr.placeholder }}" onChange="{{ fr.onPlaceholderChange }}" placeholder="placeholder text" style="width:150px; font-size:12px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ fr.description }}" onChange="{{ fr.onDescriptionChange }}" placeholder="Help text under the field." style="flex:1; min-width:160px; font-size:12px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              </div>
+              <sc-if value="{{ fr.needsChoices }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:7px;">
+                  <input value="{{ fr.choices }}" onChange="{{ fr.onChoicesChange }}" spellCheck="false" placeholder="fast:Fast, safe:Safe" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ fr.choicesBorder }};" style-focus="outline:2px solid #3858E9;" />
+                  <div style="font-size:11px; color:#948C7E; margin-top:4px;">value:Label pairs, comma separated. Values are whitelisted in the sanitiser.</div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noFields }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No fields yet — an empty settings page is just a heading.</div>
+          </sc-if>
+        </div>
+        <button onClick="{{ onAddField }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add field</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Extras</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="6">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabScreen }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabScreenColor }}; border-bottom:2px solid {{ tabScreenBorder }};" style-focus="outline:2px solid #3858E9;">Screen</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showScreenTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; background:#F0F0F1;">
+          <div style="padding:16px 18px 40px; min-width:420px;">
+            <div style="font-size:10.5px; color:#787C82; margin-bottom:10px;">How the screen renders — {{ screenPathLabel }}</div>
+            <h1 style="margin:0 0 12px; font-size:23px; font-weight:400; color:#1D2327; line-height:1.3;">{{ sp.pageTitle }}</h1>
+            <sc-if value="{{ sp.settingsErrors }}" hint-placeholder-val="{{ true }}">
+              <div style="background:#fff; border:1px solid #C3C4C7; border-left:4px solid #00A32A; padding:9px 12px; margin-bottom:14px; font-size:13px; color:#1D2327;">Settings saved.</div>
+            </sc-if>
+            <sc-if value="{{ sp.tabbed }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; gap:2px; border-bottom:1px solid #C3C4C7; margin-bottom:16px; padding-left:8px;">
+                <sc-for list="{{ screenTabs }}" as="stab" hint-placeholder-count="2">
+                  <button onClick="{{ stab.onClick }}" style="font-size:14px; padding:7px 12px 8px; border:1px solid #C3C4C7; border-bottom:{{ stab.borderBottom }}; background:{{ stab.bg }}; color:{{ stab.color }}; cursor:pointer; margin-bottom:-1px; border-radius:2px 2px 0 0;" style-focus="outline:2px solid #3858E9;">{{ stab.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-for list="{{ screenSections }}" as="ss" hint-placeholder-count="1">
+              <div style="margin-bottom:18px;">
+                <h2 style="margin:0 0 4px; font-size:16px; font-weight:600; color:#1D2327;">{{ ss.title }}</h2>
+                <p style="margin:0 0 10px; font-size:13px; color:#50575E; line-height:1.6;">{{ ss.description }}</p>
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                  <sc-for list="{{ ss.fields }}" as="sf" hint-placeholder-count="2">
+                    <div style="display:grid; grid-template-columns:150px 1fr; gap:14px; align-items:start;">
+                      <div style="font-size:13.5px; font-weight:600; color:#1D2327; padding-top:5px; line-height:1.4;">{{ sf.label }}</div>
+                      <div style="min-width:0;">
+                        <sc-if value="{{ sf.isInput }}" hint-placeholder-val="{{ true }}">
+                          <input value="{{ sf.value }}" placeholder="{{ sf.placeholder }}" readOnly="{{ trueVal }}" style="width:100%; max-width:280px; font-size:13.5px; padding:5px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff; color:#2C3338;" />
+                        </sc-if>
+                        <sc-if value="{{ sf.isTextarea }}" hint-placeholder-val="{{ false }}">
+                          <textarea value="{{ sf.value }}" placeholder="{{ sf.placeholder }}" rows="3" readOnly="{{ trueVal }}" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff; color:#2C3338; resize:vertical;"></textarea>
+                        </sc-if>
+                        <sc-if value="{{ sf.isCheckbox }}" hint-placeholder-val="{{ false }}">
+                          <label style="display:inline-flex; align-items:center; gap:7px; font-size:13.5px; color:#2C3338;">
+                            <input type="checkbox" checked="{{ sf.checked }}" readOnly="{{ trueVal }}" style="width:16px; height:16px; accent-color:#2271B1;" />
+                            {{ sf.inlineLabel }}
+                          </label>
+                        </sc-if>
+                        <sc-if value="{{ sf.isSelect }}" hint-placeholder-val="{{ false }}">
+                          <select value="{{ sf.value }}" style="font-size:13.5px; padding:4px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff; color:#2C3338; min-width:160px;">
+                            <sc-for list="{{ sf.choices }}" as="sfc" hint-placeholder-count="2">
+                              <option value="{{ sfc.value }}">{{ sfc.label }}</option>
+                            </sc-for>
+                          </select>
+                        </sc-if>
+                        <sc-if value="{{ sf.isRadio }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex; flex-direction:column; gap:5px;">
+                            <sc-for list="{{ sf.choices }}" as="sfr" hint-placeholder-count="2">
+                              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13.5px; color:#2C3338;">
+                                <input type="radio" checked="{{ sfr.checked }}" readOnly="{{ trueVal }}" style="accent-color:#2271B1;" />
+                                {{ sfr.label }}
+                              </label>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{ sf.isColor }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="width:26px; height:26px; border-radius:3px; border:1px solid #8C8F94; background:{{ sf.swatch }}; display:inline-block;"></span>
+                            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#2C3338;">{{ sf.value }}</span>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{ sf.hasDescription }}" hint-placeholder-val="{{ true }}">
+                          <p style="margin:5px 0 0; font-size:13px; color:#646970; font-style:italic; line-height:1.5;">{{ sf.description }}</p>
+                        </sc-if>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ ss.empty }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:13px; color:#787C82;">No fields in this section.</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+            <div style="display:flex; gap:8px; align-items:center; margin-top:6px;">
+              <button style="background:#2271B1; border:1px solid #2271B1; color:#fff; font-size:13px; padding:6px 14px; border-radius:3px; cursor:pointer;" style-hover="background:#135E96;">Save Changes</button>
+              <sc-if value="{{ sp.resetButton }}" hint-placeholder-val="{{ false }}">
+                <button style="background:#F6F7F7; border:1px solid #2271B1; color:#2271B1; font-size:13px; padding:6px 14px; border-radius:3px; cursor:pointer;" style-hover="background:#F0F0F1;">Reset to defaults</button>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">{{ refFunction }}</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">{{ screenPathLabel }}</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refSignature }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">What core does, in order</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refFlow }}" as="rf" hint-placeholder-count="5">
+              <div style="display:flex; gap:9px; align-items:flex-start;">
+                <span style="flex-shrink:0; width:19px; height:19px; border-radius:50%; background:#EEF1FE; color:#2A46C4; font-size:10.5px; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ rf.n }}</span>
+                <span style="flex:1; font-size:12.5px; line-height:1.55; color:#3B362D;">{{ rf.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">In the database</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refOptionShape }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Screen hook suffix</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:12px; color:#26221C; margin-bottom:8px; word-break:break-all; font-variant-ligatures:none;">{{ refHookSuffix }}</div>
+          <div style="font-size:12px; color:#5C564B; line-height:1.6;">{{ refHookNote }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on this page.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;snippet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const PARENTS = [
+  ['top', 'Top-level menu'],
+  ['options-general.php', 'Settings'],
+  ['tools.php', 'Tools'],
+  ['themes.php', 'Appearance'],
+  ['plugins.php', 'Plugins'],
+  ['users.php', 'Users'],
+  ['upload.php', 'Media'],
+  ['edit.php', 'Posts'],
+  ['custom', 'Custom parent file…']
+];
+const PARENT_LABEL = {};
+PARENTS.forEach(function (p) { PARENT_LABEL[p[0]] = p[1]; });
+const HOOK_BASE = { 'options-general.php': 'settings', 'tools.php': 'tools', 'themes.php': 'appearance', 'plugins.php': 'plugins', 'users.php': 'users', 'upload.php': 'media', 'edit.php': 'posts' };
+const CAPS = [
+  ['manage_options', 'manage_options — admins only'],
+  ['edit_theme_options', 'edit_theme_options — editors of the theme'],
+  ['manage_categories', 'manage_categories — editors'],
+  ['edit_posts', 'edit_posts — contributors and up'],
+  ['upload_files', 'upload_files — authors and up'],
+  ['read', 'read — every logged-in user']
+];
+const ICONS = ['dashicons-admin-generic', 'dashicons-admin-settings', 'dashicons-admin-tools', 'dashicons-chart-bar', 'dashicons-cart', 'dashicons-groups', 'dashicons-shield', 'dashicons-cloud', 'dashicons-email-alt', 'dashicons-forms'];
+const FIELD_TYPES = [
+  ['text', 'Text'], ['textarea', 'Textarea'], ['number', 'Number'], ['checkbox', 'Checkbox'],
+  ['select', 'Select'], ['radio', 'Radio'], ['email', 'Email'], ['url', 'URL'], ['color', 'Colour']
+];
+const SANITIZE = { text: 'sanitize_text_field', textarea: 'sanitize_textarea_field', email: 'sanitize_email', url: 'esc_url_raw', number: 'absint', checkbox: 'rest_sanitize_boolean', select: 'sanitize_key', radio: 'sanitize_key', color: 'sanitize_hex_color' };
+const REST_TYPE = { text: 'string', textarea: 'string', email: 'string', url: 'string', number: 'integer', checkbox: 'boolean', select: 'string', radio: 'string', color: 'string' };
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function pascal(s) { return String(s || '').split(/[^A-Za-z0-9]+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join('_'); }
+function indent(text, depth) { const pad = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? pad + l : ''; }).join('\n'); }
+function pad(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return pad("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+function parseChoices(str) {
+  return String(str || '').split(',').map(function (part) {
+    const p = part.trim();
+    if (!p) return null;
+    const i = p.indexOf(':');
+    const v = slugify(i >= 0 ? p.slice(0, i) : p);
+    const l = i >= 0 ? p.slice(i + 1).trim() : p.charAt(0).toUpperCase() + p.slice(1);
+    return v ? { value: v, label: l || v } : null;
+  }).filter(Boolean);
+}
+function defLiteral(f) {
+  if (f.type === 'checkbox') return (f.def === true || String(f.def) === '1' || String(f.def) === 'true') ? 'true' : 'false';
+  if (f.type === 'number') return String(parseInt(f.def, 10) || 0);
+  return "'" + esc(f.def || '') + "'";
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) {
+  if (out.indexOf('<?php\n') === 0) return '<?php\n' + CREDIT + out.slice(6);
+  return CREDIT + out;
+}
+
+function derive(sp) {
+  const pre = fnSlug(sp.prefix) || 'acme';
+  const slug = slugify(sp.slug) || pre + '-settings';
+  const sections = (sp.sections && sp.sections.length) ? sp.sections : [{ id: 'general', title: 'General', description: '' }];
+  const secIds = sections.map(function (s) { return slugify(s.id) || 'general'; });
+  const fields = (sp.fields || []).map(function (f) {
+    const sec = slugify(f.section);
+    return Object.assign({}, f, { id: fnSlug(f.id) || 'field', section: secIds.indexOf(sec) >= 0 ? sec : secIds[0], parsed: parseChoices(f.choices) });
+  });
+  return {
+    pre: pre, slug: slug,
+    td: slugify(sp.textDomain) || slug,
+    opt: fnSlug(sp.optionName) || pre + '_options',
+    group: fnSlug(sp.optionGroup) || pre + '_group',
+    cap: sp.capability || 'manage_options',
+    cls: (pascal(sp.prefix || 'Acme') || 'Acme') + '_Settings',
+    isClass: sp.codeStyle === 'class',
+    arrayMode: sp.storage !== 'individual',
+    isTop: sp.parent === 'top',
+    parentFile: sp.parent === 'custom' ? (sp.customParent || 'options-general.php') : sp.parent,
+    sections: sections.map(function (s, i) { return { id: secIds[i], title: s.title || 'Section', description: s.description || '' }; }),
+    fields: fields
+  };
+}
+
+function hookSuffixFor(d, sp) {
+  if (d.isTop) return 'toplevel_page_' + d.slug;
+  const base = HOOK_BASE[d.parentFile] || slugify(String(d.parentFile).replace(/\.php.*$/, '')) || 'admin';
+  return base + '_page_' + d.slug;
+}
+
+function buildCode(sp, mode) {
+  const d = derive(sp);
+  const pre = d.pre, td = d.td, isClass = d.isClass, arrayMode = d.arrayMode;
+  const t = function (s) { return "__( '" + esc(s) + "', '" + td + "' )"; };
+  const cb = function (m) { return isClass ? "array( $this, '" + m + "' )" : "'" + pre + '_' + m + "'"; };
+  const call = function (m) { return (isClass ? '$this->' + m : pre + '_' + m) + '()'; };
+  const secId = function (id) { return pre + '_section_' + fnSlug(id); };
+  const pageFor = function (id) { return sp.tabbed ? d.slug + '-' + slugify(id) : d.slug; };
+  const optFor = function (f) { return pre + '_' + f.id; };
+  const blocks = [];
+  const usedTypes = {};
+  d.fields.forEach(function (f) { usedTypes[f.type] = true; });
+
+  if (arrayMode || sp.resetButton) {
+    blocks.push({
+      name: 'default_options', params: '',
+      doc: '/**\n * Default values for every field.\n *\n * @return array\n */\n',
+      body: d.fields.length
+        ? 'return array(\n' + indent(aligned(d.fields.map(function (f) { return [f.id, defLiteral(f)]; })), 1) + '\n);'
+        : 'return array();'
+    });
+  }
+
+  if (arrayMode) {
+    blocks.push({
+      name: 'get_options', params: '',
+      doc: '/**\n * Saved options, merged over the defaults so no key is ever missing.\n *\n * @return array\n */\n',
+      body: "return wp_parse_args( (array) get_option( '" + d.opt + "', array() ), " + call('default_options') + ' );'
+    });
+  }
+
+  const menuArgs = [t(sp.pageTitle || 'Settings'), t(sp.menuTitle || sp.pageTitle || 'Settings'), "'" + esc(d.cap) + "'", "'" + esc(d.slug) + "'", cb('render_settings_page')];
+  let menuCall;
+  if (d.isTop) {
+    menuArgs.push("'" + esc(sp.icon || 'dashicons-admin-generic') + "'");
+    if (String(sp.position || '').trim()) menuArgs.push(String(parseInt(sp.position, 10) || 80));
+    menuCall = 'add_menu_page(\n' + indent(menuArgs.join(',\n'), 1) + '\n);';
+  } else {
+    menuCall = 'add_submenu_page(\n' + indent(["'" + esc(d.parentFile) + "'"].concat(menuArgs).join(',\n'), 1) + '\n);';
+  }
+  blocks.push({
+    name: 'add_settings_page', params: '', hook: 'admin_menu',
+    doc: '/**\n * Add the page to the admin menu.\n */\n',
+    body: sp.scopedAssets
+      ? (isClass ? '$this->hook = ' + menuCall : '$hook = ' + menuCall + '\n\n' + pre + '_settings_hook( $hook );')
+      : menuCall
+  });
+
+  if (sp.scopedAssets && !isClass) {
+    blocks.push({
+      name: 'settings_hook', params: '$hook = null',
+      doc: '/**\n * Remember the screen hook suffix add_menu_page() handed back.\n *\n * @param string|null $hook Hook suffix to store, or null to read it.\n * @return string\n */\n',
+      body: "static $stored = '';\n\nif ( null !== $hook ) {\n\t$stored = (string) $hook;\n}\n\nreturn $stored;"
+    });
+  }
+
+  let reg = '';
+  if (arrayMode) {
+    const regPairs = [['type', "'array'"], ['sanitize_callback', cb('sanitize_options')], ['default', call('default_options')]];
+    if (sp.showInRest) {
+      const props = d.fields.map(function (f) { return [f.id, "array( 'type' => '" + REST_TYPE[f.type] + "' )"]; });
+      regPairs.push(['show_in_rest', 'array(\n' + indent("'schema' => array(\n" + indent("'type'       => 'object',\n'properties' => array(\n" + indent(aligned(props), 1) + '\n),', 1) + '\n),', 1) + '\n)']);
+    } else {
+      regPairs.push(['show_in_rest', 'false']);
+    }
+    reg += 'register_setting(\n' + indent("'" + esc(d.group) + "',\n'" + esc(d.opt) + "',\narray(\n" + indent(aligned(regPairs), 1) + '\n)', 1) + '\n);\n';
+  } else {
+    d.fields.forEach(function (f) {
+      reg += 'register_setting(\n' + indent("'" + esc(d.group) + "',\n'" + optFor(f) + "',\narray(\n" + indent(aligned([['type', "'" + REST_TYPE[f.type] + "'"], ['sanitize_callback', "'" + SANITIZE[f.type] + "'"], ['default', defLiteral(f)], ['show_in_rest', sp.showInRest ? 'true' : 'false']]), 1) + '\n)', 1) + '\n);\n';
+    });
+  }
+  d.sections.forEach(function (s) {
+    reg += '\nadd_settings_section(\n' + indent("'" + secId(s.id) + "',\n" + t(s.title) + ',\n' + cb('render_section') + ",\n'" + pageFor(s.id) + "'", 1) + '\n);\n';
+    d.fields.filter(function (f) { return f.section === s.id; }).forEach(function (f) {
+      const argPairs = [['key', "'" + esc(f.id) + "'"], ['type', "'" + f.type + "'"], ['label_for', "'" + esc(f.id) + "'"], ['default', defLiteral(f)]];
+      if (!arrayMode) argPairs.push(['option', "'" + optFor(f) + "'"]);
+      argPairs.push(['placeholder', "'" + esc(f.placeholder || '') + "'"]);
+      argPairs.push(['description', f.description ? t(f.description) : "''"]);
+      argPairs.push(['choices', f.parsed.length ? 'array(\n' + indent(aligned(f.parsed.map(function (c) { return [c.value, t(c.label)]; })), 1) + '\n)' : 'array()']);
+      reg += '\nadd_settings_field(\n' + indent("'" + esc(f.id) + "',\n" + t(f.label || f.id) + ',\n' + cb('render_field') + ",\n'" + pageFor(s.id) + "',\n'" + secId(s.id) + "',\narray(\n" + indent(aligned(argPairs), 1) + '\n)', 1) + '\n);\n';
+    });
+  });
+  blocks.push({
+    name: 'register_settings', params: '', hook: 'admin_init',
+    doc: '/**\n * Register the setting, its sections and its fields.\n */\n',
+    body: reg.replace(/\n+$/, '')
+  });
+
+  if (arrayMode) {
+    const lines = [];
+    const w = d.fields.reduce(function (m, f) { return Math.max(m, f.id.length); }, 0);
+    d.fields.forEach(function (f) {
+      const lhs = pad("$output['" + f.id + "']", 11 + w);
+      const key = "$input['" + f.id + "']";
+      if (f.type === 'checkbox') lines.push(lhs + ' = ! empty( ' + key + ' );');
+      else if (f.type === 'select' || f.type === 'radio') lines.push(lhs + ' = isset( ' + key + ' ) && in_array( ' + key + ', array( ' + f.parsed.map(function (c) { return "'" + c.value + "'"; }).join(', ') + ' ), true ) ? sanitize_key( ' + key + ' ) : ' + defLiteral(f) + ';');
+      else if (f.type === 'color') lines.push(lhs + ' = isset( ' + key + ' ) && sanitize_hex_color( ' + key + ' ) ? sanitize_hex_color( ' + key + ' ) : ' + defLiteral(f) + ';');
+      else lines.push(lhs + ' = isset( ' + key + ' ) ? ' + SANITIZE[f.type] + '( ' + key + ' ) : ' + defLiteral(f) + ';');
+    });
+    blocks.push({
+      name: 'sanitize_options', params: '$input',
+      doc: '/**\n * Sanitise the submitted values. Anything not listed here never reaches the database.\n *\n * @param mixed $input Raw value from the form.\n * @return array\n */\n',
+      body: '$input  = (array) $input;\n$output = ' + call('default_options') + ';\n\n' + (lines.length ? lines.join('\n') + '\n\n' : '') + 'return $output;'
+    });
+  }
+
+  blocks.push({
+    name: 'render_section', params: '$args',
+    doc: '/**\n * Print the blurb under a section heading.\n *\n * @param array $args Section arguments from add_settings_section().\n */\n',
+    body: '$descriptions = array(\n' + indent(aligned(d.sections.map(function (s) { return [secId(s.id), s.description ? t(s.description) : "''"]; })), 1) + "\n);\n\nif ( ! empty( $descriptions[ $args['id'] ] ) ) {\n\techo '<p>' . esc_html( $descriptions[ $args['id'] ] ) . '</p>';\n}"
+  });
+
+  let fieldBody = arrayMode
+    ? '$options = ' + call('get_options') + ";\n$key     = $args['key'];\n$name    = '" + d.opt + "[' . $key . ']';\n$value   = isset( $options[ $key ] ) ? $options[ $key ] : $args['default'];"
+    : "$key   = $args['key'];\n$name  = $args['option'];\n$value = get_option( $args['option'], $args['default'] );";
+  const cases = [];
+  if (usedTypes.textarea) cases.push("case 'textarea':\n\tprintf(\n\t\t'<textarea id=\"%1$s\" name=\"%2$s\" rows=\"5\" class=\"large-text code\" placeholder=\"%4$s\">%3$s</textarea>',\n\t\tesc_attr( $key ),\n\t\tesc_attr( $name ),\n\t\tesc_textarea( $value ),\n\t\tesc_attr( $args['placeholder'] )\n\t);\n\tbreak;");
+  if (usedTypes.checkbox) cases.push("case 'checkbox':\n\tprintf(\n\t\t'<input type=\"checkbox\" id=\"%1$s\" name=\"%2$s\" value=\"1\"%3$s />',\n\t\tesc_attr( $key ),\n\t\tesc_attr( $name ),\n\t\tchecked( (bool) $value, true, false )\n\t);\n\tbreak;");
+  if (usedTypes.select) cases.push("case 'select':\n\techo '<select id=\"' . esc_attr( $key ) . '\" name=\"' . esc_attr( $name ) . '\">';\n\tforeach ( $args['choices'] as $choice => $label ) {\n\t\tprintf(\n\t\t\t'<option value=\"%1$s\"%2$s>%3$s</option>',\n\t\t\tesc_attr( $choice ),\n\t\t\tselected( $value, $choice, false ),\n\t\t\tesc_html( $label )\n\t\t);\n\t}\n\techo '</select>';\n\tbreak;");
+  if (usedTypes.radio) cases.push("case 'radio':\n\tforeach ( $args['choices'] as $choice => $label ) {\n\t\tprintf(\n\t\t\t'<label><input type=\"radio\" name=\"%1$s\" value=\"%2$s\"%3$s /> %4$s</label><br />',\n\t\t\tesc_attr( $name ),\n\t\t\tesc_attr( $choice ),\n\t\t\tchecked( $value, $choice, false ),\n\t\t\tesc_html( $label )\n\t\t);\n\t}\n\tbreak;");
+  cases.push("default:\n\tprintf(\n\t\t'<input type=\"%1$s\" id=\"%2$s\" name=\"%3$s\" value=\"%4$s\" class=\"regular-text\" placeholder=\"%5$s\" />',\n\t\tesc_attr( $args['type'] ),\n\t\tesc_attr( $key ),\n\t\tesc_attr( $name ),\n\t\tesc_attr( $value ),\n\t\tesc_attr( $args['placeholder'] )\n\t);\n\tbreak;");
+  fieldBody += "\n\nswitch ( $args['type'] ) {\n" + indent(cases.join('\n\n'), 1) + "\n}\n\nif ( ! empty( $args['description'] ) ) {\n\techo '<p class=\"description\">' . esc_html( $args['description'] ) . '</p>';\n}";
+  blocks.push({
+    name: 'render_field', params: '$args',
+    doc: '/**\n * Print one field. Every type routes through here so escaping lives in one place.\n *\n * @param array $args Field arguments from add_settings_field().\n */\n',
+    body: fieldBody
+  });
+
+  let page = '';
+  if (sp.capCheck) page += "if ( ! current_user_can( '" + esc(d.cap) + "' ) ) {\n\treturn;\n}\n\n";
+  if (sp.tabbed) {
+    page += '$tabs = array(\n' + indent(aligned(d.sections.map(function (s) { return [s.id, t(s.title)]; })), 1) + '\n);\n\n';
+    page += "$active_tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '" + d.sections[0].id + "'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended\n\nif ( ! isset( $tabs[ $active_tab ] ) ) {\n\t$active_tab = '" + d.sections[0].id + "';\n}\n\n";
+  }
+  const menuBase = d.isTop ? 'admin.php' : d.parentFile;
+  page += '?>\n<div class="wrap">\n\t<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>\n\n';
+  if (sp.settingsErrors) page += "\t<?php settings_errors( '" + d.opt + "' ); ?>\n\n";
+  if (sp.tabbed) {
+    page += '\t<h2 class="nav-tab-wrapper">\n\t\t<?php foreach ( $tabs as $tab_key => $tab_label ) : ?>\n\t\t\t<a\n\t\t\t\thref="<?php echo esc_url( add_query_arg( array( \'page\' => \'' + d.slug + '\', \'tab\' => $tab_key ), admin_url( \'' + menuBase + '\' ) ) ); ?>"\n\t\t\t\tclass="nav-tab <?php echo $active_tab === $tab_key ? \'nav-tab-active\' : \'\'; ?>"\n\t\t\t>\n\t\t\t\t<?php echo esc_html( $tab_label ); ?>\n\t\t\t</a>\n\t\t<?php endforeach; ?>\n\t</h2>\n\n';
+  }
+  page += '\t<form action="options.php" method="post">\n\t\t<?php\n\t\tsettings_fields( \'' + esc(d.group) + '\' );\n\t\tdo_settings_sections( ' + (sp.tabbed ? "'" + d.slug + "-' . $active_tab" : "'" + d.slug + "'") + ' );\n\t\tsubmit_button();\n\t\t?>\n\t</form>\n';
+  if (sp.resetButton) {
+    page += '\n\t<p>\n\t\t<a\n\t\t\thref="<?php echo esc_url( wp_nonce_url( admin_url( \'admin-post.php?action=' + pre + '_reset_options\' ), \'' + pre + '_reset_options\' ) ); ?>"\n\t\t\tclass="button button-secondary"\n\t\t>\n\t\t\t<?php esc_html_e( \'Reset to defaults\', \'' + td + '\' ); ?>\n\t\t</a>\n\t</p>\n';
+  }
+  page += '</div>\n<?php';
+  blocks.push({
+    name: 'render_settings_page', params: '',
+    doc: '/**\n * Render the settings screen.\n */\n',
+    body: page
+  });
+
+  if (sp.scopedAssets) {
+    blocks.push({
+      name: 'admin_assets', params: '$hook_suffix', hook: 'admin_enqueue_scripts',
+      doc: '/**\n * Load assets on this screen only — never on every admin page.\n *\n * @param string $hook_suffix Current admin screen.\n */\n',
+      body: (isClass ? 'if ( $this->hook !== $hook_suffix ) {' : 'if ( ' + pre + '_settings_hook() !== $hook_suffix ) {') + "\n\treturn;\n}\n\nwp_enqueue_style(\n\t'" + d.slug + "-admin',\n\tplugins_url( 'assets/admin.css', __FILE__ ),\n\tarray(),\n\t'1.0.0'\n);"
+    });
+  }
+
+  if (sp.resetButton) {
+    blocks.push({
+      name: 'handle_reset', params: '', hook: 'admin_post_' + pre + '_reset_options',
+      doc: '/**\n * Restore the defaults, then bounce back to the settings screen.\n */\n',
+      body: "if ( ! current_user_can( '" + esc(d.cap) + "' ) ) {\n\twp_die( esc_html__( 'You are not allowed to do that.', '" + td + "' ) );\n}\n\ncheck_admin_referer( '" + pre + "_reset_options' );\n\n"
+        + (arrayMode
+          ? "update_option( '" + d.opt + "', " + call('default_options') + ' );'
+          : 'foreach ( ' + call('default_options') + " as $key => $value ) {\n\tupdate_option( '" + pre + "_' . $key, $value );\n}")
+        + "\n\nadd_settings_error( '" + d.opt + "', 'reset', __( 'Settings restored to defaults.', '" + td + "' ), 'updated' );\nset_transient( 'settings_errors', get_settings_errors(), 30 );\n\nwp_safe_redirect( add_query_arg( 'settings-updated', 'true', wp_get_referer() ) );\nexit;"
+    });
+  }
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + (sp.pageTitle || 'Settings Page') + '\n * Description:       Adds the ' + (sp.menuTitle || 'settings') + ' screen and its options.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Text Domain:       ' + td + '\n */\n\ndefined( \'ABSPATH\' ) || exit;\n\n';
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+
+  if (isClass) {
+    out += 'final class ' + d.cls + ' {\n\n';
+    if (sp.scopedAssets) out += "\t/**\n\t * Screen hook suffix for the settings page.\n\t *\n\t * @var string\n\t */\n\tprivate $hook = '';\n\n";
+    const hookLines = blocks.filter(function (b) { return b.hook; }).map(function (b) { return "add_action( '" + b.hook + "', array( $this, '" + b.name + "' ) );"; });
+    out += '\t/**\n\t * Wire the class into WordPress.\n\t */\n\tpublic function hooks() {\n' + indent(hookLines.join('\n'), 2) + '\n\t}\n\n';
+    blocks.forEach(function (b) {
+      out += indent(b.doc, 1) + '\tpublic function ' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 2) + '\n\t}\n\n';
+    });
+    out += '}\n\n( new ' + d.cls + '() )->hooks();\n';
+  } else {
+    out += blocks.map(function (b) {
+      let s = b.doc + 'function ' + pre + '_' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 1) + '\n}\n';
+      if (b.hook) s += "add_action( '" + b.hook + "', '" + pre + '_' + b.name + "' );\n";
+      return s;
+    }).join('\n');
+  }
+
+  if (sp.uninstall) {
+    out += '\n/*\n * uninstall.php — sits next to the plugin file and runs when the plugin is deleted.\n *\n * defined( \'WP_UNINSTALL_PLUGIN\' ) || exit;\n'
+      + (arrayMode
+        ? " * delete_option( '" + d.opt + "' );\n"
+        : d.fields.map(function (f) { return " * delete_option( '" + optFor(f) + "' );"; }).join('\n') + '\n')
+      + ' */\n';
+  }
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit|static|new|class|final|public|private|if|else|foreach|switch|case|break|isset|empty|as|endforeach)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(sp) {
+  const d = derive(sp);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const rawSlug = String(sp.slug || '').trim();
+  if (!rawSlug) add('error', 'A menu slug is required — it becomes the ?page= value in the URL.');
+  else if (rawSlug !== slugify(rawSlug)) add('error', 'Menu slugs must be lowercase letters, numbers and dashes. “' + rawSlug + '” will not match the URL WordPress builds.', 'fixSlug', 'Use ' + slugify(rawSlug));
+  if (!String(sp.pageTitle || '').trim()) add('warning', 'No page title — the h1 and the browser tab will both be blank.');
+  if (sp.capability === 'read') add('error', 'A capability of read means any logged-in subscriber can open and save this page.', 'setManageOptions', 'Use manage_options');
+  else if (sp.capability === 'edit_posts' || sp.capability === 'upload_files') add('recommendation', 'Contributors and authors will see this menu item. Settings that affect the whole site usually want manage_options.');
+  if (d.isTop && !sp.icon) add('recommendation', 'A top-level menu with no icon renders an empty square in the sidebar.', 'addIcon', 'Use the generic gear');
+  if (!d.isTop && String(sp.position || '').trim() && sp.parent !== 'custom') add('recommendation', 'Submenu order is set by registration order in most themes — the position field is only read for top-level menus.');
+  if (d.isTop) {
+    const p = parseInt(sp.position, 10);
+    if (!isNaN(p) && p >= 5 && p <= 25) add('recommendation', 'Position ' + p + ' lands in the middle of the core content menus. Positions 80–100 are the conventional home for plugin settings.');
+  }
+  if (d.opt.indexOf(d.pre + '_') !== 0) add('warning', 'The option name is not prefixed with “' + d.pre + '_”. Unprefixed option names are the single most common source of plugin conflicts.', 'prefixOption', 'Prefix it');
+  if (d.td !== d.slug) add('recommendation', 'The text domain must match the plugin folder name for translations to load — check that “' + d.td + '” is the folder you ship.');
+  if (!d.fields.length) add('warning', 'No fields yet, so the page renders a heading and a Save button that saves nothing.');
+  const seen = {};
+  d.fields.forEach(function (f) {
+    if (seen[f.id]) add('error', 'Two fields share the key “' + f.id + '”. The second one silently overwrites the first.');
+    seen[f.id] = true;
+    if (!String(f.label || '').trim()) add('warning', 'The field “' + f.id + '” has no label, so its row in the form table will be blank.');
+    if ((f.type === 'select' || f.type === 'radio') && !f.parsed.length) add('error', 'The ' + f.type + ' field “' + f.id + '” has no choices — it will render an empty control and sanitise to its default.', 'addChoices', 'Add two choices');
+  });
+  const secIds = d.sections.map(function (s) { return s.id; });
+  (sp.fields || []).forEach(function (f) {
+    if (f.section && secIds.indexOf(slugify(f.section)) === -1) add('error', 'The field “' + (f.id || 'untitled') + '” points at the missing section “' + f.section + '”, so it will never appear.', 'reassignSection', 'Move to ' + d.sections[0].title);
+  });
+  if (sp.tabbed && d.sections.length < 2) add('recommendation', 'Tabs with a single section add chrome without navigation. Turn tabs off until there are two groups.');
+  if (!sp.tabbed && d.sections.length > 3) add('recommendation', d.sections.length + ' sections on one screen is a long scroll — tabs split them into separate pages of the same form.');
+  if (!d.arrayMode && d.fields.length > 3) add('recommendation', 'One option per field means ' + d.fields.length + ' autoloaded rows in wp_options on every page load. A single array option is one row.');
+  if (sp.showInRest && d.arrayMode) add('recommendation', 'An array option exposed over REST needs a schema. One is generated from your fields — regenerate after adding a field or the API will reject it.');
+  if (!sp.capCheck) add('recommendation', 'The render callback has no current_user_can() check. Core gates the menu, but a direct call to the callback from another plugin would not be gated.');
+  if (!sp.uninstall) add('recommendation', 'Nothing removes the option when the plugin is deleted. An uninstall.php snippet keeps wp_options clean.');
+  if (!sp.settingsErrors && d.isTop) add('warning', 'Top-level pages do not print the “Settings saved.” notice automatically — without settings_errors() the save looks like it did nothing.', 'enableNotice', 'Print the notice');
+  return out;
+}
+
+function freshProject() {
+  return {
+    pageTitle: 'Acme Toolkit Settings', menuTitle: 'Acme Toolkit', slug: 'acme-toolkit',
+    parent: 'top', customParent: '', capability: 'manage_options', icon: 'dashicons-admin-generic', position: '80',
+    prefix: 'acme', textDomain: 'acme-toolkit', optionName: 'acme_toolkit_options', optionGroup: 'acme_toolkit_group',
+    storage: 'array', codeStyle: 'procedural',
+    sections: [
+      { id: 'general', title: 'General', description: 'How the toolkit behaves on the front end.' },
+      { id: 'api', title: 'API', description: 'Credentials for the remote service.' }
+    ],
+    fields: [
+      { id: 'enabled', label: 'Enable the toolkit', type: 'checkbox', section: 'general', def: '1', description: 'Turn everything off without deactivating the plugin.', placeholder: '', choices: '' },
+      { id: 'mode', label: 'Mode', type: 'select', section: 'general', def: 'fast', description: 'Fast skips the extra validation pass.', placeholder: '', choices: 'fast:Fast, safe:Safe' },
+      { id: 'accent', label: 'Accent colour', type: 'color', section: 'general', def: '#2271b1', description: '', placeholder: '#2271b1', choices: '' },
+      { id: 'api_key', label: 'API key', type: 'text', section: 'api', def: '', description: 'Found under Account → Developers.', placeholder: 'sk_live_…', choices: '' },
+      { id: 'cache_ttl', label: 'Cache lifetime', type: 'number', section: 'api', def: '3600', description: 'Seconds to keep API responses.', placeholder: '3600', choices: '' }
+    ],
+    tabbed: true, settingsErrors: true, resetButton: false, scopedAssets: true, showInRest: false, uninstall: true, capCheck: true
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    sp: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'snippet', validationFilter: 'all', screenTab: '',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('settings-page-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.slug) this.setState({ sp: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(sp) { try { localStorage.setItem('settings-page-generator-v1', JSON.stringify(sp)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.sp));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { sp: next, past: coalesce ? s.past : s.past.concat([s.sp]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.sp));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { sp: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.sp].concat(s.future) }; }, () => this.persist(this.state.sp)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { sp: s.future[0], past: s.past.concat([s.sp]), future: s.future.slice(1) }; }, () => this.persist(this.state.sp)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      const d = derive(p);
+      if (kind === 'fixSlug') p.slug = slugify(p.slug);
+      if (kind === 'setManageOptions') p.capability = 'manage_options';
+      if (kind === 'addIcon') p.icon = 'dashicons-admin-generic';
+      if (kind === 'prefixOption') p.optionName = fnSlug(p.prefix) + '_' + fnSlug(p.optionName).replace(new RegExp('^' + fnSlug(p.prefix) + '_?'), '');
+      if (kind === 'enableNotice') p.settingsErrors = true;
+      if (kind === 'addChoices') {
+        p.fields.forEach(function (f) {
+          if ((f.type === 'select' || f.type === 'radio') && !parseChoices(f.choices).length) f.choices = 'first:First, second:Second';
+        });
+      }
+      if (kind === 'reassignSection') {
+        const ids = d.sections.map(function (s) { return s.id; });
+        p.fields.forEach(function (f) { if (ids.indexOf(slugify(f.section)) === -1) f.section = ids[0]; });
+      }
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.sp, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const sp = this.state.sp, mode = this.state.outputMode;
+    let code = buildCode(sp, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = (slugify(sp.slug) || 'settings') + '-settings.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, sp = s.sp, self = this;
+    const d = derive(sp);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), up: ic('\ue555', 12), down: ic('\ue54f', 12), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(sp);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    const activeScreenTab = (sp.tabbed && d.sections.some(function (x) { return x.id === s.screenTab; })) ? s.screenTab : d.sections[0].id;
+    const shownSections = sp.tabbed ? d.sections.filter(function (x) { return x.id === activeScreenTab; }) : d.sections;
+    const placementLabel = d.isTop
+      ? 'Top-level menu at position ' + (parseInt(sp.position, 10) || 80)
+      : (PARENT_LABEL[sp.parent] || d.parentFile) + ' → ' + (sp.menuTitle || sp.pageTitle || 'Settings');
+
+    return {
+      toolCount: 38, trueVal: true, sp: sp,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (slugify(sp.slug) || 'settings') + '-settings.php',
+
+      onPageTitleChange: function (ev) { self.set('pageTitle', ev.target.value, true); },
+      onMenuTitleChange: function (ev) { self.set('menuTitle', ev.target.value, true); },
+      onSlugChange: function (ev) { self.set('slug', ev.target.value, true); },
+      slugBorder: String(sp.slug || '').trim() && String(sp.slug).trim() === slugify(sp.slug) ? '#E7E2D9' : '#B91C1C',
+      onParentChange: function (ev) { self.set('parent', ev.target.value); },
+      parentOptions: PARENTS.map(function (p) { return { value: p[0], label: p[1] }; }),
+      isCustomParent: sp.parent === 'custom',
+      onCustomParentChange: function (ev) { self.set('customParent', ev.target.value, true); },
+      isTopLevel: d.isTop,
+      onCapabilityChange: function (ev) { self.set('capability', ev.target.value); },
+      capabilityOptions: CAPS.map(function (c) { return { value: c[0], label: c[1] }; }),
+      capBorder: sp.capability === 'read' ? '#B91C1C' : '#E7E2D9',
+      onPositionChange: function (ev) { self.set('position', ev.target.value, true); },
+      positionNote: (function () {
+        const p = parseInt(sp.position, 10);
+        if (isNaN(p)) return 'Appended to the bottom of the menu.';
+        if (p < 5) return 'Above Posts — very aggressive.';
+        if (p <= 25) return 'In among the core content menus.';
+        if (p <= 65) return 'Below the content menus, above Appearance.';
+        if (p <= 100) return 'The conventional home for plugin settings.';
+        return 'Below Settings, near the bottom.';
+      })(),
+      iconChoices: ICONS.map(function (i) {
+        const on = sp.icon === i;
+        return { label: i.replace('dashicons-', ''), borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onPick: function () { self.set('icon', i); } };
+      }),
+      placementNote: d.isTop
+        ? 'Appears as its own sidebar item. The first submenu item repeats the page, so many plugins rename it with a second add_submenu_page() call.'
+        : 'Appears under ' + (PARENT_LABEL[sp.parent] || d.parentFile) + '. Submenu pages inherit the parent capability check as well as their own.',
+
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      onOptionNameChange: function (ev) { self.set('optionName', ev.target.value, true); },
+      onOptionGroupChange: function (ev) { self.set('optionGroup', ev.target.value, true); },
+      storageChips: [['array', 'One array option'], ['individual', 'One option per field']].map(function (c) {
+        const on = (sp.storage || 'array') === c[0];
+        return { label: c[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onSelect: function () { self.set('storage', c[0]); } };
+      }),
+      styleChips: [['procedural', 'Functions'], ['class', 'Class']].map(function (c) {
+        const on = (sp.codeStyle || 'procedural') === c[0];
+        return { label: c[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onSelect: function () { self.set('codeStyle', c[0]); } };
+      }),
+      storageNote: d.arrayMode
+        ? 'Every field lives in one row: ' + d.opt + '. One register_setting() call, one sanitiser, one row to delete on uninstall.'
+        : 'Each field gets its own option (' + d.pre + '_field_name) with a core sanitise callback — easy to read with get_option(), heavier on autoload.',
+
+      sectionsNote: d.sections.length + (d.sections.length === 1 ? ' section' : ' sections') + (sp.tabbed ? ' · one tab each' : ' · stacked on one screen'),
+      sectionRows: (sp.sections || []).map(function (sec, i) {
+        return {
+          title: sec.title, id: sec.id, description: sec.description, iconRemove: ICON.close,
+          onTitleChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.sections[i].title = v; }, 's-' + i + '-t'); },
+          onIdChange: function (ev) { const v = ev.target.value; self.commit(function (p) { const old = p.sections[i].id; p.sections[i].id = v; p.fields.forEach(function (f) { if (f.section === old) f.section = slugify(v); }); }, 's-' + i + '-i'); },
+          onDescriptionChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.sections[i].description = v; }, 's-' + i + '-d'); },
+          onRemove: function () { self.commit(function (p) { if (p.sections.length < 2) return; const removed = p.sections[i].id; p.sections.splice(i, 1); const first = p.sections[0].id; p.fields.forEach(function (f) { if (f.section === removed) f.section = first; }); }); }
+        };
+      }),
+      onAddSection: function () { self.commit(function (p) { const n = p.sections.length + 1; p.sections.push({ id: 'section_' + n, title: 'Section ' + n, description: '' }); }); },
+
+      fieldsNote: d.fields.length + (d.fields.length === 1 ? ' field' : ' fields') + ' · ' + (d.arrayMode ? 'one option' : d.fields.length + ' options'),
+      noFields: d.fields.length === 0,
+      fieldTypeOptions: FIELD_TYPES.map(function (f) { return { value: f[0], label: f[1] }; }),
+      sectionOptions: d.sections.map(function (sec) { return { value: sec.id, label: sec.title }; }),
+      fieldRows: (sp.fields || []).map(function (f, i) {
+        const needsChoices = f.type === 'select' || f.type === 'radio';
+        const dupe = (sp.fields || []).filter(function (o) { return fnSlug(o.id) === fnSlug(f.id); }).length > 1;
+        return {
+          label: f.label, id: f.id, type: f.type, section: f.section, def: f.def, placeholder: f.placeholder, description: f.description, choices: f.choices,
+          needsChoices: needsChoices,
+          idBorder: (!String(f.id || '').trim() || dupe) ? '#B91C1C' : '#E7E2D9',
+          sectionBorder: d.sections.some(function (sec) { return sec.id === slugify(f.section); }) ? '#E7E2D9' : '#B91C1C',
+          choicesBorder: needsChoices && !parseChoices(f.choices).length ? '#B91C1C' : '#E7E2D9',
+          defPlaceholder: f.type === 'checkbox' ? '1 or 0' : f.type === 'number' ? '0' : 'default',
+          iconUp: ICON.up, iconDown: ICON.down, iconRemove: ICON.close,
+          onLabelChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].label = v; }, 'f-' + i + '-l'); },
+          onIdChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].id = v; }, 'f-' + i + '-i'); },
+          onTypeChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].type = v; if ((v === 'select' || v === 'radio') && !p.fields[i].choices) p.fields[i].choices = 'first:First, second:Second'; }); },
+          onSectionChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].section = v; }); },
+          onDefChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].def = v; }, 'f-' + i + '-v'); },
+          onPlaceholderChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].placeholder = v; }, 'f-' + i + '-p'); },
+          onDescriptionChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].description = v; }, 'f-' + i + '-d'); },
+          onChoicesChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].choices = v; }, 'f-' + i + '-c'); },
+          onMoveUp: function () { self.commit(function (p) { if (i === 0) return; const t2 = p.fields[i - 1]; p.fields[i - 1] = p.fields[i]; p.fields[i] = t2; }); },
+          onMoveDown: function () { self.commit(function (p) { if (i >= p.fields.length - 1) return; const t2 = p.fields[i + 1]; p.fields[i + 1] = p.fields[i]; p.fields[i] = t2; }); },
+          onRemove: function () { self.commit(function (p) { p.fields.splice(i, 1); }); }
+        };
+      }),
+      onAddField: function () {
+        self.commit(function (p) {
+          const n = p.fields.length + 1;
+          p.fields.push({ id: 'field_' + n, label: 'Field ' + n, type: 'text', section: (p.sections[0] && slugify(p.sections[0].id)) || 'general', def: '', description: '', placeholder: '', choices: '' });
+        });
+      },
+
+      extraToggles: [
+        { key: 'tabbed', label: 'Tabbed sections', help: 'Each section becomes a nav-tab and gets its own do_settings_sections() page.', on: sp.tabbed },
+        { key: 'settingsErrors', label: 'Print the saved notice', help: 'Calls settings_errors() — required on top-level pages, which core does not notice for you.', on: sp.settingsErrors },
+        { key: 'capCheck', label: 'Capability check in the render callback', help: 'A current_user_can() guard before anything is printed.', on: sp.capCheck },
+        { key: 'scopedAssets', label: 'Screen-scoped assets', help: 'Stores the hook suffix and enqueues CSS on this screen only.', on: sp.scopedAssets },
+        { key: 'resetButton', label: 'Reset to defaults', help: 'A nonced admin-post handler that restores the defaults.', on: sp.resetButton },
+        { key: 'showInRest', label: 'Expose over REST', help: 'Adds show_in_rest — with a generated object schema for the array option.', on: sp.showInRest },
+        { key: 'uninstall', label: 'Uninstall cleanup snippet', help: 'Appends the uninstall.php that deletes the option on delete.', on: sp.uninstall }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(sp, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: 'Paste into a plugin, an mu-plugin, or a functionality plugin.', functions: 'Ready for your theme’s functions.php.', plugin: 'A complete single-file plugin with a header.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new settings page' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      screenPathLabel: placementLabel,
+      screenTabs: d.sections.map(function (sec) {
+        const on = sec.id === activeScreenTab;
+        return { label: sec.title, bg: on ? '#F0F0F1' : '#DCDCDE', color: on ? '#1D2327' : '#50575E', borderBottom: on ? '1px solid #F0F0F1' : '1px solid #C3C4C7', onClick: function () { self.setState({ screenTab: sec.id }); } };
+      }),
+      screenSections: shownSections.map(function (sec) {
+        const rows = d.fields.filter(function (f) { return f.section === sec.id; });
+        return {
+          title: sec.title, description: sec.description, empty: rows.length === 0,
+          fields: rows.map(function (f) {
+            const choices = f.parsed;
+            const val = f.type === 'checkbox' ? '' : String(f.def || '');
+            return {
+              label: f.label || f.id,
+              value: val, placeholder: f.placeholder || '',
+              description: f.description, hasDescription: !!f.description,
+              isInput: ['text', 'number', 'email', 'url'].indexOf(f.type) >= 0,
+              isTextarea: f.type === 'textarea',
+              isCheckbox: f.type === 'checkbox',
+              isSelect: f.type === 'select',
+              isRadio: f.type === 'radio',
+              isColor: f.type === 'color',
+              checked: f.def === true || String(f.def) === '1' || String(f.def) === 'true',
+              inlineLabel: f.label || f.id,
+              swatch: /^#[0-9a-f]{3,8}$/i.test(String(f.def)) ? f.def : '#ffffff',
+              choices: choices.map(function (c, ci) { return { value: c.value, label: c.label, checked: String(f.def) ? c.value === String(f.def) : ci === 0 }; })
+            };
+          })
+        };
+      }),
+
+      refFunction: d.isTop ? 'add_menu_page()' : 'add_submenu_page()',
+      refSignature: d.isTop
+        ? "add_menu_page(\n\t$page_title,\n\t$menu_title,\n\t'" + d.cap + "',\n\t'" + d.slug + "',\n\t$callback,\n\t'" + (sp.icon || 'dashicons-admin-generic') + "',\n\t" + (parseInt(sp.position, 10) || 80) + '\n);'
+        : "add_submenu_page(\n\t'" + d.parentFile + "',\n\t$page_title,\n\t$menu_title,\n\t'" + d.cap + "',\n\t'" + d.slug + "',\n\t$callback\n);",
+      refFlow: [
+        'admin_menu fires. Your callback registers the page and WordPress remembers the capability, the slug and the render callback.',
+        'admin_init fires. register_setting() adds the option to the allowed list for the group “' + d.group + '” — without it, options.php refuses the save.',
+        'The page renders. settings_fields() prints the nonce, the option_page field and the referer; do_settings_sections() walks the sections and fields you registered.',
+        'On submit the form posts to options.php, not to your page. Core checks the nonce and the capability, then runs your sanitise callback.',
+        'options.php saves the value and redirects back with settings-updated=true. ' + (sp.settingsErrors ? 'settings_errors() prints the notice.' : 'Nothing prints a notice unless you call settings_errors().')
+      ].map(function (text, i) { return { n: String(i + 1), text: text }; }),
+      refOptionShape: d.arrayMode
+        ? 'wp_options\n  option_name:  ' + d.opt + '\n  option_value: array(\n' + d.fields.map(function (f) { return '    ' + pad("'" + f.id + "'", 14) + ' => ' + defLiteral(f) + ','; }).join('\n') + '\n  )'
+        : 'wp_options\n' + d.fields.map(function (f) { return '  ' + pad(d.pre + '_' + f.id, 20) + ' => ' + defLiteral(f); }).join('\n'),
+      refHookSuffix: hookSuffixFor(d, sp),
+      refHookNote: sp.scopedAssets
+        ? 'The generated code stores what add_' + (d.isTop ? 'menu' : 'submenu') + '_page() returned rather than hard-coding this string — safer if the slug or the parent ever changes.'
+        : 'Turn on screen-scoped assets and the generator will capture this from the return value instead of you hard-coding it.',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showScreenTab: s.rightTab === 'screen', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabScreen: function () { self.setState({ rightTab: 'screen', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabScreenColor: s.rightTab === 'screen' ? '#3858E9' : '#948C7E', tabScreenBorder: s.rightTab === 'screen' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Editor'], ['output', 'PHP & Screen']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

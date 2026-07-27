@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Role &amp; Capability Generator — add_role() — Generator for WP</title>
+  <meta name="description" content="Custom roles and capability maps with a versioned migration routine — because add_role() writes to the database once and then quietly does nothing." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=admin" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Admin</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Role &amp; Capability</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Role &amp; Capability Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Roles live in the database, not in your code. This generates the role, the capability map, and the versioned migration that makes changing it later actually work.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The role</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Display name</label>
+            <input value="{{ rc.name }}" onChange="{{ onNameChange }}" placeholder="Shop Editor" style="width:100%; font-size:14px; padding:8px 10px; border-radius:6px; border:1px solid {{ nameBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">role slug</label>
+            <input value="{{ rc.slug }}" onChange="{{ onSlugChange }}" spellCheck="false" placeholder="shop_editor" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ slugBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">start from</label>
+            <select value="{{ rc.basedOn }}" onChange="{{ onBasedOnChange }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <sc-for list="{{ baseOptions }}" as="bo" hint-placeholder-count="5">
+                <option value="{{ bo.value }}">{{ bo.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">prefix</label>
+            <input value="{{ rc.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">version</label>
+            <input value="{{ rc.version }}" onChange="{{ onVersionChange }}" spellCheck="false" placeholder="2" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ versionBorder }};" style-focus="outline:2px solid #3858E9;" />
+            <div style="font-size:11px; color:#948C7E; margin-top:4px; line-height:1.45;">Bump this whenever you change the capability list.</div>
+          </div>
+        </div>
+        <div style="margin-top:12px; padding:11px 13px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:7px; font-size:12px; color:#5C564B; line-height:1.6;">{{ summaryNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Capabilities</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ capsNote }}</div>
+        </div>
+        <sc-for list="{{ capGroups }}" as="cg" hint-placeholder-count="4">
+          <div style="margin-bottom:14px;">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:8px;">
+              <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E;">{{ cg.label }}</div>
+              <button onClick="{{ cg.onToggleAll }}" style="font-size:11px; font-weight:600; border:1px solid #E7E2D9; background:#fff; color:#5C564B; border-radius:5px; padding:3px 9px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ cg.toggleLabel }}</button>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <sc-for list="{{ cg.items }}" as="cp" hint-placeholder-count="6">
+                <button onClick="{{ cp.onToggle }}" title="{{ cp.help }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ cp.borderColor }}; background:{{ cp.bg }}; color:{{ cp.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ cp.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <div style="padding-top:12px; border-top:1px solid #F0ECE4;">
+          <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">custom capabilities</label>
+          <input value="{{ rc.customCaps }}" onChange="{{ onCustomCapsChange }}" spellCheck="false" placeholder="edit_briefs, publish_briefs" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ customBorder }};" style-focus="outline:2px solid #3858E9;" />
+          <div style="font-size:11px; color:#948C7E; margin-top:4px; line-height:1.45;">Comma separated. These are the caps a custom post type with its own capability_type needs.</div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Also grant to existing roles</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ grantNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <sc-for list="{{ grantChips }}" as="gc" hint-placeholder-count="4">
+            <button onClick="{{ gc.onToggle }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ gc.borderColor }}; background:{{ gc.bg }}; color:{{ gc.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ gc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="margin-top:11px; font-size:12px; color:#5C564B; line-height:1.55;">Grants your custom capabilities to these roles too — the usual reason an administrator cannot see a new post type.</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Lifecycle</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="4">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabMatrix }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabMatrixColor }}; border-bottom:2px solid {{ tabMatrixBorder }};" style-focus="outline:2px solid #3858E9;">Matrix</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="2">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showMatrixTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; padding:14px 16px 40px;">
+          <div style="font-size:10.5px; color:#948C7E; margin-bottom:11px;">{{ matrixNote }}</div>
+          <div style="display:flex; flex-direction:column; gap:0; min-width:340px;">
+            <div style="display:grid; grid-template-columns:1fr repeat(4, 46px); gap:4px; padding-bottom:7px; border-bottom:1px solid #E7E2D9;">
+              <span style="font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E;">Capability</span>
+              <sc-for list="{{ matrixHeaders }}" as="mh" hint-placeholder-count="4">
+                <span style="font-size:9.5px; font-weight:700; color:#948C7E; text-align:center; line-height:1.2;">{{ mh.label }}</span>
+              </sc-for>
+            </div>
+            <sc-for list="{{ matrixRows }}" as="mr" hint-placeholder-count="10">
+              <div style="display:grid; grid-template-columns:1fr repeat(4, 46px); gap:4px; padding:6px 0; border-bottom:1px solid #F5F2EC; align-items:center;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:{{ mr.nameColor }};">{{ mr.cap }}</span>
+                <sc-for list="{{ mr.cells }}" as="mc" hint-placeholder-count="4">
+                  <span style="text-align:center; font-size:12px; font-weight:700; color:{{ mc.color }};">{{ mc.mark }}</span>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">add_role()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Writes to the wp_user_roles option — once</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Why the version matters</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">add_role() returns null and does nothing if the role already exists. Change the capability list in your code and nothing happens on any site that already ran it once. The generated migration stores a version number and re-applies the map whenever it changes — the difference between code that works on your machine and code that works on a client’s.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Arguments and friends</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="5">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:3px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Primitive vs meta capabilities</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">edit_posts is primitive: it lives in the role. edit_post — singular — is a meta capability that core maps at runtime against the specific post and its author. Never store singular meta caps in a role; check them with current_user_can( edit_post, $post_id ) instead.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">On uninstall</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">remove_role() deletes the role but leaves every user who had it with no role at all — they lose admin access entirely. The generated cleanup reassigns those users first, which is the part most plugins skip.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on this role.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;plugin&quot;,&quot;functions&quot;],&quot;default&quot;:&quot;plugin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const CAP_GROUPS = [
+  ['Reading and dashboard', [
+    ['read', 'See the dashboard at all. Every role needs this.'],
+    ['level_0', 'Legacy level, kept for old plugins that still check it.']
+  ]],
+  ['Posts', [
+    ['edit_posts', 'Write and edit their own posts.'],
+    ['edit_others_posts', 'Edit posts written by anyone.'],
+    ['publish_posts', 'Publish, rather than submit for review.'],
+    ['delete_posts', 'Delete their own posts.'],
+    ['delete_others_posts', 'Delete anyone’s posts.'],
+    ['edit_published_posts', 'Edit a post after it is live.'],
+    ['delete_published_posts', 'Delete a live post.'],
+    ['edit_private_posts', 'Edit private posts.'],
+    ['read_private_posts', 'See private posts.']
+  ]],
+  ['Pages and media', [
+    ['edit_pages', 'Edit their own pages.'],
+    ['edit_others_pages', 'Edit anyone’s pages.'],
+    ['publish_pages', 'Publish pages.'],
+    ['delete_pages', 'Delete pages.'],
+    ['upload_files', 'Use the media library.'],
+    ['unfiltered_html', 'Post arbitrary HTML, including script tags. Treat as dangerous.']
+  ]],
+  ['Site management', [
+    ['manage_categories', 'Manage taxonomy terms.'],
+    ['moderate_comments', 'Approve and edit comments.'],
+    ['manage_options', 'Change every site setting. This is effectively admin.'],
+    ['edit_theme_options', 'Menus, widgets and the customiser.'],
+    ['list_users', 'See the users list.'],
+    ['edit_users', 'Edit other users, including their roles.'],
+    ['promote_users', 'Change what role someone has.'],
+    ['activate_plugins', 'Activate and deactivate plugins.'],
+    ['edit_plugins', 'Edit plugin files from the admin. Almost never right.'],
+    ['export', 'Export site content.'],
+    ['import', 'Import content.']
+  ]]
+];
+const BASE_ROLES = {
+  scratch: { label: 'Nothing — start empty', caps: [] },
+  subscriber: { label: 'subscriber', caps: ['read', 'level_0'] },
+  contributor: { label: 'contributor', caps: ['read', 'level_0', 'edit_posts', 'delete_posts'] },
+  author: { label: 'author', caps: ['read', 'level_0', 'edit_posts', 'delete_posts', 'publish_posts', 'upload_files', 'edit_published_posts', 'delete_published_posts'] },
+  editor: { label: 'editor', caps: ['read', 'level_0', 'edit_posts', 'edit_others_posts', 'publish_posts', 'delete_posts', 'delete_others_posts', 'edit_published_posts', 'delete_published_posts', 'edit_private_posts', 'read_private_posts', 'edit_pages', 'edit_others_pages', 'publish_pages', 'delete_pages', 'upload_files', 'manage_categories', 'moderate_comments', 'unfiltered_html'] }
+};
+const GRANT_ROLES = ['administrator', 'editor', 'author', 'shop_manager'];
+const DANGEROUS = ['manage_options', 'edit_users', 'promote_users', 'activate_plugins', 'edit_plugins', 'unfiltered_html', 'edit_themes', 'install_plugins'];
+const CORE_ROLE_SLUGS = ['administrator', 'editor', 'author', 'contributor', 'subscriber'];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function capList(str) { return String(str || '').split(',').map(function (c) { return fnSlug(c); }).filter(Boolean); }
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(rc) {
+  const pre = fnSlug(rc.prefix) || 'acme';
+  const custom = capList(rc.customCaps);
+  const caps = (rc.caps || []).concat(custom.filter(function (c) { return (rc.caps || []).indexOf(c) === -1; }));
+  return {
+    pre: pre, td: slugify(rc.textDomain || rc.prefix) || pre.replace(/_/g, '-'),
+    slug: fnSlug(rc.slug) || pre + '_role',
+    caps: caps, custom: custom,
+    version: parseInt(rc.version, 10) || 1,
+    grants: rc.grantTo || []
+  };
+}
+
+function buildCode(rc, mode) {
+  const d = derive(rc);
+  const pre = d.pre, td = d.td;
+  const optName = pre + '_roles_version';
+  const capsArray = d.caps.length
+    ? 'array(\n' + indent(d.caps.map(function (c) { return padTo("'" + c + "'", 28) + '=> true,'; }).join('\n'), 1) + '\n)'
+    : 'array()';
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + (rc.name || 'Custom role') + '\n * Description:       Adds the ' + d.slug + ' role and its capabilities.\n * Version:           1.0.' + d.version + '\n * Requires PHP:      7.4\n * Text Domain:       ' + td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else {
+    out += "<?php\n// Add to your theme's functions.php — though roles usually belong in a plugin.\n\n";
+  }
+
+  out += '/**\n * The capability map for this role.\n *\n * @return array\n */\nfunction ' + pre + '_role_caps() {\n\treturn ' + indent(capsArray, 1).replace(/^\t/, '') + ';\n}\n';
+
+  out += '\n/**\n * Create or update the role.\n *\n * add_role() does nothing when the role exists, so changing the map above\n * has no effect on a site that already ran this. Bumping the version does.\n */\nfunction ' + pre + '_install_roles() {\n\t$role = get_role( \'' + esc(d.slug) + "' );\n\n\tif ( ! $role ) {\n\t\tadd_role(\n\t\t\t'" + esc(d.slug) + "',\n\t\t\t_x( '" + esc(rc.name || 'Custom Role') + "', 'user role', '" + td + "' ),\n\t\t\t" + pre + '_role_caps()\n\t\t);\n\t} else {\n\t\tforeach ( ' + pre + '_role_caps() as $cap => $grant ) {\n\t\t\t$role->add_cap( $cap, (bool) $grant );\n\t\t}\n\t}\n';
+  if (d.grants.length && d.custom.length) {
+    out += '\n\t$extra_roles = array( ' + d.grants.map(function (r) { return "'" + r + "'"; }).join(', ') + ' );\n\n\tforeach ( $extra_roles as $slug ) {\n\t\t$other = get_role( $slug );\n\n\t\tif ( ! $other ) {\n\t\t\tcontinue;\n\t\t}\n\n\t\tforeach ( array( ' + d.custom.map(function (c) { return "'" + c + "'"; }).join(', ') + ' ) as $cap ) {\n\t\t\t$other->add_cap( $cap );\n\t\t}\n\t}\n';
+  }
+  out += "\n\tupdate_option( '" + optName + "', " + d.version + ' );\n}\n';
+
+  if (rc.migrate) {
+    out += '\n/**\n * Re-apply the map whenever the version changes.\n */\nfunction ' + pre + '_maybe_install_roles() {\n\tif ( (int) get_option( \'' + optName + "', 0 ) === " + d.version + ' ) {\n\t\treturn;\n\t}\n\n\t' + pre + '_install_roles();\n}\n' + "add_action( 'admin_init', '" + pre + "_maybe_install_roles' );\n";
+  }
+  if (mode === 'plugin') {
+    out += '\nregister_activation_hook( __FILE__, \'' + pre + '_install_roles\' );\n';
+  }
+
+  if (rc.removeOnUninstall) {
+    out += '\n/**\n * Remove the role, moving anyone who had it somewhere safe first.\n *\n * remove_role() on its own leaves those users with no role at all.\n */\nfunction ' + pre + '_remove_roles() {\n\t$users = get_users( array( \'role\' => \'' + esc(d.slug) + "', 'fields' => 'ID' ) );\n\n\tforeach ( $users as $user_id ) {\n\t\t$user = new WP_User( $user_id );\n\t\t$user->remove_role( '" + esc(d.slug) + "' );\n\n\t\tif ( ! $user->roles ) {\n\t\t\t$user->add_role( '" + esc(rc.fallbackRole || 'subscriber') + "' );\n\t\t}\n\t}\n\n\tremove_role( '" + esc(d.slug) + "' );\n";
+    if (d.grants.length && d.custom.length) {
+      out += '\n\tforeach ( array( ' + d.grants.map(function (r) { return "'" + r + "'"; }).join(', ') + ' ) as $slug ) {\n\t\t$other = get_role( $slug );\n\n\t\tif ( ! $other ) {\n\t\t\tcontinue;\n\t\t}\n\n\t\tforeach ( array( ' + d.custom.map(function (c) { return "'" + c + "'"; }).join(', ') + ' ) as $cap ) {\n\t\t\t$other->remove_cap( $cap );\n\t\t}\n\t}\n';
+    }
+    out += "\n\tdelete_option( '" + optName + "' );\n}\n";
+    if (mode === 'plugin') out += "\n// Call " + pre + "_remove_roles() from uninstall.php — not on deactivation,\n// or a plugin update would strip everyone's access.\n";
+  }
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|new|if|else|foreach|continue|defined|exit|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(rc) {
+  const d = derive(rc);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const has = function (c) { return d.caps.indexOf(c) >= 0; };
+  if (!String(rc.name || '').trim()) add('error', 'A display name is required — it is what the Users screen shows.');
+  if (!String(rc.slug || '').trim()) add('error', 'A role slug is required. It is the key stored against every user who has this role.');
+  else if (String(rc.slug).trim() !== d.slug) add('error', '“' + rc.slug + '” is not a safe role slug. Lowercase and underscores — it is a database key.', 'fixSlug', 'Use ' + d.slug);
+  if (CORE_ROLE_SLUGS.indexOf(d.slug) >= 0) add('error', '“' + d.slug + '” is a core role. This code would rewrite the capabilities of every existing ' + d.slug + ' on the site.');
+  if (!d.caps.length) add('error', 'No capabilities at all. A user in this role cannot even load the dashboard.', 'addRead', 'Grant read');
+  else if (!has('read')) add('error', 'Without the read capability, users in this role are bounced out of wp-admin entirely.', 'addRead', 'Grant read');
+  if (has('manage_options')) add('warning', 'manage_options is administrator-level: settings, permalinks, plugin options, everything. If this role is not meant to be an admin, drop it.', 'dropManage', 'Remove it');
+  if (has('edit_users') || has('promote_users')) add('warning', 'This role can change other users’ roles, which means it can promote itself to administrator.', 'dropUserAdmin', 'Remove user admin');
+  if (has('edit_plugins')) add('error', 'edit_plugins allows editing PHP from the admin — that is arbitrary code execution. Nobody but a developer should have it, and even then not through a role.', 'dropPluginEdit', 'Remove it');
+  if (has('unfiltered_html')) add('warning', 'unfiltered_html lets this role post script tags. Reasonable for a trusted editor, dangerous for a client-facing role.');
+  if (has('edit_others_posts') && !has('edit_posts')) add('error', 'edit_others_posts without edit_posts leaves the editor screens half-broken — core checks edit_posts first.', 'addEditPosts', 'Grant edit_posts');
+  if (has('publish_posts') && !has('edit_posts')) add('error', 'publish_posts without edit_posts gives nothing to publish.', 'addEditPosts', 'Grant edit_posts');
+  if (has('edit_published_posts') && !has('publish_posts')) add('recommendation', 'edit_published_posts without publish_posts is a valid review workflow — the role can revise live posts but not publish new ones. Worth confirming that is the intent.');
+  if (has('upload_files') === false && (has('edit_posts') || has('edit_pages'))) add('warning', 'This role can write posts but cannot upload an image. Almost always an oversight.', 'addUpload', 'Grant upload_files');
+  if (has('delete_others_posts') && !has('edit_others_posts')) add('recommendation', 'Deleting others’ posts without being able to edit them is an odd combination.');
+  if (has('edit_pages') && !has('edit_posts')) add('recommendation', 'Pages only, no posts — fine for a brochure site role, unusual otherwise.');
+  d.custom.forEach(function (c) {
+    if (/^(edit|delete|read)_(post|page)$/.test(c)) add('error', '“' + c + '” is a meta capability that core maps per object. Storing it in a role does nothing — check it with current_user_can( \'' + c + '\', $post_id ) instead.');
+  });
+  if (d.custom.length && !d.grants.length) add('warning', 'You added custom capabilities but granted them to no existing role, so not even an administrator can use the post type they belong to.', 'grantAdmin', 'Grant to administrator');
+  if (d.grants.indexOf('administrator') === -1 && d.custom.length) add('recommendation', 'Administrators do not automatically get custom capabilities. If they should manage this content, they need them explicitly.');
+  if (!rc.migrate) add('warning', 'No migration routine. add_role() silently does nothing when the role exists, so every future change to this map will fail to apply on sites that already ran it.', 'addMigrate', 'Add the migration');
+  if (!parseInt(rc.version, 10)) add('error', 'The version must be a number — it is what the migration compares against.');
+  if (!rc.removeOnUninstall) add('recommendation', 'Nothing removes the role on uninstall. Orphaned roles accumulate on client sites and confuse the next developer.');
+  if (rc.removeOnUninstall && !String(rc.fallbackRole || '').trim()) add('error', 'Choose a fallback role, or removal leaves those users with no role and no access.');
+  if (d.caps.length > 25) add('recommendation', d.caps.length + ' capabilities is close to editor territory. Consider whether cloning editor and removing a few is simpler to reason about.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'acme', textDomain: 'acme', name: 'Shop Editor', slug: 'shop_editor',
+    basedOn: 'author', version: '1',
+    caps: BASE_ROLES.author.caps.slice(),
+    customCaps: 'edit_briefs, publish_briefs',
+    grantTo: ['administrator'],
+    migrate: true, removeOnUninstall: true, fallbackRole: 'subscriber'
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    rc: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('role-capability-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.slug) this.setState({ rc: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(rc) { try { localStorage.setItem('role-capability-generator-v1', JSON.stringify(rc)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.rc));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { rc: next, past: coalesce ? s.past : s.past.concat([s.rc]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.rc));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { rc: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.rc].concat(s.future) }; }, () => this.persist(this.state.rc)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { rc: s.future[0], past: s.past.concat([s.rc]), future: s.future.slice(1) }; }, () => this.persist(this.state.rc)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+  toggleCap(c) { this.commit(function (p) { p.caps = p.caps || []; const i = p.caps.indexOf(c); if (i >= 0) p.caps.splice(i, 1); else p.caps.push(c); }); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      p.caps = p.caps || [];
+      const addCap = function (c) { if (p.caps.indexOf(c) === -1) p.caps.push(c); };
+      const dropCap = function (c) { const i = p.caps.indexOf(c); if (i >= 0) p.caps.splice(i, 1); };
+      if (kind === 'fixSlug') p.slug = fnSlug(p.slug);
+      if (kind === 'addRead') addCap('read');
+      if (kind === 'dropManage') dropCap('manage_options');
+      if (kind === 'dropUserAdmin') { dropCap('edit_users'); dropCap('promote_users'); }
+      if (kind === 'dropPluginEdit') dropCap('edit_plugins');
+      if (kind === 'addEditPosts') addCap('edit_posts');
+      if (kind === 'addUpload') addCap('upload_files');
+      if (kind === 'grantAdmin') { p.grantTo = p.grantTo || []; if (p.grantTo.indexOf('administrator') === -1) p.grantTo.push('administrator'); }
+      if (kind === 'addMigrate') p.migrate = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.rc, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const code = buildCode(this.state.rc, this.state.outputMode);
+    const name = (fnSlug(this.state.rc.slug) || 'role').replace(/_/g, '-') + '-role.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, rc = s.rc, self = this;
+    const d = derive(rc);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(rc);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const caps = rc.caps || [];
+    const matrixRoles = ['contributor', 'author', 'editor'];
+
+    return {
+      toolCount: 38, trueVal: true, rc: rc,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (fnSlug(rc.slug) || 'role').replace(/_/g, '-') + '-role.php',
+
+      onNameChange: function (ev) { self.set('name', ev.target.value, true); },
+      nameBorder: String(rc.name || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onSlugChange: function (ev) { self.set('slug', ev.target.value, true); },
+      slugBorder: String(rc.slug || '').trim() && String(rc.slug).trim() === d.slug && CORE_ROLE_SLUGS.indexOf(d.slug) === -1 ? '#E7E2D9' : '#B91C1C',
+      baseOptions: Object.keys(BASE_ROLES).map(function (k) { return { value: k, label: BASE_ROLES[k].label }; }),
+      onBasedOnChange: function (ev) {
+        const v = ev.target.value;
+        self.commit(function (p) { p.basedOn = v; p.caps = BASE_ROLES[v] ? BASE_ROLES[v].caps.slice() : []; });
+      },
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onVersionChange: function (ev) { self.set('version', ev.target.value, true); },
+      versionBorder: parseInt(rc.version, 10) ? '#E7E2D9' : '#B91C1C',
+      summaryNote: d.slug + ' starts from ' + (BASE_ROLES[rc.basedOn] ? BASE_ROLES[rc.basedOn].label : 'nothing') + ' and ends with ' + d.caps.length + ' capabilit' + (d.caps.length === 1 ? 'y' : 'ies')
+        + (d.custom.length ? ', including ' + d.custom.length + ' custom' : '')
+        + (rc.migrate ? '. Version ' + d.version + ' is re-applied on admin_init when it changes.' : '. No migration — changes will not apply to sites that already ran this.'),
+
+      capsNote: d.caps.length + ' granted' + (d.caps.some(function (c) { return DANGEROUS.indexOf(c) >= 0; }) ? ' · includes high-risk' : ''),
+      capGroups: CAP_GROUPS.map(function (g) {
+        const allOn = g[1].every(function (c) { return caps.indexOf(c[0]) >= 0; });
+        return {
+          label: g[0],
+          toggleLabel: allOn ? 'Clear group' : 'Select all',
+          onToggleAll: function () {
+            self.commit(function (p) {
+              p.caps = p.caps || [];
+              g[1].forEach(function (c) {
+                const i = p.caps.indexOf(c[0]);
+                if (allOn) { if (i >= 0) p.caps.splice(i, 1); }
+                else if (i === -1) p.caps.push(c[0]);
+              });
+            });
+          },
+          items: g[1].map(function (c) {
+            const on = caps.indexOf(c[0]) >= 0;
+            const risky = DANGEROUS.indexOf(c[0]) >= 0;
+            return {
+              label: c[0], help: c[1],
+              borderColor: on ? (risky ? '#B91C1C' : '#3858E9') : '#E7E2D9',
+              bg: on ? (risky ? '#FBEBEB' : '#EEF1FE') : '#fff',
+              color: on ? (risky ? '#B91C1C' : '#2A46C4') : '#5C564B',
+              onToggle: function () { self.toggleCap(c[0]); }
+            };
+          })
+        };
+      }),
+      onCustomCapsChange: function (ev) { self.set('customCaps', ev.target.value, true); },
+      customBorder: d.custom.some(function (c) { return /^(edit|delete|read)_(post|page)$/.test(c); }) ? '#B91C1C' : '#E7E2D9',
+
+      grantNote: d.grants.length ? d.grants.join(', ') : 'nobody else',
+      grantChips: GRANT_ROLES.map(function (r) {
+        const on = d.grants.indexOf(r) >= 0;
+        return {
+          label: r, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B',
+          onToggle: function () { self.commit(function (p) { p.grantTo = p.grantTo || []; const i = p.grantTo.indexOf(r); if (i >= 0) p.grantTo.splice(i, 1); else p.grantTo.push(r); }); }
+        };
+      }),
+
+      extraToggles: [
+        { key: 'migrate', label: 'Versioned migration', help: 'Re-applies the map on admin_init whenever the version number changes.', on: rc.migrate },
+        { key: 'removeOnUninstall', label: 'Cleanup routine', help: 'Reassigns affected users, then removes the role and its option.', on: rc.removeOnUninstall }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(rc, s.outputMode)),
+      outputModes: [['plugin', 'Plugin file'], ['functions', 'functions.php']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: s.outputMode === 'plugin'
+        ? 'Roles belong in a plugin — they must survive a theme switch.'
+        : 'Works, but a role defined in a theme disappears from the code the moment the theme changes. The database keeps it.',
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new role' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      matrixNote: 'Your role against the three core roles it sits between. ✓ granted, · not granted.',
+      matrixHeaders: [{ label: d.slug.length > 9 ? d.slug.slice(0, 8) + '…' : d.slug }].concat(matrixRoles.map(function (r) { return { label: r.slice(0, 7) }; })),
+      matrixRows: (function () {
+        const all = [];
+        CAP_GROUPS.forEach(function (g) { g[1].forEach(function (c) { all.push(c[0]); }); });
+        d.custom.forEach(function (c) { if (all.indexOf(c) === -1) all.push(c); });
+        return all.filter(function (cap) {
+          return d.caps.indexOf(cap) >= 0 || matrixRoles.some(function (r) { return BASE_ROLES[r] && BASE_ROLES[r].caps.indexOf(cap) >= 0; });
+        }).map(function (cap) {
+          const mine = d.caps.indexOf(cap) >= 0;
+          const risky = DANGEROUS.indexOf(cap) >= 0;
+          const cells = [{ mark: mine ? '✓' : '·', color: mine ? (risky ? '#B91C1C' : '#1F7A4C') : '#C9C2B4' }].concat(matrixRoles.map(function (r) {
+            const on = BASE_ROLES[r] && BASE_ROLES[r].caps.indexOf(cap) >= 0;
+            return { mark: on ? '✓' : '·', color: on ? '#948C7E' : '#DCD7CE' };
+          }));
+          return { cap: cap, nameColor: mine ? (risky ? '#B91C1C' : '#26221C') : '#948C7E', cells: cells };
+        });
+      })(),
+
+      refArgs: [
+        ['add_role( $slug, $name, $caps )', 'Creates the role in the wp_user_roles option. Returns null and does nothing if the slug already exists.'],
+        ['get_role( $slug )->add_cap( $cap )', 'The only reliable way to change an existing role. One database write per call, so batch them behind a version check.'],
+        ['remove_cap( $cap )', 'Removes a capability. Note that removing is not the same as denying — a cap set to false is an explicit deny.'],
+        ['remove_role( $slug )', 'Deletes the role. Users who had it are left with no role, so reassign them first.'],
+        ['wp_roles()->roles', 'The full map as core sees it, after every plugin has had its say. Useful when debugging why a capability appeared.']
+      ].map(function (r) { return { name: r[0], description: r[1] }; }),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showMatrixTab: s.rightTab === 'matrix', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabMatrix: function () { self.setState({ rightTab: 'matrix', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabMatrixColor: s.rightTab === 'matrix' ? '#3858E9' : '#948C7E', tabMatrixBorder: s.rightTab === 'matrix' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Role'], ['output', 'PHP & Matrix']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

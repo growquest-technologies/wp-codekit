@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Custom Post Type Generator — register_post_type() — Generator for WP</title>
+  <meta name="description" content="Generate a register_post_type() call with labels, supports, rewrite rules, REST exposure and capabilities. Live PHP preview, permalink preview and validation." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=content" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Content</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Post Type</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Custom Post Type Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Name it, pick what it supports, copy the <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">register_post_type()</span> call. Everything else stays out of your way until you ask for it.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:14px;">Naming</div>
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px 16px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Singular name</label>
+            <input ref="{{ refSingular }}" value="{{ pt.singular }}" onChange="{{ onSingularChange }}" placeholder="Book" style="width:100%; font-size:14px; padding:8px 10px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">
+              <span>Plural name</span>
+              <sc-if value="{{ pluralIsCustom }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ onResetPlural }}" style="border:none; background:none; font-size:11px; font-weight:600; color:#3858E9; cursor:pointer; padding:0;" style-focus="outline:2px solid #3858E9;">Re-derive</button>
+              </sc-if>
+            </label>
+            <input ref="{{ refPlural }}" value="{{ pt.plural }}" onChange="{{ onPluralChange }}" placeholder="Books" style="width:100%; font-size:14px; padding:8px 10px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+
+          <div style="grid-column:1 / -1;">
+            <label style="display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">
+              <span>Post type key</span>
+              <span style="font-weight:600; color:{{ keyCounterColor }}; font-family:'JetBrains Mono',monospace;">{{ keyLength }}/20</span>
+            </label>
+            <div style="display:flex; gap:6px;">
+              <input ref="{{ refKey }}" value="{{ pt.key }}" onChange="{{ onKeyChange }}" spellCheck="false" placeholder="book" style="flex:1; font-size:14px; font-family:'JetBrains Mono',monospace; padding:8px 10px; border-radius:6px; border:1px solid {{ keyBorderColor }};" style-focus="outline:2px solid #3858E9;" />
+              <sc-if value="{{ keyIsCustom }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ onResetKey }}" style="border:1px solid #E7E2D9; background:#fff; border-radius:6px; padding:0 12px; font-size:11.5px; font-weight:600; color:#4A4438; cursor:pointer; white-space:nowrap;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">Re-derive</button>
+              </sc-if>
+            </div>
+            <div style="font-size:11.5px; color:#948C7E; margin-top:5px; line-height:1.45;">{{ keyHint }}</div>
+          </div>
+
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Description <span style="font-weight:600; color:#B3ACA0;">optional</span></label>
+            <textarea value="{{ pt.description }}" onChange="{{ onDescriptionChange }}" rows="2" placeholder="A short summary of what this post type holds." style="width:100%; font-size:13px; padding:8px 10px; border-radius:6px; border:1px solid #E7E2D9; resize:vertical;" style-focus="outline:2px solid #3858E9;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Behaviour</div>
+        <sc-for list="{{ behaviourToggles }}" as="bt" hint-placeholder-count="4">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+        <sc-if value="{{ pt.hasArchive }}" hint-placeholder-val="{{ false }}">
+          <div style="border-top:1px solid #F0ECE4; padding:12px 0 2px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <label style="font-size:12px; font-weight:700; color:#948C7E;">Archive slug</label>
+            <input value="{{ pt.archiveSlug }}" onChange="{{ onArchiveSlugChange }}" placeholder="{{ archiveSlugPlaceholder }}" spellCheck="false" style="flex:1; min-width:160px; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#948C7E;">{{ archivePreviewUrl }}</span>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:11px; gap:10px; flex-wrap:wrap;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Supports</div>
+          <div style="font-size:11.5px; color:#948C7E;">Editor panels and features this type gets.</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:7px;">
+          <sc-for list="{{ supportChips }}" as="sp" hint-placeholder-count="11">
+            <button role="checkbox" aria-checked="{{ sp.on }}" onClick="{{ sp.onToggle }}" style="display:flex; align-items:center; gap:7px; border:1px solid {{ sp.borderColor }}; background:{{ sp.bg }}; color:{{ sp.color }}; border-radius:20px; padding:6px 13px 6px 10px; font-size:12.5px; font-weight:600; font-family:'JetBrains Mono',monospace; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+              <span style="width:14px; height:14px; border-radius:4px; border:1.5px solid {{ sp.boxBorder }}; background:{{ sp.boxBg }}; display:flex; align-items:center; justify-content:center; color:#fff; font-family:lineicons; font-size:9px; line-height:1;">{{ sp.check }}</span>{{ sp.label }}
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:11px; gap:10px; flex-wrap:wrap;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Taxonomies</div>
+          <div style="font-size:11.5px; color:#948C7E;">Attach at registration so query filters stay consistent.</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:7px; margin-bottom:10px;">
+          <sc-for list="{{ taxonomyChips }}" as="tx" hint-placeholder-count="2">
+            <button role="checkbox" aria-checked="{{ tx.on }}" onClick="{{ tx.onToggle }}" style="display:flex; align-items:center; gap:7px; border:1px solid {{ tx.borderColor }}; background:{{ tx.bg }}; color:{{ tx.color }}; border-radius:20px; padding:6px 13px 6px 10px; font-size:12.5px; font-weight:600; font-family:'JetBrains Mono',monospace; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+              <span style="width:14px; height:14px; border-radius:4px; border:1.5px solid {{ tx.boxBorder }}; background:{{ tx.boxBg }}; display:flex; align-items:center; justify-content:center; color:#fff; font-family:lineicons; font-size:9px; line-height:1;">{{ tx.check }}</span>{{ tx.label }}
+            </button>
+          </sc-for>
+        </div>
+        <div style="border:1px solid #E7E2D9; border-radius:6px; padding:6px; display:flex; flex-wrap:wrap; gap:6px; background:#fff;">
+          <sc-for list="{{ customTaxChips }}" as="chip" hint-placeholder-count="1">
+            <span style="display:flex; align-items:center; gap:5px; background:#EEF1FE; color:#3858E9; border-radius:5px; padding:3px 6px; font-size:12px; font-family:'JetBrains Mono',monospace;">
+              {{ chip.value }}
+              <button aria-label="Remove {{ chip.value }}" onClick="{{ chip.onRemove }}" style="border:none; background:none; cursor:pointer; color:inherit; padding:0; display:flex; align-items:center;" style-focus="outline:1px solid currentColor;">{{ iconClose }}</button>
+            </span>
+          </sc-for>
+          <input aria-label="Add custom taxonomy slug" placeholder="custom taxonomy slug…" value="{{ taxDraft }}" onChange="{{ onTaxDraftChange }}" onKeyDown="{{ onTaxDraftKeyDown }}" onBlur="{{ onTaxDraftBlur }}" style="border:none; outline:none; font-size:12px; flex:1; min-width:120px;" />
+        </div>
+        <div style="font-size:11.5px; color:#948C7E; margin-top:8px; line-height:1.5;">Custom taxonomies still need their own <span style="font-family:'JetBrains Mono',monospace; font-size:11px;">register_taxonomy()</span> call — the <a href="./Generator%20for%20WP.dc.html#/tools?q=taxonomy" style="font-weight:600; text-decoration:none;">Taxonomy generator</a> is next up.</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; margin-bottom:16px;">
+        <button onClick="{{ onToggleLabels }}" style="width:100%; display:flex; align-items:center; gap:10px; padding:14px 18px; background:none; border:none; cursor:pointer; text-align:left;" style-focus="outline:2px solid #3858E9;">
+          <span style="color:#948C7E; display:flex; transform:{{ labelsChevron }}; transition:transform .15s;">{{ iconChevronDown }}</span>
+          <span style="font-size:13px; font-weight:700; color:#26221C;">Labels</span>
+          <span style="font-size:11.5px; color:#948C7E;">{{ labelsSummary }}</span>
+        </button>
+        <sc-if value="{{ labelsOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:0 18px 16px;">
+            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding-bottom:12px;">
+              <button onClick="{{ onToggleAllLabels }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:{{ allLabelsBg }}; color:{{ allLabelsColor }}; border-radius:20px; padding:5px 12px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ allLabelsLabel }}</button>
+              <button onClick="{{ onToggleOutputAllLabels }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:{{ outputAllBg }}; color:{{ outputAllColor }}; border-radius:20px; padding:5px 12px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ outputAllLabel }}</button>
+              <sc-if value="{{ hasLabelOverrides }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ onClearLabelOverrides }}" style="font-size:11.5px; font-weight:600; border:none; background:none; color:#B91C1C; cursor:pointer; padding:5px 0;" style-focus="outline:2px solid #3858E9;">Clear {{ overrideCount }} override(s)</button>
+              </sc-if>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <sc-for list="{{ labelRows }}" as="lb" hint-placeholder-count="10">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="width:170px; flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:{{ lb.keyColor }}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ lb.key }}</span>
+                  <input value="{{ lb.value }}" onChange="{{ lb.onChange }}" placeholder="{{ lb.auto }}" style="flex:1; min-width:0; font-size:13px; padding:6px 8px; border-radius:5px; border:1px solid {{ lb.borderColor }}; background:{{ lb.inputBg }};" style-focus="outline:2px solid #3858E9;" />
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; margin-bottom:16px;">
+        <button onClick="{{ onToggleAdvanced }}" style="width:100%; display:flex; align-items:center; gap:10px; padding:14px 18px; background:none; border:none; cursor:pointer; text-align:left;" style-focus="outline:2px solid #3858E9;">
+          <span style="color:#948C7E; display:flex; transform:{{ advancedChevron }}; transition:transform .15s;">{{ iconChevronDown }}</span>
+          <span style="font-size:13px; font-weight:700; color:#26221C;">Advanced options</span>
+          <span style="font-size:11.5px; color:#948C7E;">{{ advancedSummary }}</span>
+        </button>
+
+        <sc-if value="{{ advancedOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:0 18px 18px; display:flex; flex-direction:column; gap:14px;">
+
+            <div style="border:1px solid #EFEBE3; border-radius:7px; padding:14px; background:#FCFBF9;">
+              <div style="font-size:12px; font-weight:700; color:#4A4438; margin-bottom:3px;">Visibility</div>
+              <div style="font-size:11.5px; color:#948C7E; margin-bottom:12px; line-height:1.45;">Each of these inherits from <span style="font-family:'JetBrains Mono',monospace; font-size:11px;">public</span> unless you set it.</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+                <sc-for list="{{ visibilitySelects }}" as="vs" hint-placeholder-count="6">
+                  <div>
+                    <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; color:#948C7E; margin-bottom:4px;">{{ vs.key }}</label>
+                    <select value="{{ vs.value }}" onChange="{{ vs.onChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff; color:#26221C;" style-focus="outline:2px solid #3858E9;">
+                      <option value="inherit">{{ vs.inheritLabel }}</option>
+                      <option value="true">true</option>
+                      <option value="false">false</option>
+                    </select>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="border:1px solid #EFEBE3; border-radius:7px; padding:14px; background:#FCFBF9;">
+              <div style="font-size:12px; font-weight:700; color:#4A4438; margin-bottom:12px;">Admin menu</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">menu_position</label>
+                  <select value="{{ adv.menuPosition }}" onChange="{{ onMenuPositionChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <sc-for list="{{ menuPositions }}" as="mp" hint-placeholder-count="12">
+                      <option value="{{ mp.value }}">{{ mp.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">menu_icon</label>
+                  <select value="{{ adv.menuIcon }}" onChange="{{ onMenuIconChange }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <sc-for list="{{ dashicons }}" as="di" hint-placeholder-count="12">
+                      <option value="{{ di.value }}">{{ di.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <div style="grid-column:1 / -1;">
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">show_in_menu — parent slug</label>
+                  <input value="{{ adv.showInMenuString }}" onChange="{{ onShowInMenuStringChange }}" spellCheck="false" placeholder="edit.php?post_type=page — leave empty for a top-level menu" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </div>
+              </div>
+            </div>
+
+            <div style="border:1px solid #EFEBE3; border-radius:7px; padding:14px; background:#FCFBF9;">
+              <div style="font-size:12px; font-weight:700; color:#4A4438; margin-bottom:12px;">REST API</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">rest_base</label>
+                  <input value="{{ adv.restBase }}" onChange="{{ onRestBaseChange }}" spellCheck="false" placeholder="{{ pt.key }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">rest_namespace</label>
+                  <input value="{{ adv.restNamespace }}" onChange="{{ onRestNamespaceChange }}" spellCheck="false" placeholder="wp/v2" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <div style="grid-column:1 / -1;">
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">rest_controller_class</label>
+                  <input value="{{ adv.restController }}" onChange="{{ onRestControllerChange }}" spellCheck="false" placeholder="WP_REST_Posts_Controller" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </div>
+              </div>
+            </div>
+
+            <div style="border:1px solid #EFEBE3; border-radius:7px; padding:14px; background:#FCFBF9;">
+              <div style="font-size:12px; font-weight:700; color:#4A4438; margin-bottom:12px;">Permalinks &amp; rewrite</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">rewrite</label>
+                  <select value="{{ adv.rewriteMode }}" onChange="{{ onRewriteModeChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="on">Pretty permalinks on</option>
+                    <option value="off">false — no rewrite rules</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">rewrite.slug</label>
+                  <input value="{{ adv.rewriteSlug }}" onChange="{{ onRewriteSlugChange }}" spellCheck="false" placeholder="{{ pt.key }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">query_var</label>
+                  <select value="{{ adv.queryVarMode }}" onChange="{{ onQueryVarModeChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="true">true — use the post type key</option>
+                    <option value="custom">Custom string</option>
+                    <option value="false">false — disabled</option>
+                  </select>
+                </div>
+                <sc-if value="{{ showQueryVarInput }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">query_var string</label>
+                    <input value="{{ adv.queryVarString }}" onChange="{{ onQueryVarStringChange }}" spellCheck="false" placeholder="publication" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                  </div>
+                </sc-if>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:12px;">
+                <sc-for list="{{ rewriteFlags }}" as="rf" hint-placeholder-count="3">
+                  <button role="checkbox" aria-checked="{{ rf.on }}" onClick="{{ rf.onToggle }}" style="display:flex; align-items:center; gap:7px; border:1px solid {{ rf.borderColor }}; background:{{ rf.bg }}; color:{{ rf.color }}; border-radius:20px; padding:5px 12px 5px 9px; font-size:12px; font-weight:600; font-family:'JetBrains Mono',monospace; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+                    <span style="width:13px; height:13px; border-radius:4px; border:1.5px solid {{ rf.boxBorder }}; background:{{ rf.boxBg }}; display:flex; align-items:center; justify-content:center; color:#fff; font-family:lineicons; font-size:8px; line-height:1;">{{ rf.check }}</span>{{ rf.label }}
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="border:1px solid #EFEBE3; border-radius:7px; padding:14px; background:#FCFBF9;">
+              <div style="font-size:12px; font-weight:700; color:#4A4438; margin-bottom:12px;">Capabilities</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">capability_type</label>
+                  <select value="{{ adv.capMode }}" onChange="{{ onCapModeChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="post">post — same caps as posts</option>
+                    <option value="page">page</option>
+                    <option value="custom">Custom singular / plural</option>
+                  </select>
+                </div>
+                <sc-if value="{{ showCapCustom }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">singular / plural base</label>
+                    <div style="display:flex; gap:6px;">
+                      <input value="{{ adv.capSingular }}" onChange="{{ onCapSingularChange }}" spellCheck="false" placeholder="book" style="flex:1; min-width:0; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                      <input value="{{ adv.capPlural }}" onChange="{{ onCapPluralChange }}" spellCheck="false" placeholder="books" style="flex:1; min-width:0; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:14px; margin-top:12px;">
+                <div style="flex:1;">
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500; color:#4A4438;">map_meta_cap</div>
+                  <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">Let core map edit/read/delete meta caps to the primitive ones. Recommended with custom capability types.</div>
+                </div>
+                <button role="switch" aria-checked="{{ adv.mapMetaCap }}" aria-label="map_meta_cap" onClick="{{ onToggleMapMetaCap }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ mapMetaCapBg }}; position:relative; cursor:pointer; padding:0;" style-focus="outline:2px solid #3858E9;">
+                  <span style="position:absolute; top:2px; left:{{ mapMetaCapKnob }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+                </button>
+              </div>
+            </div>
+
+            <div style="border:1px solid #EFEBE3; border-radius:7px; padding:14px; background:#FCFBF9;">
+              <div style="font-size:12px; font-weight:700; color:#4A4438; margin-bottom:12px;">Misc &amp; code output</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">can_export</label>
+                  <select value="{{ adv.canExport }}" onChange="{{ onCanExportChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="inherit">true (default)</option>
+                    <option value="false">false</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">delete_with_user</label>
+                  <select value="{{ adv.deleteWithUser }}" onChange="{{ onDeleteWithUserChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="inherit">null (follows author support)</option>
+                    <option value="true">true — trash their posts</option>
+                    <option value="false">false — keep their posts</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">template_lock</label>
+                  <select value="{{ adv.templateLock }}" onChange="{{ onTemplateLockChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="">false (default)</option>
+                    <option value="all">all — no insert, move or delete</option>
+                    <option value="insert">insert — move only</option>
+                    <option value="contentOnly">contentOnly</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+                  <input value="{{ adv.fnPrefix }}" onChange="{{ onFnPrefixChange }}" spellCheck="false" placeholder="mytheme" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+                  <input value="{{ adv.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="textdomain" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </sc-if>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabPermalinks }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabPermalinksColor }}; border-bottom:2px solid {{ tabPermalinksBorder }};" style-focus="outline:2px solid #3858E9;">Permalinks</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Validation ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="40"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showPermalinksTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:14px;">
+          <div style="font-size:11.5px; color:#948C7E; line-height:1.5; margin-bottom:12px;">URLs this registration produces on <span style="font-family:'JetBrains Mono',monospace; font-size:11px;">{{ sampleDomainLabel }}</span>. Flush rewrite rules once after registering.</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <sc-for list="{{ permalinkRows }}" as="pl" hint-placeholder-count="5">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ pl.accent }}; border-radius:6px; padding:10px 12px; background:{{ pl.bg }};">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                  <span style="font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#948C7E;">{{ pl.label }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:{{ pl.stateColor }};">{{ pl.state }}</span>
+                </div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.5; color:{{ pl.urlColor }}; word-break:break-all;">{{ pl.url }}</div>
+                <sc-if value="{{ pl.hasNote }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:11px; color:#948C7E; margin-top:5px; line-height:1.45;">{{ pl.note }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <button onClick="{{ iss.onFocus }}" style="flex:1; text-align:left; background:none; border:none; font-size:12.5px; line-height:1.5; cursor:pointer; color:#3B362D; padding:0;" style-focus="outline:2px solid #3858E9;">{{ iss.message }}</button>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this filter.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;snippet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;},&quot;advancedOpenByDefault&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Output&quot;},&quot;sampleDomain&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;example.com&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;}}">
+const RESERVED = ['post','page','attachment','revision','nav_menu_item','custom_css','customize_changeset','oembed_cache','user_request','wp_block','wp_global_styles','wp_navigation','wp_template','wp_template_part','action','author','order','theme'];
+const SUPPORTS = ['title','editor','author','thumbnail','excerpt','trackbacks','custom-fields','comments','revisions','page-attributes','post-formats'];
+const BUILTIN_TAX = [['category','category'],['post_tag','post_tag']];
+const MENU_POSITIONS = [['','Default — bottom'],['5','5 — below Posts'],['10','10 — below Media'],['15','15 — below Links'],['20','20 — below Pages'],['25','25 — below Comments'],['60','60 — below first separator'],['65','65 — below Plugins'],['70','70 — below Users'],['75','75 — below Tools'],['80','80 — below Settings'],['100','100 — below second separator']];
+const DASHICONS = ['dashicons-admin-post','dashicons-admin-page','dashicons-book','dashicons-portfolio','dashicons-calendar-alt','dashicons-format-quote','dashicons-cart','dashicons-groups','dashicons-media-document','dashicons-star-filled','dashicons-location','dashicons-megaphone','dashicons-testimonial','dashicons-video-alt3','dashicons-hammer'];
+const VISIBILITY_KEYS = [['showUi','show_ui','inherit from public'],['showInMenu','show_in_menu','inherit from show_ui'],['showInNavMenus','show_in_nav_menus','inherit from public'],['showInAdminBar','show_in_admin_bar','inherit from show_in_menu'],['publiclyQueryable','publicly_queryable','inherit from public'],['excludeFromSearch','exclude_from_search','opposite of public']];
+
+function slugify(s, max) {
+  const out = String(s || '').toLowerCase().trim().replace(/['"]/g, '').replace(/[^a-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
+  return max ? out.slice(0, max) : out;
+}
+function lower(s) { return String(s || '').toLowerCase(); }
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
+function autoLabels(pt) {
+  const s = pt.singular || 'Item', p = pt.plural || (s + 's'), ls = lower(s), lp = lower(p);
+  return [
+    ['name', p], ['singular_name', s], ['menu_name', p], ['name_admin_bar', s],
+    ['add_new', 'Add New'], ['add_new_item', 'Add New ' + s], ['new_item', 'New ' + s],
+    ['edit_item', 'Edit ' + s], ['view_item', 'View ' + s], ['view_items', 'View ' + p],
+    ['all_items', 'All ' + p], ['search_items', 'Search ' + p],
+    ['not_found', 'No ' + lp + ' found.'], ['not_found_in_trash', 'No ' + lp + ' found in Trash.'],
+    ['parent_item_colon', 'Parent ' + p + ':'],
+    ['archives', s + ' archives'], ['attributes', s + ' attributes'],
+    ['insert_into_item', 'Insert into ' + ls], ['uploaded_to_this_item', 'Uploaded to this ' + ls],
+    ['featured_image', 'Featured image'], ['set_featured_image', 'Set featured image'],
+    ['remove_featured_image', 'Remove featured image'], ['use_featured_image', 'Use as featured image'],
+    ['filter_items_list', 'Filter ' + lp + ' list'], ['filter_by_date', 'Filter by date'],
+    ['items_list_navigation', p + ' list navigation'], ['items_list', p + ' list'],
+    ['item_published', s + ' published.'], ['item_published_privately', s + ' published privately.'],
+    ['item_reverted_to_draft', s + ' reverted to draft.'], ['item_scheduled', s + ' scheduled.'],
+    ['item_updated', s + ' updated.'], ['item_link', s + ' link'], ['item_link_description', 'A link to a ' + ls + '.']
+  ];
+}
+const ESSENTIAL_LABELS = ['name','singular_name','menu_name','add_new_item','edit_item','new_item','view_item','all_items','search_items','not_found'];
+
+function resolvedLabels(pt) {
+  return autoLabels(pt).map(function (row) {
+    const ov = pt.labelOverrides[row[0]];
+    return [row[0], (ov != null && ov !== '') ? ov : row[1], ov != null && ov !== ''];
+  });
+}
+
+function effective(pt) {
+  const a = pt.adv;
+  const tri = function (v, fallback) { return v === 'true' ? true : v === 'false' ? false : fallback; };
+  const publiclyQueryable = tri(a.publiclyQueryable, pt.public);
+  const showUi = tri(a.showUi, pt.public);
+  const rewriteOn = a.rewriteMode !== 'off';
+  const slug = a.rewriteSlug || pt.key || 'post-type';
+  return {
+    publiclyQueryable: publiclyQueryable, showUi: showUi,
+    showInMenu: a.showInMenuString ? a.showInMenuString : tri(a.showInMenu, showUi),
+    rewriteOn: rewriteOn, slug: slug,
+    archiveSlug: pt.archiveSlug || slug,
+    queryVar: a.queryVarMode === 'false' ? false : a.queryVarMode === 'custom' ? (a.queryVarString || pt.key) : (pt.key || 'post-type'),
+    restBase: a.restBase || pt.key || 'post-type',
+    restNamespace: a.restNamespace || 'wp/v2'
+  };
+}
+
+function buildArgs(pt) {
+  const a = pt.adv, e = effective(pt), args = [];
+  args.push(['labels', '$labels']);
+  if (pt.description) args.push(['description', "__( '" + esc(pt.description) + "', '" + esc(a.textDomain) + "' )"]);
+  args.push(['public', pt.public ? 'true' : 'false']);
+  if (pt.hierarchical) args.push(['hierarchical', 'true']);
+  VISIBILITY_KEYS.forEach(function (v) {
+    if (v[0] === 'showInMenu' && a.showInMenuString) { args.push(['show_in_menu', "'" + esc(a.showInMenuString) + "'"]); return; }
+    if (a[v[0]] === 'true' || a[v[0]] === 'false') args.push([v[1], a[v[0]]]);
+  });
+  args.push(['show_in_rest', pt.showInRest ? 'true' : 'false']);
+  if (a.restBase) args.push(['rest_base', "'" + esc(a.restBase) + "'"]);
+  if (a.restNamespace) args.push(['rest_namespace', "'" + esc(a.restNamespace) + "'"]);
+  if (a.restController) args.push(['rest_controller_class', "'" + esc(a.restController) + "'"]);
+  if (a.menuPosition) args.push(['menu_position', a.menuPosition]);
+  if (a.menuIcon && a.menuIcon !== 'dashicons-admin-post') args.push(['menu_icon', "'" + esc(a.menuIcon) + "'"]);
+  if (a.capMode === 'page') args.push(['capability_type', "'page'"]);
+  else if (a.capMode === 'custom') args.push(['capability_type', "array( '" + esc(a.capSingular || pt.key) + "', '" + esc(a.capPlural || (pt.key + 's')) + "' )"]);
+  if (a.mapMetaCap) args.push(['map_meta_cap', 'true']);
+  args.push(['supports', pt.supports.length ? 'array( ' + pt.supports.map(function (s) { return "'" + s + "'"; }).join(', ') + ' )' : 'false']);
+  const taxes = pt.taxonomies.concat(pt.customTax);
+  if (taxes.length) args.push(['taxonomies', 'array( ' + taxes.map(function (t) { return "'" + esc(t) + "'"; }).join(', ') + ' )']);
+  if (pt.hasArchive) args.push(['has_archive', pt.archiveSlug ? "'" + esc(pt.archiveSlug) + "'" : 'true']);
+  if (!e.rewriteOn) args.push(['rewrite', 'false']);
+  else {
+    const parts = [];
+    if (a.rewriteSlug) parts.push("'slug' => '" + esc(a.rewriteSlug) + "'");
+    if (!a.withFront) parts.push("'with_front' => false");
+    if (!a.pages) parts.push("'pages' => false");
+    if (a.feeds) parts.push("'feeds' => true");
+    if (parts.length) args.push(['rewrite', 'array( ' + parts.join(', ') + ' )']);
+  }
+  if (a.queryVarMode === 'false') args.push(['query_var', 'false']);
+  else if (a.queryVarMode === 'custom' && a.queryVarString) args.push(['query_var', "'" + esc(a.queryVarString) + "'"]);
+  if (a.canExport === 'false') args.push(['can_export', 'false']);
+  if (a.deleteWithUser === 'true' || a.deleteWithUser === 'false') args.push(['delete_with_user', a.deleteWithUser]);
+  if (a.templateLock) args.push(['template_lock', "'" + esc(a.templateLock) + "'"]);
+  return args;
+}
+
+function alignBlock(pairs, indent) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) {
+    const key = "'" + p[0] + "'";
+    return indent + key + ' '.repeat(w - p[0].length) + ' => ' + p[1] + ',';
+  }).join('\n');
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) {
+  if (out.indexOf('<?php\n') === 0) return '<?php\n' + CREDIT + out.slice(6);
+  return CREDIT + out;
+}
+
+function buildCode(pt, mode) {
+  const a = pt.adv, key = pt.key || 'post_type', fn = (a.fnPrefix || 'mytheme') + '_register_' + (key.replace(/-/g, '_')) + '_post_type';
+  const td = esc(a.textDomain || 'textdomain');
+  const labels = resolvedLabels(pt).filter(function (l) { return pt.outputAllLabels || ESSENTIAL_LABELS.indexOf(l[0]) !== -1 || l[2]; });
+  const labelPairs = labels.map(function (l) { return [l[0], "__( '" + esc(l[1]) + "', '" + td + "' )"]; });
+  const argPairs = buildArgs(pt);
+  let out = '';
+  if (mode === 'plugin') {
+    out += "<?php\n/**\n * Plugin Name:       " + (pt.plural || 'Custom Post Type') + "\n * Description:       Registers the " + (pt.plural || 'custom') + " post type.\n * Version:           1.0.0\n * Requires at least: 6.0\n * Requires PHP:      7.4\n * Text Domain:       " + td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+  out += '/**\n * Register the ' + (pt.plural || 'custom') + ' post type.\n */\nfunction ' + fn + '() {\n';
+  out += '\t$labels = array(\n' + alignBlock(labelPairs, '\t\t') + '\n\t);\n\n';
+  out += '\t$args = array(\n' + alignBlock(argPairs, '\t\t') + '\n\t);\n\n';
+  out += "\tregister_post_type( '" + esc(key) + "', $args );\n}\nadd_action( 'init', '" + fn + "' );\n";
+  if (mode === 'plugin') {
+    out += "\n/**\n * Flush rewrite rules once, on activation only.\n */\nfunction " + fn + "_activate() {\n\t" + fn + "();\n\tflush_rewrite_rules();\n}\nregister_activation_hook( __FILE__, '" + fn + "_activate' );\n";
+  } else if (mode === 'functions') {
+    out += "\n/**\n * Flush rewrite rules once, after the theme is switched on.\n */\nfunction " + fn + "_flush() {\n\t" + fn + "();\n\tflush_rewrite_rules();\n}\nadd_action( 'after_switch_theme', '" + fn + "_flush' );\n";
+  }
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|([{}()\[\];,]|=>|=)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function keyPrefix(adv, key) {
+  const full = slugify(adv.fnPrefix) || 'acme';
+  return (full.length + 1 + key.length) <= 20 ? full : full.slice(0, 4);
+}
+function validate(pt) {
+  const out = [], key = pt.key || '', a = pt.adv, e = effective(pt);
+  const add = function (severity, message, targetId, fix, fixLabel) { out.push({ severity: severity, message: message, targetId: targetId, fix: fix, fixLabel: fixLabel }); };
+  if (!pt.singular.trim()) add('error', 'Singular name is empty — every label is derived from it.', 'singular');
+  if (!pt.plural.trim()) add('error', 'Plural name is empty — the admin menu label needs it.', 'plural');
+  if (!key) add('error', 'Post type key is required.', 'key');
+  else {
+    if (key.length > 20) add('error', 'Post type key is ' + key.length + ' characters — the limit is 20.', 'key', 'truncateKey', 'Truncate to 20');
+    if (!/^[a-z0-9_-]+$/.test(key)) add('error', 'Post type key may only contain lowercase letters, numbers, dashes and underscores.', 'key', 'sanitizeKey', 'Sanitise key');
+    if (RESERVED.indexOf(key) !== -1) add('error', '“' + key + '” is reserved by WordPress and will collide with core.', 'key', 'prefixKey', 'Add a prefix');
+    else if (!/^[a-z0-9]{2,6}_/.test(key) && key.length <= 16) { const pfx = keyPrefix(a, key); add('recommendation', 'Prefix the key with a short project prefix (e.g. “' + pfx + '_' + key + '”) so it cannot clash with another plugin.', 'key', 'prefixKey', 'Add “' + pfx + '_”'); }
+  }
+  if (pt.supports.indexOf('editor') !== -1 && !pt.showInRest) add('warning', 'The block editor needs show_in_rest — with it off, this type falls back to the classic editor.', 'rest', 'enableRest', 'Turn on REST');
+  if (pt.hierarchical && pt.supports.indexOf('page-attributes') === -1) add('warning', 'Hierarchical types need “page-attributes” support to show the Parent selector.', 'supports', 'addPageAttributes', 'Add page-attributes');
+  if (pt.supports.indexOf('thumbnail') !== -1) add('recommendation', 'Featured images also require the active theme to call add_theme_support( \'post-thumbnails\' ).', 'supports');
+  if (pt.hasArchive && !e.rewriteOn) add('warning', 'has_archive is on but rewrite is false — the archive will only be reachable via a query string.', 'rewrite', 'enableRewrite', 'Enable rewrite');
+  if (pt.hasArchive && pt.archiveSlug && pt.archiveSlug === e.slug) add('recommendation', 'Archive slug matches the rewrite slug — a single post and the archive will compete for the same path.', 'archive');
+  if (e.rewriteOn && a.rewriteSlug && !/^[a-z0-9\/_-]+$/.test(a.rewriteSlug)) add('warning', 'Rewrite slug should be lowercase with dashes — “' + a.rewriteSlug + '” will be escaped in URLs.', 'rewrite');
+  if (!pt.public && pt.adv.showUi === 'inherit') add('recommendation', 'This type is private, so no admin UI is generated. Set show_ui to true if editors still need a screen.', 'visibility');
+  if (pt.customTax.length) add('recommendation', 'Custom taxonomies (' + pt.customTax.join(', ') + ') still need their own register_taxonomy() call.', 'taxonomies');
+  if (a.capMode === 'custom' && !a.mapMetaCap) add('warning', 'Custom capability types usually need map_meta_cap set to true, or administrators lose access.', 'caps', 'enableMapMetaCap', 'Turn on map_meta_cap');
+  if (!pt.supports.length) add('warning', 'supports is false — the editor screen will only show the Publish box.', 'supports');
+  return out;
+}
+
+function freshProject() {
+  return {
+    singular: 'Book', plural: 'Books', key: 'book', keyEdited: false, pluralEdited: false,
+    description: '', public: true, hierarchical: false, showInRest: true, hasArchive: true, archiveSlug: '',
+    supports: ['title', 'editor', 'thumbnail', 'excerpt'],
+    taxonomies: ['category'], customTax: [],
+    labelOverrides: {}, outputAllLabels: false,
+    adv: {
+      showUi: 'inherit', showInMenu: 'inherit', showInNavMenus: 'inherit', showInAdminBar: 'inherit', publiclyQueryable: 'inherit', excludeFromSearch: 'inherit',
+      menuPosition: '', menuIcon: 'dashicons-admin-post', showInMenuString: '',
+      restBase: '', restNamespace: '', restController: '',
+      rewriteMode: 'on', rewriteSlug: '', withFront: true, pages: true, feeds: false,
+      queryVarMode: 'true', queryVarString: '',
+      capMode: 'post', capSingular: '', capPlural: '', mapMetaCap: false,
+      canExport: 'inherit', deleteWithUser: 'inherit', templateLock: '',
+      fnPrefix: 'mytheme', textDomain: 'textdomain'
+    }
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    pt: freshProject(),
+    past: [], future: [],
+    rightTab: 'code', outputMode: 'snippet', validationFilter: 'all',
+    labelsOpen: false, showAllLabels: false, advancedOpen: false,
+    taxDraft: '', copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) {
+    super(props);
+    this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 };
+  }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('post-type-generator-v1');
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved && saved.__lastAutoPlural != null) { saved.pluralEdited = saved.plural !== (saved.singular + 's'); delete saved.__lastAutoPlural; }
+        if (saved && saved.key != null) this.setState({ pt: Object.assign(freshProject(), saved, { adv: Object.assign(freshProject().adv, saved.adv || {}) }) });
+      }
+    } catch (err) { /* ignore */ }
+    if (this.props.advancedOpenByDefault) this.setState({ advancedOpen: true });
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+
+  persist(pt) { try { localStorage.setItem('post-type-generator-v1', JSON.stringify(pt)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.pt));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      const past = coalesce ? s.past : s.past.concat([s.pt]).slice(-60);
+      return { pt: next, past: past, future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.pt));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { pt: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.pt].concat(s.future) }; }, () => this.persist(this.state.pt)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { pt: s.future[0], past: s.past.concat([s.pt]), future: s.future.slice(1) }; }, () => this.persist(this.state.pt)); }
+
+  setAdv(field, value, coalesce) { this.commit(function (p) { p.adv[field] = value; }, coalesce ? 'adv-' + field : null); }
+
+  applyFix(kind) {
+    const self = this;
+    this.commit(function (p) {
+      if (kind === 'truncateKey') { p.key = p.key.slice(0, 20); p.keyEdited = true; }
+      if (kind === 'sanitizeKey') { p.key = slugify(p.key, 20); p.keyEdited = true; }
+      if (kind === 'prefixKey') { p.key = slugify((slugify(p.adv.fnPrefix, 4) || 'acme') + '_' + p.key, 20); p.keyEdited = true; }
+      if (kind === 'enableRest') p.showInRest = true;
+      if (kind === 'addPageAttributes' && p.supports.indexOf('page-attributes') === -1) p.supports.push('page-attributes');
+      if (kind === 'enableRewrite') p.adv.rewriteMode = 'on';
+      if (kind === 'enableMapMetaCap') p.adv.mapMetaCap = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+    void self;
+  }
+  focusTarget(id) { setTimeout(() => { const el = this._refs[id]; if (el && el.focus) el.focus(); }, 60); }
+
+  copyCode() {
+    const code = buildCode(this.state.pt, this.state.outputMode);
+    const text = this.state.outputMode === 'snippet' ? code : code;
+    try { navigator.clipboard.writeText(text); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const pt = this.state.pt, mode = this.state.outputMode;
+    let code = buildCode(pt, mode);
+    if (mode === 'snippet') code = "<?php\n\n" + code;
+    const name = (pt.key || 'post-type').replace(/_/g, '-') + (mode === 'plugin' ? '-post-type.php' : mode === 'functions' ? '-functions-snippet.php' : '-post-type.php');
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, pt = s.pt, a = pt.adv, self = this;
+    const ic = (name, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, name);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), chevronDown: ic('\ue54f'), close: ic('\uf73a', 13), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(pt);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    const e = effective(pt);
+    const domain = this.props.sampleDomain || 'example.com';
+    const code = buildCode(pt, s.outputMode);
+    const autos = autoLabels(pt);
+    const labelRowsAll = autos.map(function (row) {
+      const ov = pt.labelOverrides[row[0]];
+      return {
+        key: row[0], auto: row[1], value: ov == null ? '' : ov,
+        keyColor: (ov != null && ov !== '') ? '#3858E9' : '#948C7E',
+        borderColor: (ov != null && ov !== '') ? '#C7D2FE' : '#E7E2D9',
+        inputBg: (ov != null && ov !== '') ? '#F8F9FF' : '#fff',
+        onChange: function (ev) { const v = ev.target.value; self.commit(function (p) { if (v) p.labelOverrides[row[0]] = v; else delete p.labelOverrides[row[0]]; }, 'label-' + row[0]); }
+      };
+    });
+    const overrideCount = Object.keys(pt.labelOverrides).length;
+    const chipStyle = function (on) {
+      return {
+        borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B',
+        boxBorder: on ? '#3858E9' : '#C7C2B8', boxBg: on ? '#3858E9' : '#fff', check: on ? '\ue539' : ''
+      };
+    };
+
+    const permalinkRows = [];
+    const single = e.rewriteOn ? 'https://' + domain + (a.withFront ? '' : '') + '/' + e.slug + '/sample-' + (pt.key || 'item') + '/' : 'https://' + domain + '/?' + (pt.key || 'item') + '=sample-' + (pt.key || 'item');
+    permalinkRows.push({
+      label: 'Single', url: single, state: e.publiclyQueryable ? 'Reachable' : 'Not queryable',
+      stateColor: e.publiclyQueryable ? '#1F7A4C' : '#B45309', accent: e.publiclyQueryable ? '#1F7A4C' : '#D9D4C8',
+      bg: e.publiclyQueryable ? '#fff' : '#FCFBF9', urlColor: e.publiclyQueryable ? '#26221C' : '#A79F91',
+      hasNote: !a.withFront, note: 'with_front is off, so the permalink base (e.g. /blog) is not prepended.'
+    });
+    permalinkRows.push({
+      label: 'Archive', url: pt.hasArchive ? 'https://' + domain + '/' + e.archiveSlug + '/' : '— has_archive is off',
+      state: pt.hasArchive ? (e.rewriteOn ? 'Enabled' : 'Query string only') : 'Disabled',
+      stateColor: pt.hasArchive ? (e.rewriteOn ? '#1F7A4C' : '#B45309') : '#948C7E',
+      accent: pt.hasArchive ? '#1F7A4C' : '#D9D4C8', bg: pt.hasArchive ? '#fff' : '#FCFBF9',
+      urlColor: pt.hasArchive ? '#26221C' : '#A79F91', hasNote: pt.hasArchive && !e.rewriteOn, note: 'Reachable at ?post_type=' + pt.key + ' while rewrite is false.'
+    });
+    permalinkRows.push({
+      label: 'Query var', url: e.queryVar === false ? '— query_var is false' : 'https://' + domain + '/?' + e.queryVar + '=sample-' + (pt.key || 'item'),
+      state: e.queryVar === false ? 'Disabled' : 'Enabled', stateColor: e.queryVar === false ? '#948C7E' : '#1F7A4C',
+      accent: e.queryVar === false ? '#D9D4C8' : '#1F7A4C', bg: e.queryVar === false ? '#FCFBF9' : '#fff',
+      urlColor: e.queryVar === false ? '#A79F91' : '#26221C', hasNote: false, note: ''
+    });
+    permalinkRows.push({
+      label: 'REST', url: pt.showInRest ? 'https://' + domain + '/wp-json/' + e.restNamespace + '/' + e.restBase : '— show_in_rest is false',
+      state: pt.showInRest ? 'Block editor ready' : 'Classic editor only', stateColor: pt.showInRest ? '#1F7A4C' : '#B45309',
+      accent: pt.showInRest ? '#1F7A4C' : '#D9D4C8', bg: pt.showInRest ? '#fff' : '#FCFBF9',
+      urlColor: pt.showInRest ? '#26221C' : '#A79F91', hasNote: false, note: ''
+    });
+    permalinkRows.push({
+      label: 'Admin', url: e.showUi ? 'https://' + domain + '/wp-admin/edit.php?post_type=' + (pt.key || 'item') : '— show_ui is false',
+      state: e.showUi ? 'Listed in admin' : 'No admin screen', stateColor: e.showUi ? '#1F7A4C' : '#B45309',
+      accent: e.showUi ? '#1F7A4C' : '#D9D4C8', bg: e.showUi ? '#fff' : '#FCFBF9',
+      urlColor: e.showUi ? '#26221C' : '#A79F91',
+      hasNote: !!a.showInMenuString, note: 'Nested under ' + a.showInMenuString + ' rather than a top-level menu.'
+    });
+
+    const outputHints = {
+      snippet: 'Paste anywhere that runs on init — a plugin file, an mu-plugin, or a functionality plugin.',
+      functions: 'Named function plus an after_switch_theme flush, so permalinks work the moment the theme is activated.',
+      plugin: 'A complete single-file plugin with a header and an activation-only rewrite flush.'
+    };
+
+    return {
+      toolCount: 38, trueVal: true,
+      pt: pt, adv: a,
+      refWorkspace: this.getRef('workspace'),
+      refSingular: this.getRef('singular'), refPlural: this.getRef('plural'), refKey: this.getRef('key'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (pt.key || 'post-type').replace(/_/g, '-') + '.php',
+
+      onSingularChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.singular = v; if (!p.keyEdited) p.key = slugify(v, 20); if (!p.pluralEdited) p.plural = v ? v + 's' : ''; }, 'singular'); },
+      onPluralChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.plural = v; p.pluralEdited = true; }, 'plural'); },
+      onResetPlural: function () { self.commit(function (p) { p.plural = p.singular ? p.singular + 's' : ''; p.pluralEdited = false; }); },
+      pluralIsCustom: pt.pluralEdited,
+      onKeyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.key = v; p.keyEdited = true; }, 'key'); },
+      onResetKey: function () { self.commit(function (p) { p.key = slugify(p.singular, 20); p.keyEdited = false; }); },
+      onDescriptionChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.description = v; }, 'description'); },
+      onArchiveSlugChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.archiveSlug = v; }, 'archiveSlug'); },
+      keyLength: (pt.key || '').length,
+      keyCounterColor: (pt.key || '').length > 20 ? '#B91C1C' : (pt.key || '').length > 16 ? '#B45309' : '#948C7E',
+      keyBorderColor: (pt.key || '').length > 20 || RESERVED.indexOf(pt.key) !== -1 ? '#B91C1C' : '#E7E2D9',
+      keyIsCustom: pt.keyEdited,
+      keyHint: pt.keyEdited ? 'Edited by hand — lowercase, max 20 characters, prefixed to avoid clashes.' : 'Derived from the singular name. Type here to set it yourself.',
+      archiveSlugPlaceholder: e.slug,
+      archivePreviewUrl: '/' + e.archiveSlug + '/',
+
+      behaviourToggles: [
+        { key: 'public', label: 'Public', help: 'Visible on the front end and in the admin. Off means an internal-only type.', on: pt.public },
+        { key: 'hierarchical', label: 'Hierarchical (page-like)', help: 'Allows a parent to be set. Heavy on sites with thousands of entries.', on: pt.hierarchical },
+        { key: 'showInRest', label: 'Block editor (show_in_rest)', help: 'Required for Gutenberg and the REST API.', on: pt.showInRest },
+        { key: 'hasArchive', label: 'Archive page', help: 'Generates /slug/ listing every entry of this type.', on: pt.hasArchive }
+      ].map(function (t) {
+        return {
+          label: t.label, help: t.help, on: t.on,
+          bg: t.on ? '#3858E9' : '#D9D4C8', knobLeft: t.on ? '19px' : '2px',
+          onToggle: function () { self.commit(function (p) { p[t.key] = !p[t.key]; }); }
+        };
+      }),
+
+      supportChips: SUPPORTS.map(function (sup) {
+        const on = pt.supports.indexOf(sup) !== -1;
+        return Object.assign({ label: sup, on: on, onToggle: function () { self.commit(function (p) { const i = p.supports.indexOf(sup); if (i === -1) p.supports.push(sup); else p.supports.splice(i, 1); }); } }, chipStyle(on));
+      }),
+      taxonomyChips: BUILTIN_TAX.map(function (t) {
+        const on = pt.taxonomies.indexOf(t[0]) !== -1;
+        return Object.assign({ label: t[1], on: on, onToggle: function () { self.commit(function (p) { const i = p.taxonomies.indexOf(t[0]); if (i === -1) p.taxonomies.push(t[0]); else p.taxonomies.splice(i, 1); }); } }, chipStyle(on));
+      }),
+      customTaxChips: pt.customTax.map(function (v, i) {
+        return { value: v, onRemove: function () { self.commit(function (p) { p.customTax.splice(i, 1); }); } };
+      }),
+      taxDraft: s.taxDraft,
+      onTaxDraftChange: function (ev) { self.setState({ taxDraft: ev.target.value }); },
+      onTaxDraftKeyDown: function (ev) {
+        if (ev.key === 'Enter' || ev.key === ',') {
+          ev.preventDefault();
+          const v = slugify(s.taxDraft, 32);
+          if (v) self.commit(function (p) { if (p.customTax.indexOf(v) === -1) p.customTax.push(v); });
+          self.setState({ taxDraft: '' });
+        }
+      },
+      onTaxDraftBlur: function () {
+        const v = slugify(s.taxDraft, 32);
+        if (v) self.commit(function (p) { if (p.customTax.indexOf(v) === -1) p.customTax.push(v); });
+        self.setState({ taxDraft: '' });
+      },
+
+      labelsOpen: s.labelsOpen,
+      labelsChevron: s.labelsOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+      labelsSummary: overrideCount ? overrideCount + ' overridden · rest auto-generated' : 'Auto-generated from the names above',
+      onToggleLabels: function () { self.setState({ labelsOpen: !s.labelsOpen }); },
+      labelRows: s.showAllLabels ? labelRowsAll : labelRowsAll.filter(function (r) { return ESSENTIAL_LABELS.indexOf(r.key) !== -1 || r.value; }),
+      allLabelsLabel: s.showAllLabels ? 'Showing all ' + labelRowsAll.length : 'Show all ' + labelRowsAll.length + ' labels',
+      allLabelsBg: s.showAllLabels ? '#EEF1FE' : '#fff', allLabelsColor: s.showAllLabels ? '#2A46C4' : '#5C564B',
+      onToggleAllLabels: function () { self.setState({ showAllLabels: !s.showAllLabels }); },
+      outputAllLabel: pt.outputAllLabels ? 'Writing all labels to PHP' : 'Write only used labels to PHP',
+      outputAllBg: pt.outputAllLabels ? '#EEF1FE' : '#fff', outputAllColor: pt.outputAllLabels ? '#2A46C4' : '#5C564B',
+      onToggleOutputAllLabels: function () { self.commit(function (p) { p.outputAllLabels = !p.outputAllLabels; }); },
+      hasLabelOverrides: overrideCount > 0, overrideCount: overrideCount,
+      onClearLabelOverrides: function () { self.commit(function (p) { p.labelOverrides = {}; }); },
+
+      advancedOpen: s.advancedOpen,
+      advancedChevron: s.advancedOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+      advancedSummary: s.advancedOpen ? 'Visibility, menu, REST, permalinks, capabilities' : 'Only if you need them — sensible defaults are already applied',
+      onToggleAdvanced: function () { self.setState({ advancedOpen: !s.advancedOpen }); },
+
+      visibilitySelects: VISIBILITY_KEYS.map(function (v) {
+        return { key: v[1], value: a[v[0]], inheritLabel: v[2], onChange: function (ev) { self.setAdv(v[0], ev.target.value); } };
+      }),
+      menuPositions: MENU_POSITIONS.map(function (m) { return { value: m[0], label: m[1] }; }),
+      dashicons: DASHICONS.map(function (d) { return { value: d, label: d.replace('dashicons-', '') }; }),
+      onMenuPositionChange: function (ev) { self.setAdv('menuPosition', ev.target.value); },
+      onMenuIconChange: function (ev) { self.setAdv('menuIcon', ev.target.value); },
+      onShowInMenuStringChange: function (ev) { self.setAdv('showInMenuString', ev.target.value, true); },
+      onRestBaseChange: function (ev) { self.setAdv('restBase', ev.target.value, true); },
+      onRestNamespaceChange: function (ev) { self.setAdv('restNamespace', ev.target.value, true); },
+      onRestControllerChange: function (ev) { self.setAdv('restController', ev.target.value, true); },
+      onRewriteModeChange: function (ev) { self.setAdv('rewriteMode', ev.target.value); },
+      onRewriteSlugChange: function (ev) { self.setAdv('rewriteSlug', ev.target.value, true); },
+      onQueryVarModeChange: function (ev) { self.setAdv('queryVarMode', ev.target.value); },
+      onQueryVarStringChange: function (ev) { self.setAdv('queryVarString', ev.target.value, true); },
+      showQueryVarInput: a.queryVarMode === 'custom',
+      rewriteFlags: [
+        { key: 'withFront', label: 'with_front', on: a.withFront },
+        { key: 'pages', label: 'pages', on: a.pages },
+        { key: 'feeds', label: 'feeds', on: a.feeds }
+      ].map(function (f) {
+        return Object.assign({ label: f.label, on: f.on, onToggle: function () { self.setAdv(f.key, !f.on); } }, chipStyle(f.on));
+      }),
+      onCapModeChange: function (ev) { self.setAdv('capMode', ev.target.value); },
+      showCapCustom: a.capMode === 'custom',
+      onCapSingularChange: function (ev) { self.setAdv('capSingular', ev.target.value, true); },
+      onCapPluralChange: function (ev) { self.setAdv('capPlural', ev.target.value, true); },
+      onToggleMapMetaCap: function () { self.setAdv('mapMetaCap', !a.mapMetaCap); },
+      mapMetaCapBg: a.mapMetaCap ? '#3858E9' : '#D9D4C8', mapMetaCapKnob: a.mapMetaCap ? '19px' : '2px',
+      onCanExportChange: function (ev) { self.setAdv('canExport', ev.target.value); },
+      onDeleteWithUserChange: function (ev) { self.setAdv('deleteWithUser', ev.target.value); },
+      onTemplateLockChange: function (ev) { self.setAdv('templateLock', ev.target.value); },
+      onFnPrefixChange: function (ev) { self.setAdv('fnPrefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.setAdv('textDomain', ev.target.value, true); },
+
+      codeTokens: tokenizePHP(code),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: outputHints[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new post type' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo, iconChevronDown: ICON.chevronDown, iconClose: ICON.close,
+
+      permalinkRows: permalinkRows,
+      sampleDomainLabel: domain,
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i, idx) {
+        return {
+          message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity],
+          fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix automatically',
+          onFix: function () { self.applyFix(i.fix); },
+          onFocus: function () { if (i.targetId) self.focusTarget(i.targetId); void idx; }
+        };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showPermalinksTab: s.rightTab === 'permalinks', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabPermalinks: function () { self.setState({ rightTab: 'permalinks', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabPermalinksColor: s.rightTab === 'permalinks' ? '#3858E9' : '#948C7E', tabPermalinksBorder: s.rightTab === 'permalinks' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Editor'], ['output', 'PHP & Checks']].map(function (t) {
+        const on = s.mobilePane === t[0];
+        return { label: t[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: t[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

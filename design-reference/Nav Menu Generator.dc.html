@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Nav Menu Generator — register_nav_menus() &amp; wp_nav_menu() — Generator for WP</title>
+  <meta name="description" content="Register menu locations and generate the wp_nav_menu() call that outputs them — with the fallback that does not dump every page on the site." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=design" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Design</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Nav Menu</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Nav Menu Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Menu locations for Appearance → Menus, plus the wp_nav_menu() call with a fallback that stays quiet instead of listing every page you have.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Menu locations</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ locationsNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:13px;">
+          <sc-for list="{{ startPresets }}" as="qp" hint-placeholder-count="3">
+            <button onClick="{{ qp.onPick }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; color:#5C564B; border-radius:20px; padding:4px 11px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ qp.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ locationRows }}" as="lr" hint-placeholder-count="2">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <input value="{{ lr.name }}" onChange="{{ lr.onNameChange }}" placeholder="Primary Menu" style="flex:1.2; min-width:120px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid {{ lr.nameBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <input value="{{ lr.slug }}" onChange="{{ lr.onSlugChange }}" spellCheck="false" placeholder="primary" style="width:130px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ lr.slugBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <input value="{{ lr.where }}" onChange="{{ lr.onWhereChange }}" placeholder="header.php" style="width:130px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              <div style="display:flex; gap:3px; flex-shrink:0;">
+                <button aria-label="Move up" onClick="{{ lr.onMoveUp }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ lr.iconUp }}</button>
+                <button aria-label="Move down" onClick="{{ lr.onMoveDown }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ lr.iconDown }}</button>
+                <button aria-label="Remove location" onClick="{{ lr.onRemove }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ lr.iconRemove }}</button>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noLocations }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No locations — Appearance → Menus will have nowhere to assign a menu.</div>
+          </sc-if>
+        </div>
+        <button onClick="{{ onAddLocation }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add location</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">The wp_nav_menu() call</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ callTargetNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+          <sc-for list="{{ locationChips }}" as="lc" hint-placeholder-count="2">
+            <button onClick="{{ lc.onClick }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ lc.borderColor }}; background:{{ lc.bg }}; color:{{ lc.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ lc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">container</label>
+            <select value="{{ nm.container }}" onChange="{{ onContainerChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="false">false — no wrapper</option>
+              <option value="nav">nav</option>
+              <option value="div">div</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">menu_class</label>
+            <input value="{{ nm.menuClass }}" onChange="{{ onMenuClassChange }}" spellCheck="false" placeholder="menu" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">menu_id</label>
+            <input value="{{ nm.menuId }}" onChange="{{ onMenuIdChange }}" spellCheck="false" placeholder="primary-menu" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">depth</label>
+            <select value="{{ nm.depth }}" onChange="{{ onDepthChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="0">0 — unlimited</option>
+              <option value="1">1 — flat, no children</option>
+              <option value="2">2 — one dropdown level</option>
+              <option value="3">3 — two dropdown levels</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">fallback_cb</label>
+            <select value="{{ nm.fallback }}" onChange="{{ onFallbackChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid {{ fallbackBorder }}; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="false">false — print nothing</option>
+              <option value="page_menu">wp_page_menu — list pages</option>
+              <option value="custom">Your own callback</option>
+            </select>
+          </div>
+          <sc-if value="{{ isCustomFallback }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">callback name</label>
+              <input value="{{ nm.fallbackName }}" onChange="{{ onFallbackNameChange }}" spellCheck="false" placeholder="mytheme_menu_fallback" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </sc-if>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">items_wrap</label>
+          <input value="{{ nm.itemsWrap }}" onChange="{{ onItemsWrapChange }}" spellCheck="false" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ itemsWrapBorder }};" style-focus="outline:2px solid #3858E9;" />
+          <div style="font-size:11px; color:#948C7E; margin-top:4px; line-height:1.45;">%1$s is the menu_id, %2$s the menu_class, %3$s the items. Drop %3$s and the menu renders empty.</div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Naming &amp; shape</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+            <input value="{{ nm.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="mytheme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ nm.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="mytheme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E;">Registration</span>
+          <sc-for list="{{ hookChips }}" as="hc" hint-placeholder-count="2">
+            <button onClick="{{ hc.onSelect }}" style="font-size:12px; font-weight:650; font-family:'JetBrains Mono',monospace; border:1px solid {{ hc.borderColor }}; background:{{ hc.bg }}; color:{{ hc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ hc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="margin-top:11px; font-size:12px; color:#5C564B; line-height:1.55;">{{ hookNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Template output</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="4">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">Register</button>
+        <button onClick="{{ onSetTabTemplate }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabTemplateColor }}; border-bottom:2px solid {{ tabTemplateBorder }};" style-focus="outline:2px solid #3858E9;">Template</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showTemplateTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; align-items:center;">
+            <span style="font-size:11.5px; font-weight:600; color:#5C564B;">{{ templateFileHint }}</span>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopyTemplate }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyTemplateLabel }}</button>
+          </div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 18px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre-wrap; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ templateTokens }}" as="tt" hint-placeholder-count="14"><span style="color:{{ tt.color }}; font-style:{{ tt.italic }};">{{ tt.text }}</span></sc-for></pre>
+            <div style="border-top:1px solid #E7E2D9; background:#FFFFFF; padding:12px 16px 30px;">
+              <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Markup it produces</div>
+              <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; white-space:pre-wrap; word-break:break-word;"><sc-for list="{{ htmlTokens }}" as="ht" hint-placeholder-count="10"><span style="color:{{ ht.color }};">{{ ht.text }}</span></sc-for></pre>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">register_nav_menus()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">{{ refHookLabel }}</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refSignature }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">wp_nav_menu() arguments worth knowing</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Registered locations</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refRegistered }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The classes core adds</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Each item gets menu-item, menu-item-{id} and menu-item-object-{page|post|category}. The current page carries current-menu-item, its ancestors current-menu-ancestor, and items with children menu-item-has-children. Style those rather than adding your own walker — most “I need a custom walker” problems are one CSS rule.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this menu setup.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;snippet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const START_PRESETS = [
+  ['Primary only', [['primary', 'Primary Menu', 'header.php']]],
+  ['Header + footer', [['primary', 'Primary Menu', 'header.php'], ['footer', 'Footer Menu', 'footer.php']]],
+  ['Full theme set', [['primary', 'Primary Menu', 'header.php'], ['footer', 'Footer Menu', 'footer.php'], ['social', 'Social Links', 'footer.php'], ['legal', 'Legal Links', 'footer.php']]]
+];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function pascal(s) { return String(s || '').split(/[^A-Za-z0-9]+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join('_'); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(nm) {
+  const pre = fnSlug(nm.prefix) || 'mytheme';
+  const locations = (nm.locations || []).map(function (l) { return { slug: slugify(l.slug) || 'primary', name: l.name || 'Menu', where: l.where || 'header.php' }; });
+  return {
+    pre: pre, td: slugify(nm.textDomain) || pre.replace(/_/g, '-'),
+    cls: (pascal(nm.prefix || 'MyTheme') || 'MyTheme') + '_Nav_Menus',
+    hook: nm.hook === 'init' ? 'init' : 'after_setup_theme',
+    locations: locations
+  };
+}
+
+function buildCode(nm, mode) {
+  const d = derive(nm);
+  const t = function (s) { return "__( '" + esc(s) + "', '" + d.td + "' )"; };
+  let body = d.locations.length
+    ? 'register_nav_menus(\n' + indent('array(\n' + indent(aligned(d.locations.map(function (l) { return [l.slug, t(l.name)]; })), 1) + '\n)', 1) + '\n);'
+    : '// Add a menu location to generate the registration call.';
+  const doc = '/**\n * Register the theme’s menu locations.\n */\n';
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       Menu locations\n * Description:       Registers ' + d.locations.length + ' nav menu location' + (d.locations.length === 1 ? '' : 's') + '.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Text Domain:       ' + d.td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+  if (nm.codeStyle === 'class') {
+    out += 'final class ' + d.cls + " {\n\n\t/**\n\t * Wire the class into WordPress.\n\t */\n\tpublic function hooks() {\n\t\tadd_action( '" + d.hook + "', array( $this, 'register' ) );\n\t}\n\n" + indent(doc, 1) + '\tpublic function register() {\n' + indent(body, 2) + '\n\t}\n}\n\n( new ' + d.cls + '() )->hooks();\n';
+  } else {
+    out += doc + 'function ' + d.pre + '_nav_menus() {\n' + indent(body, 1) + '\n}\n' + "add_action( '" + d.hook + "', '" + d.pre + "_nav_menus' );\n";
+  }
+  if (nm.fallback === 'custom' && d.locations.length) {
+    out += '\n/**\n * Printed when no menu is assigned to the location.\n */\nfunction ' + (fnSlug(nm.fallbackName) || d.pre + '_menu_fallback') + '() {\n\tif ( ! current_user_can( \'edit_theme_options\' ) ) {\n\t\treturn;\n\t}\n\n\tprintf(\n\t\t\'<p class="menu-fallback"><a href="%1$s">%2$s</a></p>\',\n\t\tesc_url( admin_url( \'nav-menus.php\' ) ),\n\t\tesc_html__( \'Assign a menu to this location\', \'' + d.td + "' )\n\t);\n}\n";
+  }
+  return withCredit(out);
+}
+
+function buildTemplate(nm, loc) {
+  const d = derive(nm);
+  if (!loc) return '<?php\n// Add a menu location first.\n';
+  const args = [['theme_location', "'" + esc(loc.slug) + "'"]];
+  if (nm.menuId) args.push(['menu_id', "'" + esc(nm.menuId) + "'"]);
+  if (nm.menuClass) args.push(['menu_class', "'" + esc(nm.menuClass) + "'"]);
+  args.push(['container', nm.container === 'false' ? 'false' : "'" + nm.container + "'"]);
+  if (nm.container !== 'false') args.push(['container_class', "'" + esc(nm.containerClass || 'menu-' + loc.slug) + "'"]);
+  if (String(nm.depth) !== '0') args.push(['depth', String(parseInt(nm.depth, 10) || 0)]);
+  args.push(['fallback_cb', nm.fallback === 'false' ? 'false' : nm.fallback === 'page_menu' ? "'wp_page_menu'" : "'" + (fnSlug(nm.fallbackName) || d.pre + '_menu_fallback') + "'"]);
+  if (nm.itemsWrap) args.push(['items_wrap', "'" + esc(nm.itemsWrap) + "'"]);
+  const call = 'wp_nav_menu(\n' + indent('array(\n' + indent(aligned(args), 1) + '\n)', 1) + '\n);';
+  const inner = nm.ariaWrapper
+    ? '<nav class="' + esc(nm.containerClass || 'site-nav') + '" aria-label="' + '<?php esc_attr_e( \'' + esc(loc.name) + '\', \'' + d.td + '\' ); ?>">\n\t<?php\n' + indent(call, 1) + '\n\t?>\n</nav>'
+    : '<?php\n' + call + '\n?>';
+  let out = '';
+  if (nm.hasMenuGuard) {
+    out += "<?php if ( has_nav_menu( '" + esc(loc.slug) + "' ) ) : ?>\n" + indent(inner, 1) + '\n<?php endif; ?>\n';
+  } else {
+    out += inner + '\n';
+  }
+  return out;
+}
+
+function sampleHTML(nm, loc) {
+  if (!loc) return '<!-- add a menu location -->';
+  const id = nm.menuId || 'menu-' + loc.slug;
+  const cls = nm.menuClass || 'menu';
+  const items = '\n\t<li class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item"><a href="/" aria-current="page">Home</a></li>\n\t<li class="menu-item menu-item-has-children"><a href="/work/">Work</a>\n\t\t<ul class="sub-menu">\n\t\t\t<li class="menu-item"><a href="/work/case-studies/">Case Studies</a></li>\n\t\t</ul>\n\t</li>\n';
+  const list = String(nm.itemsWrap || '<ul id="%1$s" class="%2$s">%3$s</ul>').replace('%1$s', id).replace('%2$s', cls).replace('%3$s', items);
+  const wrap = nm.ariaWrapper ? '<nav class="' + (nm.containerClass || 'site-nav') + '" aria-label="' + loc.name + '">\n' + indent(list, 1) + '\n</nav>' : list;
+  return nm.container === 'false' ? wrap : '<' + nm.container + ' class="' + (nm.containerClass || 'menu-' + loc.slug) + '">\n' + indent(wrap, 1) + '\n</' + nm.container + '>';
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit|static|new|class|final|public|private|if|else|foreach|endif|endforeach|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+const HTML_RE = /(<\/?[a-z][a-z0-9]*)|([a-z-]+)(?==")|("(?:[^"]*)")|(>)/gi;
+function tokenizeHTML(code) {
+  const C = { tag: '#B3439A', attr: '#8A5B00', string: '#1F7A4C', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color) { if (text) out.push({ text: text, color: color }); };
+  HTML_RE.lastIndex = 0;
+  while ((m = HTML_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.tag);
+    else if (m[2]) push(m[2], C.attr);
+    else if (m[3]) push(m[3], C.string);
+    else push(m[4], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(nm) {
+  const d = derive(nm);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!d.locations.length) add('error', 'No menu locations registered, so Appearance → Menus has nowhere to assign a menu.');
+  const seen = {};
+  (nm.locations || []).forEach(function (l) {
+    const slug = slugify(l.slug);
+    if (!String(l.slug || '').trim()) add('error', 'A location is missing its slug — theme_location has nothing to match.', 'fixSlugs', 'Derive from names');
+    else if (String(l.slug).trim() !== slug) add('error', '“' + l.slug + '” is not a safe location slug. Use lowercase and dashes so the theme_location value matches.', 'fixSlugs', 'Use ' + slug);
+    if (seen[slug]) add('error', 'Two locations share the slug “' + slug + '”. The second registration replaces the first.');
+    seen[slug] = true;
+    if (!String(l.name || '').trim()) add('warning', 'The location “' + slug + '” has no name, so the Menus screen shows an unlabelled checkbox.');
+  });
+  if (nm.fallback === 'page_menu') add('warning', 'fallback_cb is wp_page_menu, so a site with no menu assigned prints every published page — including the ones nobody meant to link.', 'noFallback', 'Set false');
+  if (!nm.hasMenuGuard) add('warning', 'No has_nav_menu() guard, so an unassigned location still prints your nav wrapper and the fallback runs inside it.', 'addGuard', 'Add the guard');
+  if (!nm.ariaWrapper) add('recommendation', 'No nav landmark or aria-label. Two unlabelled navs on a page are indistinguishable to a screen reader — wrap the call and name it.');
+  if (String(nm.itemsWrap || '').indexOf('%3$s') === -1) add('error', 'items_wrap has no %3$s, so the list renders with no items at all.', 'fixItemsWrap', 'Restore the default');
+  if (String(nm.itemsWrap || '').indexOf('%1$s') === -1 && nm.menuId) add('recommendation', 'items_wrap drops %1$s, so the menu_id you set never lands in the markup.');
+  if (String(nm.depth) === '1' && d.locations.length) add('recommendation', 'depth 1 flattens the menu — child items an editor adds in the admin will silently not render.');
+  if (String(nm.depth) === '0') add('recommendation', 'depth 0 means unlimited nesting. Fine if your CSS handles third-level dropdowns; most themes only style two.');
+  if (nm.container !== 'false' && nm.ariaWrapper) add('recommendation', 'You have both a container (' + nm.container + ') and your own nav wrapper — that is two nested elements doing one job. Set container to false.');
+  if (d.hook === 'init') add('recommendation', 'register_nav_menus() on init works, but after_setup_theme is where theme features belong and it runs earlier.');
+  if (d.td !== d.pre.replace(/_/g, '-')) add('recommendation', 'The text domain “' + d.td + '” must match the theme folder name or the location names never translate.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'mytheme', textDomain: 'mytheme', codeStyle: 'procedural', hook: 'after_setup_theme',
+    locations: [
+      { slug: 'primary', name: 'Primary Menu', where: 'header.php' },
+      { slug: 'footer', name: 'Footer Menu', where: 'footer.php' }
+    ],
+    container: 'false', containerClass: 'site-nav', menuClass: 'menu', menuId: 'primary-menu',
+    depth: '2', fallback: 'false', fallbackName: '',
+    itemsWrap: '<ul id="%1$s" class="%2$s">%3$s</ul>',
+    hasMenuGuard: true, ariaWrapper: true
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    nm: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'snippet', validationFilter: 'all', activeLocation: '',
+    copiedFlash: false, copiedTemplateFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('nav-menu-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.locations) this.setState({ nm: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(nm) { try { localStorage.setItem('nav-menu-generator-v1', JSON.stringify(nm)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.nm));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { nm: next, past: coalesce ? s.past : s.past.concat([s.nm]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.nm));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { nm: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.nm].concat(s.future) }; }, () => this.persist(this.state.nm)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { nm: s.future[0], past: s.past.concat([s.nm]), future: s.future.slice(1) }; }, () => this.persist(this.state.nm)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'fixSlugs') p.locations.forEach(function (l) { l.slug = slugify(l.slug) || slugify(l.name) || 'primary'; });
+      if (kind === 'noFallback') p.fallback = 'false';
+      if (kind === 'addGuard') p.hasMenuGuard = true;
+      if (kind === 'fixItemsWrap') p.itemsWrap = '<ul id="%1$s" class="%2$s">%3$s</ul>';
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.nm, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  copyTemplate(loc) {
+    try { navigator.clipboard.writeText(buildTemplate(this.state.nm, loc)); } catch (err) { /* ignore */ }
+    this.setState({ copiedTemplateFlash: true, ariaLiveMessage: 'Template code copied' });
+    setTimeout(() => this.setState({ copiedTemplateFlash: false }), 1600);
+  }
+  download() {
+    const nm = this.state.nm, mode = this.state.outputMode;
+    let code = buildCode(nm, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = (fnSlug(nm.prefix) || 'theme').replace(/_/g, '-') + '-nav-menus.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, nm = s.nm, self = this;
+    const d = derive(nm);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), up: ic('\ue555', 12), down: ic('\ue54f', 12), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(nm);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const activeLoc = d.locations.filter(function (l) { return l.slug === s.activeLocation; })[0] || d.locations[0] || null;
+
+    return {
+      toolCount: 38, trueVal: true, nm: nm,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (fnSlug(nm.prefix) || 'theme').replace(/_/g, '-') + '-nav-menus.php',
+
+      locationsNote: d.locations.length + (d.locations.length === 1 ? ' location' : ' locations'),
+      noLocations: d.locations.length === 0,
+      startPresets: START_PRESETS.map(function (sp) {
+        return { label: sp[0], onPick: function () { self.commit(function (p) { p.locations = sp[1].map(function (l) { return { slug: l[0], name: l[1], where: l[2] }; }); }); } };
+      }),
+      locationRows: (nm.locations || []).map(function (l, i) {
+        return {
+          name: l.name, slug: l.slug, where: l.where,
+          nameBorder: String(l.name || '').trim() ? '#E7E2D9' : '#B91C1C',
+          slugBorder: String(l.slug || '').trim() && String(l.slug).trim() === slugify(l.slug) ? '#E7E2D9' : '#B91C1C',
+          iconUp: ICON.up, iconDown: ICON.down, iconRemove: ICON.close,
+          onNameChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.locations[i].name = v; }, 'l-' + i + '-n'); },
+          onSlugChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.locations[i].slug = v; }, 'l-' + i + '-s'); },
+          onWhereChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.locations[i].where = v; }, 'l-' + i + '-w'); },
+          onMoveUp: function () { self.commit(function (p) { if (i === 0) return; const t = p.locations[i - 1]; p.locations[i - 1] = p.locations[i]; p.locations[i] = t; }); },
+          onMoveDown: function () { self.commit(function (p) { if (i >= p.locations.length - 1) return; const t = p.locations[i + 1]; p.locations[i + 1] = p.locations[i]; p.locations[i] = t; }); },
+          onRemove: function () { self.commit(function (p) { p.locations.splice(i, 1); }); }
+        };
+      }),
+      onAddLocation: function () { self.commit(function (p) { const n = p.locations.length + 1; p.locations.push({ slug: 'menu-' + n, name: 'Menu ' + n, where: 'header.php' }); }); },
+
+      callTargetNote: activeLoc ? 'theme_location: ' + activeLoc.slug : 'no location selected',
+      locationChips: d.locations.map(function (l) {
+        const on = activeLoc && l.slug === activeLoc.slug;
+        return { label: l.slug, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onClick: function () { self.setState({ activeLocation: l.slug }); } };
+      }),
+      onContainerChange: function (ev) { self.set('container', ev.target.value); },
+      onMenuClassChange: function (ev) { self.set('menuClass', ev.target.value, true); },
+      onMenuIdChange: function (ev) { self.set('menuId', ev.target.value, true); },
+      onDepthChange: function (ev) { self.set('depth', ev.target.value); },
+      onFallbackChange: function (ev) { self.set('fallback', ev.target.value); },
+      fallbackBorder: nm.fallback === 'page_menu' ? '#B45309' : '#E7E2D9',
+      isCustomFallback: nm.fallback === 'custom',
+      onFallbackNameChange: function (ev) { self.set('fallbackName', ev.target.value, true); },
+      onItemsWrapChange: function (ev) { self.set('itemsWrap', ev.target.value, true); },
+      itemsWrapBorder: String(nm.itemsWrap || '').indexOf('%3$s') === -1 ? '#B91C1C' : '#E7E2D9',
+
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      hookChips: [['after_setup_theme', 'after_setup_theme'], ['init', 'init']].map(function (h) {
+        const on = d.hook === h[0];
+        return { label: h[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onSelect: function () { self.set('hook', h[0]); } };
+      }),
+      hookNote: d.hook === 'after_setup_theme'
+        ? 'Where theme features belong. Runs before init, so the locations exist by the time anything asks for them.'
+        : 'init also works and is what plugins use — a plugin registering a location for a theme it does not control.',
+
+      extraToggles: [
+        { key: 'hasMenuGuard', label: 'has_nav_menu() guard', help: 'Skips the whole block when no menu is assigned to the location.', on: nm.hasMenuGuard },
+        { key: 'ariaWrapper', label: 'Wrap in a labelled nav', help: 'A nav landmark with an aria-label so screen readers can tell your menus apart.', on: nm.ariaWrapper }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(nm, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: 'The registration call and its hook — paste anywhere that loads early.', functions: 'Ready for your theme’s functions.php.', plugin: 'A complete single-file plugin with a header.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new menu setup' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      templateTokens: tokenizePHP(buildTemplate(nm, activeLoc)),
+      templateFileHint: activeLoc ? activeLoc.where + ' — ' + activeLoc.name : 'Add a location first',
+      htmlTokens: tokenizeHTML(sampleHTML(nm, activeLoc)),
+      copyTemplateLabel: s.copiedTemplateFlash ? 'Copied' : 'Copy',
+      onCopyTemplate: function () { self.copyTemplate(activeLoc); },
+
+      refHookLabel: 'Registered on ' + d.hook + ' · read by Appearance → Menus',
+      refSignature: 'register_nav_menus(\n\tarray(\n' + d.locations.map(function (l) { return "\t\t'" + l.slug + "' => __( '" + esc(l.name) + "', '" + d.td + "' ),"; }).join('\n') + '\n\t)\n);',
+      refArgs: [
+        ['theme_location', 'string', 'The registered location slug. Without it wp_nav_menu() falls back to the first menu it can find, which is why menus sometimes appear in the wrong place.'],
+        ['menu', 'int|string|WP_Term', 'A specific menu by id, slug or name. Use it only when the menu must not be swappable by the site owner.'],
+        ['container / container_class', 'string|false', 'The wrapper element. false lets you write your own markup — usually cleaner than fighting the default div.'],
+        ['items_wrap', 'string', 'The ul template. %1$s is the id, %2$s the class, %3$s the items themselves.'],
+        ['depth', 'int', '0 is unlimited, 1 flattens the menu, 2 allows one dropdown level.'],
+        ['fallback_cb', 'callable|false', 'Runs when no menu is assigned. Defaults to wp_page_menu, which lists every page — almost never what you want on a live site.'],
+        ['walker', 'Walker', 'A custom walker rewrites the markup entirely. Try the core classes first: most needs are covered by CSS on menu-item-has-children.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+      refRegistered: d.locations.length ? d.locations.map(function (l) { return padTo(l.slug, 14) + ' ' + l.name + '  ·  ' + l.where; }).join('\n') : 'Nothing registered yet.',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showTemplateTab: s.rightTab === 'template', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabTemplate: function () { self.setState({ rightTab: 'template', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabTemplateColor: s.rightTab === 'template' ? '#3858E9' : '#948C7E', tabTemplateBorder: s.rightTab === 'template' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Editor'], ['output', 'PHP & Template']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

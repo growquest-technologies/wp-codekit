@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Date Query Builder — date_query clauses — Generator for WP</title>
+  <meta name="description" content="Build date_query clauses: absolute ranges, relative windows, column targeting and inclusive boundaries — with the timezone caveat spelled out." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=query" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Query</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">WP_Date_Query</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Date Query Builder</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Ranges, rolling windows and calendar parts — with the inclusive flag that decides whether the last day of the month is in or out.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:11px;">Shape of the range</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+          <sc-for list="{{ modeChips }}" as="mc" hint-placeholder-count="4">
+            <button onClick="{{ mc.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ mc.borderColor }}; background:{{ mc.bg }}; color:{{ mc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mc.label }}</button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ isRange }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">after</label>
+              <input value="{{ dq.after }}" onChange="{{ onAfterChange }}" spellCheck="false" placeholder="2026-01-01" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ afterBorder }};" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">before</label>
+              <input value="{{ dq.before }}" onChange="{{ onBeforeChange }}" spellCheck="false" placeholder="2026-06-30" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ beforeBorder }};" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </div>
+          <div style="margin-top:10px; font-size:11.5px; color:#948C7E; line-height:1.5;">Either an absolute date or a strtotime phrase — “1 January 2026”, “-30 days”, “last monday”. Leave one empty for an open-ended range.</div>
+        </sc-if>
+
+        <sc-if value="{{ isRelative }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">last</label>
+              <input value="{{ dq.relativeCount }}" onChange="{{ onRelativeCountChange }}" spellCheck="false" placeholder="30" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ relativeBorder }};" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">unit</label>
+              <select value="{{ dq.relativeUnit }}" onChange="{{ onRelativeUnitChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                <option value="hours">hours</option>
+                <option value="days">days</option>
+                <option value="weeks">weeks</option>
+                <option value="months">months</option>
+                <option value="years">years</option>
+              </select>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isParts }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px;">
+            <sc-for list="{{ partFields }}" as="pf" hint-placeholder-count="4">
+              <div>
+                <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">{{ pf.label }}</label>
+                <input value="{{ pf.value }}" onChange="{{ pf.onChange }}" spellCheck="false" placeholder="{{ pf.placeholder }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ pf.border }};" style-focus="outline:2px solid #3858E9;" />
+                <div style="font-size:11px; color:#948C7E; margin-top:4px;">{{ pf.help }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px; margin-top:14px; padding-top:13px; border-top:1px solid #EDE8DF;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">column</label>
+            <select value="{{ dq.column }}" onChange="{{ onColumnChange }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <sc-for list="{{ columnOptions }}" as="co" hint-placeholder-count="4">
+                <option value="{{ co.value }}">{{ co.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post_type</label>
+            <input value="{{ dq.postType }}" onChange="{{ onPostTypeChange }}" spellCheck="false" placeholder="post" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">posts_per_page</label>
+            <input value="{{ dq.perPage }}" onChange="{{ onPerPageChange }}" spellCheck="false" placeholder="10" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post_status</label>
+            <select value="{{ dq.postStatus }}" onChange="{{ onPostStatusChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="publish">publish</option>
+              <option value="future">future — scheduled</option>
+              <option value="draft">draft</option>
+              <option value="any">any</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:13px;">
+          <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="3">
+            <div style="display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-top:1px solid #F0ECE4;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+                <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+              </div>
+              <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+                <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#FBFAF7; border:1px solid #E7E2D9; border-radius:8px; padding:16px 18px; margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">In plain English</div>
+        <div style="font-size:13px; line-height:1.65; color:#3B362D;">{{ plainEnglish }}</div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">date_query</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Handled by WP_Date_Query — no JOIN, it filters wp_posts directly</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Clause keys</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="5">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Columns</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refColumns }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">post_date or post_date_gmt</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">post_date is the site’s local time; post_date_gmt is UTC. A date_query compares against whichever column you name, using the literal numbers you gave it — no conversion happens. If your dates come from an API in UTC, query the GMT column, or you will be off by your timezone offset twice a year.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">inclusive</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">With inclusive false, before => '2026-06-30' means everything up to midnight on the 30th — so nothing published that day matches. With it true, the boundary day is included. This is the single most common off-by-one in WordPress date filtering.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this query.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;query&quot;,&quot;args&quot;,&quot;pre&quot;],&quot;default&quot;:&quot;query&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const COLUMNS = [
+  ['post_date', 'post_date — site time'],
+  ['post_date_gmt', 'post_date_gmt — UTC'],
+  ['post_modified', 'post_modified'],
+  ['post_modified_gmt', 'post_modified_gmt']
+];
+const MODES = [['range', 'Between two dates'], ['relative', 'A rolling window'], ['parts', 'Calendar parts'], ['none', 'No date filter']];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+function isYmd(v) { return /^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}(:\d{2})?)?$/.test(String(v || '').trim()); }
+function numList(str) { return String(str || '').split(',').map(function (v) { return v.trim(); }).filter(Boolean); }
+function numLiteral(str) {
+  const items = numList(str);
+  if (!items.length) return null;
+  const mapped = items.map(function (v) { return /^\d+$/.test(v) ? v : "'" + esc(v) + "'"; });
+  return items.length === 1 ? mapped[0] : 'array( ' + mapped.join(', ') + ' )';
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+
+function buildDateQuery(dq) {
+  if (dq.mode === 'none') return null;
+  const pairs = [];
+  if (dq.column !== 'post_date') pairs.push(['column', "'" + dq.column + "'"]);
+  if (dq.mode === 'range') {
+    if (String(dq.after || '').trim()) pairs.push(['after', "'" + esc(String(dq.after).trim()) + "'"]);
+    if (String(dq.before || '').trim()) pairs.push(['before', "'" + esc(String(dq.before).trim()) + "'"]);
+    if (!pairs.length) return null;
+    pairs.push(['inclusive', dq.inclusive ? 'true' : 'false']);
+  } else if (dq.mode === 'relative') {
+    const n = parseInt(dq.relativeCount, 10) || 30;
+    pairs.push(['after', "'-" + n + ' ' + dq.relativeUnit + "'"]);
+    pairs.push(['inclusive', dq.inclusive ? 'true' : 'false']);
+  } else {
+    const year = numLiteral(dq.year), month = numLiteral(dq.month), day = numLiteral(dq.day), hour = numLiteral(dq.hour), dayofweek = numLiteral(dq.dayofweek);
+    if (year) pairs.push(['year', year]);
+    if (month) pairs.push(['month', month]);
+    if (day) pairs.push(['day', day]);
+    if (dayofweek) pairs.push(['dayofweek', dayofweek]);
+    if (hour) pairs.push(['hour', hour]);
+    if (!pairs.length) return null;
+  }
+  return 'array(\n' + indent('array(\n' + indent(aligned(pairs), 1) + '\n),', 1) + '\n)';
+}
+
+function buildArgs(dq) {
+  const pairs = [['post_type', "'" + esc(slugify(dq.postType) || 'post') + "'"], ['post_status', "'" + dq.postStatus + "'"]];
+  const per = parseInt(dq.perPage, 10);
+  pairs.push(['posts_per_page', isNaN(per) ? '10' : String(per)]);
+  if (dq.orderAsc) pairs.push(['order', "'ASC'"]);
+  if (dq.noFoundRows) pairs.push(['no_found_rows', 'true']);
+  const date = buildDateQuery(dq);
+  if (date) pairs.push(['date_query', date]);
+  return 'array(\n' + indent(aligned(pairs), 1) + '\n)';
+}
+
+function buildCode(dq, mode) {
+  const args = buildArgs(dq);
+  let out = CREDIT;
+  if (mode === 'args') return out + '$args = ' + args + ';\n';
+  if (mode === 'pre') {
+    const date = buildDateQuery(dq);
+    return out + '/**\n * Limit the main query to a date range.\n *\n * @param WP_Query $query The query, by reference.\n */\nfunction mytheme_filter_dates( $query ) {\n\tif ( is_admin() || ! $query->is_main_query() ) {\n\t\treturn;\n\t}\n\n\t$query->set(\n\t\t\'date_query\',\n' + indent(date || 'array()', 2) + '\n\t);\n}\nadd_action( \'pre_get_posts\', \'mytheme_filter_dates\' );\n';
+  }
+  out += '$args = ' + args + ';\n\n$query = new WP_Query( $args );\n\nif ( $query->have_posts() ) {\n\techo \'<ul>\';\n\n\twhile ( $query->have_posts() ) {\n\t\t$query->the_post();\n\t\tprintf(\n\t\t\t\'<li><a href="%1$s">%2$s</a> <time datetime="%3$s">%4$s</time></li>\',\n\t\t\tesc_url( get_permalink() ),\n\t\t\tesc_html( get_the_title() ),\n\t\t\tesc_attr( get_the_date( \'c\' ) ),\n\t\t\tesc_html( get_the_date() )\n\t\t);\n\t}\n\n\techo \'</ul>\';\n\twp_reset_postdata();\n} else {\n\tesc_html_e( \'Nothing in that range.\', \'mytheme\' );\n}\n';
+  return out;
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|new|if|else|while|foreach|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(dq) {
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (dq.mode === 'none') add('warning', 'No date filter at all — this is a plain query.');
+  if (dq.mode === 'range') {
+    const a = String(dq.after || '').trim(), b = String(dq.before || '').trim();
+    if (!a && !b) add('error', 'A range needs at least one boundary. Both empty means no filter.');
+    if (a && b && isYmd(a) && isYmd(b) && a > b) add('error', 'after (' + a + ') is later than before (' + b + '), so nothing can match.', 'swapDates', 'Swap them');
+    [['after', a], ['before', b]].forEach(function (pair) {
+      const v = pair[1];
+      if (!v) return;
+      if (/^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v)) add('error', pair[0] + ' is “' + v + '”. WP_Date_Query wants Y-m-d or a strtotime phrase — d-m-Y is read as something else entirely.');
+      else if (!isYmd(v) && !/^[-+]?\d+\s+(hour|day|week|month|year)s?$/i.test(v) && !/^(today|yesterday|now|last|next|first|this)/i.test(v)) add('warning', pair[0] + ' is “' + v + '”, which is neither Y-m-d nor an obvious strtotime phrase. Anything strtotime cannot parse is silently ignored.');
+    });
+    if (!dq.inclusive && (isYmd(a) || isYmd(b))) add('warning', 'inclusive is false, so a boundary date is excluded: before 2026-06-30 stops at midnight and nothing from the 30th matches.', 'setInclusive', 'Include the boundary');
+  }
+  if (dq.mode === 'relative') {
+    const n = parseInt(dq.relativeCount, 10);
+    if (!n) add('error', 'Set how many ' + dq.relativeUnit + ' the window covers.');
+    else if (dq.relativeUnit === 'hours' && n > 48) add('recommendation', n + ' hours is easier to read as ' + Math.round(n / 24) + ' days.');
+    add('recommendation', 'A rolling window is evaluated at query time, so its result changes on every page load. Cache it or the query will never hit the object cache.');
+  }
+  if (dq.mode === 'parts') {
+    const y = numList(dq.year), mo = numList(dq.month), d = numList(dq.day), h = numList(dq.hour), dw = numList(dq.dayofweek);
+    if (!y.length && !mo.length && !d.length && !h.length && !dw.length) add('error', 'Set at least one calendar part, or nothing is filtered.');
+    mo.forEach(function (v) { if (!/^\d+$/.test(v) || +v < 1 || +v > 12) add('error', 'month “' + v + '” is out of range. Months are 1 to 12.'); });
+    d.forEach(function (v) { if (!/^\d+$/.test(v) || +v < 1 || +v > 31) add('error', 'day “' + v + '” is out of range. Days are 1 to 31.'); });
+    h.forEach(function (v) { if (!/^\d+$/.test(v) || +v < 0 || +v > 23) add('error', 'hour “' + v + '” is out of range. Hours are 0 to 23.'); });
+    dw.forEach(function (v) { if (!/^\d+$/.test(v) || +v < 1 || +v > 7) add('error', 'dayofweek “' + v + '” is out of range: 1 is Sunday through 7 is Saturday. Use dayofweek_iso if you want Monday to be 1.'); });
+    if (d.length && !mo.length) add('recommendation', 'A day with no month matches that day in every month — the 1st of January, February, March and so on. Deliberate?');
+  }
+  if (dq.column === 'post_date' && dq.mode === 'range') add('recommendation', 'You are comparing against post_date, the site’s local time. If these dates came from an API or a CSV in UTC, use post_date_gmt instead.', 'useGmt', 'Compare UTC');
+  if (dq.postStatus === 'publish' && dq.mode === 'range' && String(dq.after || '').indexOf('+') === 0) add('warning', 'A future-facing range with post_status publish returns nothing: scheduled posts have the future status.', 'statusFuture', 'Query future posts');
+  if (dq.postStatus === 'any') add('recommendation', 'post_status any includes drafts, pending and private. Fine in the admin, usually wrong on the front end.');
+  const per = parseInt(dq.perPage, 10);
+  if (per === -1) add('warning', 'posts_per_page of -1 over a wide date range can load years of posts into memory.', 'setHundred', 'Cap at 100');
+  if ((dq.column === 'post_modified' || dq.column === 'post_modified_gmt')) add('recommendation', 'Filtering on post_modified finds recently touched posts — including ones edited for a typo. Rarely what “recent” means to a reader.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    mode: 'range', column: 'post_date',
+    after: '2026-01-01', before: '2026-06-30', inclusive: true,
+    relativeCount: '30', relativeUnit: 'days',
+    year: '', month: '', day: '', hour: '', dayofweek: '',
+    postType: 'post', postStatus: 'publish', perPage: '10', orderAsc: false, noFoundRows: false
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    dq: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'query', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('date-query-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.mode) this.setState({ dq: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(dq) { try { localStorage.setItem('date-query-generator-v1', JSON.stringify(dq)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.dq));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { dq: next, past: coalesce ? s.past : s.past.concat([s.dq]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.dq));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { dq: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.dq].concat(s.future) }; }, () => this.persist(this.state.dq)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { dq: s.future[0], past: s.past.concat([s.dq]), future: s.future.slice(1) }; }, () => this.persist(this.state.dq)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'swapDates') { const a = p.after; p.after = p.before; p.before = a; }
+      if (kind === 'setInclusive') p.inclusive = true;
+      if (kind === 'useGmt') p.column = 'post_date_gmt';
+      if (kind === 'statusFuture') p.postStatus = 'future';
+      if (kind === 'setHundred') p.perPage = '100';
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.dq, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const dq = this.state.dq;
+    const code = '<?php\n\n' + buildCode(dq, this.state.outputMode);
+    const name = (slugify(dq.postType) || 'post') + '-date-query.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, dq = s.dq, self = this;
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(dq);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    const partsPhrase = function () {
+      const bits = [];
+      if (numList(dq.year).length) bits.push('year ' + numList(dq.year).join(' or '));
+      if (numList(dq.month).length) bits.push('month ' + numList(dq.month).join(' or '));
+      if (numList(dq.day).length) bits.push('day ' + numList(dq.day).join(' or '));
+      if (numList(dq.dayofweek).length) bits.push('weekday ' + numList(dq.dayofweek).join(' or '));
+      if (numList(dq.hour).length) bits.push('hour ' + numList(dq.hour).join(' or '));
+      return bits.length ? bits.join(', ') : 'no parts set';
+    };
+
+    return {
+      toolCount: 38, trueVal: true, dq: dq,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (slugify(dq.postType) || 'post') + '-date-query.php',
+
+      modeChips: MODES.map(function (m) {
+        const on = dq.mode === m[0];
+        return { label: m[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onSelect: function () { self.set('mode', m[0]); } };
+      }),
+      isRange: dq.mode === 'range', isRelative: dq.mode === 'relative', isParts: dq.mode === 'parts',
+      onAfterChange: function (ev) { self.set('after', ev.target.value, true); },
+      onBeforeChange: function (ev) { self.set('before', ev.target.value, true); },
+      afterBorder: dq.mode === 'range' && !String(dq.after || '').trim() && !String(dq.before || '').trim() ? '#B91C1C' : '#E7E2D9',
+      beforeBorder: dq.mode === 'range' && String(dq.after || '').trim() && String(dq.before || '').trim() && isYmd(dq.after) && isYmd(dq.before) && String(dq.after).trim() > String(dq.before).trim() ? '#B91C1C' : '#E7E2D9',
+      onRelativeCountChange: function (ev) { self.set('relativeCount', ev.target.value, true); },
+      onRelativeUnitChange: function (ev) { self.set('relativeUnit', ev.target.value); },
+      relativeBorder: parseInt(dq.relativeCount, 10) ? '#E7E2D9' : '#B91C1C',
+      partFields: [
+        ['year', 'year', '2026', 'Four digits. Comma separate for several.'],
+        ['month', 'month', '12', '1 to 12.'],
+        ['day', 'day', '25', '1 to 31.'],
+        ['dayofweek', 'dayofweek', '2', '1 is Sunday, 7 is Saturday.'],
+        ['hour', 'hour', '9', '0 to 23.']
+      ].map(function (f) {
+        const vals = numList(dq[f[0]]);
+        const bad = f[0] === 'month' ? vals.some(function (v) { return !/^\d+$/.test(v) || +v < 1 || +v > 12; })
+          : f[0] === 'day' ? vals.some(function (v) { return !/^\d+$/.test(v) || +v < 1 || +v > 31; })
+            : f[0] === 'hour' ? vals.some(function (v) { return !/^\d+$/.test(v) || +v < 0 || +v > 23; })
+              : f[0] === 'dayofweek' ? vals.some(function (v) { return !/^\d+$/.test(v) || +v < 1 || +v > 7; }) : false;
+        return {
+          label: f[1], value: dq[f[0]], placeholder: f[2], help: f[3], border: bad ? '#B91C1C' : '#E7E2D9',
+          onChange: function (ev) { const v = ev.target.value; self.set(f[0], v, true); }
+        };
+      }),
+      onColumnChange: function (ev) { self.set('column', ev.target.value); },
+      columnOptions: COLUMNS.map(function (c) { return { value: c[0], label: c[1] }; }),
+      onPostTypeChange: function (ev) { self.set('postType', ev.target.value, true); },
+      onPerPageChange: function (ev) { self.set('perPage', ev.target.value, true); },
+      onPostStatusChange: function (ev) { self.set('postStatus', ev.target.value); },
+      extraToggles: [
+        { key: 'inclusive', label: 'Inclusive boundaries', help: 'Includes the after and before dates themselves. Off by one waits for you if this is false.', on: dq.inclusive },
+        { key: 'orderAsc', label: 'Oldest first', help: 'order ASC — the right default for an events list, wrong for a blog.', on: dq.orderAsc },
+        { key: 'noFoundRows', label: 'no_found_rows', help: 'Skips the COUNT query when you are not paginating.', on: dq.noFoundRows }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+      plainEnglish: (function () {
+        const type = slugify(dq.postType) || 'post';
+        const col = dq.column === 'post_date' ? 'published' : dq.column === 'post_date_gmt' ? 'published (UTC)' : 'last modified';
+        if (dq.mode === 'none') return 'Find ' + type + ' entries with no date filter.';
+        if (dq.mode === 'relative') return 'Find ' + type + ' entries ' + col + ' in the last ' + (parseInt(dq.relativeCount, 10) || 30) + ' ' + dq.relativeUnit + '.';
+        if (dq.mode === 'parts') return 'Find ' + type + ' entries where the ' + col + ' date matches ' + partsPhrase() + '.';
+        const a = String(dq.after || '').trim(), b = String(dq.before || '').trim();
+        if (a && b) return 'Find ' + type + ' entries ' + col + ' between ' + a + ' and ' + b + ', ' + (dq.inclusive ? 'both days included' : 'both boundary days excluded') + '.';
+        if (a) return 'Find ' + type + ' entries ' + col + ' after ' + a + '.';
+        if (b) return 'Find ' + type + ' entries ' + col + ' before ' + b + '.';
+        return 'Find ' + type + ' entries — no boundary set, so no filter is applied.';
+      })(),
+
+      codeTokens: tokenizePHP(buildCode(dq, s.outputMode)),
+      outputModes: [['query', 'WP_Query + loop'], ['args', 'Args array'], ['pre', 'pre_get_posts']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: {
+        query: 'A secondary query with a loop that prints a real time element.',
+        args: 'Just the args, for get_posts() or your own WP_Query.',
+        pre: 'Filters the main query instead of running a second one.'
+      }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new date query' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refArgs: [
+        ['after / before', 'string|array', 'A Y-m-d string, a strtotime phrase, or an array of year, month and day parts. Anything unparseable is dropped without warning.'],
+        ['inclusive', 'bool', 'Whether the boundary dates count. False means before 2026-06-30 stops at midnight on the 30th.'],
+        ['column', 'string', 'Which wp_posts column to compare: post_date, post_date_gmt, post_modified or post_modified_gmt.'],
+        ['year / month / day / hour', 'int|array', 'Calendar parts. Great for “every December” or “weekday mornings”; useless for a continuous range.'],
+        ['dayofweek', 'int|array', '1 is Sunday through 7 is Saturday. dayofweek_iso runs Monday to Sunday instead — mixing them up shifts everything by a day.'],
+        ['compare', 'string', 'Applies to part comparisons: =, >, >=, <, <=, IN, BETWEEN.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+      refColumns: padTo('post_date', 20) + 'local time, what the editor typed\n' + padTo('post_date_gmt', 20) + 'UTC — use this for API data\n' + padTo('post_modified', 20) + 'last edit, local\n' + padTo('post_modified_gmt', 20) + 'last edit, UTC',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Range'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

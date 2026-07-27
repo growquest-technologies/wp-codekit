@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="background:#fff; max-width:900px; margin:0 auto; font-family:Inter, system-ui, sans-serif; color:#1E1E1E;">
+
+  <div style="height:130px; background:linear-gradient(135deg,#3858E9,#26221C); display:flex; align-items:center; padding:0 24px;">
+    <div style="color:#fff; font-size:22px; font-weight:700; opacity:.9;">{{ pluginName }}</div>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:16px; padding:18px 24px; border-bottom:1px solid #DCDCDE;">
+    <div style="width:64px; height:64px; border-radius:10px; background:#3858E9; color:#fff; font-size:26px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ initial }}</div>
+    <div style="flex:1; min-width:0;">
+      <div style="font-size:22px; font-weight:600;">{{ pluginName }}</div>
+      <sc-if value="{{ byline }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; color:#3858E9;">{{ byline }}</div></sc-if>
+    </div>
+    <button style="width:40px; height:40px; border:1px solid #DCDCDE; border-radius:6px; background:#fff; cursor:default; display:flex; align-items:center; justify-content:center; color:#4A4438;" tabIndex="-1">♡</button>
+    <button style="border:none; border-radius:6px; background:#3858E9; color:#fff; font-size:13px; font-weight:700; padding:10px 22px; cursor:default;" tabIndex="-1">Download</button>
+  </div>
+
+  <div style="display:flex; gap:2px; padding:0 24px; border-bottom:1px solid #DCDCDE;">
+    <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="4">
+      <button onClick="{{ tab.onClick }}" disabled="{{ tab.inert }}" style="padding:12px 16px; font-size:13px; font-weight:600; background:none; border:none; border-bottom:3px solid {{ tab.borderColor }}; color:{{ tab.color }}; cursor:{{ tab.cursor }};">{{ tab.label }}</button>
+    </sc-for>
+  </div>
+
+  <div style="display:flex; gap:28px; padding:24px;">
+    <div style="flex:1; min-width:0;">
+
+      <sc-if value="{{ showDetails }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <sc-for list="{{ detailsBlocks }}" as="pblk" hint-placeholder-count="2">
+            <div style="margin-bottom:12px;">
+              <sc-if value="{{ pblk.isSubheading }}" hint-placeholder-val="{{ false }}"><h3 style="font-size:15px; margin:16px 0 6px;">{{ pblk.text }}</h3></sc-if>
+              <sc-if value="{{ pblk.isParagraphLike }}" hint-placeholder-val="{{ false }}">
+                <p style="font-size:13.5px; line-height:1.75; margin:0; color:#3C434A;">
+                  <sc-for list="{{ pblk.tokens }}" as="tok" hint-placeholder-count="1">
+                    <sc-if value="{{ tok.isBreak }}" hint-placeholder-val="{{ false }}"><br /></sc-if>
+                    <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                    <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                    <sc-if value="{{ tok.isItalic }}" hint-placeholder-val="{{ false }}"><em>{{ tok.value }}</em></sc-if>
+                    <sc-if value="{{ tok.isCode }}" hint-placeholder-val="{{ false }}"><code style="background:#F0F0F1; padding:1px 4px; border-radius:3px;">{{ tok.value }}</code></sc-if>
+                    <sc-if value="{{ tok.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tok.href }}" title="{{ tok.title }}" style="color:#3858E9;">{{ tok.value }}</a></sc-if>
+                  </sc-for>
+                </p>
+              </sc-if>
+              <sc-if value="{{ pblk.isCode }}" hint-placeholder-val="{{ false }}"><pre style="background:#F0F0F1; border-radius:6px; padding:10px; font-family:'JetBrains Mono',monospace; font-size:12px; overflow-x:auto; margin:0;">{{ pblk.text }}</pre></sc-if>
+              <sc-if value="{{ pblk.isEmbedVideo }}" hint-placeholder-val="{{ false }}">
+                <div style="position:relative; width:100%; padding-top:56.25%; border-radius:6px; overflow:hidden; background:#000;">
+                  <iframe src="{{ pblk.videoEmbedUrl }}" style="position:absolute; inset:0; width:100%; height:100%; border:none;" allowFullScreen="{{ true }}"></iframe>
+                </div>
+              </sc-if>
+              <sc-if value="{{ pblk.isOtherVideo }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px solid #DCDCDE; border-radius:6px; padding:16px; display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; color:#646970;">{{ iconPlay }} Video: {{ pblk.videoUrl }}</div>
+              </sc-if>
+              <sc-if value="{{ pblk.isBulletedList }}" hint-placeholder-val="{{ false }}">
+                <ul style="margin:0; padding-left:22px; font-size:13.5px; line-height:1.8; color:#3C434A;">
+                  <sc-for list="{{ pblk.tokenItems }}" as="li" hint-placeholder-count="2">
+                    <li style="margin-left:{{ li.indent }}px;">
+                      <sc-for list="{{ li.tokens }}" as="tok" hint-placeholder-count="1">
+                        <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                        <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                        <sc-if value="{{ tok.isItalic }}" hint-placeholder-val="{{ false }}"><em>{{ tok.value }}</em></sc-if>
+                        <sc-if value="{{ tok.isCode }}" hint-placeholder-val="{{ false }}"><code style="background:#F0F0F1; padding:1px 4px; border-radius:3px;">{{ tok.value }}</code></sc-if>
+                        <sc-if value="{{ tok.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tok.href }}" title="{{ tok.title }}" style="color:#3858E9;">{{ tok.value }}</a></sc-if>
+                      </sc-for>
+                    </li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+              <sc-if value="{{ pblk.isNumberedList }}" hint-placeholder-val="{{ false }}">
+                <ol style="margin:0; padding-left:22px; font-size:13.5px; line-height:1.8; color:#3C434A;">
+                  <sc-for list="{{ pblk.tokenItems }}" as="li" hint-placeholder-count="2">
+                    <li>
+                      <sc-for list="{{ li.tokens }}" as="tok" hint-placeholder-count="1">
+                        <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                        <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                        <sc-if value="{{ tok.isItalic }}" hint-placeholder-val="{{ false }}"><em>{{ tok.value }}</em></sc-if>
+                        <sc-if value="{{ tok.isCode }}" hint-placeholder-val="{{ false }}"><code style="background:#F0F0F1; padding:1px 4px; border-radius:3px;">{{ tok.value }}</code></sc-if>
+                        <sc-if value="{{ tok.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tok.href }}" title="{{ tok.title }}" style="color:#3858E9;">{{ tok.value }}</a></sc-if>
+                      </sc-for>
+                    </li>
+                  </sc-for>
+                </ol>
+              </sc-if>
+            </div>
+          </sc-for>
+
+          <sc-if value="{{ hasScreenshots }}" hint-placeholder-val="{{ false }}">
+            <h3 style="font-size:15px; margin:22px 0 10px;">Screenshots</h3>
+            <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:10px;">
+              <sc-for list="{{ screenshots }}" as="pshot" hint-placeholder-count="2">
+                <div>
+                  <div style="background:#F0F0F1; border:1px solid #DCDCDE; border-radius:4px; aspect-ratio:16/10; display:flex; align-items:center; justify-content:center; color:#A7AAAD; font-size:11px;">Screenshot {{ pshot.number }}</div>
+                  <div style="font-size:12px; color:#3C434A; margin-top:5px;">{{ pshot.number }}. {{ pshot.description }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasFaqs }}" hint-placeholder-val="{{ false }}">
+            <h3 style="font-size:15px; margin:22px 0 10px;">FAQ</h3>
+            <sc-for list="{{ faqs }}" as="pfaq" hint-placeholder-count="2">
+              <details style="border-bottom:1px solid #DCDCDE; padding:10px 0;">
+                <summary style="font-size:13.5px; font-weight:600; cursor:pointer;">{{ pfaq.question }}</summary>
+                <p style="font-size:13px; margin:8px 0 0; line-height:1.7; color:#3C434A;">
+                  <sc-for list="{{ pfaq.tokens }}" as="tok" hint-placeholder-count="1">
+                    <sc-if value="{{ tok.isBreak }}" hint-placeholder-val="{{ false }}"><br /></sc-if>
+                    <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                    <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                    <sc-if value="{{ tok.isItalic }}" hint-placeholder-val="{{ false }}"><em>{{ tok.value }}</em></sc-if>
+                    <sc-if value="{{ tok.isCode }}" hint-placeholder-val="{{ false }}"><code style="background:#F0F0F1; padding:1px 4px; border-radius:3px;">{{ tok.value }}</code></sc-if>
+                    <sc-if value="{{ tok.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tok.href }}" title="{{ tok.title }}" style="color:#3858E9;">{{ tok.value }}</a></sc-if>
+                  </sc-for>
+                </p>
+              </details>
+            </sc-for>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showInstallation }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <sc-for list="{{ installationBlocks }}" as="pblk" hint-placeholder-count="2">
+            <div style="margin-bottom:12px;">
+              <sc-if value="{{ pblk.isSubheading }}" hint-placeholder-val="{{ false }}"><h3 style="font-size:15px; margin:16px 0 6px;">{{ pblk.text }}</h3></sc-if>
+              <sc-if value="{{ pblk.isParagraphLike }}" hint-placeholder-val="{{ false }}">
+                <p style="font-size:13.5px; line-height:1.75; margin:0; color:#3C434A;">
+                  <sc-for list="{{ pblk.tokens }}" as="tok" hint-placeholder-count="1">
+                    <sc-if value="{{ tok.isBreak }}" hint-placeholder-val="{{ false }}"><br /></sc-if>
+                    <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                    <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                    <sc-if value="{{ tok.isItalic }}" hint-placeholder-val="{{ false }}"><em>{{ tok.value }}</em></sc-if>
+                    <sc-if value="{{ tok.isCode }}" hint-placeholder-val="{{ false }}"><code style="background:#F0F0F1; padding:1px 4px; border-radius:3px;">{{ tok.value }}</code></sc-if>
+                    <sc-if value="{{ tok.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tok.href }}" title="{{ tok.title }}" style="color:#3858E9;">{{ tok.value }}</a></sc-if>
+                  </sc-for>
+                </p>
+              </sc-if>
+              <sc-if value="{{ pblk.isCode }}" hint-placeholder-val="{{ false }}"><pre style="background:#F0F0F1; border-radius:6px; padding:10px; font-family:'JetBrains Mono',monospace; font-size:12px; overflow-x:auto; margin:0;">{{ pblk.text }}</pre></sc-if>
+              <sc-if value="{{ pblk.isBulletedList }}" hint-placeholder-val="{{ false }}">
+                <ul style="margin:0; padding-left:22px; font-size:13.5px; line-height:1.8; color:#3C434A;">
+                  <sc-for list="{{ pblk.tokenItems }}" as="li" hint-placeholder-count="2">
+                    <li>
+                      <sc-for list="{{ li.tokens }}" as="tok" hint-placeholder-count="1">
+                        <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                        <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                      </sc-for>
+                    </li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+              <sc-if value="{{ pblk.isNumberedList }}" hint-placeholder-val="{{ false }}">
+                <ol style="margin:0; padding-left:22px; font-size:13.5px; line-height:1.8; color:#3C434A;">
+                  <sc-for list="{{ pblk.tokenItems }}" as="li" hint-placeholder-count="2">
+                    <li>
+                      <sc-for list="{{ li.tokens }}" as="tok" hint-placeholder-count="1">
+                        <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                        <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                      </sc-for>
+                    </li>
+                  </sc-for>
+                </ol>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showDevelopment }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <h3 style="font-size:15px; margin:0 0 10px;">Contributors &amp; Developers</h3>
+          <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px;">
+            <sc-for list="{{ contributors }}" as="c" hint-placeholder-count="2">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <div style="width:26px; height:26px; border-radius:50%; background:#3858E9; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ c.initial }}</div>
+                <span style="font-size:12.5px; color:#3858E9;">{{ c.name }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <h3 style="font-size:15px; margin:0 0 10px;">Changelog</h3>
+          <sc-for list="{{ versions }}" as="pver" hint-placeholder-count="2">
+            <div style="margin-bottom:16px;">
+              <div style="font-size:13.5px; font-weight:700; font-family:'JetBrains Mono',monospace;">{{ pver.version }}</div>
+              <p style="margin:6px 0 0; font-size:13px; line-height:1.8; color:#3C434A;">
+                <sc-for list="{{ pver.tokens }}" as="tok" hint-placeholder-count="1">
+                  <sc-if value="{{ tok.isBreak }}" hint-placeholder-val="{{ false }}"><br /></sc-if>
+                  <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                  <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                  <sc-if value="{{ tok.isItalic }}" hint-placeholder-val="{{ false }}"><em>{{ tok.value }}</em></sc-if>
+                  <sc-if value="{{ tok.isCode }}" hint-placeholder-val="{{ false }}"><code style="background:#F0F0F1; padding:1px 4px; border-radius:3px;">{{ tok.value }}</code></sc-if>
+                  <sc-if value="{{ tok.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tok.href }}" title="{{ tok.title }}" style="color:#3858E9;">{{ tok.value }}</a></sc-if>
+                </sc-for>
+              </p>
+            </div>
+          </sc-for>
+
+          <sc-if value="{{ notices }}" hint-placeholder-val="{{ false }}">
+            <h3 style="font-size:15px; margin:16px 0 10px;">Upgrade Notice</h3>
+            <sc-for list="{{ notices }}" as="pnotice" hint-placeholder-count="1">
+              <div style="margin-bottom:14px;">
+                <div style="font-size:13.5px; font-weight:700; font-family:'JetBrains Mono',monospace;">{{ pnotice.version }}</div>
+                <p style="margin:6px 0 0; font-size:13px; line-height:1.8; color:#3C434A;">
+                  <sc-for list="{{ pnotice.tokens }}" as="tok" hint-placeholder-count="1">
+                    <sc-if value="{{ tok.isBreak }}" hint-placeholder-val="{{ false }}"><br /></sc-if>
+                    <sc-if value="{{ tok.isText }}" hint-placeholder-val="{{ true }}"><span>{{ tok.value }}</span></sc-if>
+                    <sc-if value="{{ tok.isBold }}" hint-placeholder-val="{{ false }}"><strong>{{ tok.value }}</strong></sc-if>
+                    <sc-if value="{{ tok.isItalic }}" hint-placeholder-val="{{ false }}"><em>{{ tok.value }}</em></sc-if>
+                    <sc-if value="{{ tok.isCode }}" hint-placeholder-val="{{ false }}"><code style="background:#F0F0F1; padding:1px 4px; border-radius:3px;">{{ tok.value }}</code></sc-if>
+                    <sc-if value="{{ tok.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tok.href }}" title="{{ tok.title }}" style="color:#3858E9;">{{ tok.value }}</a></sc-if>
+                  </sc-for>
+                </p>
+              </div>
+            </sc-for>
+          </sc-if>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <div style="width:220px; flex-shrink:0;">
+      <div style="border:1px solid #DCDCDE; border-radius:6px; padding:14px; font-size:12.5px;">
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F0F0F1;"><span style="color:#646970;">Version</span><strong>{{ version }}</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F0F0F1;"><span style="color:#646970;">Requires WordPress</span><strong>{{ requiresAtLeast }}+</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F0F0F1;"><span style="color:#646970;">Tested up to</span><strong>{{ testedUpTo }}</strong></div>
+        <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F0F0F1;"><span style="color:#646970;">Requires PHP</span><strong>{{ requiresPhp }}+</strong></div>
+        <div style="padding:8px 0 2px; color:#646970;">Tags</div>
+        <div style="display:flex; flex-wrap:wrap; gap:5px;">
+          <sc-for list="{{ tagChips }}" as="tg" hint-placeholder-count="3">
+            <span style="background:#F0F0F1; border-radius:3px; padding:2px 7px; font-size:11px; color:#3C434A;">{{ tg.label }}</span>
+          </sc-for>
+        </div>
+        <sc-if value="{{ hasDonateLink }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ donateLink }}" style="display:block; margin-top:12px; font-size:12.5px; color:#3858E9;">Donate to this plugin »</a>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:700}}"></script>
+</body>
+</html>

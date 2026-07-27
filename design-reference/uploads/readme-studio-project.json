@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "data": {
+    "name": "",
+    "meta": {
+      "contributors": [],
+      "donateLink": "",
+      "tags": [
+        "block",
+        "gutenberg"
+      ],
+      "requiresAtLeast": "",
+      "testedUpTo": "",
+      "requiresPHP": "",
+      "stableTag": "",
+      "license": "GPLv2 or later",
+      "licenseURI": "https://www.gnu.org/licenses/gpl-2.0.html",
+      "shortDescription": ""
+    },
+    "sections": [
+      {
+        "id": "sec_98_ffmhz",
+        "kind": "description",
+        "title": "Description",
+        "enabled": true,
+        "blocks": [
+          {
+            "id": "blk_103_l2klj",
+            "type": "paragraph",
+            "data": {
+              "text": "ssss"
+            }
+          }
+        ]
+      },
+      {
+        "id": "sec_99_tgjhr",
+        "kind": "installation",
+        "title": "Installation",
+        "enabled": true,
+        "blocks": []
+      },
+      {
+        "id": "sec_100_4oci1",
+        "kind": "screenshots",
+        "title": "Screenshots",
+        "enabled": true,
+        "screenshots": []
+      },
+      {
+        "id": "sec_101_b4oy3",
+        "kind": "faq",
+        "title": "Frequently Asked Questions",
+        "enabled": true,
+        "faqs": []
+      },
+      {
+        "id": "sec_102_cum5f",
+        "kind": "changelog",
+        "title": "Changelog",
+        "enabled": true,
+        "versions": []
+      }
+    ]
+  }
+}

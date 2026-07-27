@@ -1,0 +1,85 @@
+:root {
+  /* Surfaces */
+  --gfw-bg: #FAF9F7;
+  --gfw-surface: #FFFFFF;
+  --gfw-surface-muted: #FCFBF9;
+  --gfw-surface-sunken: #F7F5F0;
+  --gfw-surface-tint: #EEF1FE;
+
+  /* Borders */
+  --gfw-border: #E7E2D9;
+  --gfw-border-muted: #EFEBE3;
+  --gfw-border-dashed: #DCD7CE;
+
+  /* Text */
+  --gfw-text: #26221C;
+  --gfw-text-strong: #1C1A15;
+  --gfw-text-muted: #5C564B;
+  --gfw-text-mutest: #948C7E;
+  --gfw-text-faint: #A79F91;
+  --gfw-text-soft: #7E7668;
+  --gfw-text-label: #6B6459;
+  --gfw-text-body: #4A4438;
+
+  /* Accent (brand blue — swappable per-tool via data-accent) */
+  --gfw-accent: #3858E9;
+  --gfw-accent-hover: #213FD4;
+  --gfw-accent-strong: #2A46C4;
+  --gfw-accent-soft: #93A9FF;
+  --gfw-accent-tint: #EEF1FE;
+  --gfw-accent-tint-border: #C7D2FE;
+
+  /* Dark surfaces (footer, code panels) */
+  --gfw-dark: #1C1A15;
+  --gfw-dark-raised: #221F19;
+  --gfw-dark-border: #2E2A23;
+  --gfw-dark-border-strong: #322E26;
+  --gfw-dark-text: #B3ACA0;
+  --gfw-dark-text-strong: #F0EDE6;
+  --gfw-dark-text-muted: #8C8474;
+  --gfw-dark-code: #C9C2B5;
+
+  /* Status */
+  --gfw-success: #1F7A4C;
+  --gfw-success-bg: #E4F3EA;
+  --gfw-success-border: #B9DFC8;
+  --gfw-success-text: #14532D;
+  --gfw-success-text-soft: #1F5136;
+  --gfw-warning: #F0A82E;
+  --gfw-danger: #B4451F;
+
+  /* Radii / shadow */
+  --gfw-radius-sm: 6px;
+  --gfw-radius: 9px;
+  --gfw-radius-md: 11px;
+  --gfw-radius-lg: 14px;
+  --gfw-shadow-sm: 0 1px 2px rgba(38, 34, 28, 0.04);
+  --gfw-shadow-card: 0 1px 3px rgba(38, 34, 28, 0.05);
+  --gfw-shadow-hover: 0 8px 22px -12px rgba(56, 88, 233, 0.28);
+
+  /* Type */
+  --gfw-font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --gfw-font-mono: 'JetBrains Mono', monospace;
+}
+
+:root[data-accent='teal'] {
+  --gfw-accent: #0B7A75;
+  --gfw-accent-hover: #086560;
+  --gfw-accent-strong: #086560;
+  --gfw-accent-tint: #E3F3F2;
+  --gfw-accent-tint-border: #BFE3E1;
+}
+:root[data-accent='rust'] {
+  --gfw-accent: #B4451F;
+  --gfw-accent-hover: #953A1A;
+  --gfw-accent-strong: #953A1A;
+  --gfw-accent-tint: #FBEAE3;
+  --gfw-accent-tint-border: #F0CBB8;
+}
+:root[data-accent='violet'] {
+  --gfw-accent: #5B21B6;
+  --gfw-accent-hover: #4C1D95;
+  --gfw-accent-strong: #4C1D95;
+  --gfw-accent-tint: #F1EBFC;
+  --gfw-accent-tint-border: #DCCCF5;
+}

@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>WP_Query Builder — new WP_Query() — Generator for WP</title>
+  <meta name="description" content="Build a WP_Query: post types, taxonomy and meta clauses, dates, ordering and pagination — with the loop, a plain-English summary and performance warnings." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=query" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Query</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">WP_Query</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">WP_Query Builder</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Pick the posts you want; get the query, the loop and a plain-English summary — plus warnings for the arguments that quietly kill performance.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">What to fetch</div>
+        <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:6px;">Post types</label>
+        <div style="display:flex; flex-wrap:wrap; gap:7px; margin-bottom:8px;">
+          <sc-for list="{{ postTypeChips }}" as="pc" hint-placeholder-count="4">
+            <button role="checkbox" aria-checked="{{ pc.on }}" onClick="{{ pc.onToggle }}" style="display:flex; align-items:center; gap:7px; border:1px solid {{ pc.borderColor }}; background:{{ pc.bg }}; color:{{ pc.color }}; border-radius:20px; padding:6px 13px 6px 10px; font-size:12.5px; font-weight:600; font-family:'JetBrains Mono',monospace; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+              <span style="width:14px; height:14px; border-radius:4px; border:1.5px solid {{ pc.boxBorder }}; background:{{ pc.boxBg }}; display:flex; align-items:center; justify-content:center; color:#fff; font-family:lineicons; font-size:9px; line-height:1;">{{ pc.check }}</span>{{ pc.label }}
+            </button>
+          </sc-for>
+        </div>
+        <div style="border:1px solid #E7E2D9; border-radius:6px; padding:6px; display:flex; flex-wrap:wrap; gap:6px; background:#fff; margin-bottom:14px;">
+          <sc-for list="{{ customTypeChips }}" as="chip" hint-placeholder-count="1">
+            <span style="display:flex; align-items:center; gap:5px; background:#EEF1FE; color:#3858E9; border-radius:5px; padding:3px 6px; font-size:12px; font-family:'JetBrains Mono',monospace;">
+              {{ chip.value }}
+              <button aria-label="Remove {{ chip.value }}" onClick="{{ chip.onRemove }}" style="border:none; background:none; cursor:pointer; color:inherit; padding:0; display:flex; align-items:center;" style-focus="outline:1px solid currentColor;">{{ iconClose }}</button>
+            </span>
+          </sc-for>
+          <input aria-label="Add custom post type key" placeholder="custom post type key…" value="{{ typeDraft }}" onChange="{{ onTypeDraftChange }}" onKeyDown="{{ onTypeDraftKeyDown }}" onBlur="{{ onTypeDraftBlur }}" style="border:none; outline:none; font-size:12px; flex:1; min-width:140px;" />
+        </div>
+
+        <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:6px;">Post status</label>
+        <div style="display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px;">
+          <sc-for list="{{ statusChips }}" as="st" hint-placeholder-count="4">
+            <button role="checkbox" aria-checked="{{ st.on }}" onClick="{{ st.onToggle }}" style="display:flex; align-items:center; gap:7px; border:1px solid {{ st.borderColor }}; background:{{ st.bg }}; color:{{ st.color }}; border-radius:20px; padding:6px 13px 6px 10px; font-size:12.5px; font-weight:600; font-family:'JetBrains Mono',monospace; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+              <span style="width:14px; height:14px; border-radius:4px; border:1.5px solid {{ st.boxBorder }}; background:{{ st.boxBg }}; display:flex; align-items:center; justify-content:center; color:#fff; font-family:lineicons; font-size:9px; line-height:1;">{{ st.check }}</span>{{ st.label }}
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Posts per page</label>
+            <input ref="{{ refPerPage }}" value="{{ q.perPage }}" onChange="{{ onPerPageChange }}" spellCheck="false" placeholder="10" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ perPageBorder }};" style-focus="outline:2px solid #3858E9;" />
+            <div style="font-size:11px; color:#948C7E; margin-top:4px;">{{ perPageHint }}</div>
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Offset</label>
+            <input value="{{ q.offset }}" onChange="{{ onOffsetChange }}" spellCheck="false" placeholder="0" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Order by</label>
+            <select value="{{ q.orderby }}" onChange="{{ onOrderbyChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <sc-for list="{{ orderbyOptions }}" as="oo" hint-placeholder-count="10">
+                <option value="{{ oo.value }}">{{ oo.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Order</label>
+            <select value="{{ q.order }}" onChange="{{ onOrderChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="DESC">DESC — newest / highest first</option>
+              <option value="ASC">ASC — oldest / lowest first</option>
+            </select>
+          </div>
+          <sc-if value="{{ showOrderbyMetaKey }}" hint-placeholder-val="{{ false }}">
+            <div style="grid-column:1 / -1;">
+              <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Meta key to order by</label>
+              <input value="{{ q.orderbyMetaKey }}" onChange="{{ onOrderbyMetaKeyChange }}" spellCheck="false" placeholder="_price" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Pagination &amp; behaviour</div>
+        <sc-for list="{{ behaviourToggles }}" as="bt" hint-placeholder-count="3">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Taxonomy clauses</div>
+          <sc-if value="{{ showTaxRelation }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; gap:7px;">
+              <span style="font-size:11.5px; color:#948C7E; font-family:'JetBrains Mono',monospace;">relation</span>
+              <select value="{{ q.taxRelation }}" onChange="{{ onTaxRelationChange }}" style="font-size:12px; padding:5px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                <option value="AND">AND</option>
+                <option value="OR">OR</option>
+              </select>
+            </div>
+          </sc-if>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ taxClauses }}" as="tc" hint-placeholder-count="1">
+            <div style="border:1px solid #E7E2D9; border-radius:7px; padding:11px; background:#FCFBF9;">
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:9px;">
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">taxonomy</label>
+                  <input value="{{ tc.taxonomy }}" onChange="{{ tc.onTaxonomyChange }}" spellCheck="false" placeholder="category" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ tc.taxonomyBorder }};" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">field</label>
+                  <select value="{{ tc.field }}" onChange="{{ tc.onFieldChange }}" style="width:100%; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="slug">slug</option>
+                    <option value="term_id">term_id</option>
+                    <option value="name">name</option>
+                    <option value="term_taxonomy_id">term_taxonomy_id</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">operator</label>
+                  <select value="{{ tc.operator }}" onChange="{{ tc.onOperatorChange }}" style="width:100%; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="IN">IN</option>
+                    <option value="NOT IN">NOT IN</option>
+                    <option value="AND">AND</option>
+                    <option value="EXISTS">EXISTS</option>
+                    <option value="NOT EXISTS">NOT EXISTS</option>
+                  </select>
+                </div>
+                <div style="grid-column:1 / -1; display:flex; gap:9px; align-items:flex-end;">
+                  <div style="flex:1;">
+                    <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">terms — comma separated</label>
+                    <input value="{{ tc.terms }}" onChange="{{ tc.onTermsChange }}" spellCheck="false" placeholder="news, updates" disabled="{{ tc.termsDisabled }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ tc.termsBorder }}; background:{{ tc.termsBg }};" style-focus="outline:2px solid #3858E9;" />
+                  </div>
+                  <button aria-label="Remove clause" onClick="{{ tc.onRemove }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#B91C1C;display:flex;align-items:center;justify-content:center;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconTrash }}</button>
+                </div>
+              </div>
+              <sc-if value="{{ tc.includeChildrenVisible }}" hint-placeholder-val="{{ false }}">
+                <button role="checkbox" aria-checked="{{ tc.includeChildren }}" onClick="{{ tc.onToggleChildren }}" style="margin-top:9px; display:flex; align-items:center; gap:7px; border:1px solid {{ tc.childBorder }}; background:{{ tc.childBg }}; color:{{ tc.childColor }}; border-radius:20px; padding:4px 11px 4px 8px; font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+                  <span style="width:12px; height:12px; border-radius:3px; border:1.5px solid {{ tc.childBoxBorder }}; background:{{ tc.childBoxBg }}; display:flex; align-items:center; justify-content:center; color:#fff; font-family:lineicons; font-size:8px; line-height:1;">{{ tc.childCheck }}</span>include_children
+                </button>
+              </sc-if>
+            </div>
+          </sc-for>
+          <button onClick="{{ onAddTaxClause }}" style="align-self:flex-start; font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:6px; padding:7px 13px; cursor:pointer; color:#4A4438;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">+ Taxonomy clause</button>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Meta clauses</div>
+          <sc-if value="{{ showMetaRelation }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; gap:7px;">
+              <span style="font-size:11.5px; color:#948C7E; font-family:'JetBrains Mono',monospace;">relation</span>
+              <select value="{{ q.metaRelation }}" onChange="{{ onMetaRelationChange }}" style="font-size:12px; padding:5px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                <option value="AND">AND</option>
+                <option value="OR">OR</option>
+              </select>
+            </div>
+          </sc-if>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ metaClauses }}" as="mc" hint-placeholder-count="1">
+            <div style="border:1px solid #E7E2D9; border-radius:7px; padding:11px; background:#FCFBF9;">
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:9px;">
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">key</label>
+                  <input value="{{ mc.key }}" onChange="{{ mc.onKeyChange }}" spellCheck="false" placeholder="_price" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ mc.keyBorder }};" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">compare</label>
+                  <select value="{{ mc.compare }}" onChange="{{ mc.onCompareChange }}" style="width:100%; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <sc-for list="{{ compareOptions }}" as="co" hint-placeholder-count="10">
+                      <option value="{{ co.value }}">{{ co.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">type</label>
+                  <select value="{{ mc.type }}" onChange="{{ mc.onTypeChange }}" style="width:100%; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid {{ mc.typeBorder }}; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="CHAR">CHAR</option>
+                    <option value="NUMERIC">NUMERIC</option>
+                    <option value="DECIMAL">DECIMAL</option>
+                    <option value="DATE">DATE</option>
+                    <option value="DATETIME">DATETIME</option>
+                    <option value="BINARY">BINARY</option>
+                  </select>
+                </div>
+                <div style="grid-column:1 / -1; display:flex; gap:9px; align-items:flex-end;">
+                  <div style="flex:1;">
+                    <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">{{ mc.valueLabel }}</label>
+                    <input value="{{ mc.value }}" onChange="{{ mc.onValueChange }}" spellCheck="false" placeholder="{{ mc.valuePlaceholder }}" disabled="{{ mc.valueDisabled }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ mc.valueBorder }}; background:{{ mc.valueBg }};" style-focus="outline:2px solid #3858E9;" />
+                  </div>
+                  <button aria-label="Remove clause" onClick="{{ mc.onRemove }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#B91C1C;display:flex;align-items:center;justify-content:center;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconTrash }}</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+          <button onClick="{{ onAddMetaClause }}" style="align-self:flex-start; font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:6px; padding:7px 13px; cursor:pointer; color:#4A4438;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">+ Meta clause</button>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; margin-bottom:16px;">
+        <button onClick="{{ onToggleFilters }}" style="width:100%; display:flex; align-items:center; gap:10px; padding:14px 18px; background:none; border:none; cursor:pointer; text-align:left;" style-focus="outline:2px solid #3858E9;">
+          <span style="color:#948C7E; display:flex; transform:{{ filtersChevron }}; transition:transform .15s;">{{ iconChevronDown }}</span>
+          <span style="font-size:13px; font-weight:700; color:#26221C;">Authors, dates, search &amp; IDs</span>
+          <span style="font-size:11.5px; color:#948C7E;">{{ filtersSummary }}</span>
+        </button>
+        <sc-if value="{{ filtersOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:0 18px 18px; display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">s — search term</label>
+              <input value="{{ q.search }}" onChange="{{ onSearchChange }}" placeholder="keyword" style="width:100%; font-size:12.5px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">author__in — IDs</label>
+              <input value="{{ q.authors }}" onChange="{{ onAuthorsChange }}" spellCheck="false" placeholder="1, 4" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post__in — IDs</label>
+              <input value="{{ q.include }}" onChange="{{ onIncludeChange }}" spellCheck="false" placeholder="12, 34" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post__not_in — IDs</label>
+              <input value="{{ q.exclude }}" onChange="{{ onExcludeChange }}" spellCheck="false" placeholder="56" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post_parent</label>
+              <input value="{{ q.postParent }}" onChange="{{ onPostParentChange }}" spellCheck="false" placeholder="7" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">date_query — after</label>
+              <input value="{{ q.dateAfter }}" onChange="{{ onDateAfterChange }}" spellCheck="false" placeholder="1 month ago" style="width:100%; font-size:12.5px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">date_query — before</label>
+              <input value="{{ q.dateBefore }}" onChange="{{ onDateBeforeChange }}" spellCheck="false" placeholder="today" style="width:100%; font-size:12.5px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; margin-bottom:16px;">
+        <button onClick="{{ onToggleAdvanced }}" style="width:100%; display:flex; align-items:center; gap:10px; padding:14px 18px; background:none; border:none; cursor:pointer; text-align:left;" style-focus="outline:2px solid #3858E9;">
+          <span style="color:#948C7E; display:flex; transform:{{ advancedChevron }}; transition:transform .15s;">{{ iconChevronDown }}</span>
+          <span style="font-size:13px; font-weight:700; color:#26221C;">Performance &amp; output</span>
+          <span style="font-size:11.5px; color:#948C7E;">{{ advancedSummary }}</span>
+        </button>
+        <sc-if value="{{ advancedOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:0 18px 18px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px; margin-bottom:14px;">
+              <div>
+                <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">fields</label>
+                <select value="{{ q.fields }}" onChange="{{ onFieldsChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <option value="">all — full post objects</option>
+                  <option value="ids">ids — post IDs only</option>
+                  <option value="id=&gt;parent">id=&gt;parent</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">variable name</label>
+                <input value="{{ q.varName }}" onChange="{{ onVarNameChange }}" spellCheck="false" placeholder="query" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              </div>
+              <div>
+                <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+                <input value="{{ q.fnPrefix }}" onChange="{{ onFnPrefixChange }}" spellCheck="false" placeholder="mytheme" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              </div>
+              <div>
+                <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">shortcode tag</label>
+                <input value="{{ q.shortcodeTag }}" onChange="{{ onShortcodeTagChange }}" spellCheck="false" placeholder="recent_posts" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:7px;">
+              <sc-for list="{{ perfFlags }}" as="pf" hint-placeholder-count="4">
+                <button role="checkbox" aria-checked="{{ pf.on }}" onClick="{{ pf.onToggle }}" title="{{ pf.help }}" style="display:flex; align-items:center; gap:7px; border:1px solid {{ pf.borderColor }}; background:{{ pf.bg }}; color:{{ pf.color }}; border-radius:20px; padding:5px 12px 5px 9px; font-size:12px; font-weight:600; font-family:'JetBrains Mono',monospace; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+                  <span style="width:13px; height:13px; border-radius:4px; border:1.5px solid {{ pf.boxBorder }}; background:{{ pf.boxBg }}; display:flex; align-items:center; justify-content:center; color:#fff; font-family:lineicons; font-size:8px; line-height:1;">{{ pf.check }}</span>{{ pf.label }}
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabSummary }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabSummaryColor }}; border-bottom:2px solid {{ tabSummaryBorder }};" style-focus="outline:2px solid #3858E9;">Summary</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="40"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showSummaryTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-size:14.5px; line-height:1.6; color:#26221C; margin-bottom:16px;">{{ summarySentence }}</div>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <sc-for list="{{ summaryRows }}" as="sr" hint-placeholder-count="5">
+              <div style="display:flex; gap:12px; align-items:baseline; border-bottom:1px solid #F0ECE4; padding-bottom:7px;">
+                <span style="width:120px; flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#948C7E;">{{ sr.key }}</span>
+                <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ sr.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:18px; border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FCFBF9;">
+            <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:7px;">Cost profile</div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="flex:1; height:7px; border-radius:4px; background:#EFEBE3; overflow:hidden;">
+                <div style="width:{{ costWidth }}; height:100%; background:{{ costColor }};"></div>
+              </div>
+              <span style="font-size:11.5px; font-weight:700; color:{{ costColor }};">{{ costLabel }}</span>
+            </div>
+            <div style="font-size:11.5px; color:#7E7668; line-height:1.5;">{{ costNote }}</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this filter.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;loop&quot;,&quot;pre_get_posts&quot;,&quot;shortcode&quot;],&quot;default&quot;:&quot;loop&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const BUILTIN_TYPES = ['post', 'page', 'any', 'attachment'];
+const STATUSES = ['publish', 'draft', 'pending', 'private', 'future', 'any'];
+const ORDERBY = [['date', 'date — published date'], ['ID', 'ID'], ['title', 'title'], ['name', 'name — post slug'], ['modified', 'modified'], ['rand', 'rand — random'], ['comment_count', 'comment_count'], ['menu_order', 'menu_order'], ['relevance', 'relevance — search only'], ['meta_value', 'meta_value — text'], ['meta_value_num', 'meta_value_num — numeric'], ['post__in', 'post__in — keep given order']];
+const COMPARES = ['=', '!=', '>', '>=', '<', '<=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN', 'EXISTS', 'NOT EXISTS'];
+const NO_VALUE_COMPARES = ['EXISTS', 'NOT EXISTS'];
+const NUMERIC_COMPARES = ['>', '>=', '<', '<=', 'BETWEEN', 'NOT BETWEEN'];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function slugify(s, max) {
+  const out = String(s || '').toLowerCase().trim().replace(/[^a-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
+  return max ? out.slice(0, max) : out;
+}
+function csv(s) { return String(s || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+function phpList(items, numeric) {
+  return 'array( ' + items.map(function (i) { return numeric ? i : "'" + esc(i) + "'"; }).join(', ') + ' )';
+}
+function isIntList(s) { return csv(s).every(function (x) { return /^\d+$/.test(x); }); }
+
+function effectiveTypes(q) { return q.postTypes.concat(q.customTypes); }
+
+function buildArgs(q) {
+  const args = [];
+  const types = effectiveTypes(q);
+  if (types.length === 1) args.push(['post_type', "'" + esc(types[0]) + "'"]);
+  else if (types.length > 1) args.push(['post_type', phpList(types)]);
+  if (q.statuses.length === 1) args.push(['post_status', "'" + esc(q.statuses[0]) + "'"]);
+  else if (q.statuses.length > 1) args.push(['post_status', phpList(q.statuses)]);
+  args.push(['posts_per_page', String(parseInt(q.perPage, 10) || (q.perPage === '-1' ? -1 : 10))]);
+  if (q.offset && parseInt(q.offset, 10)) args.push(['offset', String(parseInt(q.offset, 10))]);
+  if (q.paged) args.push(['paged', "get_query_var( 'paged' ) ? absint( get_query_var( 'paged' ) ) : 1"]);
+  args.push(['orderby', "'" + q.orderby + "'"]);
+  args.push(['order', "'" + q.order + "'"]);
+  if ((q.orderby === 'meta_value' || q.orderby === 'meta_value_num') && q.orderbyMetaKey) args.push(['meta_key', "'" + esc(q.orderbyMetaKey) + "'"]);
+  if (q.search) args.push(['s', "'" + esc(q.search) + "'"]);
+  if (csv(q.authors).length) args.push(['author__in', phpList(csv(q.authors), isIntList(q.authors))]);
+  if (csv(q.include).length) args.push(['post__in', phpList(csv(q.include), isIntList(q.include))]);
+  if (csv(q.exclude).length) args.push(['post__not_in', phpList(csv(q.exclude), isIntList(q.exclude))]);
+  if (q.postParent !== '') args.push(['post_parent', String(parseInt(q.postParent, 10) || 0)]);
+  if (q.ignoreSticky) args.push(['ignore_sticky_posts', 'true']);
+
+  const taxes = q.taxClauses.filter(function (c) { return c.taxonomy; });
+  if (taxes.length) {
+    const rows = [];
+    if (taxes.length > 1) rows.push("'relation' => '" + q.taxRelation + "',");
+    taxes.forEach(function (c) {
+      const inner = ["'taxonomy' => '" + esc(c.taxonomy) + "'", "'field' => '" + c.field + "'"];
+      if (NO_VALUE_COMPARES.indexOf(c.operator) === -1) {
+        const terms = csv(c.terms);
+        inner.push("'terms' => " + (terms.length === 1 ? (c.field === 'term_id' || c.field === 'term_taxonomy_id' ? terms[0] : "'" + esc(terms[0]) + "'") : phpList(terms, c.field === 'term_id' || c.field === 'term_taxonomy_id')));
+      }
+      if (c.operator !== 'IN') inner.push("'operator' => '" + c.operator + "'");
+      if (c.includeChildren === false) inner.push("'include_children' => false");
+      rows.push('array(');
+      inner.forEach(function (i) { rows.push('\t' + i + ','); });
+      rows.push('),');
+    });
+    args.push(['tax_query', 'array(\n' + rows.map(function (r) { return '\t\t\t' + r; }).join('\n') + '\n\t\t)']);
+  }
+
+  const metas = q.metaClauses.filter(function (c) { return c.key; });
+  if (metas.length) {
+    const rows = [];
+    if (metas.length > 1) rows.push("'relation' => '" + q.metaRelation + "',");
+    metas.forEach(function (c) {
+      const inner = ["'key' => '" + esc(c.key) + "'"];
+      if (NO_VALUE_COMPARES.indexOf(c.compare) === -1) {
+        const vals = csv(c.value);
+        const numeric = c.type === 'NUMERIC' || c.type === 'DECIMAL';
+        if (c.compare === 'IN' || c.compare === 'NOT IN' || c.compare === 'BETWEEN' || c.compare === 'NOT BETWEEN') inner.push("'value' => " + phpList(vals, numeric && vals.every(function (v) { return /^-?\d+(\.\d+)?$/.test(v); })));
+        else inner.push("'value' => " + (numeric && /^-?\d+(\.\d+)?$/.test(c.value) ? c.value : "'" + esc(c.value) + "'"));
+      }
+      inner.push("'compare' => '" + c.compare + "'");
+      if (c.type !== 'CHAR') inner.push("'type' => '" + c.type + "'");
+      rows.push('array(');
+      inner.forEach(function (i) { rows.push('\t' + i + ','); });
+      rows.push('),');
+    });
+    args.push(['meta_query', 'array(\n' + rows.map(function (r) { return '\t\t\t' + r; }).join('\n') + '\n\t\t)']);
+  }
+
+  if (q.dateAfter || q.dateBefore) {
+    const rows = ['array('];
+    if (q.dateAfter) rows.push("\t'after'     => '" + esc(q.dateAfter) + "',");
+    if (q.dateBefore) rows.push("\t'before'    => '" + esc(q.dateBefore) + "',");
+    rows.push("\t'inclusive' => true,");
+    rows.push('),');
+    args.push(['date_query', 'array(\n' + rows.map(function (r) { return '\t\t\t' + r; }).join('\n') + '\n\t\t)']);
+  }
+
+  if (q.fields) args.push(['fields', "'" + q.fields + "'"]);
+  if (q.noFoundRows) args.push(['no_found_rows', 'true']);
+  if (!q.updateMetaCache) args.push(['update_post_meta_cache', 'false']);
+  if (!q.updateTermCache) args.push(['update_post_term_cache', 'false']);
+  if (q.suppressFilters) args.push(['suppress_filters', 'true']);
+  return args;
+}
+
+function alignBlock(pairs, indent) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return indent + "'" + p[0] + "'" + ' '.repeat(w - p[0].length) + ' => ' + p[1] + ','; }).join('\n');
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) {
+  if (out.indexOf('<?php\n') === 0) return '<?php\n' + CREDIT + out.slice(6);
+  return CREDIT + out;
+}
+
+function buildCode(q, mode) {
+  const v = '$' + (slugify(q.varName) || 'query');
+  const args = alignBlock(buildArgs(q), '\t');
+  const idsOnly = q.fields === 'ids' || q.fields === 'id=>parent';
+  let loop = '';
+  if (idsOnly) {
+    loop = 'foreach ( ' + v + '->posts as $post_id ) {\n\t// ' + (q.fields === 'ids' ? 'Post ID' : 'ID => parent') + ' available as $post_id.\n}\n';
+  } else {
+    loop = 'if ( ' + v + "->have_posts() ) {\n\techo '<ul class=\"" + (slugify(q.fnPrefix) || 'mytheme') + "-list\">';\n\twhile ( " + v + '->have_posts() ) {\n\t\t' + v + "->the_post();\n\t\tprintf(\n\t\t\t'<li><a href=\"%s\">%s</a></li>',\n\t\t\tesc_url( get_permalink() ),\n\t\t\tesc_html( get_the_title() )\n\t\t);\n\t}\n\techo '</ul>';\n\twp_reset_postdata();\n} else {\n\techo '<p>' . esc_html__( 'Nothing found.', 'textdomain' ) . '</p>';\n}\n";
+  }
+
+  if (mode === 'pre_get_posts') {
+    const fn = (slugify(q.fnPrefix) || 'mytheme') + '_adjust_main_query';
+    const sets = buildArgs(q).filter(function (p) { return p[0] !== 'paged'; }).map(function (p) { return "\t$query->set( '" + p[0] + "', " + p[1].replace(/\n\t\t\t/g, '\n\t\t').replace(/\n\t\t\)/, '\n\t)') + ' );'; }).join('\n');
+    return withCredit("/**\n * Adjust the main query instead of running a second one.\n */\nfunction " + fn + "( $query ) {\n\tif ( is_admin() || ! $query->is_main_query() ) {\n\t\treturn;\n\t}\n\n" + sets + "\n}\nadd_action( 'pre_get_posts', '" + fn + "' );\n");
+  }
+
+  if (mode === 'shortcode') {
+    const tag = slugify(q.shortcodeTag) || 'recent_posts';
+    const fn = (slugify(q.fnPrefix) || 'mytheme') + '_' + tag + '_shortcode';
+    return withCredit("/**\n * [" + tag + "] — renders the query below.\n */\nfunction " + fn + "() {\n\t$args = array(\n" + args.replace(/^\t/gm, '\t\t') + '\n\t);\n\n\t' + v + ' = new WP_Query( $args );\n\n\tob_start();\n' + loop.replace(/^/gm, '\t') + "\n\treturn ob_get_clean();\n}\nadd_shortcode( '" + tag + "', '" + fn + "' );\n");
+  }
+
+  return withCredit('$args = array(\n' + args + '\n);\n\n' + v + ' = new WP_Query( $args );\n\n' + loop);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|new|foreach|as|while|if|else|echo|printf)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|([{}()\[\];,]|=>|->|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(q) {
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const per = parseInt(q.perPage, 10);
+  if (!effectiveTypes(q).length) add('warning', 'No post type set — WordPress falls back to “post” only.');
+  if (effectiveTypes(q).indexOf('any') !== -1 && effectiveTypes(q).length > 1) add('warning', '“any” already covers every public type; listing others alongside it has no effect.');
+  if (q.perPage === '-1') add('warning', 'posts_per_page = -1 loads every matching row into memory. Set a real ceiling unless you know the table is small.', 'cap100', 'Set 100');
+  else if (isNaN(per)) add('error', 'Posts per page must be a number (or -1 for unlimited).');
+  else if (per > 100) add('recommendation', per + ' posts per page is a heavy page render — consider pagination instead.');
+  if (q.orderby === 'rand') add('warning', 'orderby “rand” cannot use the query cache and gets slower as the table grows.');
+  if ((q.orderby === 'meta_value' || q.orderby === 'meta_value_num') && !q.orderbyMetaKey) add('error', 'Ordering by meta value needs a meta key.');
+  if (q.orderby === 'meta_value' && q.orderbyMetaKey) add('recommendation', 'meta_value sorts as text — “10” lands before “9”. Use meta_value_num for numbers.');
+  if (q.orderby === 'relevance' && !q.search) add('warning', 'orderby “relevance” only means something with a search term.');
+  if (q.orderby === 'post__in' && !csv(q.include).length) add('warning', 'orderby “post__in” needs post__in to be set.');
+  if (csv(q.include).length && q.orderby !== 'post__in') add('recommendation', 'With post__in set, orderby “post__in” preserves the order you listed.');
+  if (q.paged && q.noFoundRows) add('error', 'Pagination needs the found-rows count — no_found_rows must be off when paged is on.', 'unsetNoFoundRows', 'Turn off no_found_rows');
+  if (!q.paged && !q.noFoundRows && !q.offset) add('recommendation', 'Not paginating? no_found_rows skips a SQL_CALC_FOUND_ROWS pass on every request.', 'setNoFoundRows', 'Turn on no_found_rows');
+  if (q.offset && q.paged) add('warning', 'offset breaks WordPress pagination — the two should not be combined.');
+  q.metaClauses.forEach(function (c, i) {
+    if (!c.key) add('error', 'Meta clause ' + (i + 1) + ' has no key.');
+    if (NUMERIC_COMPARES.indexOf(c.compare) !== -1 && c.type === 'CHAR') add('warning', 'Meta clause ' + (i + 1) + ' compares with ' + c.compare + ' but casts to CHAR — “9” > “10” as text. Switch the type to NUMERIC.');
+    if ((c.compare === 'LIKE' || c.compare === 'NOT LIKE') && c.value && c.value.length < 3) add('recommendation', 'Short LIKE values scan the whole postmeta table.');
+  });
+  if (q.metaClauses.filter(function (c) { return c.key; }).length > 2) add('recommendation', 'Three or more meta clauses means three or more JOINs. Consider a taxonomy for filterable values.');
+  q.taxClauses.forEach(function (c, i) {
+    if (!c.taxonomy) add('error', 'Taxonomy clause ' + (i + 1) + ' has no taxonomy.');
+    else if (!csv(c.terms).length && NO_VALUE_COMPARES.indexOf(c.operator) === -1) add('error', 'Taxonomy clause ' + (i + 1) + ' has no terms.');
+    if (c.field === 'name') add('recommendation', 'Taxonomy clause ' + (i + 1) + ' matches on “name” — slug or term_id is safer, names are not unique.');
+  });
+  if (q.suppressFilters) add('warning', 'suppress_filters skips every plugin filter on the query. Only get_posts() sets it by default; leave it off in a WP_Query.');
+  if (q.search && q.suppressFilters) add('warning', 'Search relies on filters that suppress_filters removes.');
+  if (!q.updateMetaCache && q.fields === '') add('recommendation', 'Meta cache is off — every get_post_meta() in the loop becomes its own query.');
+  if (q.fields === 'ids' && (!q.updateMetaCache || !q.updateTermCache)) add('recommendation', 'fields=ids already skips the object caches; the cache flags are redundant here.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    postTypes: ['post'], customTypes: [], statuses: ['publish'],
+    perPage: '10', offset: '', paged: true, ignoreSticky: false,
+    orderby: 'date', order: 'DESC', orderbyMetaKey: '',
+    search: '', authors: '', include: '', exclude: '', postParent: '',
+    dateAfter: '', dateBefore: '',
+    taxClauses: [], metaClauses: [], taxRelation: 'AND', metaRelation: 'AND',
+    fields: '', noFoundRows: false, updateMetaCache: true, updateTermCache: true, suppressFilters: false,
+    varName: 'query', fnPrefix: 'mytheme', shortcodeTag: 'recent_posts'
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    q: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'loop', validationFilter: 'all',
+    filtersOpen: false, advancedOpen: false,
+    typeDraft: '', copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('wp-query-builder-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.postTypes) this.setState({ q: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(q) { try { localStorage.setItem('wp-query-builder-v1', JSON.stringify(q)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.q));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { q: next, past: coalesce ? s.past : s.past.concat([s.q]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.q));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { q: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.q].concat(s.future) }; }, () => this.persist(this.state.q)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { q: s.future[0], past: s.past.concat([s.q]), future: s.future.slice(1) }; }, () => this.persist(this.state.q)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'cap100') p.perPage = '100';
+      if (kind === 'unsetNoFoundRows') p.noFoundRows = false;
+      if (kind === 'setNoFoundRows') p.noFoundRows = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.q, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const q = this.state.q, mode = this.state.outputMode;
+    const code = "<?php\n\n" + buildCode(q, mode);
+    const name = mode === 'shortcode' ? (slugify(q.shortcodeTag) || 'shortcode').replace(/_/g, '-') + '-query.php' : mode === 'pre_get_posts' ? 'pre-get-posts.php' : 'wp-query.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, q = s.q, self = this;
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), chevronDown: ic('\ue54f'), close: ic('\uf73a', 13), trash: ic('\uf4ed', 15), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(q);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    const chipStyle = function (on) {
+      return { borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', boxBorder: on ? '#3858E9' : '#C7C2B8', boxBg: on ? '#3858E9' : '#fff', check: on ? '\ue539' : '' };
+    };
+    const code = buildCode(q, s.outputMode);
+    const types = effectiveTypes(q);
+
+    let cost = 1;
+    if (q.perPage === '-1') cost += 3;
+    else if ((parseInt(q.perPage, 10) || 10) > 50) cost += 1;
+    cost += q.metaClauses.filter(function (c) { return c.key; }).length;
+    cost += q.taxClauses.filter(function (c) { return c.taxonomy; }).length * 0.5;
+    if (q.orderby === 'rand') cost += 2;
+    if (q.search) cost += 1;
+    if (q.noFoundRows) cost -= 0.5;
+    if (q.fields === 'ids') cost -= 0.5;
+    const costPct = Math.max(8, Math.min(100, Math.round(cost / 8 * 100)));
+    const costLabel = cost <= 2 ? 'Light' : cost <= 4 ? 'Moderate' : cost <= 6 ? 'Heavy' : 'Very heavy';
+    const costColor = cost <= 2 ? '#1F7A4C' : cost <= 4 ? '#3B6FB0' : cost <= 6 ? '#B45309' : '#B91C1C';
+    const costNotes = {
+      Light: 'Indexed columns only. Safe to run on every page load.',
+      Moderate: 'A JOIN or two. Fine for a template, cache it if it runs site-wide.',
+      Heavy: 'Several JOINs or an unbounded result set — measure it with Query Monitor.',
+      'Very heavy': 'This will show up in your slow query log. Cache the result or denormalise the filter into a taxonomy.'
+    };
+
+    const summaryBits = [];
+    summaryBits.push(types.length ? (types.length === 1 ? types[0] : types.slice(0, -1).join(', ') + ' and ' + types[types.length - 1]) : 'post');
+    const summarySentence = 'Returns ' + (q.perPage === '-1' ? 'every' : 'up to ' + (parseInt(q.perPage, 10) || 10)) + ' ' + summaryBits[0] + ' item' + (q.perPage === '1' ? '' : 's') +
+      (q.statuses.length ? ' with status ' + q.statuses.join(' or ') : '') +
+      (q.taxClauses.filter(function (c) { return c.taxonomy; }).length ? ', filtered by ' + q.taxClauses.filter(function (c) { return c.taxonomy; }).map(function (c) { return c.taxonomy; }).join(' ' + q.taxRelation.toLowerCase() + ' ') : '') +
+      (q.metaClauses.filter(function (c) { return c.key; }).length ? ', matching meta ' + q.metaClauses.filter(function (c) { return c.key; }).map(function (c) { return c.key; }).join(' ' + q.metaRelation.toLowerCase() + ' ') : '') +
+      (q.search ? ', searching for “' + q.search + '”' : '') +
+      ', ordered by ' + q.orderby + ' ' + q.order.toLowerCase() + (q.paged ? ', paginated.' : '.');
+
+    const summaryRows = [
+      { key: 'post_type', value: types.length ? types.join(', ') : 'post (default)' },
+      { key: 'post_status', value: q.statuses.length ? q.statuses.join(', ') : 'publish (default)' },
+      { key: 'per page', value: q.perPage === '-1' ? 'unlimited' : String(parseInt(q.perPage, 10) || 10) + (q.paged ? ' · paginated' : '') },
+      { key: 'orderby', value: q.orderby + ' ' + q.order + ((q.orderby === 'meta_value' || q.orderby === 'meta_value_num') && q.orderbyMetaKey ? ' (' + q.orderbyMetaKey + ')' : '') },
+      { key: 'tax_query', value: q.taxClauses.filter(function (c) { return c.taxonomy; }).length ? q.taxClauses.filter(function (c) { return c.taxonomy; }).map(function (c) { return c.taxonomy + ' ' + c.operator + ' ' + (csv(c.terms).join('/') || '—'); }).join('  ·  ') : 'none' },
+      { key: 'meta_query', value: q.metaClauses.filter(function (c) { return c.key; }).length ? q.metaClauses.filter(function (c) { return c.key; }).map(function (c) { return c.key + ' ' + c.compare + ' ' + (c.value || '—'); }).join('  ·  ') : 'none' },
+      { key: 'date_query', value: (q.dateAfter || q.dateBefore) ? [q.dateAfter ? 'after ' + q.dateAfter : '', q.dateBefore ? 'before ' + q.dateBefore : ''].filter(Boolean).join(', ') : 'none' },
+      { key: 'caches', value: [q.noFoundRows ? 'no_found_rows' : '', !q.updateMetaCache ? 'meta cache off' : '', !q.updateTermCache ? 'term cache off' : ''].filter(Boolean).join(', ') || 'defaults' }
+    ];
+
+    const outputHints = {
+      loop: 'A secondary query — the usual choice inside a template or shortcode.',
+      pre_get_posts: 'Modifies the main query instead of running a second one. Faster, and archives keep working.',
+      shortcode: 'The same query wrapped in a shortcode with output buffering.'
+    };
+
+    return {
+      toolCount: 38, trueVal: true, q: q,
+      refWorkspace: this.getRef('workspace'), refPerPage: this.getRef('perPage'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: s.outputMode === 'shortcode' ? (slugify(q.shortcodeTag) || 'shortcode').replace(/_/g, '-') + '.php' : s.outputMode === 'pre_get_posts' ? 'pre-get-posts.php' : 'wp-query.php',
+
+      postTypeChips: BUILTIN_TYPES.map(function (t) {
+        const on = q.postTypes.indexOf(t) !== -1;
+        return Object.assign({ label: t, on: on, onToggle: function () { self.commit(function (p) { const i = p.postTypes.indexOf(t); if (i === -1) p.postTypes.push(t); else p.postTypes.splice(i, 1); }); } }, chipStyle(on));
+      }),
+      customTypeChips: q.customTypes.map(function (v, i) { return { value: v, onRemove: function () { self.commit(function (p) { p.customTypes.splice(i, 1); }); } }; }),
+      typeDraft: s.typeDraft,
+      onTypeDraftChange: function (ev) { self.setState({ typeDraft: ev.target.value }); },
+      onTypeDraftKeyDown: function (ev) {
+        if (ev.key === 'Enter' || ev.key === ',') {
+          ev.preventDefault();
+          const v = slugify(s.typeDraft, 20);
+          if (v) self.commit(function (p) { if (p.customTypes.indexOf(v) === -1) p.customTypes.push(v); });
+          self.setState({ typeDraft: '' });
+        }
+      },
+      onTypeDraftBlur: function () {
+        const v = slugify(s.typeDraft, 20);
+        if (v) self.commit(function (p) { if (p.customTypes.indexOf(v) === -1) p.customTypes.push(v); });
+        self.setState({ typeDraft: '' });
+      },
+      statusChips: STATUSES.map(function (t) {
+        const on = q.statuses.indexOf(t) !== -1;
+        return Object.assign({ label: t, on: on, onToggle: function () { self.commit(function (p) { const i = p.statuses.indexOf(t); if (i === -1) p.statuses.push(t); else p.statuses.splice(i, 1); }); } }, chipStyle(on));
+      }),
+
+      onPerPageChange: function (ev) { self.set('perPage', ev.target.value, true); },
+      perPageBorder: (q.perPage === '-1' || isNaN(parseInt(q.perPage, 10))) ? '#E8B45C' : '#E7E2D9',
+      perPageHint: q.perPage === '-1' ? 'Unlimited — every matching row is loaded.' : 'Use -1 for no limit.',
+      onOffsetChange: function (ev) { self.set('offset', ev.target.value, true); },
+      orderbyOptions: ORDERBY.map(function (o) { return { value: o[0], label: o[1] }; }),
+      onOrderbyChange: function (ev) { self.set('orderby', ev.target.value); },
+      onOrderChange: function (ev) { self.set('order', ev.target.value); },
+      showOrderbyMetaKey: q.orderby === 'meta_value' || q.orderby === 'meta_value_num',
+      onOrderbyMetaKeyChange: function (ev) { self.set('orderbyMetaKey', ev.target.value, true); },
+
+      behaviourToggles: [
+        { key: 'paged', label: 'Paginate', help: 'Reads the paged query var so page 2 and beyond work.', on: q.paged },
+        { key: 'ignoreSticky', label: 'Ignore sticky posts', help: 'Stops pinned posts jumping to the top of a secondary query.', on: q.ignoreSticky }
+      ].map(function (t) {
+        return { label: t.label, help: t.help, on: t.on, bg: t.on ? '#3858E9' : '#D9D4C8', knobLeft: t.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[t.key] = !p[t.key]; }); } };
+      }),
+
+      showTaxRelation: q.taxClauses.length > 1,
+      onTaxRelationChange: function (ev) { self.set('taxRelation', ev.target.value); },
+      taxClauses: q.taxClauses.map(function (c, i) {
+        const noTerms = NO_VALUE_COMPARES.indexOf(c.operator) !== -1;
+        const childOn = c.includeChildren !== false;
+        return {
+          taxonomy: c.taxonomy, field: c.field, operator: c.operator, terms: c.terms,
+          taxonomyBorder: c.taxonomy ? '#E7E2D9' : '#E8B45C',
+          termsDisabled: noTerms, termsBg: noTerms ? '#F3F1EC' : '#fff',
+          termsBorder: (noTerms || csv(c.terms).length) ? '#E7E2D9' : '#E8B45C',
+          includeChildrenVisible: c.field === 'slug' || c.field === 'term_id',
+          includeChildren: childOn, childCheck: childOn ? '\ue539' : '',
+          childBorder: childOn ? '#3858E9' : '#E7E2D9', childBg: childOn ? '#EEF1FE' : '#fff', childColor: childOn ? '#2A46C4' : '#5C564B',
+          childBoxBorder: childOn ? '#3858E9' : '#C7C2B8', childBoxBg: childOn ? '#3858E9' : '#fff',
+          onTaxonomyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.taxClauses[i].taxonomy = v; }, 'tax-' + i + '-taxonomy'); },
+          onFieldChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.taxClauses[i].field = v; }); },
+          onOperatorChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.taxClauses[i].operator = v; }); },
+          onTermsChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.taxClauses[i].terms = v; }, 'tax-' + i + '-terms'); },
+          onToggleChildren: function () { self.commit(function (p) { p.taxClauses[i].includeChildren = p.taxClauses[i].includeChildren === false; }); },
+          onRemove: function () { self.commit(function (p) { p.taxClauses.splice(i, 1); }); }
+        };
+      }),
+      onAddTaxClause: function () { self.commit(function (p) { p.taxClauses.push({ taxonomy: '', field: 'slug', operator: 'IN', terms: '', includeChildren: true }); }); },
+
+      showMetaRelation: q.metaClauses.length > 1,
+      onMetaRelationChange: function (ev) { self.set('metaRelation', ev.target.value); },
+      compareOptions: COMPARES.map(function (c) { return { value: c, label: c }; }),
+      metaClauses: q.metaClauses.map(function (c, i) {
+        const noValue = NO_VALUE_COMPARES.indexOf(c.compare) !== -1;
+        const multi = ['IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN'].indexOf(c.compare) !== -1;
+        const mismatch = NUMERIC_COMPARES.indexOf(c.compare) !== -1 && c.type === 'CHAR';
+        return {
+          key: c.key, compare: c.compare, type: c.type, value: c.value,
+          keyBorder: c.key ? '#E7E2D9' : '#E8B45C',
+          typeBorder: mismatch ? '#E8B45C' : '#E7E2D9',
+          valueLabel: multi ? 'value — comma separated' : 'value',
+          valuePlaceholder: noValue ? 'not used with ' + c.compare : multi ? '10, 20' : '10',
+          valueDisabled: noValue, valueBg: noValue ? '#F3F1EC' : '#fff',
+          valueBorder: (noValue || c.value) ? '#E7E2D9' : '#E8B45C',
+          onKeyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.metaClauses[i].key = v; }, 'meta-' + i + '-key'); },
+          onCompareChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.metaClauses[i].compare = v; }); },
+          onTypeChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.metaClauses[i].type = v; }); },
+          onValueChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.metaClauses[i].value = v; }, 'meta-' + i + '-value'); },
+          onRemove: function () { self.commit(function (p) { p.metaClauses.splice(i, 1); }); }
+        };
+      }),
+      onAddMetaClause: function () { self.commit(function (p) { p.metaClauses.push({ key: '', compare: '=', type: 'CHAR', value: '' }); }); },
+
+      filtersOpen: s.filtersOpen,
+      filtersChevron: s.filtersOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+      filtersSummary: [q.search ? 'search' : '', csv(q.authors).length ? 'authors' : '', csv(q.include).length ? 'post__in' : '', csv(q.exclude).length ? 'post__not_in' : '', (q.dateAfter || q.dateBefore) ? 'dates' : ''].filter(Boolean).join(' · ') || 'None set',
+      onToggleFilters: function () { self.setState({ filtersOpen: !s.filtersOpen }); },
+      onSearchChange: function (ev) { self.set('search', ev.target.value, true); },
+      onAuthorsChange: function (ev) { self.set('authors', ev.target.value, true); },
+      onIncludeChange: function (ev) { self.set('include', ev.target.value, true); },
+      onExcludeChange: function (ev) { self.set('exclude', ev.target.value, true); },
+      onPostParentChange: function (ev) { self.set('postParent', ev.target.value, true); },
+      onDateAfterChange: function (ev) { self.set('dateAfter', ev.target.value, true); },
+      onDateBeforeChange: function (ev) { self.set('dateBefore', ev.target.value, true); },
+
+      advancedOpen: s.advancedOpen,
+      advancedChevron: s.advancedOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+      advancedSummary: [q.fields ? 'fields=' + q.fields : '', q.noFoundRows ? 'no_found_rows' : '', !q.updateMetaCache ? 'no meta cache' : '', q.suppressFilters ? 'suppress_filters' : ''].filter(Boolean).join(' · ') || 'Defaults — caches on, found rows counted',
+      onToggleAdvanced: function () { self.setState({ advancedOpen: !s.advancedOpen }); },
+      onFieldsChange: function (ev) { self.set('fields', ev.target.value); },
+      onVarNameChange: function (ev) { self.set('varName', ev.target.value, true); },
+      onFnPrefixChange: function (ev) { self.set('fnPrefix', ev.target.value, true); },
+      onShortcodeTagChange: function (ev) { self.set('shortcodeTag', ev.target.value, true); },
+      perfFlags: [
+        { key: 'noFoundRows', label: 'no_found_rows', on: q.noFoundRows, help: 'Skips the row count. Cannot be used with pagination.' },
+        { key: 'updateMetaCache', label: 'update_post_meta_cache', on: q.updateMetaCache, help: 'Primes post meta in one query.' },
+        { key: 'updateTermCache', label: 'update_post_term_cache', on: q.updateTermCache, help: 'Primes terms in one query.' },
+        { key: 'suppressFilters', label: 'suppress_filters', on: q.suppressFilters, help: 'Skips plugin filters — rarely what you want.' }
+      ].map(function (f) {
+        return Object.assign({ label: f.label, on: f.on, help: f.help, onToggle: function () { self.commit(function (p) { p[f.key] = !p[f.key]; }); } }, chipStyle(f.on));
+      }),
+
+      codeTokens: tokenizePHP(code),
+      outputModes: [['loop', 'Query + loop'], ['pre_get_posts', 'pre_get_posts'], ['shortcode', 'Shortcode']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: outputHints[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new query' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo, iconChevronDown: ICON.chevronDown, iconClose: ICON.close, iconTrash: ICON.trash,
+
+      summarySentence: summarySentence, summaryRows: summaryRows,
+      costWidth: costPct + '%', costColor: costColor, costLabel: costLabel, costNote: costNotes[costLabel],
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showSummaryTab: s.rightTab === 'summary', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabSummary: function () { self.setState({ rightTab: 'summary', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabSummaryColor: s.rightTab === 'summary' ? '#3858E9' : '#948C7E', tabSummaryBorder: s.rightTab === 'summary' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Builder'], ['output', 'PHP & Checks']].map(function (t) {
+        const on = s.mobilePane === t[0];
+        return { label: t[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: t[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>List Table Generator — WP_List_Table — Generator for WP</title>
+  <meta name="description" content="Sortable, searchable admin tables with bulk actions, pagination and row actions — the boilerplate WP_List_Table expects, written for you." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=admin" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Admin</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">List Table</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">List Table Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">WP_List_Table is undocumented and unavoidable. Columns, sorting, search, bulk actions and pagination — all wired, with the nonce checks bulk handlers usually skip.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The table</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Singular / plural</label>
+            <input value="{{ lt.labels }}" onChange="{{ onLabelsChange }}" placeholder="brief, briefs" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid {{ labelsBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">class name</label>
+            <input value="{{ lt.className }}" onChange="{{ onClassNameChange }}" spellCheck="false" placeholder="Acme_Briefs_Table" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ classBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">data source</label>
+            <select value="{{ lt.source }}" onChange="{{ onSourceChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="table">Custom table</option>
+              <option value="posts">Post type</option>
+              <option value="array">In-memory array</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">{{ sourceLabel }}</label>
+            <input value="{{ lt.sourceName }}" onChange="{{ onSourceNameChange }}" spellCheck="false" placeholder="acme_briefs" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ sourceBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">per page</label>
+            <input value="{{ lt.perPage }}" onChange="{{ onPerPageChange }}" spellCheck="false" placeholder="20" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ perPageBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">prefix</label>
+            <input value="{{ lt.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Columns</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ columnsNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ columnRows }}" as="cr" hint-placeholder-count="4">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <input value="{{ cr.label }}" onChange="{{ cr.onLabelChange }}" placeholder="Title" style="flex:1.2; min-width:110px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              <input value="{{ cr.key }}" onChange="{{ cr.onKeyChange }}" spellCheck="false" placeholder="title" style="width:110px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ cr.keyBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <select value="{{ cr.type }}" onChange="{{ cr.onTypeChange }}" style="width:120px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                <sc-for list="{{ typeOptions }}" as="to" hint-placeholder-count="5">
+                  <option value="{{ to.value }}">{{ to.label }}</option>
+                </sc-for>
+              </select>
+              <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#5C564B;">
+                <input type="checkbox" checked="{{ cr.sortable }}" onChange="{{ cr.onSortableChange }}" style="width:14px; height:14px; accent-color:#3858E9;" />
+                sortable
+              </label>
+              <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#5C564B;">
+                <input type="checkbox" checked="{{ cr.primary }}" onChange="{{ cr.onPrimaryChange }}" style="width:14px; height:14px; accent-color:#3858E9;" />
+                primary
+              </label>
+              <div style="display:flex; gap:3px; flex-shrink:0;">
+                <button aria-label="Move up" onClick="{{ cr.onMoveUp }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ cr.iconUp }}</button>
+                <button aria-label="Move down" onClick="{{ cr.onMoveDown }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ cr.iconDown }}</button>
+                <button aria-label="Remove column" onClick="{{ cr.onRemove }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ cr.iconRemove }}</button>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noColumns }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No columns — the table renders an empty header.</div>
+          </sc-if>
+        </div>
+        <button onClick="{{ onAddColumn }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add column</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Actions</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ actionsNote }}</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">row actions</label>
+            <input value="{{ lt.rowActions }}" onChange="{{ onRowActionsChange }}" spellCheck="false" placeholder="edit:Edit, delete:Delete" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">bulk actions</label>
+            <input value="{{ lt.bulkActions }}" onChange="{{ onBulkActionsChange }}" spellCheck="false" placeholder="delete:Delete permanently" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ bulkBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">views (status filters)</label>
+            <input value="{{ lt.views }}" onChange="{{ onViewsChange }}" spellCheck="false" placeholder="all:All, draft:Drafts" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">capability</label>
+            <select value="{{ lt.capability }}" onChange="{{ onCapabilityChange }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="manage_options">manage_options</option>
+              <option value="edit_others_posts">edit_others_posts</option>
+              <option value="edit_posts">edit_posts</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Features</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="5">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabScreen }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabScreenColor }}; border-bottom:2px solid {{ tabScreenBorder }};" style-focus="outline:2px solid #3858E9;">Screen</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="2">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showScreenTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; background:#F0F0F1; padding:16px 18px 40px;">
+          <h1 style="margin:0 0 12px; font-size:23px; font-weight:400; color:#1D2327;">{{ pageTitle }}</h1>
+          <sc-if value="{{ hasViews }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; gap:12px; flex-wrap:wrap; font-size:13px; margin-bottom:10px;">
+              <sc-for list="{{ previewViews }}" as="pv" hint-placeholder-count="2">
+                <span style="color:{{ pv.color }}; font-weight:{{ pv.weight }};">{{ pv.label }} <span style="color:#787C82;">({{ pv.count }})</span></span>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+            <div style="display:flex; gap:6px; align-items:center;">
+              <sc-if value="{{ hasBulk }}" hint-placeholder-val="{{ true }}">
+                <select style="font-size:13px; padding:3px 6px; border:1px solid #8C8F94; border-radius:3px; background:#fff;">
+                  <option value="">Bulk actions</option>
+                  <sc-for list="{{ previewBulk }}" as="pb" hint-placeholder-count="1">
+                    <option value="{{ pb.value }}">{{ pb.label }}</option>
+                  </sc-for>
+                </select>
+                <span style="font-size:13px; padding:3px 10px; border:1px solid #8C8F94; border-radius:3px; background:#F6F7F7; color:#2C3338;">Apply</span>
+              </sc-if>
+            </div>
+            <sc-if value="{{ lt.search }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; gap:5px; align-items:center;">
+                <input value="" placeholder="Search {{ pluralLabel }}" readOnly="{{ trueVal }}" style="font-size:13px; padding:3px 7px; border:1px solid #8C8F94; border-radius:3px; background:#fff; width:150px;" />
+                <span style="font-size:13px; padding:3px 10px; border:1px solid #8C8F94; border-radius:3px; background:#F6F7F7; color:#2C3338;">Search</span>
+              </div>
+            </sc-if>
+          </div>
+          <table style="width:100%; border-collapse:collapse; background:#fff; border:1px solid #C3C4C7; font-size:13px;">
+            <thead>
+              <tr style="border-bottom:1px solid #C3C4C7;">
+                <sc-if value="{{ hasBulk }}" hint-placeholder-val="{{ true }}">
+                  <th style="width:28px; padding:8px 6px; text-align:left;"><input type="checkbox" readOnly="{{ trueVal }}" style="width:15px; height:15px;" /></th>
+                </sc-if>
+                <sc-for list="{{ previewColumns }}" as="pc" hint-placeholder-count="4">
+                  <th style="padding:8px 8px; text-align:left; font-weight:600; color:#2271B1; white-space:nowrap;">{{ pc.label }}{{ pc.sortMark }}</th>
+                </sc-for>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ previewRows }}" as="pr" hint-placeholder-count="3">
+                <tr style="border-bottom:1px solid #F0F0F1;">
+                  <sc-if value="{{ hasBulk }}" hint-placeholder-val="{{ true }}">
+                    <td style="padding:8px 6px;"><input type="checkbox" readOnly="{{ trueVal }}" style="width:15px; height:15px;" /></td>
+                  </sc-if>
+                  <sc-for list="{{ pr.cells }}" as="pcell" hint-placeholder-count="4">
+                    <td style="padding:8px 8px; color:{{ pcell.color }}; font-weight:{{ pcell.weight }};">{{ pcell.text }}</td>
+                  </sc-for>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="margin-top:8px; text-align:right; font-size:13px; color:#787C82;">{{ paginationLabel }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">extends WP_List_Table</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">A private core class you are officially not supposed to extend</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Methods you override</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="7">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:3px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The require nobody expects</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:8px;">if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">WP_List_Table is not loaded on every admin request, and it is marked private in core. It has been stable for a decade, but that is a promise nobody made — pin the require and test after major releases.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Order matters in prepare_items()</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Process bulk actions first, then fetch, then set_pagination_args, then assign $this->items. Setting items before pagination means the count is wrong; fetching before the bulk action means you display rows you just deleted.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Escaping</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Nothing in this class escapes for you. Every column callback returns markup that goes straight into the page — so each one here escapes its own value, and the generated row_actions() output is built from esc_url() and esc_html().</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on this table.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;plugin&quot;,&quot;page&quot;],&quot;default&quot;:&quot;plugin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const TYPES = [['text', 'Text'], ['number', 'Number'], ['date', 'Date'], ['link', 'Link'], ['status', 'Status badge']];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function pascal(s) { return String(s || '').split(/[^A-Za-z0-9]+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join('_'); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+function pairs(str) {
+  return String(str || '').split(',').map(function (part) {
+    const p = part.trim();
+    if (!p) return null;
+    const i = p.indexOf(':');
+    const v = fnSlug(i >= 0 ? p.slice(0, i) : p);
+    const l = i >= 0 ? p.slice(i + 1).trim() : p.charAt(0).toUpperCase() + p.slice(1);
+    return v ? { value: v, label: l || v } : null;
+  }).filter(Boolean);
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(lt) {
+  const parts = String(lt.labels || 'item, items').split(',');
+  const singular = slugify(parts[0]) || 'item';
+  const plural = slugify(parts[1] || '') || singular + 's';
+  const pre = fnSlug(lt.prefix) || 'acme';
+  return {
+    pre: pre, singular: singular, plural: plural,
+    cls: pascal(lt.className) || 'Acme_Items_Table',
+    td: pre.replace(/_/g, '-'),
+    columns: (lt.columns || []).map(function (c) { return Object.assign({}, c, { key: fnSlug(c.key) || 'col' }); }),
+    rowActions: pairs(lt.rowActions),
+    bulkActions: pairs(lt.bulkActions),
+    views: pairs(lt.views),
+    nonceAction: pre + '_bulk_' + (slugify(parts[1] || '') || 'items')
+  };
+}
+
+function buildCode(lt, mode) {
+  const d = derive(lt);
+  const pre = d.pre;
+  const t = function (s) { return "__( '" + esc(s) + "', '" + d.td + "' )"; };
+  const primary = d.columns.filter(function (c) { return c.primary; })[0] || d.columns[0];
+  const perPage = parseInt(lt.perPage, 10) || 20;
+
+  if (mode === 'page') {
+    return withCredit('<?php\n/**\n * The admin page that renders the table.\n */\nfunction ' + pre + '_render_' + d.plural + '_page() {\n\tif ( ! current_user_can( \'' + lt.capability + "' ) ) {\n\t\treturn;\n\t}\n\n\t$table = new " + d.cls + '();\n\t$table->prepare_items();\n\t?>\n\t<div class="wrap">\n\t\t<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>\n\t\t<form method="get">\n\t\t\t<input type="hidden" name="page" value="' + pre + '-' + d.plural + '" />\n\t\t\t<?php\n' + (lt.views ? '\t\t\t$table->views();\n' : '') + (lt.search ? "\t\t\t$table->search_box( " + t('Search ' + d.plural) + ", '" + pre + "-search' );\n" : '') + '\t\t\t$table->display();\n\t\t\t?>\n\t\t</form>\n\t</div>\n\t<?php\n}\n\n/**\n * Add the page and remember the per-page option.\n */\nfunction ' + pre + '_' + d.plural + "_menu() {\n\t$hook = add_menu_page(\n\t\t" + t(d.plural.charAt(0).toUpperCase() + d.plural.slice(1)) + ',\n\t\t' + t(d.plural.charAt(0).toUpperCase() + d.plural.slice(1)) + ",\n\t\t'" + lt.capability + "',\n\t\t'" + pre + '-' + d.plural + "',\n\t\t'" + pre + '_render_' + d.plural + "_page',\n\t\t'dashicons-list-view'\n\t);\n\n\tadd_action( \"load-{$hook}\", function () {\n\t\tadd_screen_option(\n\t\t\t'per_page',\n\t\t\tarray(\n\t\t\t\t'label'   => " + t('Per page') + ",\n\t\t\t\t'default' => " + perPage + ",\n\t\t\t\t'option'  => '" + pre + '_' + d.plural + "_per_page',\n\t\t\t)\n\t\t);\n\t} );\n}\nadd_action( 'admin_menu', '" + pre + '_' + d.plural + "_menu' );\n\n/**\n * Screen options only save when the option is allowed.\n */\nadd_filter(\n\t'set-screen-option',\n\tfunction ( $status, $option, $value ) {\n\t\treturn '" + pre + '_' + d.plural + "_per_page' === $option ? (int) $value : $status;\n\t},\n\t10,\n\t3\n);\n");
+  }
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + d.plural.charAt(0).toUpperCase() + d.plural.slice(1) + ' list table\n * Description:       An admin table of ' + d.plural + ' with sorting, search and bulk actions.\n * Version:           1.0.0\n * Requires PHP:      7.4\n */\n\ndefined( \'ABSPATH\' ) || exit;\n\n';
+  } else {
+    out += '<?php\n\ndefined( \'ABSPATH\' ) || exit;\n\n';
+  }
+  out += "if ( ! class_exists( 'WP_List_Table' ) ) {\n\trequire_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';\n}\n\n";
+
+  out += '/**\n * A table of ' + d.plural + '.\n */\nclass ' + d.cls + ' extends WP_List_Table {\n\n';
+  out += '\t/**\n\t * Tell the parent what one row is called.\n\t */\n\tpublic function __construct() {\n\t\tparent::__construct(\n\t\t\tarray(\n\t\t\t\t\'singular\' => \'' + d.singular + "',\n\t\t\t\t'plural'   => '" + d.plural + "',\n\t\t\t\t'ajax'     => false,\n\t\t\t)\n\t\t);\n\t}\n\n";
+
+  const colPairs = [];
+  if (d.bulkActions.length) colPairs.push(['cb', "'<input type=\"checkbox\" />'"]);
+  d.columns.forEach(function (c) { colPairs.push([c.key, t(c.label || c.key)]); });
+  out += '\t/**\n\t * The columns, in order.\n\t *\n\t * @return array\n\t */\n\tpublic function get_columns() {\n\t\treturn array(\n' + indent(aligned(colPairs), 3) + '\n\t\t);\n\t}\n\n';
+
+  const sortable = d.columns.filter(function (c) { return c.sortable; });
+  out += '\t/**\n\t * Which columns can be sorted, and which is sorted by default.\n\t *\n\t * @return array\n\t */\n\tpublic function get_sortable_columns() {\n\t\treturn array(\n' + (sortable.length ? indent(aligned(sortable.map(function (c, i) { return [c.key, "array( '" + c.key + "', " + (i === 0 ? 'true' : 'false') + ' )']; })), 3) : '') + '\n\t\t);\n\t}\n\n';
+
+  if (primary) {
+    out += '\t/**\n\t * Which column carries the row actions.\n\t *\n\t * @return string\n\t */\n\tprotected function get_default_primary_column_name() {\n\t\treturn \'' + primary.key + "';\n\t}\n\n";
+  }
+
+  if (d.bulkActions.length) {
+    out += '\t/**\n\t * The checkbox column.\n\t *\n\t * @param array $item One row.\n\t * @return string\n\t */\n\tpublic function column_cb( $item ) {\n\t\treturn sprintf(\n\t\t\t\'<input type="checkbox" name="' + d.plural + '[]" value="%s" />\',\n\t\t\tesc_attr( $item[\'id\'] )\n\t\t);\n\t}\n\n';
+    out += '\t/**\n\t * The bulk actions dropdown.\n\t *\n\t * @return array\n\t */\n\tpublic function get_bulk_actions() {\n\t\treturn array(\n' + indent(aligned(d.bulkActions.map(function (a) { return [a.value, t(a.label)]; })), 3) + '\n\t\t);\n\t}\n\n';
+    out += '\t/**\n\t * Run a bulk action. Called before anything is fetched.\n\t */\n\tprotected function process_bulk_action() {\n\t\t$action = $this->current_action();\n\n\t\tif ( ! $action ) {\n\t\t\treturn;\n\t\t}\n\n\t\tcheck_admin_referer( \'bulk-\' . $this->_args[\'plural\'] );\n\n\t\tif ( ! current_user_can( \'' + lt.capability + "' ) ) {\n\t\t\twp_die( esc_html__( 'You are not allowed to do that.', '" + d.td + "' ) );\n\t\t}\n\n\t\t$ids = isset( $_REQUEST['" + d.plural + "'] ) ? array_map( 'absint', (array) $_REQUEST['" + d.plural + "'] ) : array();\n\n\t\tif ( ! $ids ) {\n\t\t\treturn;\n\t\t}\n\n\t\tswitch ( $action ) {\n" + indent(d.bulkActions.map(function (a) { return "case '" + a.value + "':\n\t// " + a.label + ' — act on $ids here.\n\tbreak;'; }).join('\n\n'), 3) + '\n\t\t}\n\t}\n\n';
+  }
+
+  if (d.views.length) {
+    out += '\t/**\n\t * The status links above the table.\n\t *\n\t * @return array\n\t */\n\tprotected function get_views() {\n\t\t$current = isset( $_REQUEST[\'status\'] ) ? sanitize_key( $_REQUEST[\'status\'] ) : \'all\';\n\t\t$base    = remove_query_arg( array( \'status\', \'paged\' ) );\n\t\t$views   = array();\n\n' + indent(d.views.map(function (v) {
+      return "$views['" + v.value + "'] = sprintf(\n\t'<a href=\"%1$s\"%2$s>%3$s</a>',\n\tesc_url( add_query_arg( 'status', '" + v.value + "', $base ) ),\n\t'" + v.value + "' === $current ? ' class=\"current\"' : '',\n\tesc_html( " + t(v.label) + ' )\n);';
+    }).join('\n\n'), 2) + '\n\n\t\treturn $views;\n\t}\n\n';
+  }
+
+  d.columns.forEach(function (c) {
+    if (c === primary && d.rowActions.length) {
+      out += '\t/**\n\t * The primary column, with its row actions.\n\t *\n\t * @param array $item One row.\n\t * @return string\n\t */\n\tpublic function column_' + c.key + '( $item ) {\n\t\t$actions = array(\n' + indent(d.rowActions.map(function (a) {
+        return "'" + a.value + "' => sprintf(\n\t'<a href=\"%1$s\"" + (a.value === 'delete' ? ' class="submitdelete"' : '') + '>%2$s</a>\',\n\tesc_url( wp_nonce_url( add_query_arg( array( \'action\' => \'' + a.value + "', '" + d.singular + "' => $item['id'] ) ), '" + pre + '_' + a.value + "_' . $item['id'] ) ),\n\tesc_html( " + t(a.label) + ' )\n),';
+      }).join('\n'), 3) + '\n\t\t);\n\n\t\treturn sprintf(\n\t\t\t\'<strong>%1$s</strong>%2$s\',\n\t\t\tesc_html( $item[\'' + c.key + "'] ),\n\t\t\t$this->row_actions( $actions )\n\t\t);\n\t}\n\n";
+    } else if (c.type === 'status') {
+      out += '\t/**\n\t * @param array $item One row.\n\t * @return string\n\t */\n\tpublic function column_' + c.key + '( $item ) {\n\t\treturn sprintf(\n\t\t\t\'<span class="' + pre + '-status ' + pre + '-status--%1$s">%2$s</span>\',\n\t\t\tesc_attr( $item[\'' + c.key + "'] ),\n\t\t\tesc_html( ucfirst( $item['" + c.key + "'] ) )\n\t\t);\n\t}\n\n";
+    } else if (c.type === 'date') {
+      out += '\t/**\n\t * @param array $item One row.\n\t * @return string\n\t */\n\tpublic function column_' + c.key + '( $item ) {\n\t\treturn esc_html( mysql2date( get_option( \'date_format\' ), $item[\'' + c.key + "'] ) );\n\t}\n\n";
+    } else if (c.type === 'number') {
+      out += '\t/**\n\t * @param array $item One row.\n\t * @return string\n\t */\n\tpublic function column_' + c.key + '( $item ) {\n\t\treturn esc_html( number_format_i18n( (int) $item[\'' + c.key + "'] ) );\n\t}\n\n";
+    }
+  });
+
+  out += '\t/**\n\t * Anything without its own column_ method lands here.\n\t *\n\t * @param array  $item        One row.\n\t * @param string $column_name The column.\n\t * @return string\n\t */\n\tpublic function column_default( $item, $column_name ) {\n\t\treturn isset( $item[ $column_name ] ) ? esc_html( $item[ $column_name ] ) : \'\';\n\t}\n\n';
+
+  out += '\t/**\n\t * Shown when there is nothing to list.\n\t */\n\tpublic function no_items() {\n\t\tesc_html_e( \'No ' + d.plural + " yet.', '" + d.td + "' );\n\t}\n\n";
+
+  let fetch = '';
+  if (lt.source === 'table') {
+    fetch = 'global $wpdb;\n\n$table   = $wpdb->prefix . \'' + fnSlug(lt.sourceName) + "';\n$orderby = isset( $_REQUEST['orderby'] ) ? sanitize_key( $_REQUEST['orderby'] ) : '" + (sortable[0] ? sortable[0].key : 'id') + "';\n$order   = isset( $_REQUEST['order'] ) && 'desc' === strtolower( $_REQUEST['order'] ) ? 'DESC' : 'ASC';\n$search  = isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '';\n\n// Only ever sort by a column you declared sortable.\n$allowed = array_keys( $this->get_sortable_columns() );\n\nif ( ! in_array( $orderby, $allowed, true ) ) {\n\t$orderby = '" + (sortable[0] ? sortable[0].key : 'id') + "';\n}\n\n$where = 'WHERE 1=1';\n$args  = array();\n\nif ( '' !== $search ) {\n\t$where .= ' AND " + (primary ? primary.key : 'id') + " LIKE %s';\n\t$args[] = '%' . $wpdb->esc_like( $search ) . '%';\n}\n\n$args[] = $per_page;\n$args[] = $offset;\n\n// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared\n$sql = \"SELECT * FROM {$table} {$where} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d\";\n\n$items = $wpdb->get_results( $wpdb->prepare( $sql, $args ), ARRAY_A );\n$total = (int) $wpdb->get_var( \"SELECT COUNT(*) FROM {$table} {$where}\" );";
+  } else if (lt.source === 'posts') {
+    fetch = '$query = new WP_Query(\n\tarray(\n\t\t\'post_type\'      => \'' + slugify(lt.sourceName) + "',\n\t\t'post_status'    => 'any',\n\t\t'posts_per_page' => $per_page,\n\t\t'offset'         => $offset,\n\t\t's'              => isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : '',\n\t)\n);\n\n$items = array_map(\n\tfunction ( $post ) {\n\t\treturn array(\n\t\t\t'id'    => $post->ID,\n\t\t\t'" + (primary ? primary.key : 'title') + "' => get_the_title( $post ),\n\t\t\t'date'  => $post->post_date,\n\t\t);\n\t},\n\t$query->posts\n);\n\n$total = (int) $query->found_posts;";
+  } else {
+    fetch = '$all = ' + pre + "_get_" + d.plural + "();\n\n$search = isset( $_REQUEST['s'] ) ? strtolower( sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) ) : '';\n\nif ( '' !== $search ) {\n\t$all = array_filter(\n\t\t$all,\n\t\tfunction ( $item ) use ( $search ) {\n\t\t\treturn false !== strpos( strtolower( implode( ' ', $item ) ), $search );\n\t\t}\n\t);\n}\n\n$total = count( $all );\n$items = array_slice( $all, $offset, $per_page );";
+  }
+
+  out += '\t/**\n\t * Fetch, paginate and hand the rows to the parent.\n\t *\n\t * Order matters: bulk action, then fetch, then pagination, then items.\n\t */\n\tpublic function prepare_items() {\n\t\t$this->_column_headers = array( $this->get_columns(), array(), $this->get_sortable_columns() );\n\n';
+  if (d.bulkActions.length) out += '\t\t$this->process_bulk_action();\n\n';
+  out += '\t\t$per_page = $this->get_items_per_page( \'' + pre + '_' + d.plural + '_per_page\', ' + perPage + ' );\n\t\t$paged    = $this->get_pagenum();\n\t\t$offset   = ( $paged - 1 ) * $per_page;\n\n' + indent(fetch, 2) + '\n\n\t\t$this->set_pagination_args(\n\t\t\tarray(\n\t\t\t\t\'total_items\' => $total,\n\t\t\t\t\'per_page\'    => $per_page,\n\t\t\t\t\'total_pages\' => (int) ceil( $total / $per_page ),\n\t\t\t)\n\t\t);\n\n\t\t$this->items = $items;\n\t}\n}\n';
+
+  if (lt.source === 'array') {
+    out += '\n/**\n * The rows. Replace with your own source.\n *\n * @return array\n */\nfunction ' + pre + '_get_' + d.plural + '() {\n\treturn array();\n}\n';
+  }
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\$[A-Za-z_]\w*|\{\$[^}]+\})|\b(function|array|true|false|null|return|new|class|extends|public|protected|parent|if|else|foreach|switch|case|break|isset|use|global|defined|exit|require_once|class_exists|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.|\?|:)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(lt) {
+  const d = derive(lt);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!d.columns.length) add('error', 'No columns, so get_columns() returns an empty array and the table renders nothing.');
+  if (String(lt.labels || '').indexOf(',') === -1) add('warning', 'Give both a singular and a plural, comma separated — the plural becomes the bulk-action field name and the nonce.', 'fixLabels', 'Use ' + d.singular + ', ' + d.plural);
+  if (!pascal(lt.className)) add('error', 'A class name is required.');
+  if (!String(lt.sourceName || '').trim()) add('error', (lt.source === 'posts' ? 'A post type' : lt.source === 'table' ? 'A table name' : 'A source name') + ' is required.');
+  const seen = {};
+  d.columns.forEach(function (c) {
+    if (seen[c.key]) add('error', 'Two columns share the key “' + c.key + '”.');
+    seen[c.key] = true;
+    if (c.key === 'cb') add('error', '“cb” is reserved for the checkbox column — rename this one.');
+    if (!String(c.label || '').trim()) add('warning', 'The column “' + c.key + '” has no label, so its header is blank.');
+  });
+  const primaries = d.columns.filter(function (c) { return c.primary; });
+  if (!primaries.length) add('warning', 'No primary column, so row actions attach to the first column by default and the mobile toggle has nothing to expand.', 'setPrimary', 'Make the first one primary');
+  if (primaries.length > 1) add('error', primaries.length + ' columns are marked primary. Only one can be.', 'onePrimary', 'Keep the first');
+  if (!d.columns.some(function (c) { return c.sortable; })) add('recommendation', 'Nothing is sortable. On a list of any length, sorting is the first thing a user reaches for.', 'makeSortable', 'Make the first sortable');
+  if (d.bulkActions.length && !d.columns.length) add('error', 'Bulk actions need a checkbox column, which needs at least one real column beside it.');
+  if (d.bulkActions.some(function (a) { return a.value === 'delete'; })) add('recommendation', 'A delete bulk action is generated with check_admin_referer() and a capability check. Keep both — a bulk delete behind a GET link is the classic list-table vulnerability.');
+  if (!d.bulkActions.length) add('recommendation', 'No bulk actions, so no checkbox column is rendered. Fine for a read-only log.');
+  if (!lt.search && lt.source !== 'array') add('recommendation', 'No search box. The query is written to accept an s parameter either way, so turning it on is free.', 'addSearch', 'Add the search box');
+  if (lt.source === 'table') {
+    add('recommendation', 'The generated query interpolates the sorted column, but only after checking it against get_sortable_columns() — that whitelist is what makes it safe. Do not loosen it.');
+    if (!fnSlug(lt.sourceName)) add('error', 'The table name must be a plain identifier; the $wpdb prefix is added for you.');
+  }
+  if (lt.source === 'posts') add('recommendation', 'For a post type, the core posts list table already gives you sorting, search, bulk edit and quick edit. A custom table is worth it only when you need columns core cannot show.');
+  const per = parseInt(lt.perPage, 10);
+  if (!per) add('error', 'Set a per-page default.');
+  else if (per > 100) add('warning', per + ' rows per page is a lot of DOM for an admin screen. Twenty to fifty is typical, and the screen option lets users raise it.');
+  if (!lt.screenOption) add('recommendation', 'Without a screen option, users cannot change the per-page count — and get_items_per_page() will always fall back to your default.', 'addScreenOption', 'Add the screen option');
+  if (d.views.length && !d.views.some(function (v) { return v.value === 'all'; })) add('warning', 'The views list has no “all” entry, so there is no way back to the unfiltered table.', 'addAll', 'Add all');
+  add('recommendation', 'WP_List_Table is marked @access private in core. It has been stable for years, but test this screen after every major WordPress release.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    labels: 'brief, briefs', className: 'Acme_Briefs_Table', prefix: 'acme',
+    source: 'table', sourceName: 'acme_briefs', perPage: '20', capability: 'edit_others_posts',
+    columns: [
+      { key: 'title', label: 'Title', type: 'text', sortable: true, primary: true },
+      { key: 'author', label: 'Author', type: 'text', sortable: false, primary: false },
+      { key: 'status', label: 'Status', type: 'status', sortable: true, primary: false },
+      { key: 'created', label: 'Created', type: 'date', sortable: true, primary: false }
+    ],
+    rowActions: 'edit:Edit, delete:Delete',
+    bulkActions: 'delete:Delete permanently',
+    views: 'all:All, draft:Drafts, review:In review',
+    search: true, screenOption: true
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    lt: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 560, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('list-table-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.columns) this.setState({ lt: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(lt) { try { localStorage.setItem('list-table-generator-v1', JSON.stringify(lt)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.lt));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { lt: next, past: coalesce ? s.past : s.past.concat([s.lt]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.lt));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { lt: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.lt].concat(s.future) }; }, () => this.persist(this.state.lt)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { lt: s.future[0], past: s.past.concat([s.lt]), future: s.future.slice(1) }; }, () => this.persist(this.state.lt)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      const d = derive(p);
+      if (kind === 'fixLabels') p.labels = d.singular + ', ' + d.plural;
+      if (kind === 'setPrimary' && p.columns.length) p.columns[0].primary = true;
+      if (kind === 'onePrimary') { let seen = false; p.columns.forEach(function (c) { if (c.primary) { if (seen) c.primary = false; seen = true; } }); }
+      if (kind === 'makeSortable' && p.columns.length) p.columns[0].sortable = true;
+      if (kind === 'addSearch') p.search = true;
+      if (kind === 'addScreenOption') p.screenOption = true;
+      if (kind === 'addAll') p.views = 'all:All' + (String(p.views || '').trim() ? ', ' + p.views : '');
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.lt, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const d = derive(this.state.lt);
+    const code = buildCode(this.state.lt, this.state.outputMode);
+    const name = this.state.outputMode === 'page' ? d.pre.replace(/_/g, '-') + '-' + d.plural + '-page.php' : 'class-' + slugify(d.cls) + '.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, lt = s.lt, self = this;
+    const d = derive(lt);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), up: ic('\ue555', 12), down: ic('\ue54f', 12), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(lt);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const sampleRows = [
+      { title: 'Winter campaign brief', author: 'Sam', status: 'review', created: '12 Jul 2026' },
+      { title: 'Pricing page rewrite', author: 'Ada', status: 'draft', created: '9 Jul 2026' },
+      { title: 'Northwind case study', author: 'Sam', status: 'draft', created: '2 Jul 2026' }
+    ];
+
+    return {
+      toolCount: 38, trueVal: true, lt: lt,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: s.outputMode === 'page' ? d.pre.replace(/_/g, '-') + '-' + d.plural + '-page.php' : 'class-' + slugify(d.cls) + '.php',
+
+      onLabelsChange: function (ev) { self.set('labels', ev.target.value, true); },
+      labelsBorder: String(lt.labels || '').indexOf(',') > 0 ? '#E7E2D9' : '#B45309',
+      onClassNameChange: function (ev) { self.set('className', ev.target.value, true); },
+      classBorder: pascal(lt.className) ? '#E7E2D9' : '#B91C1C',
+      onSourceChange: function (ev) { self.set('source', ev.target.value); },
+      sourceLabel: lt.source === 'posts' ? 'post type' : lt.source === 'table' ? 'table name (no prefix)' : 'source function suffix',
+      onSourceNameChange: function (ev) { self.set('sourceName', ev.target.value, true); },
+      sourceBorder: String(lt.sourceName || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onPerPageChange: function (ev) { self.set('perPage', ev.target.value, true); },
+      perPageBorder: parseInt(lt.perPage, 10) ? '#E7E2D9' : '#B91C1C',
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+
+      columnsNote: d.columns.length + ' column' + (d.columns.length === 1 ? '' : 's') + ' · ' + d.columns.filter(function (c) { return c.sortable; }).length + ' sortable',
+      noColumns: d.columns.length === 0,
+      typeOptions: TYPES.map(function (t2) { return { value: t2[0], label: t2[1] }; }),
+      columnRows: (lt.columns || []).map(function (c, i) {
+        const dupe = (lt.columns || []).filter(function (o) { return fnSlug(o.key) === fnSlug(c.key); }).length > 1;
+        return {
+          label: c.label, key: c.key, type: c.type, sortable: !!c.sortable, primary: !!c.primary,
+          keyBorder: (!String(c.key || '').trim() || dupe || fnSlug(c.key) === 'cb') ? '#B91C1C' : '#E7E2D9',
+          iconUp: ICON.up, iconDown: ICON.down, iconRemove: ICON.close,
+          onLabelChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.columns[i].label = v; }, 'c-' + i + '-l'); },
+          onKeyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.columns[i].key = v; }, 'c-' + i + '-k'); },
+          onTypeChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.columns[i].type = v; }); },
+          onSortableChange: function () { self.commit(function (p) { p.columns[i].sortable = !p.columns[i].sortable; }); },
+          onPrimaryChange: function () { self.commit(function (p) { const next = !p.columns[i].primary; p.columns.forEach(function (o) { o.primary = false; }); p.columns[i].primary = next; }); },
+          onMoveUp: function () { self.commit(function (p) { if (i === 0) return; const t2 = p.columns[i - 1]; p.columns[i - 1] = p.columns[i]; p.columns[i] = t2; }); },
+          onMoveDown: function () { self.commit(function (p) { if (i >= p.columns.length - 1) return; const t2 = p.columns[i + 1]; p.columns[i + 1] = p.columns[i]; p.columns[i] = t2; }); },
+          onRemove: function () { self.commit(function (p) { p.columns.splice(i, 1); }); }
+        };
+      }),
+      onAddColumn: function () { self.commit(function (p) { p.columns = p.columns || []; const n = p.columns.length + 1; p.columns.push({ key: 'col_' + n, label: 'Column ' + n, type: 'text', sortable: false, primary: false }); }); },
+
+      actionsNote: d.rowActions.length + ' row · ' + d.bulkActions.length + ' bulk · ' + d.views.length + ' views',
+      onRowActionsChange: function (ev) { self.set('rowActions', ev.target.value, true); },
+      onBulkActionsChange: function (ev) { self.set('bulkActions', ev.target.value, true); },
+      bulkBorder: '#E7E2D9',
+      onViewsChange: function (ev) { self.set('views', ev.target.value, true); },
+      onCapabilityChange: function (ev) { self.set('capability', ev.target.value); },
+
+      extraToggles: [
+        { key: 'search', label: 'Search box', help: 'search_box() above the table, wired to the s parameter.', on: lt.search },
+        { key: 'screenOption', label: 'Per-page screen option', help: 'add_screen_option plus the set-screen-option filter that lets it save.', on: lt.screenOption }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(lt, s.outputMode)),
+      outputModes: [['plugin', 'The class'], ['page', 'Admin page']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: s.outputMode === 'plugin'
+        ? 'The table class, with the require core needs and every override wired.'
+        : 'The menu page, the form wrapper and the screen option — the half that renders the class.',
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new table' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      pageTitle: d.plural.charAt(0).toUpperCase() + d.plural.slice(1),
+      pluralLabel: d.plural,
+      hasViews: d.views.length > 0,
+      hasBulk: d.bulkActions.length > 0,
+      previewViews: d.views.map(function (v, i) {
+        return { label: v.label, count: i === 0 ? '24' : i === 1 ? '18' : '6', color: i === 0 ? '#1D2327' : '#2271B1', weight: i === 0 ? '600' : '400' };
+      }),
+      previewBulk: d.bulkActions.map(function (a) { return { value: a.value, label: a.label }; }),
+      previewColumns: d.columns.map(function (c) { return { label: c.label || c.key, sortMark: c.sortable ? ' ↕' : '' }; }),
+      previewRows: sampleRows.map(function (row) {
+        return {
+          cells: d.columns.map(function (c, i) {
+            const val = row[c.key] !== undefined ? row[c.key] : (c.type === 'number' ? '12' : c.type === 'date' ? '1 Jul 2026' : '—');
+            return { text: val, color: c.primary || i === 0 ? '#2271B1' : '#2C3338', weight: c.primary || i === 0 ? '600' : '400' };
+          })
+        };
+      }),
+      paginationLabel: '3 ' + d.plural + ' · ' + (parseInt(lt.perPage, 10) || 20) + ' per page',
+
+      refArgs: [
+        ['__construct()', 'Pass singular and plural. The plural names the bulk-action field and the nonce, so changing it later breaks in-flight forms.'],
+        ['get_columns()', 'Key to label. A “cb” key renders the checkbox column, and its callback must be column_cb().'],
+        ['get_sortable_columns()', 'Key to array( orderby, already_sorted ). Also the whitelist you must check the request against before putting it in SQL.'],
+        ['column_default( $item, $column )', 'The fallback for any column with no column_{key} method. Escape here.'],
+        ['prepare_items()', 'Bulk action, fetch, set_pagination_args(), then $this->items. In that order.'],
+        ['get_views()', 'The status links above the table. Mark the current one with class="current".'],
+        ['row_actions( $actions )', 'The hover links under the primary column. Nonce every destructive one.'],
+        ['display() / search_box()', 'Called from your page callback, inside a form with the page hidden field.']
+      ].map(function (r) { return { name: r[0], description: r[1] }; }),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showScreenTab: s.rightTab === 'screen', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabScreen: function () { self.setState({ rightTab: 'screen', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabScreenColor: s.rightTab === 'screen' ? '#3858E9' : '#948C7E', tabScreenBorder: s.rightTab === 'screen' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Table'], ['output', 'PHP & Screen']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

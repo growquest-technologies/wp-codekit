@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Scripts &amp; Styles Generator — wp_enqueue_script() — Generator for WP</title>
+  <meta name="description" content="Register and enqueue CSS and JS the WordPress way: correct hook per context, dependencies, cache-busting versions, defer or async, and conditional loading." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=core" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Core</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Scripts &amp; Styles</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Scripts &amp; Styles Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">The right hook for every context, <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">filemtime()</span> cache busting and conditional loading — so assets only ship where they are used.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Where the files live</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px; margin-bottom:14px;">
+          <sc-for list="{{ baseCards }}" as="bc" hint-placeholder-count="2">
+            <button onClick="{{ bc.onSelect }}" style="text-align:left; border:1.5px solid {{ bc.borderColor }}; background:{{ bc.bg }}; border-radius:8px; padding:13px 14px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                <span style="width:14px; height:14px; border-radius:50%; border:1.5px solid {{ bc.dotBorder }}; background:{{ bc.dotBg }}; box-shadow:{{ bc.dotShadow }}; flex-shrink:0;"></span>
+                <span style="font-size:13.5px; font-weight:700; color:{{ bc.titleColor }};">{{ bc.title }}</span>
+              </div>
+              <div style="font-size:11px; color:#7E7668; line-height:1.5; font-family:'JetBrains Mono',monospace;">{{ bc.help }}</div>
+            </button>
+          </sc-for>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Handle prefix</label>
+            <input value="{{ en.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="mytheme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Asset folder</label>
+            <input value="{{ en.folder }}" onChange="{{ onFolderChange }}" spellCheck="false" placeholder="assets" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Version strategy</label>
+            <select value="{{ en.versionMode }}" onChange="{{ onVersionModeChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="filemtime">filemtime() — busts on every save</option>
+              <option value="theme">Theme / plugin version constant</option>
+              <option value="manual">Fixed string</option>
+              <option value="none">null — falls back to the WP version</option>
+            </select>
+          </div>
+          <sc-if value="{{ showManualVersion }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Version string</label>
+              <input value="{{ en.versionString }}" onChange="{{ onVersionStringChange }}" spellCheck="false" placeholder="1.0.0" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Assets</div>
+          <div style="font-size:11.5px; color:#948C7E;">Handles are prefixed automatically.</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <sc-for list="{{ assetRows }}" as="as" hint-placeholder-count="2">
+            <div style="border:1px solid {{ as.cardBorder }}; border-left:3px solid {{ as.accent }}; border-radius:7px; padding:11px; background:#FCFBF9;">
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:9px;">
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">kind</label>
+                  <select value="{{ as.kind }}" onChange="{{ as.onKindChange }}" style="width:100%; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <option value="script">script — .js</option>
+                    <option value="style">style — .css</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">handle</label>
+                  <input value="{{ as.handle }}" onChange="{{ as.onHandleChange }}" spellCheck="false" placeholder="main" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ as.handleBorder }};" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">file</label>
+                  <input value="{{ as.file }}" onChange="{{ as.onFileChange }}" spellCheck="false" placeholder="{{ as.filePlaceholder }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ as.fileBorder }};" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">context</label>
+                  <select value="{{ as.context }}" onChange="{{ as.onContextChange }}" style="width:100%; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <sc-for list="{{ contextOptions }}" as="co" hint-placeholder-count="4">
+                      <option value="{{ co.value }}">{{ co.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <div>
+                  <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">dependencies</label>
+                  <input value="{{ as.deps }}" onChange="{{ as.onDepsChange }}" spellCheck="false" placeholder="{{ as.depsPlaceholder }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                </div>
+                <sc-if value="{{ as.isScript }}" hint-placeholder-val="{{ true }}">
+                  <div>
+                    <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">loading</label>
+                    <select value="{{ as.strategy }}" onChange="{{ as.onStrategyChange }}" style="width:100%; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                      <option value="defer">footer + defer</option>
+                      <option value="async">footer + async</option>
+                      <option value="footer">footer, blocking</option>
+                      <option value="head">head, blocking</option>
+                    </select>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ as.isStyle }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">media</label>
+                    <select value="{{ as.media }}" onChange="{{ as.onMediaChange }}" style="width:100%; font-size:12.5px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                      <option value="all">all</option>
+                      <option value="screen">screen</option>
+                      <option value="print">print</option>
+                      <option value="(prefers-color-scheme: dark)">prefers-color-scheme: dark</option>
+                    </select>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="display:flex; align-items:center; gap:9px; margin-top:9px; flex-wrap:wrap;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#7E7668; flex:1; min-width:180px; word-break:break-all;">{{ as.resolvedHandle }} → {{ as.resolvedPath }}</span>
+                <sc-if value="{{ as.isScript }}" hint-placeholder-val="{{ true }}">
+                  <button role="checkbox" aria-checked="{{ as.localize }}" onClick="{{ as.onToggleLocalize }}" style="display:flex; align-items:center; gap:6px; border:1px solid {{ as.locBorder }}; background:{{ as.locBg }}; color:{{ as.locColor }}; border-radius:20px; padding:4px 11px 4px 8px; font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+                    <span style="width:12px; height:12px; border-radius:3px; border:1.5px solid {{ as.locBoxBorder }}; background:{{ as.locBoxBg }}; display:flex; align-items:center; justify-content:center; color:#fff; font-family:lineicons; font-size:8px; line-height:1;">{{ as.locCheck }}</span>localize
+                  </button>
+                </sc-if>
+                <button aria-label="Remove asset" onClick="{{ as.onRemove }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#B91C1C;display:flex;align-items:center;justify-content:center;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconTrash }}</button>
+              </div>
+              <sc-if value="{{ as.localize }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:10px; border-top:1px dashed #E7E2D9; padding-top:10px;">
+                  <div style="display:flex; gap:9px; align-items:flex-end; margin-bottom:8px;">
+                    <div style="flex:1;">
+                      <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">JS object name</label>
+                      <input value="{{ as.localizeName }}" onChange="{{ as.onLocalizeNameChange }}" spellCheck="false" placeholder="mythemeData" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ as.localizeNameBorder }};" style-focus="outline:2px solid #3858E9;" />
+                    </div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:6px;">
+                    <sc-for list="{{ as.localizeRows }}" as="lr" hint-placeholder-count="2">
+                      <div style="display:flex; gap:6px; align-items:center;">
+                        <input value="{{ lr.key }}" onChange="{{ lr.onKeyChange }}" spellCheck="false" placeholder="ajaxUrl" style="width:34%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                        <select value="{{ lr.kind }}" onChange="{{ lr.onKindChange }}" style="width:26%; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                          <option value="ajax">admin_url</option>
+                          <option value="nonce">nonce</option>
+                          <option value="rest">rest_url</option>
+                          <option value="text">text</option>
+                          <option value="raw">raw PHP</option>
+                        </select>
+                        <input value="{{ lr.value }}" onChange="{{ lr.onValueChange }}" spellCheck="false" placeholder="{{ lr.valuePlaceholder }}" style="flex:1; min-width:0; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                        <button aria-label="Remove entry" onClick="{{ lr.onRemove }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" style-focus="outline:2px solid #3858E9;">{{ iconClose }}</button>
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ as.onAddLocalizeRow }}" style="align-self:flex-start; font-size:11.5px; border:1px dashed #C7C2B8; background:none; border-radius:5px; padding:5px 10px; cursor:pointer; color:#4A4438;" style-focus="outline:2px solid #3858E9;">+ Data entry</button>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button onClick="{{ onAddScript }}" style="font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:6px; padding:7px 13px; cursor:pointer; color:#4A4438;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">+ Script</button>
+            <button onClick="{{ onAddStyle }}" style="font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:6px; padding:7px 13px; cursor:pointer; color:#4A4438;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">+ Stylesheet</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:11px; gap:10px; flex-wrap:wrap;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Only load when…</div>
+          <div style="font-size:11.5px; color:#948C7E;">Applies to front-end assets.</div>
+        </div>
+        <select value="{{ en.conditional }}" onChange="{{ onConditionalChange }}" style="width:100%; font-size:13px; padding:8px 10px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+          <sc-for list="{{ conditionalOptions }}" as="cd" hint-placeholder-count="6">
+            <option value="{{ cd.value }}">{{ cd.label }}</option>
+          </sc-for>
+        </select>
+        <sc-if value="{{ showConditionalArg }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:10px;">
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">{{ conditionalArgLabel }}</label>
+            <input value="{{ en.conditionalArg }}" onChange="{{ onConditionalArgChange }}" spellCheck="false" placeholder="{{ conditionalArgPlaceholder }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </sc-if>
+        <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#7E7668; line-height:1.5;">{{ conditionalPreview }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Extras</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="3">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabMap }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabMapColor }}; border-bottom:2px solid {{ tabMapBorder }};" style-focus="outline:2px solid #3858E9;">Load map</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="40"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showMapTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:14px;">
+          <div style="font-size:11.5px; color:#948C7E; line-height:1.5; margin-bottom:12px;">Every asset, the hook it rides on and where it ends up in the page.</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <sc-for list="{{ mapRows }}" as="mr" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ mr.accent }}; border-radius:6px; padding:10px 12px;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ mr.handle }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:{{ mr.kindColor }}; background:{{ mr.kindBg }}; border-radius:4px; padding:2px 6px;">{{ mr.kind }}</span>
+                </div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5C564B; line-height:1.6; word-break:break-all;">{{ mr.hook }}</div>
+                <div style="font-size:11.5px; color:#7E7668; line-height:1.5; margin-top:4px;">{{ mr.position }}</div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noAssets }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">No assets yet.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this filter.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;snippet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const CORE_HANDLES = ['jquery', 'jquery-core', 'wp-element', 'wp-blocks', 'wp-i18n', 'wp-api-fetch', 'wp-components', 'underscore', 'backbone', 'react', 'react-dom', 'lodash', 'thickbox', 'masonry', 'imagesloaded', 'wp-editor', 'media-upload', 'common', 'admin-bar'];
+const CONTEXTS = [
+  ['front', 'Front end', 'wp_enqueue_scripts'],
+  ['admin', 'Admin screens', 'admin_enqueue_scripts'],
+  ['editor', 'Block editor', 'enqueue_block_editor_assets'],
+  ['login', 'Login screen', 'login_enqueue_scripts']
+];
+const CONDITIONALS = [
+  ['all', 'Every page', ''],
+  ['front_page', 'Front page only', 'is_front_page()'],
+  ['singular', 'Single posts of a type', "is_singular( '%s' )"],
+  ['archive', 'Archive of a post type', "is_post_type_archive( '%s' )"],
+  ['page_template', 'A page template', "is_page_template( '%s' )"],
+  ['has_shortcode', 'Posts containing a shortcode', "has_shortcode( get_post()->post_content, '%s' )"],
+  ['has_block', 'Posts containing a block', "has_block( '%s' )"]
+];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function handleSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function csv(s) { return String(s || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+
+function fullHandle(en, a) {
+  const h = handleSlug(a.handle) || 'asset';
+  const p = handleSlug(en.prefix);
+  return p && h.indexOf(p + '-') !== 0 ? p + '-' + h : h;
+}
+function relPath(en, a) {
+  const folder = String(en.folder || '').replace(/^\/+|\/+$/g, '');
+  const file = String(a.file || '').replace(/^\/+/, '');
+  return (folder ? folder + '/' : '') + file;
+}
+function urlExpr(en, a) {
+  const rel = relPath(en, a);
+  return en.base === 'plugin' ? "plugins_url( '" + esc(rel) + "', __FILE__ )" : "get_theme_file_uri( '" + esc(rel) + "' )";
+}
+function versionExpr(en, a) {
+  const rel = relPath(en, a);
+  if (en.versionMode === 'filemtime') {
+    return en.base === 'plugin' ? "filemtime( plugin_dir_path( __FILE__ ) . '" + esc(rel) + "' )" : "filemtime( get_theme_file_path( '" + esc(rel) + "' ) )";
+  }
+  if (en.versionMode === 'theme') return en.base === 'plugin' ? 'MY_PLUGIN_VERSION' : "wp_get_theme()->get( 'Version' )";
+  if (en.versionMode === 'manual') return "'" + esc(en.versionString || '1.0.0') + "'";
+  return 'null';
+}
+function depsExpr(a) {
+  const d = csv(a.deps);
+  return d.length ? 'array( ' + d.map(function (x) { return "'" + esc(x) + "'"; }).join(', ') + ' )' : 'array()';
+}
+function localizeValue(row) {
+  if (row.kind === 'ajax') return "admin_url( 'admin-ajax.php' )";
+  if (row.kind === 'nonce') return "wp_create_nonce( '" + esc(row.value || 'wp_rest') + "' )";
+  if (row.kind === 'rest') return "esc_url_raw( rest_url( '" + esc(row.value || 'wp/v2/') + "' ) )";
+  if (row.kind === 'raw') return row.value || 'null';
+  return "esc_html__( '" + esc(row.value || '') + "', 'textdomain' )";
+}
+
+function conditionalExpr(en) {
+  const def = CONDITIONALS.filter(function (c) { return c[0] === en.conditional; })[0];
+  if (!def || !def[2]) return '';
+  return def[2].replace('%s', esc(en.conditionalArg || ''));
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) {
+  if (out.indexOf('<?php\n') === 0) return '<?php\n' + CREDIT + out.slice(6);
+  return CREDIT + out;
+}
+
+function buildCode(en, mode) {
+  const prefix = fnSlug(en.prefix) || 'mytheme';
+  const byContext = {};
+  en.assets.forEach(function (a) { (byContext[a.context] = byContext[a.context] || []).push(a); });
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += "<?php\n/**\n * Plugin Name:       " + (en.prefix || 'My') + " assets\n * Description:       Registers and enqueues the plugin's scripts and styles.\n * Version:           1.0.0\n * Requires PHP:      7.4\n */\n\ndefined( 'ABSPATH' ) || exit;\n\ndefine( 'MY_PLUGIN_VERSION', '1.0.0' );\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  } else if (en.base === 'plugin' && en.versionMode === 'theme') {
+    out += "define( 'MY_PLUGIN_VERSION', '1.0.0' );\n\n";
+  }
+
+  CONTEXTS.forEach(function (ctx) {
+    const assets = byContext[ctx[0]];
+    if (!assets || !assets.length) return;
+    const fn = prefix + '_enqueue_' + ctx[0] + '_assets';
+    const cond = ctx[0] === 'front' ? conditionalExpr(en) : '';
+    out += '/**\n * Enqueue ' + ctx[1].toLowerCase() + ' assets.\n */\nfunction ' + fn + '(' + (ctx[0] === 'admin' ? ' $hook_suffix' : '') + ') {\n';
+    let ind = '\t';
+    if (cond) { out += '\tif ( ! ' + cond + ' ) {\n\t\treturn;\n\t}\n\n'; }
+    if (ctx[0] === 'admin') { out += "\tif ( 'toplevel_page_" + (fnSlug(en.prefix) || 'mytheme') + "' !== $hook_suffix ) {\n\t\treturn;\n\t}\n\n"; }
+    assets.forEach(function (a, i) {
+      const handle = fullHandle(en, a);
+      if (a.kind === 'style') {
+        out += ind + "wp_enqueue_style(\n" + ind + "\t'" + esc(handle) + "',\n" + ind + '\t' + urlExpr(en, a) + ',\n' + ind + '\t' + depsExpr(a) + ',\n' + ind + '\t' + versionExpr(en, a) + ",\n" + ind + "\t'" + (a.media || 'all') + "'\n" + ind + ');\n';
+      } else {
+        const inFooter = a.strategy === 'head' ? 'false' : 'true';
+        const argsArr = a.strategy === 'defer' || a.strategy === 'async'
+          ? "array(\n" + ind + "\t\t'in_footer' => true,\n" + ind + "\t\t'strategy'  => '" + a.strategy + "',\n" + ind + '\t)'
+          : inFooter;
+        out += ind + "wp_enqueue_script(\n" + ind + "\t'" + esc(handle) + "',\n" + ind + '\t' + urlExpr(en, a) + ',\n' + ind + '\t' + depsExpr(a) + ',\n' + ind + '\t' + versionExpr(en, a) + ',\n' + ind + '\t' + argsArr + '\n' + ind + ');\n';
+        if (a.localize && a.localizeRows.length) {
+          out += '\n' + ind + 'wp_localize_script(\n' + ind + "\t'" + esc(handle) + "',\n" + ind + "\t'" + esc(a.localizeName || 'myData') + "',\n" + ind + '\tarray(\n';
+          const w = a.localizeRows.reduce(function (m, r) { return Math.max(m, String(r.key || '').length); }, 0);
+          a.localizeRows.forEach(function (r) {
+            if (!r.key) return;
+            out += ind + "\t\t'" + esc(r.key) + "'" + ' '.repeat(Math.max(0, w - r.key.length)) + ' => ' + localizeValue(r) + ',\n';
+          });
+          out += ind + '\t)\n' + ind + ');\n';
+        }
+        if (en.scriptTranslations) {
+          out += '\n' + ind + "wp_set_script_translations( '" + esc(handle) + "', 'textdomain' );\n";
+        }
+      }
+      if (i < assets.length - 1) out += '\n';
+    });
+    out += '}\n';
+    out += "add_action( '" + ctx[2] + "', '" + fn + "' );\n\n";
+  });
+
+  if (en.dequeueBlockLibrary) {
+    out += "/**\n * Drop the core block stylesheet on the front end.\n */\nfunction " + prefix + "_dequeue_block_library() {\n\twp_dequeue_style( 'wp-block-library' );\n\twp_dequeue_style( 'wp-block-library-theme' );\n\twp_dequeue_style( 'global-styles' );\n}\nadd_action( 'wp_enqueue_scripts', '" + prefix + "_dequeue_block_library', 100 );\n\n";
+  }
+  if (en.jqueryFooter) {
+    out += "/**\n * Move the bundled jQuery to the footer on the front end.\n */\nfunction " + prefix + "_jquery_to_footer() {\n\tif ( is_admin() ) {\n\t\treturn;\n\t}\n\twp_scripts()->add_data( 'jquery', 'group', 1 );\n\twp_scripts()->add_data( 'jquery-core', 'group', 1 );\n\twp_scripts()->add_data( 'jquery-migrate', 'group', 1 );\n}\nadd_action( 'wp_default_scripts', '" + prefix + "_jquery_to_footer' );\n\n";
+  }
+  return withCredit(out.replace(/\n+$/, '\n'));
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit|define|if)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|([{}()\[\];,]|=>|->|!==|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(en) {
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!en.assets.length) add('warning', 'No assets yet — add a script or a stylesheet.');
+  const handles = [];
+  en.assets.forEach(function (a, i) {
+    const label = (a.handle || 'asset ' + (i + 1));
+    if (!handleSlug(a.handle)) add('error', 'Asset ' + (i + 1) + ' has no handle.');
+    if (!String(a.file).trim()) add('error', '“' + label + '” has no file path.');
+    else if (a.kind === 'script' && !/\.js$/i.test(a.file)) add('warning', '“' + label + '” is a script but the file does not end in .js.');
+    else if (a.kind === 'style' && !/\.css$/i.test(a.file)) add('warning', '“' + label + '” is a stylesheet but the file does not end in .css.');
+    const h = a.kind + ':' + fullHandle(en, a);
+    if (handles.indexOf(h) !== -1) add('error', 'Handle “' + fullHandle(en, a) + '” is used by two ' + a.kind + 's — the second enqueue is ignored.');
+    handles.push(h);
+    if (CORE_HANDLES.indexOf(handleSlug(a.handle)) !== -1) add('error', '“' + handleSlug(a.handle) + '” is a core WordPress handle. Prefix yours or you will replace core\u2019s copy.', 'prefixHandles', 'Prefix handles');
+    csv(a.deps).forEach(function (d) {
+      if (d === 'jquery') add('recommendation', '“' + label + '” depends on jQuery. Core still bundles it, but vanilla JS avoids the extra 30 KB.');
+    });
+    if (a.kind === 'script' && a.strategy === 'head') add('recommendation', '“' + label + '” loads in the head and blocks rendering. Footer + defer is almost always better.', 'deferAll', 'Defer scripts');
+    if (a.kind === 'script' && a.strategy === 'async' && csv(a.deps).length) add('warning', '“' + label + '” is async but has dependencies — async ignores order, so it may run before them.');
+    if (a.localize && !a.localizeName) add('error', '“' + label + '” is localised but has no JS object name.');
+    if (a.localize && a.localizeRows.some(function (r) { return !r.key; })) add('warning', '“' + label + '” has a localise entry with no key.');
+    if (a.context === 'editor' && a.kind === 'script' && csv(a.deps).indexOf('wp-blocks') === -1 && csv(a.deps).indexOf('wp-element') === -1) add('recommendation', 'Block editor scripts normally depend on wp-blocks and wp-element.');
+  });
+  if (en.versionMode === 'none') add('warning', 'Without a version, browsers cache the file against the WordPress version — a change to your file will not be picked up.', 'useFilemtime', 'Use filemtime()');
+  if (en.versionMode === 'filemtime') add('recommendation', 'filemtime() hits the filesystem on every request. Perfect in development; swap to a version constant for production if profiling shows it.');
+  if (en.conditional !== 'all' && ['singular', 'archive', 'page_template', 'has_shortcode', 'has_block'].indexOf(en.conditional) !== -1 && !en.conditionalArg) add('error', 'The chosen condition needs a value — the generated check would be empty.');
+  if (en.conditional === 'has_shortcode') add('recommendation', 'has_shortcode() only inspects the main post content, so shortcodes inside widgets or templates will not match.');
+  if (en.dequeueBlockLibrary) add('warning', 'Dequeuing wp-block-library breaks the default styling of core blocks — only do this if your theme styles every block itself.');
+  if (en.assets.some(function (a) { return a.context === 'admin'; })) add('recommendation', 'Admin assets are gated on $hook_suffix in the output — change the screen check to match your page.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    base: 'theme', prefix: 'mytheme', folder: 'assets',
+    versionMode: 'filemtime', versionString: '1.0.0',
+    conditional: 'all', conditionalArg: '',
+    scriptTranslations: false, dequeueBlockLibrary: false, jqueryFooter: false,
+    assets: [
+      { kind: 'style', handle: 'main', file: 'css/main.css', context: 'front', deps: '', media: 'all', strategy: 'defer', localize: false, localizeName: '', localizeRows: [] },
+      { kind: 'script', handle: 'main', file: 'js/main.js', context: 'front', deps: '', media: 'all', strategy: 'defer', localize: true, localizeName: 'mythemeData', localizeRows: [{ key: 'ajaxUrl', kind: 'ajax', value: '' }, { key: 'nonce', kind: 'nonce', value: 'mytheme_nonce' }] }
+    ]
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    en: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'snippet', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('enqueue-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.assets) this.setState({ en: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(en) { try { localStorage.setItem('enqueue-generator-v1', JSON.stringify(en)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.en));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { en: next, past: coalesce ? s.past : s.past.concat([s.en]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.en));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { en: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.en].concat(s.future) }; }, () => this.persist(this.state.en)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { en: s.future[0], past: s.past.concat([s.en]), future: s.future.slice(1) }; }, () => this.persist(this.state.en)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'prefixHandles') p.assets.forEach(function (a) { const h = handleSlug(a.handle); const pre = handleSlug(p.prefix) || 'acme'; if (h.indexOf(pre + '-') !== 0) a.handle = pre + '-' + h; });
+      if (kind === 'deferAll') p.assets.forEach(function (a) { if (a.kind === 'script' && a.strategy === 'head') a.strategy = 'defer'; });
+      if (kind === 'useFilemtime') p.versionMode = 'filemtime';
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.en, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const en = this.state.en, mode = this.state.outputMode;
+    let code = buildCode(en, mode);
+    if (mode === 'snippet') code = "<?php\n\n" + code;
+    const name = (handleSlug(en.prefix) || 'theme') + '-assets.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, en = s.en, self = this;
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), chevronDown: ic('\ue54f'), close: ic('\uf73a', 13), trash: ic('\uf4ed', 15), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(en);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    const condDef = CONDITIONALS.filter(function (c) { return c[0] === en.conditional; })[0] || CONDITIONALS[0];
+    const condExpr = conditionalExpr(en);
+    const argLabels = { singular: 'post type key', archive: 'post type key', page_template: 'template file', has_shortcode: 'shortcode tag', has_block: 'block name' };
+    const argPlaceholders = { singular: 'product', archive: 'product', page_template: 'templates/landing.php', has_shortcode: 'team_grid', has_block: 'core/gallery' };
+
+    return {
+      toolCount: 38, trueVal: true, en: en,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (handleSlug(en.prefix) || 'theme') + '-assets.php',
+
+      baseCards: [
+        { value: 'theme', title: 'Theme', help: 'get_theme_file_uri()', on: en.base === 'theme' },
+        { value: 'plugin', title: 'Plugin', help: 'plugins_url( …, __FILE__ )', on: en.base === 'plugin' }
+      ].map(function (c) {
+        return {
+          title: c.title, help: c.help,
+          borderColor: c.on ? '#3858E9' : '#E7E2D9', bg: c.on ? '#F5F7FE' : '#fff',
+          dotBorder: c.on ? '#3858E9' : '#C7C2B8', dotBg: c.on ? '#3858E9' : '#fff', dotShadow: c.on ? 'inset 0 0 0 2.5px #fff' : 'none',
+          titleColor: c.on ? '#2A46C4' : '#26221C',
+          onSelect: function () { self.commit(function (p) { p.base = c.value; }); }
+        };
+      }),
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onFolderChange: function (ev) { self.set('folder', ev.target.value, true); },
+      onVersionModeChange: function (ev) { self.set('versionMode', ev.target.value); },
+      showManualVersion: en.versionMode === 'manual',
+      onVersionStringChange: function (ev) { self.set('versionString', ev.target.value, true); },
+
+      contextOptions: CONTEXTS.map(function (c) { return { value: c[0], label: c[1] }; }),
+      assetRows: en.assets.map(function (a, i) {
+        const isScript = a.kind === 'script';
+        return {
+          kind: a.kind, handle: a.handle, file: a.file, context: a.context, deps: a.deps, media: a.media, strategy: a.strategy,
+          isScript: isScript, isStyle: !isScript,
+          accent: isScript ? '#8A5B00' : '#3B6FB0',
+          cardBorder: '#E7E2D9',
+          handleBorder: handleSlug(a.handle) ? '#E7E2D9' : '#E8B45C',
+          fileBorder: String(a.file).trim() ? '#E7E2D9' : '#E8B45C',
+          filePlaceholder: isScript ? 'js/main.js' : 'css/main.css',
+          depsPlaceholder: isScript ? 'wp-element, jquery' : 'another-handle',
+          resolvedHandle: fullHandle(en, a),
+          resolvedPath: relPath(en, a) || '—',
+          localize: !!a.localize, localizeName: a.localizeName,
+          localizeNameBorder: a.localizeName ? '#E7E2D9' : '#E8B45C',
+          locCheck: a.localize ? '\ue539' : '',
+          locBorder: a.localize ? '#3858E9' : '#E7E2D9', locBg: a.localize ? '#EEF1FE' : '#fff', locColor: a.localize ? '#2A46C4' : '#5C564B',
+          locBoxBorder: a.localize ? '#3858E9' : '#C7C2B8', locBoxBg: a.localize ? '#3858E9' : '#fff',
+          onKindChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].kind = v; }); },
+          onHandleChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].handle = v; }, 'as-' + i + '-handle'); },
+          onFileChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].file = v; }, 'as-' + i + '-file'); },
+          onContextChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].context = v; }); },
+          onDepsChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].deps = v; }, 'as-' + i + '-deps'); },
+          onStrategyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].strategy = v; }); },
+          onMediaChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].media = v; }); },
+          onToggleLocalize: function () { self.commit(function (p) { p.assets[i].localize = !p.assets[i].localize; if (p.assets[i].localize && !p.assets[i].localizeRows.length) p.assets[i].localizeRows = [{ key: 'ajaxUrl', kind: 'ajax', value: '' }]; }); },
+          onLocalizeNameChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].localizeName = v; }, 'as-' + i + '-locname'); },
+          onAddLocalizeRow: function () { self.commit(function (p) { p.assets[i].localizeRows.push({ key: '', kind: 'text', value: '' }); }); },
+          localizeRows: (a.localizeRows || []).map(function (r, j) {
+            return {
+              key: r.key, kind: r.kind, value: r.value,
+              valuePlaceholder: r.kind === 'ajax' ? 'admin-ajax.php (automatic)' : r.kind === 'nonce' ? 'nonce action' : r.kind === 'rest' ? 'wp/v2/posts' : r.kind === 'raw' ? 'get_the_ID()' : 'Loading…',
+              onKeyChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].localizeRows[j].key = v; }, 'loc-' + i + '-' + j + '-k'); },
+              onKindChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].localizeRows[j].kind = v; }); },
+              onValueChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.assets[i].localizeRows[j].value = v; }, 'loc-' + i + '-' + j + '-v'); },
+              onRemove: function () { self.commit(function (p) { p.assets[i].localizeRows.splice(j, 1); }); }
+            };
+          }),
+          onRemove: function () { self.commit(function (p) { p.assets.splice(i, 1); }); }
+        };
+      }),
+      onAddScript: function () { self.commit(function (p) { p.assets.push({ kind: 'script', handle: '', file: '', context: 'front', deps: '', media: 'all', strategy: 'defer', localize: false, localizeName: '', localizeRows: [] }); }); },
+      onAddStyle: function () { self.commit(function (p) { p.assets.push({ kind: 'style', handle: '', file: '', context: 'front', deps: '', media: 'all', strategy: 'defer', localize: false, localizeName: '', localizeRows: [] }); }); },
+
+      conditionalOptions: CONDITIONALS.map(function (c) { return { value: c[0], label: c[1] }; }),
+      onConditionalChange: function (ev) { self.set('conditional', ev.target.value); },
+      showConditionalArg: !!argLabels[en.conditional],
+      conditionalArgLabel: argLabels[en.conditional] || '',
+      conditionalArgPlaceholder: argPlaceholders[en.conditional] || '',
+      onConditionalArgChange: function (ev) { self.set('conditionalArg', ev.target.value, true); },
+      conditionalPreview: condExpr ? 'if ( ! ' + condExpr + ' ) { return; }' : 'No guard — front-end assets load everywhere.',
+
+      extraToggles: [
+        { key: 'scriptTranslations', label: 'Script translations', help: 'Adds wp_set_script_translations() so JS strings can be translated.', on: en.scriptTranslations },
+        { key: 'jqueryFooter', label: 'Move jQuery to the footer', help: 'Stops the bundled jQuery blocking the head on the front end.', on: en.jqueryFooter },
+        { key: 'dequeueBlockLibrary', label: 'Dequeue core block styles', help: 'Removes wp-block-library and global styles. Only when your theme styles every block.', on: en.dequeueBlockLibrary }
+      ].map(function (t) {
+        return { label: t.label, help: t.help, on: t.on, bg: t.on ? '#3858E9' : '#D9D4C8', knobLeft: t.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[t.key] = !p[t.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(en, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: 'Paste into a plugin, an mu-plugin, or a functionality plugin.', functions: 'Ready for your theme’s functions.php.', plugin: 'A complete single-file plugin with a version constant.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new asset set' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo, iconChevronDown: ICON.chevronDown, iconClose: ICON.close, iconTrash: ICON.trash,
+
+      mapRows: en.assets.map(function (a) {
+        const ctx = CONTEXTS.filter(function (c) { return c[0] === a.context; })[0] || CONTEXTS[0];
+        const isScript = a.kind === 'script';
+        const pos = isScript
+          ? (a.strategy === 'head' ? 'Rendered in <head>, blocking.' : a.strategy === 'defer' ? 'Footer, deferred — runs after parsing, order preserved.' : a.strategy === 'async' ? 'Footer, async — runs as soon as it downloads.' : 'Footer, blocking.')
+          : 'Rendered in <head> with media="' + (a.media || 'all') + '".';
+        return {
+          handle: fullHandle(en, a), kind: a.kind,
+          kindColor: isScript ? '#8A5B00' : '#2A46C4', kindBg: isScript ? '#FFF3DE' : '#EEF1FE',
+          accent: isScript ? '#8A5B00' : '#3B6FB0',
+          hook: "add_action( '" + ctx[2] + "', … ) · " + ctx[1],
+          position: pos + (a.context === 'front' && condExpr ? ' Guarded by ' + condExpr + '.' : '')
+        };
+      }),
+      noAssets: en.assets.length === 0,
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showMapTab: s.rightTab === 'map', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabMap: function () { self.setState({ rightTab: 'map', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabMapColor: s.rightTab === 'map' ? '#3858E9' : '#948C7E', tabMapBorder: s.rightTab === 'map' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Editor'], ['output', 'PHP & Checks']].map(function (t) {
+        const on = s.mobilePane === t[0];
+        return { label: t[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: t[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

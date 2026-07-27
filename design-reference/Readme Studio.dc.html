@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <!-- ══════════ TOOL TITLE STRIP ══════════ -->
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=core" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Core</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Readme Studio</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Plugin Readme Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Build a <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">readme.txt</span> the plugin directory accepts on the first try — with a live listing preview.</p>
+    </div>
+  </div>
+
+  <!-- ══════════ WORKSPACE ══════════ -->
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <!-- TOP BAR -->
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">readme.txt</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetRightTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <sc-if value="{{ hasErrors }}"><span style="width:8px;height:8px;border-radius:50%;background:#B91C1C;display:inline-block;"></span></sc-if>
+      <sc-if value="{{ hasWarnings }}"><span style="width:8px;height:8px;border-radius:50%;background:#B45309;display:inline-block;"></span></sc-if>
+      <sc-if value="{{ allClear }}"><span style="width:8px;height:8px;border-radius:50%;background:#1F7A4C;display:inline-block;"></span></sc-if>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onOpenImport }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">Import</button>
+    <button onClick="{{ onOpenNewProject }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="3">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- BODY -->
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <!-- CENTER PANE -->
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <!-- Metadata card -->
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:20px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:14px;">Plugin metadata</div>
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px 16px;">
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Plugin name</label>
+            <input value="{{ projectName }}" onChange="{{ onProjectNameChange }}" ref="{{ refName }}" style="width:100%; font-size:14px; padding:8px 10px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Contributors</label>
+            <div style="border:1px solid #E7E2D9; border-radius:6px; padding:6px; display:flex; flex-wrap:wrap; gap:6px; background:#fff;" ref="{{ refContributors }}">
+              <sc-for list="{{ contributorsChips }}" as="chip" hint-placeholder-count="2">
+                <span draggable="true" onDragStart="{{ chip.onDragStart }}" onDragOver="{{ chip.onDragOver }}" onDrop="{{ chip.onDrop }}" style="display:flex; align-items:center; gap:5px; background:{{ chip.bg }}; color:{{ chip.color }}; border-radius:5px; padding:3px 6px; font-size:12px; font-family:'JetBrains Mono',monospace;">
+                  {{ chip.value }}
+                  <button aria-label="Remove {{ chip.value }}" onClick="{{ chip.onRemove }}" style="border:none; background:none; cursor:pointer; color:inherit; padding:0; display:flex; align-items:center;" style-focus="outline:1px solid currentColor;">{{ iconClose }}</button>
+                </span>
+              </sc-for>
+              <input aria-label="Add contributor" placeholder="add…" value="{{ contributorsDraft }}" onChange="{{ onContributorsDraftChange }}" onKeyDown="{{ onContributorsKeyDown }}" onBlur="{{ onContributorsBlur }}" style="border:none; outline:none; font-size:12px; flex:1; min-width:70px;" />
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#948C7E; margin-top:4px;">Contributors: {{ contributorsLine }}</div>
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Tags</label>
+            <div style="border:1px solid #E7E2D9; border-radius:6px; padding:6px; display:flex; flex-wrap:wrap; gap:6px; background:#fff;">
+              <sc-for list="{{ tagsChips }}" as="chip" hint-placeholder-count="3">
+                <span draggable="true" onDragStart="{{ chip.onDragStart }}" onDragOver="{{ chip.onDragOver }}" onDrop="{{ chip.onDrop }}" style="display:flex; align-items:center; gap:5px; background:{{ chip.bg }}; color:{{ chip.color }}; border-radius:5px; padding:3px 6px; font-size:12px; font-family:'JetBrains Mono',monospace;">
+                  {{ chip.value }}
+                  <button aria-label="Remove {{ chip.value }}" onClick="{{ chip.onRemove }}" style="border:none; background:none; cursor:pointer; color:inherit; padding:0; display:flex; align-items:center;" style-focus="outline:1px solid currentColor;">{{ iconClose }}</button>
+                </span>
+              </sc-for>
+              <input aria-label="Add tag" placeholder="add…" value="{{ tagsDraft }}" onChange="{{ onTagsDraftChange }}" onKeyDown="{{ onTagsKeyDown }}" onBlur="{{ onTagsBlur }}" style="border:none; outline:none; font-size:12px; flex:1; min-width:70px;" />
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#948C7E; margin-top:4px;">Tags: {{ tagsLine }}</div>
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Donate link</label>
+            <input value="{{ meta.donateLink }}" onChange="{{ onDonateLinkChange }}" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Requires PHP</label>
+            <input value="{{ meta.requiresPHP }}" onChange="{{ onRequiresPHPChange }}" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9; font-family:'JetBrains Mono',monospace;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Requires at least</label>
+            <input ref="{{ refRequiresAtLeast }}" value="{{ meta.requiresAtLeast }}" onChange="{{ onRequiresAtLeastChange }}" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9; font-family:'JetBrains Mono',monospace;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Tested up to</label>
+            <input value="{{ meta.testedUpTo }}" onChange="{{ onTestedUpToChange }}" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9; font-family:'JetBrains Mono',monospace;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Stable tag</label>
+            <input ref="{{ refStableTag }}" value="{{ meta.stableTag }}" onChange="{{ onStableTagChange }}" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9; font-family:'JetBrains Mono',monospace;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">License</label>
+            <input ref="{{ refLicense }}" value="{{ meta.license }}" onChange="{{ onLicenseChange }}" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">License URI</label>
+            <input value="{{ meta.licenseURI }}" onChange="{{ onLicenseURIChange }}" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+
+          <div style="grid-column:1 / -1;">
+            <label style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:6px;"><span>Custom metadata</span></label>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <sc-for list="{{ customMetaRows }}" as="cm" hint-placeholder-count="1">
+                <div style="display:flex; gap:6px;">
+                  <input value="{{ cm.name }}" onChange="{{ cm.onNameChange }}" placeholder="Field name" style="width:38%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                  <input value="{{ cm.value }}" onChange="{{ cm.onValueChange }}" placeholder="Value" style="flex:1; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                  <button aria-label="Remove custom field" onClick="{{ cm.onRemove }}" style="width:32px;height:32px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconClose }}</button>
+                </div>
+              </sc-for>
+              <button onClick="{{ onAddCustomMeta }}" style="align-self:flex-start; font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:6px; padding:6px 12px; cursor:pointer; color:#4A4438;" style-focus="outline:2px solid #3858E9;">+ Add custom field</button>
+            </div>
+          </div>
+
+          <div style="grid-column:1 / -1;">
+            <label style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">
+              <span>Short description</span>
+              <span style="color:{{ shortDescCounterColor }}; font-family:'JetBrains Mono',monospace;">{{ shortDescCount }}/150</span>
+            </label>
+            <textarea ref="{{ refShortDescription }}" value="{{ meta.shortDescription }}" onChange="{{ onShortDescriptionChange }}" rows="2" style="width:100%; font-size:13px; padding:8px 10px; border-radius:6px; border:1px solid #E7E2D9; resize:vertical;" style-focus="outline:2px solid #3858E9;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section stack -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="5">
+          <div id="{{ sec.anchorId }}" data-screen-label="{{ sec.title }}"
+            style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; opacity:{{ sec.opacity }};">
+            <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:{{ sec.headerBorder }};">
+              <button aria-label="Collapse section" onClick="{{ sec.onToggleCollapse }}" style="background:none;border:none;cursor:pointer;color:#948C7E;transform:{{ sec.chevronRotate }};transition:transform .15s;display:flex;align-items:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronDown }}</button>
+              <div style="font-size:14px; font-weight:700; flex:1;">{{ sec.title }}</div>
+              <button title="Clear contents" aria-label="Clear section contents" onClick="{{ sec.onClear }}" style="width:32px;height:32px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconClear }}</button>
+<sc-if value="{{ sec.canToggle }}" hint-placeholder-val="{{ true }}">
+              <button aria-label="{{ sec.toggleLabel }}" onClick="{{ sec.onToggleEnabled }}" style="width:34px; height:18px; border-radius:10px; border:none; background:{{ sec.toggleBg }}; position:relative; cursor:pointer;" style-focus="outline:2px solid #3858E9;">
+                <span style="position:absolute; top:2px; left:{{ sec.toggleKnobLeft }}; width:14px; height:14px; border-radius:50%; background:#fff; transition:left .12s;"></span>
+              </button>
+              </sc-if>
+            </div>
+
+            <sc-if value="{{ sec.expanded }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:14px;">
+
+                <!-- Generic blocks (Description / Installation) -->
+                <sc-if value="{{ sec.isGeneric }}" hint-placeholder-val="{{ false }}">
+                  <div onDragOver="{{ sec.onEmptyDragOver }}" onDrop="{{ sec.onEmptyDrop }}" style="display:flex; flex-direction:column; gap:10px;">
+                    <sc-for list="{{ sec.blocks }}" as="blk" hint-placeholder-count="2">
+                      <div draggable="true" onDragStart="{{ blk.onDragStart }}" onDragOver="{{ blk.onDragOver }}" onDrop="{{ blk.onDrop }}"
+                        style="border:1px dashed {{ blk.borderColor }}; border-radius:6px; padding:10px; background:{{ blk.bg }};">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                          <span style="cursor:grab; color:#C7C2B8; display:flex;">{{ iconDrag }}</span>
+                          <span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#948C7E; flex:1;">{{ blk.typeLabel }}</span>
+                          <button aria-label="Move block up" onClick="{{ blk.onMoveUp }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronUp }}</button>
+                          <button aria-label="Move block down" onClick="{{ blk.onMoveDown }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronDown }}</button>
+                          <button aria-label="Delete block" onClick="{{ blk.onDelete }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#B91C1C;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconTrash }}</button>
+                        </div>
+
+                        <sc-if value="{{ blk.hasToolbar }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex; gap:4px; margin-bottom:6px;">
+                            <button onMouseDown="{{ blk.onToolbarMouseDown }}" onClick="{{ blk.onBold }}" title="Bold" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px;" style-focus="outline:2px solid #3858E9;">B</button>
+                            <button onMouseDown="{{ blk.onToolbarMouseDown }}" onClick="{{ blk.onItalic }}" title="Italic" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;font-style:italic;font-size:12px;" style-focus="outline:2px solid #3858E9;">I</button>
+                            <button onMouseDown="{{ blk.onToolbarMouseDown }}" onClick="{{ blk.onCode }}" title="Inline code" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconCode }}</button>
+                            <button onMouseDown="{{ blk.onToolbarMouseDown }}" onClick="{{ blk.onLink }}" title="Link" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconLink }}</button>
+                          </div>
+                        </sc-if>
+
+                        <sc-if value="{{ blk.isParagraph }}" hint-placeholder-val="{{ false }}">
+                          <div style="position:relative;">
+                            <sc-if value="{{ blk.isEmptyText }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; top:8px; left:8px; color:#B3ACA0; font-size:13px; pointer-events:none;">Paragraph text…</span></sc-if>
+                            <div contentEditable="true" ref="{{ blk.richRef }}" onInput="{{ blk.onRichInput }}" style="width:100%; min-height:44px; font-size:13px; line-height:1.6; padding:8px; border-radius:5px; border:1px solid #E7E2D9; outline:none;" style-focus="outline:2px solid #3858E9;"></div>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{ blk.isBlockquote }}" hint-placeholder-val="{{ false }}">
+                          <div style="position:relative; border-left:3px solid #C7D2FE; border-radius:5px;">
+                            <sc-if value="{{ blk.isEmptyText }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; top:8px; left:8px; color:#B3ACA0; font-size:13px; pointer-events:none;">Quoted text…</span></sc-if>
+                            <div contentEditable="true" ref="{{ blk.richRef }}" onInput="{{ blk.onRichInput }}" style="width:100%; min-height:36px; font-size:13px; line-height:1.6; padding:8px; outline:none; border-top:1px solid #E7E2D9;border-right:1px solid #E7E2D9;border-bottom:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;"></div>
+                          </div>
+                        </sc-if>
+                        <sc-if value="{{ blk.isSubheading }}" hint-placeholder-val="{{ false }}">
+                          <input ref="{{ blk.ref }}" value="{{ blk.text }}" onChange="{{ blk.onTextChange }}" placeholder="Subheading text" style="width:100%; font-size:13px; font-weight:700; padding:8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                        </sc-if>
+                        <sc-if value="{{ blk.isCode }}" hint-placeholder-val="{{ false }}">
+                          <textarea ref="{{ blk.ref }}" value="{{ blk.text }}" onChange="{{ blk.onTextChange }}" rows="4" placeholder="  code, indentation preserved" spellCheck="false" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:8px; border-radius:5px; border:1px solid #E7E2D9; background:#FBFAF7; resize:vertical; white-space:pre;"></textarea>
+                        </sc-if>
+                        <sc-if value="{{ blk.isVideo }}" hint-placeholder-val="{{ false }}">
+                          <input value="{{ blk.videoUrl }}" onChange="{{ blk.onVideoUrlChange }}" placeholder="https://youtu.be/…" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                        </sc-if>
+                        <sc-if value="{{ blk.isList }}" hint-placeholder-val="{{ false }}">
+                          <div style="display:flex; flex-direction:column; gap:6px;">
+                            <div style="display:flex; gap:6px; margin-bottom:2px;">
+                              <button onClick="{{ blk.onSetBulleted }}" style="display:flex; align-items:center; gap:5px; font-size:12px; padding:4px 8px; border-radius:5px; border:1px solid {{ blk.bulletedBorder }}; background:{{ blk.bulletedBg }}; color:{{ blk.bulletedColor }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ iconBulleted }} Bulleted</button>
+                              <button onClick="{{ blk.onSetNumbered }}" style="display:flex; align-items:center; gap:5px; font-size:12px; padding:4px 8px; border-radius:5px; border:1px solid {{ blk.numberedBorder }}; background:{{ blk.numberedBg }}; color:{{ blk.numberedColor }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ iconNumbered }} Numbered</button>
+                            </div>
+                            <sc-for list="{{ blk.items }}" as="item" hint-placeholder-count="2">
+                              <div draggable="true" onDragStart="{{ item.onDragStart }}" onDragOver="{{ item.onDragOver }}" onDrop="{{ item.onDrop }}" style="display:flex; gap:6px; align-items:center; border-top:2px solid {{ item.borderColor }}; padding-top:2px;">
+                                <span style="cursor:grab; color:#C7C2B8; display:flex;">{{ iconDrag }}</span>
+                                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#948C7E; width:20px;">{{ item.marker }}</span>
+                                <input value="{{ item.value }}" onChange="{{ item.onChange }}" placeholder="List item…" style="flex:1; font-size:13px; padding:7px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                                <button aria-label="Remove item" onClick="{{ item.onRemove }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconClose }}</button>
+                              </div>
+                            </sc-for>
+                            <button onClick="{{ blk.onAddItem }}" style="align-self:flex-start; font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:5px; padding:5px 10px; cursor:pointer; color:#4A4438;" style-focus="outline:2px solid #3858E9;">+ Add item</button>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                    <button aria-label="Add element to {{ sec.title }}" aria-expanded="{{ sec.addMenuOpen }}" onClick="{{ sec.onOpenAddMenu }}"
+                      style="display:flex; align-items:center; justify-content:center; gap:7px; width:100%; padding:9px; border:1px dashed {{ sec.addBorderColor }}; background:{{ sec.addBg }}; color:{{ sec.addColor }}; border-radius:6px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="border-color:#3858E9; background:#F5F7FE; color:#3858E9;" style-focus="outline:2px solid #3858E9;">
+                      <span style="display:flex;">{{ iconPlus }}</span>Add element
+                    </button>
+                  </div>
+                </sc-if>
+
+                <!-- FAQ -->
+                <sc-if value="{{ sec.isFAQ }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <sc-for list="{{ sec.faqs }}" as="faq" hint-placeholder-count="2">
+                      <div draggable="true" onDragStart="{{ faq.onDragStart }}" onDragOver="{{ faq.onDragOver }}" onDrop="{{ faq.onDrop }}" style="border:1px solid {{ faq.borderColor }}; border-radius:6px; padding:10px; background:#FAF9F7;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                          <span style="cursor:grab; color:#C7C2B8; display:flex;">{{ iconDrag }}</span>
+                          <input ref="{{ faq.qRef }}" value="{{ faq.question }}" onChange="{{ faq.onQuestionChange }}" placeholder="Question" style="flex:1; font-size:14px; font-weight:700; padding:7px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                          <button aria-label="Move up" onClick="{{ faq.onMoveUp }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronUp }}</button>
+                          <button aria-label="Move down" onClick="{{ faq.onMoveDown }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronDown }}</button>
+                          <button aria-label="Duplicate" onClick="{{ faq.onDuplicate }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconDuplicate }}</button>
+                          <button aria-label="Delete" onClick="{{ faq.onDelete }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#B91C1C;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconTrash }}</button>
+                        </div>
+                        <div style="display:flex; gap:4px; margin-bottom:6px;">
+                          <button onMouseDown="{{ faq.onToolbarMouseDown }}" onClick="{{ faq.onBold }}" title="Bold" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px;" style-focus="outline:2px solid #3858E9;">B</button>
+                          <button onMouseDown="{{ faq.onToolbarMouseDown }}" onClick="{{ faq.onItalic }}" title="Italic" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;font-style:italic;font-size:12px;" style-focus="outline:2px solid #3858E9;">I</button>
+                          <button onMouseDown="{{ faq.onToolbarMouseDown }}" onClick="{{ faq.onCode }}" title="Inline code" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconCode }}</button>
+                          <button onMouseDown="{{ faq.onToolbarMouseDown }}" onClick="{{ faq.onLink }}" title="Link" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconLink }}</button>
+                        </div>
+                        <div style="position:relative;">
+                          <sc-if value="{{ faq.isEmptyAnswer }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; top:8px; left:8px; color:#B3ACA0; font-size:13px; pointer-events:none;">Answer…</span></sc-if>
+                          <div contentEditable="true" ref="{{ faq.aRichRef }}" onInput="{{ faq.onAnswerRichInput }}" style="width:100%; min-height:40px; font-size:13px; line-height:1.6; padding:8px; border-radius:5px; border:1px solid #E7E2D9; outline:none;" style-focus="outline:2px solid #3858E9;"></div>
+                        </div>
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ sec.onAddFAQ }}" style="align-self:flex-start; font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:5px; padding:6px 12px; cursor:pointer; color:#4A4438;" style-focus="outline:2px solid #3858E9;">+ Add question</button>
+                  </div>
+                </sc-if>
+
+                <!-- Screenshots -->
+                <sc-if value="{{ sec.isScreenshots }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <sc-for list="{{ sec.screenshots }}" as="shot" hint-placeholder-count="2">
+                      <div draggable="true" onDragStart="{{ shot.onDragStart }}" onDragOver="{{ shot.onDragOver }}" onDrop="{{ shot.onDrop }}" style="display:flex; gap:8px; align-items:center; border:1px solid {{ shot.borderColor }}; border-radius:6px; padding:8px 10px; background:#FAF9F7;">
+                        <span style="cursor:grab; color:#C7C2B8; display:flex;">{{ iconDrag }}</span>
+                        <span style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:#948C7E; width:20px;">{{ shot.number }}.</span>
+                        <input ref="{{ shot.ref }}" value="{{ shot.description }}" onChange="{{ shot.onDescriptionChange }}" placeholder="Description" style="flex:1.4; font-size:14px; padding:7px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                        <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#B3ACA0;">{{ shot.suggestedName }}</span>
+                        <button aria-label="Move up" onClick="{{ shot.onMoveUp }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronUp }}</button>
+                        <button aria-label="Move down" onClick="{{ shot.onMoveDown }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronDown }}</button>
+                        <button aria-label="Delete" onClick="{{ shot.onDelete }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#B91C1C;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconTrash }}</button>
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ sec.onAddScreenshot }}" style="align-self:flex-start; font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:5px; padding:6px 12px; cursor:pointer; color:#4A4438;" style-focus="outline:2px solid #3858E9;">+ Add screenshot</button>
+                  </div>
+                </sc-if>
+
+                <!-- Changelog -->
+                <sc-if value="{{ sec.isChangelog }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:10px;">
+                    <sc-for list="{{ sec.versions }}" as="ver" hint-placeholder-count="2">
+                      <div draggable="true" onDragStart="{{ ver.onDragStart }}" onDragOver="{{ ver.onDragOver }}" onDrop="{{ ver.onDrop }}" style="border:1px solid {{ ver.borderColor }}; border-radius:6px; padding:10px; background:#FAF9F7;">
+                        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+                          <span style="cursor:grab; color:#C7C2B8; display:flex;">{{ iconDrag }}</span>
+                          <input ref="{{ ver.vRef }}" value="{{ ver.version }}" onChange="{{ ver.onVersionChange }}" placeholder="1.2.0" style="width:120px; font-size:14px; font-weight:700; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                          <div style="flex:1;"></div>
+                          <button aria-label="Move up" onClick="{{ ver.onMoveUp }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronUp }}</button>
+                          <button aria-label="Move down" onClick="{{ ver.onMoveDown }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronDown }}</button>
+                          <button aria-label="Delete version" onClick="{{ ver.onDelete }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#B91C1C;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconTrash }}</button>
+                        </div>
+                        <div style="display:flex; gap:4px; margin-bottom:6px;">
+                          <button onMouseDown="{{ ver.onToolbarMouseDown }}" onClick="{{ ver.onBold }}" title="Bold" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px;" style-focus="outline:2px solid #3858E9;">B</button>
+                          <button onMouseDown="{{ ver.onToolbarMouseDown }}" onClick="{{ ver.onItalic }}" title="Italic" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;font-style:italic;font-size:12px;" style-focus="outline:2px solid #3858E9;">I</button>
+                          <button onMouseDown="{{ ver.onToolbarMouseDown }}" onClick="{{ ver.onCode }}" title="Inline code" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconCode }}</button>
+                          <button onMouseDown="{{ ver.onToolbarMouseDown }}" onClick="{{ ver.onLink }}" title="Link" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconLink }}</button>
+                        </div>
+                        <div style="position:relative;">
+                          <sc-if value="{{ ver.isEmptyDescription }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; top:8px; left:8px; color:#B3ACA0; font-size:14px; pointer-events:none;">Description…</span></sc-if>
+                          <div contentEditable="true" ref="{{ ver.descRichRef }}" onInput="{{ ver.onDescRichInput }}" style="width:100%; min-height:40px; font-size:14px; line-height:1.6; padding:8px; border-radius:5px; border:1px solid #E7E2D9; outline:none;" style-focus="outline:2px solid #3858E9;"></div>
+                        </div>
+                      </div>
+                    </sc-for>
+                    <div style="display:flex; gap:8px;">
+                      <button onClick="{{ sec.onAddVersion }}" style="font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:5px; padding:6px 12px; cursor:pointer; color:#4A4438;" style-focus="outline:2px solid #3858E9;">+ New version</button>
+                      <button onClick="{{ sec.onNewFromPrevious }}" style="font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:5px; padding:6px 12px; cursor:pointer; color:#4A4438;" style-focus="outline:2px solid #3858E9;">+ New version from previous</button>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- Upgrade Notice -->
+                <sc-if value="{{ sec.isUpgradeNotice }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:10px;">
+                    <sc-for list="{{ sec.notices }}" as="notice" hint-placeholder-count="1">
+                      <div draggable="true" onDragStart="{{ notice.onDragStart }}" onDragOver="{{ notice.onDragOver }}" onDrop="{{ notice.onDrop }}" style="border:1px solid {{ notice.borderColor }}; border-radius:6px; padding:10px; background:#FAF9F7;">
+                        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+                          <span style="cursor:grab; color:#C7C2B8; display:flex;">{{ iconDrag }}</span>
+                          <input value="{{ notice.version }}" onChange="{{ notice.onVersionChange }}" placeholder="1.2.0" style="width:120px; font-size:14px; font-weight:700; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                          <div style="flex:1;"></div>
+                          <button aria-label="Move up" onClick="{{ notice.onMoveUp }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronUp }}</button>
+                          <button aria-label="Move down" onClick="{{ notice.onMoveDown }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconChevronDown }}</button>
+                          <button aria-label="Delete notice" onClick="{{ notice.onDelete }}" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#B91C1C;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconTrash }}</button>
+                        </div>
+                        <div style="display:flex; gap:4px; margin-bottom:6px;">
+                          <button onMouseDown="{{ notice.onToolbarMouseDown }}" onClick="{{ notice.onBold }}" title="Bold" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;font-weight:700;font-size:12px;" style-focus="outline:2px solid #3858E9;">B</button>
+                          <button onMouseDown="{{ notice.onToolbarMouseDown }}" onClick="{{ notice.onItalic }}" title="Italic" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;font-style:italic;font-size:12px;" style-focus="outline:2px solid #3858E9;">I</button>
+                          <button onMouseDown="{{ notice.onToolbarMouseDown }}" onClick="{{ notice.onCode }}" title="Inline code" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconCode }}</button>
+                          <button onMouseDown="{{ notice.onToolbarMouseDown }}" onClick="{{ notice.onLink }}" title="Link" style="width:28px;height:28px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-focus="outline:2px solid #3858E9;">{{ iconLink }}</button>
+                        </div>
+                        <div style="position:relative;">
+                          <sc-if value="{{ notice.isEmptyDescription }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; top:8px; left:8px; color:#B3ACA0; font-size:14px; pointer-events:none;">Notice text…</span></sc-if>
+                          <div contentEditable="true" ref="{{ notice.descRichRef }}" onInput="{{ notice.onDescRichInput }}" style="width:100%; min-height:40px; font-size:14px; line-height:1.6; padding:8px; border-radius:5px; border:1px solid #E7E2D9; outline:none;"></div>
+                        </div>
+                      </div>
+                    </sc-for>
+                    <button onClick="{{ sec.onAddNotice }}" style="align-self:flex-start; font-size:12px; border:1px dashed #C7C2B8; background:none; border-radius:5px; padding:6px 12px; cursor:pointer; color:#4A4438;" style-focus="outline:2px solid #3858E9;">+ Add notice</button>
+                  </div>
+                </sc-if>
+
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- RIGHT PANE -->
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetRightTabPreview }}" style="flex:1; padding:12px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabPreviewColor }}; border-bottom:2px solid {{ tabPreviewBorder }};" style-focus="outline:2px solid #3858E9;">Listing Preview</button>
+        <button onClick="{{ onSetRightTabRaw }}" style="flex:1; padding:12px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRawColor }}; border-bottom:2px solid {{ tabRawBorder }};" style-focus="outline:2px solid #3858E9;">Raw readme.txt</button>
+        <button onClick="{{ onSetRightTabValidation }}" style="flex:1; padding:12px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Validation ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showPreviewTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; overflow-y:auto; background:#F0F0F1;">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:#FFF6E5; color:#8A5B00; font-size:10.5px;">
+            <span>Approximate rendering — WordPress.org may differ slightly.</span>
+            <button onClick="{{ onExpandPreview }}" style="display:flex; align-items:center; gap:5px; border:1px solid #8A5B00; background:none; color:#8A5B00; border-radius:5px; padding:3px 8px; cursor:pointer; font-size:10.5px;">{{ iconExpand }} Expand</button>
+          </div>
+          <dc-import name="ListingPreview" plugin-name="{{ previewName }}" initial="{{ previewInitial }}" byline="{{ previewByline }}"
+            short-description="{{ previewShortDescription }}" version="{{ previewVersion }}" requires-at-least="{{ previewRequiresAtLeast }}"
+            tested-up-to="{{ previewTestedUpTo }}" requires-php="{{ previewRequiresPHP }}" donate-link="{{ previewDonateLink }}" has-donate-link="{{ hasDonateLink }}"
+            tag-chips="{{ previewTagChips }}" tabs="{{ previewTabs }}" show-details="{{ showPreviewDetails }}" show-installation="{{ showPreviewInstallation }}" show-development="{{ showPreviewDevelopment }}"
+            details-blocks="{{ previewDetailsBlocks }}" installation-blocks="{{ previewInstallationBlocks }}" screenshots="{{ previewScreenshots }}" faqs="{{ previewFaqs }}"
+            versions="{{ previewVersions }}" notices="{{ previewNotices }}" contributors="{{ previewContributors }}" has-screenshots="{{ hasScreenshots }}" has-faqs="{{ hasFaqs }}" icon-play="{{ iconPlay }}"
+            style="padding:20px;" hint-size="100%,600px"></dc-import>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRawTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9;">
+            <input value="{{ rawSearch }}" onChange="{{ onRawSearchChange }}" placeholder="Search…" style="flex:1; font-size:12px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            <button onClick="{{ onCopy }}" style="font-size:11px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:0 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:6px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">Read-only — generated from the structured editor. Edit content on the left.</div>
+          <sc-if value="{{ showRawReadOnly }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:1; overflow:auto; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6;">
+              <sc-for list="{{ rawLines }}" as="ln" hint-placeholder-count="10">
+                <div style="display:flex; background:{{ ln.matchBg }};">
+                  <span style="width:36px; text-align:right; padding-right:8px; color:#B3ACA0; user-select:none; flex-shrink:0;">{{ ln.num }}</span>
+                  <span style="white-space:pre-wrap; word-break:break-word; color:{{ ln.color }}; font-weight:{{ ln.weight }};">{{ ln.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="4">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <button onClick="{{ iss.onFocus }}" style="flex:1; text-align:left; background:none; border:none; font-size:12.5px; line-height:1.5; cursor:pointer; color:#3B362D; padding:0;" style-focus="outline:2px solid #3858E9;">{{ iss.message }}</button>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">Fix automatically</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">No issues in this filter 🎉</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+  <!-- EXPANDED PREVIEW MODAL -->
+  <sc-if value="{{ previewExpanded }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-label="Expanded listing preview" onKeyDown="{{ onDialogKeyDown }}" style="position:fixed; inset:0; background:rgba(38,34,28,.55); display:flex; align-items:flex-start; justify-content:center; z-index:300; padding:30px; overflow-y:auto;">
+      <div style="background:#F0F0F1; border-radius:10px; max-width:1000px; width:100%; max-height:100%; overflow-y:auto; position:relative;">
+        <button aria-label="Close expanded preview" onClick="{{ onCollapsePreview }}" style="position:sticky; top:12px; left:100%; transform:translateX(-44px); width:32px; height:32px; border-radius:6px; border:1px solid #DCDCDE; background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2;" style-focus="outline:2px solid #3858E9;">{{ iconClose }}</button>
+        <div style="margin-top:-32px;">
+          <dc-import name="ListingPreview" plugin-name="{{ previewName }}" initial="{{ previewInitial }}" byline="{{ previewByline }}"
+            short-description="{{ previewShortDescription }}" version="{{ previewVersion }}" requires-at-least="{{ previewRequiresAtLeast }}"
+            tested-up-to="{{ previewTestedUpTo }}" requires-php="{{ previewRequiresPHP }}" donate-link="{{ previewDonateLink }}" has-donate-link="{{ hasDonateLink }}"
+            tag-chips="{{ previewTagChips }}" tabs="{{ previewTabs }}" show-details="{{ showPreviewDetails }}" show-installation="{{ showPreviewInstallation }}" show-development="{{ showPreviewDevelopment }}"
+            details-blocks="{{ previewDetailsBlocks }}" installation-blocks="{{ previewInstallationBlocks }}" screenshots="{{ previewScreenshots }}" faqs="{{ previewFaqs }}"
+            versions="{{ previewVersions }}" notices="{{ previewNotices }}" contributors="{{ previewContributors }}" has-screenshots="{{ hasScreenshots }}" has-faqs="{{ hasFaqs }}" icon-play="{{ iconPlay }}"
+            style="padding:20px;" hint-size="100%,900px"></dc-import>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- NEW PROJECT DIALOG -->
+  <sc-if value="{{ newProjectOpen }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-label="New project" onKeyDown="{{ onDialogKeyDown }}" style="position:fixed; inset:0; background:rgba(38,34,28,.4); display:flex; align-items:center; justify-content:center; z-index:200;">
+      <div style="background:#fff; border-radius:10px; padding:22px; width:420px; max-width:90vw;">
+        <div style="font-size:15px; font-weight:700; margin-bottom:14px;">New project</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <sc-for list="{{ templateOptions }}" as="tpl" hint-placeholder-count="5">
+            <button onClick="{{ tpl.onSelect }}" style="text-align:left; border:1px solid #E7E2D9; background:#fff; border-radius:6px; padding:10px 12px; cursor:pointer; font-size:13px; font-weight:600;" style-hover="border-color:#3858E9; background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ tpl.label }}</button>
+          </sc-for>
+        </div>
+        <button onClick="{{ onCloseNewProject }}" style="margin-top:16px; border:none; background:none; color:#948C7E; font-size:12px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">Cancel</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- IMPORT DIALOG -->
+  <sc-if value="{{ importOpen }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-label="Import readme" onKeyDown="{{ onDialogKeyDown }}" style="position:fixed; inset:0; background:rgba(38,34,28,.4); display:flex; align-items:center; justify-content:center; z-index:200;">
+      <div style="background:#fff; border-radius:10px; padding:22px; width:560px; max-width:92vw;">
+        <div style="font-size:15px; font-weight:700; margin-bottom:12px;">Import readme.txt</div>
+        <input type="file" accept=".txt" onChange="{{ onImportFileChange }}" style="font-size:12px; margin-bottom:10px;" />
+        <textarea value="{{ importText }}" onChange="{{ onImportTextChange }}" placeholder="…or paste readme.txt contents here" rows="8" style="width:100%; font-family:'JetBrains Mono',monospace; font-size:12px; padding:10px; border-radius:6px; border:1px solid #E7E2D9;"></textarea>
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button onClick="{{ onImportSubmit }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;">Import</button>
+          <button onClick="{{ onCloseImport }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;">Cancel</button>
+          <div style="flex:1;"></div>
+          <button onClick="{{ onExportJSON }}" style="border:1px solid #E7E2D9;background:#fff;color:#26221C;font-size:12px;font-weight:600;border-radius:6px;padding:7px 14px;cursor:pointer;" style-hover="background:#F3F1EC;">Export project JSON</button>
+          <label style="border:1px solid #E7E2D9;background:#fff;color:#26221C;font-size:12px;font-weight:600;border-radius:6px;padding:7px 14px;cursor:pointer;display:inline-flex;align-items:center;" style-hover="background:#F3F1EC;">Import project JSON<input type="file" accept=".json" onChange="{{ onImportJSONFileChange }}" style="display:none;" /></label>
+        </div>
+        <sc-if value="{{ hasUnparsed }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:14px; border-top:1px solid #E7E2D9; padding-top:10px;">
+            <div style="font-size:11px; font-weight:700; color:#948C7E; margin-bottom:6px;">Unparsed content from last import</div>
+            <div style="max-height:100px; overflow-y:auto; font-family:'JetBrains Mono',monospace; font-size:11px; background:#FBFAF7; border-radius:6px; padding:8px; white-space:pre-wrap;">{{ unparsedText }}</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ELEMENT LIBRARY POPOVER -->
+  <sc-if value="{{ addMenuOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:60;" onMouseDown="{{ onCloseAddMenu }}">
+      <div role="menu" aria-label="Element library" onMouseDown="{{ onStopPropagation }}"
+        style="position:fixed; top:{{ addMenuTop }}; left:{{ addMenuLeft }}; width:236px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; box-shadow:0 14px 36px rgba(38,34,28,.18); padding:6px;">
+        <div style="padding:7px 9px 7px; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#948C7E;">{{ addMenuTitle }}</div>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <sc-for list="{{ addMenuItems }}" as="opt" hint-placeholder-count="5">
+            <button role="menuitem" onClick="{{ opt.onClick }}"
+              style="display:flex; align-items:center; gap:9px; width:100%; text-align:left; border:none; background:none; border-radius:6px; padding:8px 9px; font-size:13px; font-weight:600; color:#3B362D; cursor:pointer;" style-hover="background:#EEF1FE; color:#3858E9;" style-focus="outline:2px solid #3858E9;">
+              <span style="color:#948C7E; display:flex;">{{ opt.icon }}</span>{{ opt.label }}
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+let _idCounter = 0;
+function uid(prefix) { return prefix + '_' + (++_idCounter) + '_' + Math.random().toString(36).slice(2, 7); }
+function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+
+const SECTION_TITLES = {
+  description: 'Description', installation: 'Installation', screenshots: 'Screenshots',
+  faq: 'Frequently Asked Questions', changelog: 'Changelog', upgradeNotice: 'Upgrade Notice'
+};
+const STANDARD_KINDS = ['description', 'installation', 'screenshots', 'faq', 'changelog', 'upgradeNotice'];
+const BLOCK_TYPES = [
+  { type: 'paragraph', label: 'Paragraph' }, { type: 'subheading', label: 'Subheading' }, { type: 'list', label: 'List' },
+  { type: 'blockquote', label: 'Blockquote' }, { type: 'code', label: 'Code Block' }, { type: 'video', label: 'Video' }
+];
+const LIBRARY_BLOCK_TYPES = BLOCK_TYPES.filter(t => t.type !== 'code');
+
+function makeBlock(type) {
+  const id = uid('blk');
+  const table = {
+    paragraph: { text: '' }, subheading: { text: '' }, blockquote: { text: '' }, code: { text: '' },
+    list: { style: 'bulleted', items: [{ id: uid('li'), value: '' }] }, video: { url: '' }
+  };
+  return { id, type, data: table[type] };
+}
+function makeSection(kind) {
+  const id = uid('sec');
+  const base = { id, kind, title: SECTION_TITLES[kind], enabled: true };
+  if (kind === 'faq') return { ...base, faqs: [] };
+  if (kind === 'screenshots') return { ...base, screenshots: [] };
+  if (kind === 'changelog') return { ...base, versions: [] };
+  if (kind === 'upgradeNotice') return { ...base, notices: [] };
+  return { ...base, blocks: [] };
+}
+
+function seedProject() {
+  return {
+    name: 'Bundle Builder for WooCommerce',
+    meta: {
+      contributors: ['janedev', 'acmeplugins'], donateLink: 'https://example.com/donate',
+      tags: ['woocommerce', 'bundles', 'products', 'upsell'],
+      requiresAtLeast: '6.4', testedUpTo: '6.7', requiresPHP: '7.4',
+      stableTag: '1.1.0', license: 'GPLv2 or later', licenseURI: 'https://www.gnu.org/licenses/gpl-2.0.html', custom: [],
+      shortDescription: 'Create flexible, high-converting product bundles with per-item pricing rules, quantity discounts, and a drag-and-drop builder your merchandising team will actually enjoy using every day.'
+    },
+    sections: [
+      { id: uid('sec'), kind: 'description', title: 'Description', enabled: true, blocks: [
+        { id: uid('blk'), type: 'paragraph', data: { text: 'Bundle Builder lets store owners assemble flexible product bundles with per-item pricing rules, quantity breaks, and conditional logic — all from a visual, drag-and-drop interface inside WooCommerce.' } },
+        { id: uid('blk'), type: 'subheading', data: { text: 'Key features' } },
+        { id: uid('blk'), type: 'list', data: { style: 'bulleted', items: [
+          { id: uid('li'), value: '**Flexible pricing:** Set fixed, percentage, or tiered discounts per bundle.' },
+          { id: uid('li'), value: '**Drag-and-drop builder:** Assemble bundles visually without touching code.' },
+          { id: uid('li'), value: '**Quantity breaks:** Reward larger orders with automatic discount tiers.' }
+        ] } }
+      ] },
+      { id: uid('sec'), kind: 'installation', title: 'Installation', enabled: true, blocks: [
+        { id: uid('blk'), type: 'list', data: { style: 'numbered', items: [
+          { id: uid('li'), value: 'Upload the plugin files to /wp-content/plugins/bundle-builder-for-woocommerce.' },
+          { id: uid('li'), value: 'Activate the plugin through the Plugins screen in WordPress.' },
+          { id: uid('li'), value: 'Configure bundle rules under WooCommerce > Bundles.' }
+        ] } }
+      ] },
+      { id: uid('sec'), kind: 'screenshots', title: 'Screenshots', enabled: true, screenshots: [
+        { id: uid('shot'), description: 'Plugin settings screen.', filename: '' },
+        { id: uid('shot'), description: 'Bundle configuration interface.', filename: '' },
+        { id: uid('shot'), description: 'Bundle displayed on the product page.', filename: '' }
+      ] },
+      { id: uid('sec'), kind: 'faq', title: 'Frequently Asked Questions', enabled: true, faqs: [
+        { id: uid('faq'), question: 'Does the plugin support WooCommerce HPOS?', answer: 'Yes, HPOS is fully supported.' },
+        { id: uid('faq'), question: 'Can I limit a bundle to specific products?', answer: 'Yes, bundles can be restricted to categories, tags, or individual products.' },
+        { id: uid('faq'), question: 'Does this work with variable products?', answer: 'Yes, variable products and their variations can be added to any bundle.' }
+      ] },
+      { id: uid('sec'), kind: 'changelog', title: 'Changelog', enabled: true, versions: [
+        { id: uid('ver'), version: '1.2.0', description: '* Added support for custom products.\n* Fixed bundle settings not being saved.' },
+        { id: uid('ver'), version: '1.1.0', description: '* Added quantity break discount tiers.\n* Improved performance on bundle pages with 20+ products.' }
+      ] },
+      { id: uid('sec'), kind: 'upgradeNotice', title: 'Upgrade Notice', enabled: true, notices: [
+        { id: uid('notice'), version: '1.2.0', description: 'This release changes the plugin data structure. Back up before upgrading.' }
+      ] }
+    ]
+  };
+}
+
+function migrateProject(project) {
+  if (!project || typeof project !== 'object') return seedProject();
+  if (!project.meta) project.meta = {};
+  const m = project.meta;
+  m.contributors = Array.isArray(m.contributors) ? m.contributors : [];
+  m.tags = Array.isArray(m.tags) ? m.tags : [];
+  m.custom = Array.isArray(m.custom) ? m.custom : [];
+  ['donateLink', 'requiresAtLeast', 'testedUpTo', 'requiresPHP', 'stableTag', 'license', 'licenseURI', 'shortDescription'].forEach(k => { if (typeof m[k] !== 'string') m[k] = ''; });
+  if (typeof project.name !== 'string') project.name = '';
+
+  const byKind = {};
+  (Array.isArray(project.sections) ? project.sections : []).forEach(sec => {
+    if (!sec || !STANDARD_KINDS.includes(sec.kind)) return;
+    if (sec.blocks) {
+      sec.blocks = sec.blocks.filter(b => b && b.data).map(b => {
+        if (b.type === 'bulletList') return { id: b.id || uid('blk'), type: 'list', data: { style: 'bulleted', items: b.data.items || [] } };
+        if (b.type === 'numberedList') return { id: b.id || uid('blk'), type: 'list', data: { style: 'numbered', items: b.data.items || [] } };
+        if (b.type === 'featureList') return { id: b.id || uid('blk'), type: 'list', data: { style: 'bulleted', items: (b.data.items || []).map(it => ({ id: it.id || uid('li'), value: it.title ? `**${it.title}:** ${it.desc || ''}` : (it.desc || '') })) } };
+        if (b.type === 'link') return { id: b.id || uid('blk'), type: 'paragraph', data: { text: b.data.label && b.data.url ? `[${b.data.label}](${b.data.url})` : (b.data.url || '') } };
+        if (!BLOCK_TYPES.some(t => t.type === b.type)) return null;
+        if (b.type === 'list' && (!b.data.style)) b.data.style = 'bulleted';
+        return b;
+      }).filter(Boolean);
+    }
+    if (sec.versions) {
+      sec.versions.forEach(v => {
+        if (v.description === undefined) v.description = Array.isArray(v.changes) ? v.changes.map(c => `${c.type || ''} ${c.text || ''}`.trim()).filter(Boolean).join('\n') : '';
+        delete v.date; delete v.changes;
+      });
+    }
+    byKind[sec.kind] = sec;
+  });
+  project.sections = STANDARD_KINDS.map(k => byKind[k] || makeSection(k));
+  return project;
+}
+
+function fictitiousProject(cfg) {
+  const proj = {
+    name: cfg.name,
+    meta: {
+      contributors: cfg.contributors, donateLink: '', tags: cfg.tags,
+      requiresAtLeast: '6.3', testedUpTo: '6.7', requiresPHP: '7.4',
+      stableTag: '1.0.0', license: 'GPLv2 or later', licenseURI: 'https://www.gnu.org/licenses/gpl-2.0.html', custom: [],
+      shortDescription: cfg.shortDescription
+    },
+    sections: [
+      { id: uid('sec'), kind: 'description', title: 'Description', enabled: true, blocks: [
+        { id: uid('blk'), type: 'paragraph', data: { text: cfg.description } },
+        { id: uid('blk'), type: 'subheading', data: { text: 'Key features' } },
+        { id: uid('blk'), type: 'list', data: { style: 'bulleted', items: cfg.features.map(f => ({ id: uid('li'), value: f })) } }
+      ] },
+      { id: uid('sec'), kind: 'installation', title: 'Installation', enabled: true, blocks: [
+        { id: uid('blk'), type: 'list', data: { style: 'numbered', items: cfg.installSteps.map(s => ({ id: uid('li'), value: s })) } }
+      ] },
+      { id: uid('sec'), kind: 'screenshots', title: 'Screenshots', enabled: true, screenshots: cfg.screenshots.map(d => ({ id: uid('shot'), description: d, filename: '' })) },
+      { id: uid('sec'), kind: 'faq', title: 'Frequently Asked Questions', enabled: true, faqs: cfg.faqs.map(f => ({ id: uid('faq'), question: f.q, answer: f.a })) },
+      { id: uid('sec'), kind: 'changelog', title: 'Changelog', enabled: true, versions: [
+        { id: uid('ver'), version: '1.0.0', description: '* Initial release.' }
+      ] },
+      { id: uid('sec'), kind: 'upgradeNotice', title: 'Upgrade Notice', enabled: true, notices: [] }
+    ]
+  };
+  return proj;
+}
+const TEMPLATE_CONFIGS = {
+  basic: {
+    name: 'Simple Notice Bar', contributors: ['pluginauthor'], tags: ['notice', 'banner', 'admin'],
+    shortDescription: 'Display a dismissible announcement bar anywhere on your site.',
+    description: 'Simple Notice Bar lets you add a clean, dismissible announcement banner to your site in seconds — no code required.',
+    features: ['**Dismissible banner:** Visitors can close the notice; their choice is remembered.', '**Custom colors:** Match the banner to your brand.', '**Scheduling:** Show the notice only between chosen dates.'],
+    installSteps: ['Upload the plugin files to /wp-content/plugins/simple-notice-bar.', 'Activate the plugin through the Plugins screen in WordPress.', 'Configure your notice under Settings > Notice Bar.'],
+    screenshots: ['Notice bar settings screen.', 'Notice bar shown on the front end.'],
+    faqs: [{ q: 'Can I show different notices on different pages?', a: 'Yes, you can target notices to specific pages or show them site-wide.' }, { q: 'Does this slow down my site?', a: 'No, the plugin loads a small stylesheet and script only when a notice is active.' }]
+  },
+  woocommerce: {
+    name: 'Cart Upsell Prompts for WooCommerce', contributors: ['shopdev'], tags: ['woocommerce', 'upsell', 'cart'],
+    shortDescription: 'Suggest relevant add-ons to shoppers right in the WooCommerce cart.',
+    description: 'Cart Upsell Prompts adds smart, rule-based product suggestions to the WooCommerce cart page to help increase average order value.',
+    features: ['**Rule-based suggestions:** Show add-ons based on cart contents.', '**One-click add to cart:** Shoppers add suggestions without leaving the cart.', '**HPOS compatible:** Works with WooCommerce high-performance order storage.'],
+    installSteps: ['Upload the plugin files to /wp-content/plugins/cart-upsell-prompts-for-woocommerce.', 'Activate the plugin through the Plugins screen in WordPress.', 'Set up upsell rules under WooCommerce > Upsell Prompts.'],
+    screenshots: ['Upsell rule builder.', 'Suggested products on the cart page.'],
+    faqs: [{ q: 'Does this require WooCommerce?', a: 'Yes, WooCommerce must be installed and active.' }, { q: 'Can I limit suggestions to certain product categories?', a: 'Yes, rules can be scoped to specific categories, tags, or individual products.' }]
+  },
+  gutenberg: {
+    name: 'Testimonial Carousel Block', contributors: ['blockmaker'], tags: ['block', 'gutenberg', 'testimonial'],
+    shortDescription: 'A Gutenberg block for displaying rotating customer testimonials.',
+    description: 'Testimonial Carousel Block adds a native block editor block for showcasing customer quotes in a lightweight, swipeable carousel.',
+    features: ['**Native block editor UI:** Add and reorder testimonials without shortcodes.', '**Autoplay control:** Choose whether the carousel advances automatically.', '**Accessible markup:** Keyboard and screen-reader friendly navigation.'],
+    installSteps: ['Upload the plugin files to /wp-content/plugins/testimonial-carousel-block.', 'Activate the plugin through the Plugins screen in WordPress.', 'Add the "Testimonial Carousel" block from the block inserter.'],
+    screenshots: ['Testimonial Carousel block in the editor.', 'Carousel displayed on the front end.'],
+    faqs: [{ q: 'Does this work with any theme?', a: 'Yes, the block uses standard WordPress block markup and inherits your theme\u2019s typography.' }, { q: 'Can I add images to each testimonial?', a: 'Yes, each testimonial slide supports an optional avatar image.' }]
+  },
+  utility: {
+    name: 'Scheduled Maintenance Mode', contributors: ['sitetools'], tags: ['maintenance', 'utility', 'admin'],
+    shortDescription: 'Put your site into maintenance mode automatically on a schedule.',
+    description: 'Scheduled Maintenance Mode lets you plan maintenance windows in advance, automatically showing visitors a friendly holding page during the scheduled time.',
+    features: ['**Scheduled windows:** Set a start and end time for maintenance mode.', '**Custom holding page:** Edit the message shown to visitors.', '**Admin bypass:** Logged-in administrators can still browse the site normally.'],
+    installSteps: ['Upload the plugin files to /wp-content/plugins/scheduled-maintenance-mode.', 'Activate the plugin through the Plugins screen in WordPress.', 'Set your maintenance window under Settings > Maintenance Mode.'],
+    screenshots: ['Maintenance window scheduler.', 'Holding page shown to visitors.'],
+    faqs: [{ q: 'Can search engines still crawl my site during maintenance?', a: 'No, the plugin returns a 503 status code to discourage indexing while active.' }, { q: 'Will I be logged out during maintenance?', a: 'No, logged-in administrators can browse the site as usual.' }]
+  }
+};
+function makeTemplateProject(kind) {
+  if (kind === 'empty') {
+    return {
+      name: '', meta: { contributors: [], donateLink: '', tags: [], requiresAtLeast: '', testedUpTo: '', requiresPHP: '', stableTag: '', license: 'GPLv2 or later', licenseURI: 'https://www.gnu.org/licenses/gpl-2.0.html', shortDescription: '', custom: [] },
+      sections: STANDARD_KINDS.map(k => makeSection(k))
+    };
+  }
+  const cfg = TEMPLATE_CONFIGS[kind] || TEMPLATE_CONFIGS.basic;
+  return fictitiousProject(cfg);
+}
+
+function uniqCaseInsensitive(arr) {
+  const seen = new Set(); const out = [];
+  arr.forEach(v => { const k = v.toLowerCase(); if (!seen.has(k)) { seen.add(k); out.push(v); } });
+  return out;
+}
+function compareVersions(a, b) {
+  if (!a || !b) return 0;
+  const pa = a.split('.').map(Number), pb = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) { const x = pa[i] || 0, y = pb[i] || 0; if (x > y) return 1; if (x < y) return -1; }
+  return 0;
+}
+
+function blockToText(b) {
+  switch (b.type) {
+    case 'paragraph': return b.data.text || '';
+    case 'subheading': return b.data.text ? `= ${b.data.text} =` : '';
+    case 'list': return (b.data.items || []).filter(it => it.value && it.value.trim()).map((it, i) => b.data.style === 'numbered' ? `${i + 1}. ${it.value}` : `* ${it.value}`).join('\n');
+    case 'blockquote': return b.data.text ? b.data.text.split('\n').map(l => `> ${l}`).join('\n') : '';
+    case 'code': return b.data.text ? b.data.text.split('\n').map(l => `    ${l}`).join('\n') : '';
+    case 'video': return b.data.url || '';
+    default: return '';
+  }
+}
+function sectionBody(s) {
+  if (s.blocks) { const parts = s.blocks.map(blockToText).filter(Boolean); return parts.join('\n\n'); }
+  if (s.faqs) return s.faqs.map(f => `= ${f.question || ''} =\n\n${f.answer || ''}`).join('\n\n');
+  if (s.screenshots) return s.screenshots.map((sh, i) => `${i + 1}. ${sh.description || ''}`).join('\n');
+  if (s.versions) return s.versions.map(v => {
+    const header = `= ${v.version} =`;
+    return v.description ? `${header}\n\n${v.description}` : header;
+  }).join('\n\n');
+  if (s.notices) return s.notices.map(n => {
+    const header = `= ${n.version} =`;
+    return n.description ? `${header}\n\n${n.description}` : header;
+  }).join('\n\n');
+  return '';
+}
+function serializeReadme(project) {
+  const chunks = [];
+  chunks.push(`=== ${project.name || ''} ===`);
+  const m = project.meta; const metaLines = [];
+  if (m.contributors && m.contributors.length) metaLines.push(`Contributors: ${m.contributors.join(', ')}`);
+  if (m.donateLink) metaLines.push(`Donate link: ${m.donateLink}`);
+  if (m.tags && m.tags.length) metaLines.push(`Tags: ${m.tags.join(', ')}`);
+  if (m.requiresAtLeast) metaLines.push(`Requires at least: ${m.requiresAtLeast}`);
+  if (m.testedUpTo) metaLines.push(`Tested up to: ${m.testedUpTo}`);
+  if (m.requiresPHP) metaLines.push(`Requires PHP: ${m.requiresPHP}`);
+  if (m.stableTag) metaLines.push(`Stable tag: ${m.stableTag}`);
+  if (m.license) metaLines.push(`License: ${m.license}`);
+  if (m.licenseURI) metaLines.push(`License URI: ${m.licenseURI}`);
+  (m.custom || []).forEach(c => { if (c.name && c.name.trim()) metaLines.push(`${c.name.trim()}: ${c.value || ''}`); });
+  if (metaLines.length) chunks[0] += '\n' + metaLines.join('\n');
+  if (m.shortDescription) chunks.push(m.shortDescription.trim());
+  project.sections.filter(s => s.enabled).forEach(s => {
+    const title = SECTION_TITLES[s.kind] || s.title;
+    const body = sectionBody(s);
+    chunks.push(body ? `== ${title} ==\n\n${body}` : `== ${title} ==`);
+  });
+  return chunks.filter(Boolean).join('\n\n').replace(/[ \t]+\n/g, '\n').trim() + '\n';
+}
+
+function sectionHasContent(section) {
+  if (section.blocks) return section.blocks.some(b => JSON.stringify(b.data).replace(/[":,{}\[\]]/g, '').trim().length > 0);
+  return true;
+}
+function collectAllText(project) {
+  const out = [];
+  out.push({ text: project.meta.shortDescription || '', targetId: 'meta-shortDescription' });
+  project.sections.forEach(s => {
+    if (s.blocks) s.blocks.forEach(b => {
+      if (b.data.text) out.push({ text: b.data.text, targetId: b.id + '-text' });
+      if (b.data.items) b.data.items.forEach(it => out.push({ text: it.value || '', targetId: it.id }));
+      if (b.data.url) out.push({ text: b.data.url, targetId: b.id + '-url' });
+    });
+    if (s.faqs) s.faqs.forEach(f => { out.push({ text: f.question || '', targetId: f.id + '-question' }); out.push({ text: f.answer || '', targetId: f.id + '-answer' }); });
+    if (s.screenshots) s.screenshots.forEach(sh => out.push({ text: sh.description || '', targetId: sh.id + '-desc' }));
+    if (s.versions) s.versions.forEach(v => out.push({ text: v.description || '', targetId: v.id + '-description' }));
+    if (s.notices) s.notices.forEach(n => out.push({ text: n.description || '', targetId: n.id + '-description' }));
+  });
+  return out;
+}
+function validateProject(project) {
+  const issues = [];
+  const add = (severity, message, targetId, fixKey, extra) => issues.push({ id: uid('iss'), severity, message, targetId, fixKey, ...(extra || {}) });
+
+  if (!project.name || !project.name.trim()) add('error', 'Plugin name is required.', 'meta-name');
+  if (!project.meta.shortDescription || !project.meta.shortDescription.trim()) add('error', 'Short description is required.', 'meta-shortDescription');
+  else if (project.meta.shortDescription.length > 150) add('warning', `Short description is ${project.meta.shortDescription.length} characters, ${project.meta.shortDescription.length - 150} over the recommended 150.`, 'meta-shortDescription');
+  if (!project.meta.stableTag || !project.meta.stableTag.trim()) add('error', 'Stable tag is required.', 'meta-stableTag');
+  if (!project.meta.license || !project.meta.license.trim()) add('error', 'License is required.', 'meta-license');
+
+  const tagCounts = {}; project.meta.tags.forEach(t => { const k = t.toLowerCase(); tagCounts[k] = (tagCounts[k] || 0) + 1; });
+  if (Object.values(tagCounts).some(c => c > 1)) add('warning', 'Duplicate tags found.', 'meta-tags', 'dedupeTags');
+  const contribCounts = {}; project.meta.contributors.forEach(c => { const k = c.toLowerCase(); contribCounts[k] = (contribCounts[k] || 0) + 1; });
+  if (Object.values(contribCounts).some(c => c > 1)) add('warning', 'Duplicate contributors found.', 'meta-contributors', 'dedupeContributors');
+
+  const descSection = project.sections.find(s => s.kind === 'description');
+  if (!descSection || !descSection.enabled || !sectionHasContent(descSection)) add('error', 'Description section is missing or empty.', descSection ? descSection.id + '-body' : 'meta-name');
+
+  const changelogSection = project.sections.find(s => s.kind === 'changelog');
+  if (changelogSection && changelogSection.versions.length) {
+    const latest = changelogSection.versions[0].version;
+    if (latest && project.meta.stableTag && latest !== project.meta.stableTag) add('error', `Stable tag "${project.meta.stableTag}" doesn't match the newest changelog version "${latest}".`, 'meta-stableTag', 'syncStableTag', { latest });
+  }
+  const upgradeSection = project.sections.find(s => s.kind === 'upgradeNotice');
+  if (upgradeSection && changelogSection) {
+    const versions = new Set(changelogSection.versions.map(v => v.version));
+    upgradeSection.notices.forEach(n => { if (n.version && !versions.has(n.version)) add('error', `Upgrade notice references version "${n.version}", which isn't in the changelog.`, n.id + '-version'); });
+  }
+  const shotsSection = project.sections.find(s => s.kind === 'screenshots');
+  if (shotsSection) shotsSection.screenshots.forEach((s, i) => { if (!s.description || !s.description.trim()) add('warning', `Screenshot ${i + 1} has no description.`, s.id + '-desc'); });
+
+  const faqSection = project.sections.find(s => s.kind === 'faq');
+  if (faqSection) {
+    const qSeen = {};
+    faqSection.faqs.forEach(f => {
+      if (!f.question || !f.question.trim()) add('error', 'An FAQ question is empty.', f.id + '-question');
+      if (!f.answer || !f.answer.trim()) add('error', 'An FAQ answer is empty.', f.id + '-answer');
+      const k = (f.question || '').trim().toLowerCase(); if (k) qSeen[k] = (qSeen[k] || 0) + 1;
+    });
+    Object.entries(qSeen).forEach(([q, c]) => { if (c > 1) add('warning', `Duplicate FAQ question: "${q}".`, faqSection.id + '-body'); });
+  }
+  if (compareVersions(project.meta.requiresAtLeast, project.meta.testedUpTo) > 0) add('error', `"Requires at least" (${project.meta.requiresAtLeast}) is higher than "Tested up to" (${project.meta.testedUpTo}).`, 'meta-requiresAtLeast');
+
+  const allText = collectAllText(project);
+  allText.forEach(({ text, targetId }) => {
+    if (!text) return;
+    if (/<\s*(div|script|style|iframe)/i.test(text)) add('error', 'Unsupported HTML tag found (div/script/style/iframe are not allowed).', targetId);
+    if (/style\s*=\s*"/i.test(text)) add('error', 'Inline CSS is not allowed in the readme.', targetId);
+    if (/javascript:/i.test(text)) add('error', 'javascript: URLs are not allowed.', targetId);
+    if (/data:image\/[a-z]+;base64/i.test(text)) add('error', 'Base64-embedded images are not allowed.', targetId);
+    if (/lorem ipsum|\btodo\b/i.test(text)) add('warning', 'Placeholder text found ("Lorem ipsum" / "TODO").', targetId);
+    const linkRe = /\[([^\]]*)\]\(([^)]*)\)/g; let lm;
+    while ((lm = linkRe.exec(text))) { const label = lm[1], url = lm[2]; if (!label.trim() || !url.trim() || !/^https?:\/\/.+/i.test(url)) add('warning', `Malformed link "${lm[0]}".`, targetId); }
+  });
+  return issues;
+}
+function applyFixToProject(project, issue) {
+  if (issue.fixKey === 'dedupeTags') project.meta.tags = uniqCaseInsensitive(project.meta.tags);
+  else if (issue.fixKey === 'dedupeContributors') project.meta.contributors = uniqCaseInsensitive(project.meta.contributors);
+  else if (issue.fixKey === 'syncStableTag') project.meta.stableTag = issue.latest;
+}
+function parseVersionedEntries(body) {
+  if (!body) return [];
+  const lines = body.split('\n');
+  const entries = []; let current = null;
+  lines.forEach(line => {
+    const m = line.match(/^=\s*(.+?)\s*=\s*$/);
+    if (m) { current = { version: m[1], bodyLines: [] }; entries.push(current); }
+    else if (current) { if (line.trim() || current.bodyLines.length) current.bodyLines.push(line); }
+  });
+  return entries.map(e => { while (e.bodyLines.length && !e.bodyLines[0].trim()) e.bodyLines.shift(); while (e.bodyLines.length && !e.bodyLines[e.bodyLines.length - 1].trim()) e.bodyLines.pop(); return { version: e.version, description: e.bodyLines.join('\n') }; });
+}
+function parseGenericBody(body) {
+  if (!body) return [];
+  const lines = body.split('\n');
+  const blocks = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) { i++; continue; }
+    let m;
+    if ((m = line.match(/^=\s*(.+?)\s*=$/))) { blocks.push({ id: uid('blk'), type: 'subheading', data: { text: m[1] } }); i++; continue; }
+    if (/^ {4}\S/.test(line)) {
+      const codeLines = [];
+      while (i < lines.length && (/^ {4}/.test(lines[i]) || !lines[i].trim())) { codeLines.push(lines[i].replace(/^ {4}/, '')); i++; }
+      while (codeLines.length && !codeLines[codeLines.length - 1].trim()) codeLines.pop();
+      blocks.push({ id: uid('blk'), type: 'code', data: { text: codeLines.join('\n') } });
+      continue;
+    }
+    if (/^\*\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\*\s+/.test(lines[i])) { items.push({ id: uid('li'), value: lines[i].replace(/^\*\s+/, '') }); i++; }
+      blocks.push({ id: uid('blk'), type: 'list', data: { style: 'bulleted', items } });
+      continue;
+    }
+    if (/^\d+\.\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i])) { items.push({ id: uid('li'), value: lines[i].replace(/^\d+\.\s+/, '') }); i++; }
+      blocks.push({ id: uid('blk'), type: 'list', data: { style: 'numbered', items } });
+      continue;
+    }
+    if (/^>\s?/.test(line)) {
+      const qLines = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) { qLines.push(lines[i].replace(/^>\s?/, '')); i++; }
+      blocks.push({ id: uid('blk'), type: 'blockquote', data: { text: qLines.join('\n') } });
+      continue;
+    }
+    if (/^https?:\/\/\S+$/.test(line.trim()) && parseVideoEmbed(line.trim()).kind !== 'other') { blocks.push({ id: uid('blk'), type: 'video', data: { url: line.trim() } }); i++; continue; }
+    const pLines = [];
+    while (i < lines.length && lines[i].trim() && !/^=\s*(.+?)\s*=$/.test(lines[i]) && !/^\*\s+/.test(lines[i]) && !/^\d+\.\s+/.test(lines[i]) && !/^>\s?/.test(lines[i]) && !/^ {4}\S/.test(lines[i])) { pLines.push(lines[i]); i++; }
+    blocks.push({ id: uid('blk'), type: 'paragraph', data: { text: pLines.join(' ').trim() } });
+  }
+  return blocks;
+}
+function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function mdToHtml(text) {
+  if (!text) return '';
+  return text.split('\n').map(line => tokenizeInline(line).map(t => {
+    const esc = escapeHtml(t.value);
+    if (t.kind === 'bold') return `<strong>${esc}</strong>`;
+    if (t.kind === 'italic') return `<em>${esc}</em>`;
+    if (t.kind === 'code') return `<code>${esc}</code>`;
+    if (t.kind === 'link') return `<a href="${escapeHtml(t.href)}">${esc}</a>`;
+    return esc;
+  }).join('')).join('<br>');
+}
+function htmlToMarkdown(el) {
+  function walk(node) {
+    if (node.nodeType === 3) return node.textContent;
+    if (node.nodeType !== 1) return '';
+    const tag = node.tagName.toLowerCase();
+    const inner = () => Array.from(node.childNodes).map(walk).join('');
+    if (tag === 'br') return '\n';
+    if (tag === 'div' || tag === 'p') return inner() + '\n';
+    if (tag === 'strong' || tag === 'b') return `**${inner()}**`;
+    if (tag === 'em' || tag === 'i') return `*${inner()}*`;
+    if (tag === 'code') return `\`${inner()}\``;
+    if (tag === 'a') return `[${inner()}](${node.getAttribute('href') || ''})`;
+    return inner();
+  }
+  return Array.from(el.childNodes).map(walk).join('').replace(/\n+$/, '');
+}
+function parseVideoEmbed(url) {
+  if (!url) return { kind: 'none' };
+  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/i);
+  if (yt) return { kind: 'youtube', embedUrl: `https://www.youtube.com/embed/${yt[1]}` };
+  const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+  if (vm) return { kind: 'vimeo', embedUrl: `https://player.vimeo.com/video/${vm[1]}` };
+  return { kind: 'other' };
+}
+function mapPreviewBlocks(blocks) {
+  const out = blocks.map(b => {
+    const isList = b.type === 'list';
+    const videoInfo = b.type === 'video' ? parseVideoEmbed(b.data.url) : { kind: 'none' };
+    return {
+      isSubheading: b.type === 'subheading', text: b.type === 'subheading' ? b.data.text : undefined,
+      isParagraphLike: b.type === 'paragraph' || b.type === 'blockquote',
+      tokens: (b.type === 'paragraph' || b.type === 'blockquote') ? tokenizeMultiline(b.data.text) : [],
+      isCode: b.type === 'code', text2: b.type === 'code' ? b.data.text : undefined,
+      isEmbedVideo: videoInfo.kind === 'youtube' || videoInfo.kind === 'vimeo', isOtherVideo: videoInfo.kind === 'other',
+      videoUrl: b.data.url, videoEmbedUrl: videoInfo.embedUrl,
+      isBulletedList: isList && b.data.style !== 'numbered', isNumberedList: isList && b.data.style === 'numbered',
+      tokenItems: isList ? b.data.items.map(it => ({ tokens: tokenizeInline(it.value).map(t => ({ isText: t.kind === 'text', isBold: t.kind === 'bold', isItalic: t.kind === 'italic', isCode: t.kind === 'code', isLink: t.kind === 'link', value: t.value, href: t.href, title: t.title })) })) : []
+    };
+  }).filter(b => b.text || b.text2 || b.videoUrl || (b.tokens && b.tokens.length) || (b.tokenItems && b.tokenItems.length));
+  out.forEach(b => { if (b.isCode) b.text = b.text2; });
+  return out;
+}
+function tokenizeInline(text) {
+  if (!text) return [];
+  const tokens = []; const regex = /(\*\*(.+?)\*\*)|(\*(.+?)\*)|(`(.+?)`)|(\[(.+?)\]\(\s*(\S+?)(?:\s+"(.*?)")?\s*\))/g;
+  let last = 0, m;
+  while ((m = regex.exec(text))) {
+    if (m.index > last) tokens.push({ kind: 'text', value: text.slice(last, m.index) });
+    if (m[1]) tokens.push({ kind: 'bold', value: m[2] });
+    else if (m[3]) tokens.push({ kind: 'italic', value: m[4] });
+    else if (m[5]) tokens.push({ kind: 'code', value: m[6] });
+    else if (m[7]) tokens.push({ kind: 'link', value: m[8], href: m[9], title: m[10] || '' });
+    last = regex.lastIndex;
+  }
+  if (last < text.length) tokens.push({ kind: 'text', value: text.slice(last) });
+  return tokens.length ? tokens : [{ kind: 'text', value: text }];
+}
+function tokenizeMultiline(text) {
+  if (!text) return [];
+  const out = [];
+  text.split('\n').forEach((line, i) => {
+    if (i > 0) out.push({ isBreak: true });
+    tokenizeInline(line).forEach(t => out.push({ isText: t.kind === 'text', isBold: t.kind === 'bold', isItalic: t.kind === 'italic', isCode: t.kind === 'code', isLink: t.kind === 'link', value: t.value, href: t.href, title: t.title }));
+  });
+  return out;
+}
+function parseReadmeText(text) {
+  const project = makeTemplateProject('empty');
+  const unparsed = [];
+  const headerMatch = text.match(/^===\s*(.+?)\s*===/m);
+  if (headerMatch) project.name = headerMatch[1];
+  const lines = text.split('\n');
+  let i = headerMatch ? lines.findIndex(l => l.includes('===')) + 1 : 0;
+  const metaMap = { 'Contributors': 'contributors', 'Donate link': 'donateLink', 'Tags': 'tags', 'Requires at least': 'requiresAtLeast', 'Tested up to': 'testedUpTo', 'Requires PHP': 'requiresPHP', 'Stable tag': 'stableTag', 'License': 'license', 'License URI': 'licenseURI' };
+  const shortDescLines = [];
+  for (; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^==\s/.test(line)) break;
+    const m = line.match(/^([A-Za-z][A-Za-z0-9 ]*):\s*(.*)$/);
+    if (m && metaMap[m[1].trim()]) {
+      const key = metaMap[m[1].trim()];
+      if (key === 'contributors' || key === 'tags') project.meta[key] = m[2].split(',').map(s => s.trim()).filter(Boolean);
+      else project.meta[key] = m[2].trim();
+    } else if (m) {
+      project.meta.custom.push({ id: uid('cm'), name: m[1].trim(), value: m[2].trim() });
+    } else if (line.trim()) { shortDescLines.push(line.trim()); }
+  }
+  project.meta.shortDescription = shortDescLines.join(' ').trim();
+  const sectionRe = /^==\s*(.+?)\s*==$/gm;
+  const secIndices = []; let sm;
+  while ((sm = sectionRe.exec(text))) secIndices.push({ title: sm[1], index: sm.index, end: sm.index + sm[0].length });
+  const kindByTitle = {}; Object.entries(SECTION_TITLES).forEach(([k, v]) => kindByTitle[v.toLowerCase()] = k);
+  const parsedByKind = {};
+  secIndices.forEach((sec, idx) => {
+    const bodyStart = sec.end; const bodyEnd = idx + 1 < secIndices.length ? secIndices[idx + 1].index : text.length;
+    const body = text.slice(bodyStart, bodyEnd).trim();
+    const kind = kindByTitle[sec.title.toLowerCase()];
+    if (!kind) { unparsed.push(`== ${sec.title} ==\n${body}`); return; }
+    const section = makeSection(kind);
+    if (kind === 'faq') {
+      section.faqs = (body ? body.split(/\n\n(?==\s)/) : []).map(chunk => {
+        const qm = chunk.match(/^=\s*(.+?)\s*=\n\n([\s\S]*)$/);
+        return { id: uid('faq'), question: qm ? qm[1] : '', answer: qm ? qm[2].trim() : chunk };
+      });
+    } else if (kind === 'screenshots') {
+      section.screenshots = body.split('\n').filter(Boolean).map(l => { const m2 = l.match(/^\d+\.\s*(.*)$/); return { id: uid('shot'), description: m2 ? m2[1] : l, filename: '' }; });
+    } else if (kind === 'changelog') {
+      section.versions = parseVersionedEntries(body).map(e => ({ id: uid('ver'), version: e.version, description: e.description }));
+    } else if (kind === 'upgradeNotice') {
+      section.notices = parseVersionedEntries(body).map(e => ({ id: uid('notice'), version: e.version, description: e.description }));
+    } else {
+      section.blocks = parseGenericBody(body);
+    }
+    if (kind === 'changelog') section.versions.forEach(v => { if (v.description === undefined) { v.description = v.changes ? v.changes.map(c => `${c.type || ''} ${c.text || ''}`.trim()).join('\n') : ''; } delete v.date; delete v.changes; });
+    parsedByKind[kind] = section;
+  });
+  project.sections = STANDARD_KINDS.map(k => parsedByKind[k] || makeSection(k));
+  return { project, unparsed };
+}
+
+class Component extends DCLogic {
+  state = {
+    project: seedProject(), history: [], historyIndex: 0,
+    activeTab: 'preview', validationFilter: 'all',
+    newProjectOpen: false, importOpen: false,
+    importText: '', unparsed: [],
+    rawSearch: '',
+    collapsed: {}, dragBlock: null, libraryDrag: null, dragItem: null, dragOverItem: null,
+    chipDraft: { contributors: '', tags: '' }, dragChip: null,
+    saveStatus: 'Saved just now', ariaLiveMessage: '',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor', addMenu: null,
+    previewTab: 'details', previewExpanded: false,
+    rightPaneWidthPx: 520, resizingPane: false, copiedFlash: false
+  };
+
+  constructor(props) {
+    super(props);
+    this.state.history = [deepClone(this.state.project)];
+    this._refs = {}; this._refCallbacks = {}; this._typingTimer = null;
+  }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('readme-studio-project-v1');
+      if (raw) { const saved = migrateProject(JSON.parse(raw)); this.setState({ project: saved, history: [deepClone(saved)], historyIndex: 0 }); }
+    } catch (e) {}
+    this._onDrop = (e) => { e.preventDefault(); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) { const r = new FileReader(); r.onload = () => this.importReadme(r.result); r.readAsText(f); } };
+    this._onDragOver = (e) => e.preventDefault();
+    this._onKeyDown = (e) => { if (e.key === 'Escape') this.closeAddMenu(); if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    window.addEventListener('drop', this._onDrop); window.addEventListener('dragover', this._onDragOver); window.addEventListener('keydown', this._onKeyDown);
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    window.addEventListener('resize', this._onResize);
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      const w = Math.min(maxW, Math.max(340, rect.right - e.clientX - 3));
+      this.setState({ rightPaneWidthPx: Math.round(w) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('drop', this._onDrop); window.removeEventListener('dragover', this._onDragOver); window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('mousemove', this._onPaneMouseMove); window.removeEventListener('mouseup', this._onPaneMouseUp);
+    clearTimeout(this._typingTimer);
+  }
+
+  commit(mutator, opts) {
+    opts = opts || {};
+    const project = deepClone(this.state.project);
+    mutator(project);
+    try { localStorage.setItem('readme-studio-project-v1', JSON.stringify(project)); } catch (e) {}
+    if (opts.coalesceKey) {
+      this.setState({ project, saveStatus: 'Saving…' });
+      clearTimeout(this._typingTimer);
+      this._typingTimer = setTimeout(() => this.pushHistory(project), 500);
+    } else {
+      this.setState({ project });
+      this.pushHistory(project);
+    }
+  }
+  pushHistory(project) {
+    this.setState(s => {
+      const history = s.history.slice(0, s.historyIndex + 1);
+      history.push(deepClone(project));
+      return { history, historyIndex: history.length - 1, saveStatus: 'Saved just now' };
+    });
+  }
+  undo() { this.setState(s => s.historyIndex > 0 ? { historyIndex: s.historyIndex - 1, project: deepClone(s.history[s.historyIndex - 1]), ariaLiveMessage: 'Undid last change' } : null); }
+  redo() { this.setState(s => s.historyIndex < s.history.length - 1 ? { historyIndex: s.historyIndex + 1, project: deepClone(s.history[s.historyIndex + 1]), ariaLiveMessage: 'Redid last change' } : null); }
+
+  updateMeta(field, value, coalesce) { this.commit(p => { p.meta[field] = value; }, coalesce ? { coalesceKey: 'meta-' + field } : null); }
+  updateName(value) { this.commit(p => { p.name = value; }, { coalesceKey: 'name' }); }
+
+  addCustomMeta() { this.commit(p => { p.meta.custom.push({ id: uid('cm'), name: '', value: '' }); }); }
+  updateCustomMeta(id, field, value) { this.commit(p => { const c = p.meta.custom.find(x => x.id === id); if (c) c[field] = value; }, { coalesceKey: id + field }); }
+  removeCustomMeta(id) { this.commit(p => { p.meta.custom = p.meta.custom.filter(c => c.id !== id); }); }
+  addChip(field, raw) { const parts = raw.split(',').map(s => s.trim()).filter(Boolean); if (parts.length) this.commit(p => { p.meta[field].push(...parts); }); }
+  removeChip(field, index) { this.commit(p => { p.meta[field].splice(index, 1); }); }
+  reorderChip(field, from, to) { if (from === to) return; this.commit(p => { const arr = p.meta[field]; const [item] = arr.splice(from, 1); arr.splice(to, 0, item); }); }
+
+  toggleSectionEnabled(id) { this.commit(p => { const s = p.sections.find(x => x.id === id); if (s.kind === 'description') return; s.enabled = !s.enabled; }); }
+  toggleCollapse(id) { this.setState(s => ({ collapsed: { ...s.collapsed, [id]: !s.collapsed[id] } })); }
+  clearSection(id) { this.commit(p => { const s = p.sections.find(x => x.id === id); if (s.blocks) s.blocks = []; if (s.faqs) s.faqs = []; if (s.screenshots) s.screenshots = []; if (s.versions) s.versions = []; }); }
+
+  addBlock(sectionId, type, index) { this.commit(p => { const s = p.sections.find(x => x.id === sectionId); const block = makeBlock(type); if (index == null) s.blocks.push(block); else s.blocks.splice(index, 0, block); }); }
+  updateBlockField(sectionId, blockId, field, value, coalesce) { this.commit(p => { const s = p.sections.find(x => x.id === sectionId); const b = s.blocks.find(x => x.id === blockId); b.data[field] = value; }, coalesce ? { coalesceKey: blockId + field } : null); }
+  deleteBlock(sectionId, blockId) { this.commit(p => { const s = p.sections.find(x => x.id === sectionId); s.blocks = s.blocks.filter(b => b.id !== blockId); }); }
+  moveBlock(sectionId, blockId, dir) { this.commit(p => { const s = p.sections.find(x => x.id === sectionId); const i = s.blocks.findIndex(b => b.id === blockId); const j = i + dir; if (j < 0 || j >= s.blocks.length) return; const [item] = s.blocks.splice(i, 1); s.blocks.splice(j, 0, item); }); }
+  addListItem(sectionId, blockId, shape) { this.commit(p => { const s = p.sections.find(x => x.id === sectionId); const b = s.blocks.find(x => x.id === blockId); b.data.items.push(shape); }); }
+  updateListItem(sectionId, blockId, itemId, field, value) { this.commit(p => { const s = p.sections.find(x => x.id === sectionId); const b = s.blocks.find(x => x.id === blockId); const it = b.data.items.find(x => x.id === itemId); it[field] = value; }, { coalesceKey: itemId + field }); }
+  removeListItem(sectionId, blockId, itemId) { this.commit(p => { const s = p.sections.find(x => x.id === sectionId); const b = s.blocks.find(x => x.id === blockId); b.data.items = b.data.items.filter(x => x.id !== itemId); }); }
+
+  onBlockDragStart(sectionId, index) { this.setState({ dragBlock: { sectionId, index } }); }
+  onBlockDragOver(sectionId, index, e) { e.preventDefault(); e.stopPropagation(); }
+  onBlockDrop(sectionId, index, e) {
+    e.preventDefault(); e.stopPropagation();
+    const libDrag = this.state.libraryDrag;
+    if (libDrag) { this.addBlock(sectionId, libDrag, index); this.setState({ libraryDrag: null, dragBlock: null }); return; }
+    const drag = this.state.dragBlock;
+    if (!drag || drag.sectionId !== sectionId) { this.setState({ dragBlock: null }); return; }
+    this.commit(p => { const s = p.sections.find(x => x.id === sectionId); let ins = index; if (drag.index < index) ins--; const [item] = s.blocks.splice(drag.index, 1); s.blocks.splice(ins, 0, item); });
+    this.setState({ dragBlock: null, ariaLiveMessage: 'Block reordered' });
+  }
+  onEmptyDrop(sectionId, e) {
+    e.preventDefault();
+    const libDrag = this.state.libraryDrag;
+    if (libDrag) { this.addBlock(sectionId, libDrag, null); this.setState({ libraryDrag: null }); }
+  }
+  onLibraryDragStart(type) { this.setState({ libraryDrag: type }); }
+  openAddMenu(sectionId, e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    const W = 236, H = 26 + LIBRARY_BLOCK_TYPES.length * 35 + 14;
+    const top = r.top > H + 20 ? r.top - H - 8 : Math.max(12, Math.min(window.innerHeight - H - 12, r.bottom + 8));
+    const left = Math.max(12, Math.min(window.innerWidth - W - 12, r.left + r.width / 2 - W / 2));
+    this.setState({ addMenu: { sectionId, top, left } });
+  }
+  closeAddMenu() { if (this.state.addMenu) this.setState({ addMenu: null }); }
+
+  onItemDragStart(kind, sectionId, blockId, index) { this.setState({ dragItem: { kind, sectionId, blockId, index }, dragOverItem: null }); }
+  onItemDragOver(kind, sectionId, blockId, index, e) { e.preventDefault(); e.stopPropagation(); this.setState({ dragOverItem: { kind, sectionId, blockId, index } }); }
+  onItemDrop(kind, sectionId, blockId, index, e) {
+    e.preventDefault(); e.stopPropagation();
+    const drag = this.state.dragItem;
+    this.setState({ dragItem: null, dragOverItem: null });
+    if (!drag || drag.kind !== kind || drag.sectionId !== sectionId || drag.blockId !== blockId || drag.index === index) return;
+    this.commit(p => {
+      const sec = p.sections.find(x => x.id === sectionId);
+      let arr;
+      if (kind === 'faq') arr = sec.faqs; else if (kind === 'screenshot') arr = sec.screenshots; else if (kind === 'version') arr = sec.versions;
+      else if (kind === 'listItem') arr = sec.blocks.find(b => b.id === blockId).data.items;
+      if (!arr) return;
+      let to = index; if (drag.index < to) to--;
+      const [item] = arr.splice(drag.index, 1); arr.splice(to, 0, item);
+    });
+  }
+
+  addFAQ(sectionId) { this.commit(p => { p.sections.find(s => s.id === sectionId).faqs.push({ id: uid('faq'), question: '', answer: '' }); }); }
+  updateFAQ(sectionId, faqId, field, value) { this.commit(p => { const f = p.sections.find(s => s.id === sectionId).faqs.find(x => x.id === faqId); f[field] = value; }, { coalesceKey: faqId + field }); }
+  deleteFAQ(sectionId, faqId) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); s.faqs = s.faqs.filter(f => f.id !== faqId); }); }
+  duplicateFAQ(sectionId, faqId) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); const idx = s.faqs.findIndex(f => f.id === faqId); const copy = deepClone(s.faqs[idx]); copy.id = uid('faq'); s.faqs.splice(idx + 1, 0, copy); }); }
+  moveFAQ(sectionId, faqId, dir) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); const i = s.faqs.findIndex(f => f.id === faqId); const j = i + dir; if (j < 0 || j >= s.faqs.length) return; const [item] = s.faqs.splice(i, 1); s.faqs.splice(j, 0, item); }); }
+
+  addScreenshot(sectionId) { this.commit(p => { p.sections.find(s => s.id === sectionId).screenshots.push({ id: uid('shot'), description: '', filename: '' }); }); }
+  updateScreenshot(sectionId, shotId, field, value) { this.commit(p => { const sh = p.sections.find(s => s.id === sectionId).screenshots.find(x => x.id === shotId); sh[field] = value; }, { coalesceKey: shotId + field }); }
+  deleteScreenshot(sectionId, shotId) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); s.screenshots = s.screenshots.filter(x => x.id !== shotId); }); }
+  moveScreenshot(sectionId, shotId, dir) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); const i = s.screenshots.findIndex(x => x.id === shotId); const j = i + dir; if (j < 0 || j >= s.screenshots.length) return; const [item] = s.screenshots.splice(i, 1); s.screenshots.splice(j, 0, item); }); }
+
+  addVersion(sectionId) { this.commit(p => { p.sections.find(s => s.id === sectionId).versions.unshift({ id: uid('ver'), version: '', description: '' }); }); }
+  newVersionFromPrevious(sectionId) {
+    this.commit(p => {
+      const s = p.sections.find(s => s.id === sectionId);
+      const prev = s.versions[0];
+      let nextVersion = '';
+      if (prev && /^\d+\.\d+\.\d+$/.test(prev.version)) { const parts = prev.version.split('.').map(Number); parts[2]++; nextVersion = parts.join('.'); }
+      s.versions.unshift({ id: uid('ver'), version: nextVersion, description: '' });
+    });
+  }
+  deleteVersion(sectionId, verId) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); s.versions = s.versions.filter(v => v.id !== verId); }); }
+  addNotice(sectionId) { this.commit(p => { p.sections.find(s => s.id === sectionId).notices.push({ id: uid('notice'), version: '', description: '' }); }); }
+  updateNoticeField(sectionId, noticeId, field, value) { this.commit(p => { const n = p.sections.find(s => s.id === sectionId).notices.find(x => x.id === noticeId); n[field] = value; }, { coalesceKey: noticeId + field }); }
+  deleteNotice(sectionId, noticeId) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); s.notices = s.notices.filter(n => n.id !== noticeId); }); }
+  moveNotice(sectionId, noticeId, dir) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); const i = s.notices.findIndex(n => n.id === noticeId); const j = i + dir; if (j < 0 || j >= s.notices.length) return; const [item] = s.notices.splice(i, 1); s.notices.splice(j, 0, item); }); }
+  updateVersionField(sectionId, verId, field, value) { this.commit(p => { const v = p.sections.find(s => s.id === sectionId).versions.find(x => x.id === verId); v[field] = value; }, { coalesceKey: verId + field }); }
+  moveVersion(sectionId, verId, dir) { this.commit(p => { const s = p.sections.find(s => s.id === sectionId); const i = s.versions.findIndex(v => v.id === verId); const j = i + dir; if (j < 0 || j >= s.versions.length) return; const [item] = s.versions.splice(i, 1); s.versions.splice(j, 0, item); }); }
+
+
+  applyFix(issue) { this.commit(p => applyFixToProject(p, issue)); }
+  focusIssue(issue) {
+    setTimeout(() => { const el = this._refs[issue.targetId]; if (el && el.focus) el.focus(); }, 60);
+  }
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+
+  copyReadme() {
+    const text = serializeReadme(this.state.project);
+    const flash = () => { this.setState({ copiedFlash: true, ariaLiveMessage: 'Copied readme to clipboard' }); clearTimeout(this._copyTimer); this._copyTimer = setTimeout(() => this.setState({ copiedFlash: false }), 1600); };
+    const fallback = () => {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        flash();
+      } catch (e) { this.setState({ ariaLiveMessage: 'Copy failed — select and copy manually.' }); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(flash).catch(fallback);
+    } else { fallback(); }
+  }
+  downloadReadme() {
+    const text = serializeReadme(this.state.project);
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'readme.txt'; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+  exportProjectJSON() {
+    const wrapper = { schemaVersion: 1, data: this.state.project };
+    const blob = new Blob([JSON.stringify(wrapper, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'readme-studio-project.json'; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+  importProjectJSON(text) {
+    try {
+      const wrapper = JSON.parse(text);
+      const project = migrateProject(wrapper.data || wrapper);
+      this.pushHistory(this.state.project);
+      this.setState({ project }); this.pushHistory(project);
+    } catch (e) {}
+  }
+  importReadme(text) {
+    const { project, unparsed } = parseReadmeText(text);
+    this.pushHistory(this.state.project);
+    this.setState({ project, unparsed, importOpen: false, importText: '' });
+    this.pushHistory(project);
+  }
+
+  richRef(refId, text) {
+    return (el) => {
+      this._refs[refId] = el;
+      if (!el) return;
+      if (document.activeElement !== el && el.__lastMd !== text) { el.innerHTML = mdToHtml(text); el.__lastMd = text; }
+    };
+  }
+  onRichInput(refId, updateFn) {
+    return (e) => { const el = e.currentTarget; const md = htmlToMarkdown(el); el.__lastMd = md; updateFn(md); };
+  }
+  onToolbarMouseDown(e) { e.preventDefault(); }
+  applyRichFormat(refId, updateFn, type) {
+    const el = this._refs[refId]; if (!el) return;
+    el.focus();
+    if (type === 'bold') document.execCommand('bold');
+    else if (type === 'italic') document.execCommand('italic');
+    else if (type === 'code') { const sel = window.getSelection(); const text = sel && sel.toString() ? sel.toString() : 'code'; document.execCommand('insertHTML', false, `<code>${escapeHtml(text)}</code>`); }
+    else if (type === 'link') { const sel = window.getSelection(); const text = sel && sel.toString() ? sel.toString() : 'link text'; document.execCommand('insertHTML', false, `<a href="https://">${escapeHtml(text)}</a>`); }
+    const md = htmlToMarkdown(el); el.__lastMd = md; updateFn(md);
+  }
+
+  renderVals() {
+    const s = this.state; const project = s.project;
+    const LNI = { undo:'\uf5bc', redo:'\uf158', chevronDown:'\ue54f', chevronUp:'\ue555', duplicate:'\ue706', clear:'\uf73b', trash:'\uf4ed', drag:'\uee49', link:'\ued3e', code:'\ue619', play:'\uf0c0', error:'\ue934', warning:'\ue937', info:'\uec79', paragraph:'\uf499', heading:'\uf497', bulleted:'\ue064', numbered:'\ue110', quote:'\ue851', brace:'\ue335', plus:'\uf0db', close:'\uf73a', expand:'\ue952', file:'\ue9cf', check:'\ue539', search:'\uf241' };
+    const ic = (name, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, LNI[name] || '');
+    const ICON = {
+      undo: ic('undo'), redo: ic('redo'), chevronDown: ic('chevronDown'), chevronUp: ic('chevronUp'),
+      duplicate: ic('duplicate'), clear: ic('clear'), trash: ic('trash'), drag: ic('drag', 15),
+      link: ic('link'), code: ic('code'), play: ic('play'),
+      error: ic('error'), warning: ic('warning'), info: ic('info'),
+      paragraph: ic('paragraph'), heading: ic('heading'), bulleted: ic('bulleted', 15), numbered: ic('numbered', 15),
+      quote: ic('quote'), brace: ic('brace')
+    };
+    const issues = validateProject(project);
+    const errorCount = issues.filter(i => i.severity === 'error').length;
+    const warningCount = issues.filter(i => i.severity === 'warning').length;
+    const recCount = issues.filter(i => i.severity === 'recommendation').length;
+
+    const rawText = serializeReadme(project);
+
+    const chip = (field, list) => list.map((value, index) => {
+      const dup = list.filter((v2, j) => j !== index && v2.toLowerCase() === value.toLowerCase()).length > 0;
+      return {
+        value, bg: dup ? '#FFF1E0' : '#EEF1FE', color: dup ? '#8A5B00' : '#3858E9',
+        onRemove: () => this.removeChip(field, index),
+        onDragStart: (e) => { e.dataTransfer.setData('text/plain', String(index)); this.setState({ dragChip: { field, index } }); },
+        onDragOver: (e) => e.preventDefault(),
+        onDrop: (e) => { e.preventDefault(); const dc = this.state.dragChip; if (dc && dc.field === field) this.reorderChip(field, dc.index, index); this.setState({ dragChip: null }); }
+      };
+    });
+
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const filteredIssues = issues.filter(i => s.validationFilter === 'all' || i.severity === s.validationFilter);
+
+    const idToLoc = {};
+    project.sections.forEach(sec => {
+      idToLoc[sec.id + '-body'] = sec.id;
+      if (sec.blocks) sec.blocks.forEach(b => { idToLoc[b.id + '-text'] = sec.id; idToLoc[b.id + '-url'] = sec.id; if (b.data.items) b.data.items.forEach(it => idToLoc[it.id] = sec.id); });
+      if (sec.faqs) sec.faqs.forEach(f => { idToLoc[f.id + '-question'] = sec.id; idToLoc[f.id + '-answer'] = sec.id; });
+      if (sec.screenshots) sec.screenshots.forEach(sh => idToLoc[sh.id + '-desc'] = sec.id);
+      if (sec.versions) sec.versions.forEach(v => idToLoc[v.id + '-description'] = sec.id);
+    });
+
+    const sections = project.sections.map((sec) => {
+      const expanded = !s.collapsed[sec.id];
+      const secIssues = issues.filter(iss => idToLoc[iss.targetId] === sec.id);
+      const worst = secIssues.some(i => i.severity === 'error') ? 'error' : secIssues.some(i => i.severity === 'warning') ? 'warning' : null;
+      const isGeneric = !!sec.blocks, isFAQ = !!sec.faqs, isScreenshots = !!sec.screenshots, isChangelog = !!sec.versions, isUpgradeNotice = !!sec.notices;
+
+      const blocks = isGeneric ? sec.blocks.map((blk, bi) => {
+        const common = {
+          id: blk.id, typeLabel: (BLOCK_TYPES.find(t => t.type === blk.type) || { label: blk.type }).label,
+          borderColor: s.dragBlock && s.dragBlock.sectionId === sec.id && s.dragBlock.index === bi ? '#3858E9' : '#E7E2D9',
+          bg: '#FCFBF9',
+          onDragStart: () => this.onBlockDragStart(sec.id, bi),
+          onDragOver: (e) => this.onBlockDragOver(sec.id, bi, e),
+          onDrop: (e) => this.onBlockDrop(sec.id, bi, e),
+          onMoveUp: () => this.moveBlock(sec.id, blk.id, -1), onMoveDown: () => this.moveBlock(sec.id, blk.id, 1),
+          onDelete: () => this.deleteBlock(sec.id, blk.id),
+          isParagraph: blk.type === 'paragraph', isBlockquote: blk.type === 'blockquote', isSubheading: blk.type === 'subheading',
+          isCode: blk.type === 'code', isVideo: blk.type === 'video', isList: blk.type === 'list',
+          hasToolbar: ['paragraph', 'blockquote'].includes(blk.type)
+        };
+        const refId = blk.id + '-text';
+        if (common.isCode || common.isSubheading) {
+          common.ref = this.getRef(refId); common.text = blk.data.text;
+          common.onTextChange = (e) => this.updateBlockField(sec.id, blk.id, 'text', e.target.value, true);
+        }
+        if (common.isParagraph || common.isBlockquote) {
+          const upd = (v) => this.updateBlockField(sec.id, blk.id, 'text', v, true);
+          common.text = blk.data.text; common.isEmptyText = !blk.data.text;
+          common.richRef = this.richRef(refId, blk.data.text);
+          common.onRichInput = this.onRichInput(refId, upd);
+          common.onToolbarMouseDown = this.onToolbarMouseDown;
+          common.onBold = () => this.applyRichFormat(refId, upd, 'bold');
+          common.onItalic = () => this.applyRichFormat(refId, upd, 'italic');
+          common.onCode = () => this.applyRichFormat(refId, upd, 'code');
+          common.onLink = () => this.applyRichFormat(refId, upd, 'link');
+        }
+        if (common.isVideo) { common.videoUrl = blk.data.url; common.onVideoUrlChange = (e) => this.updateBlockField(sec.id, blk.id, 'url', e.target.value, true); }
+        if (common.isList) {
+          const style = blk.data.style || 'bulleted';
+          common.bulletedBorder = style === 'bulleted' ? '#3858E9' : '#E7E2D9'; common.bulletedBg = style === 'bulleted' ? '#EEF1FE' : '#fff'; common.bulletedColor = style === 'bulleted' ? '#3858E9' : '#4A4438';
+          common.numberedBorder = style === 'numbered' ? '#3858E9' : '#E7E2D9'; common.numberedBg = style === 'numbered' ? '#EEF1FE' : '#fff'; common.numberedColor = style === 'numbered' ? '#3858E9' : '#4A4438';
+          common.onSetBulleted = () => this.updateBlockField(sec.id, blk.id, 'style', 'bulleted');
+          common.onSetNumbered = () => this.updateBlockField(sec.id, blk.id, 'style', 'numbered');
+          common.items = blk.data.items.map((it, ii) => ({
+            id: it.id, value: it.value, marker: style === 'numbered' ? (ii + 1) + '.' : '*',
+            onChange: (e) => this.updateListItem(sec.id, blk.id, it.id, 'value', e.target.value),
+            onRemove: () => this.removeListItem(sec.id, blk.id, it.id),
+            onDragStart: () => this.onItemDragStart('listItem', sec.id, blk.id, ii),
+            onDragOver: (e) => this.onItemDragOver('listItem', sec.id, blk.id, ii, e),
+            onDrop: (e) => this.onItemDrop('listItem', sec.id, blk.id, ii, e),
+            borderColor: (s.dragOverItem && s.dragOverItem.kind === 'listItem' && s.dragOverItem.sectionId === sec.id && s.dragOverItem.blockId === blk.id && s.dragOverItem.index === ii) ? '#3858E9' : 'transparent'
+          }));
+          common.onAddItem = () => this.addListItem(sec.id, blk.id, { id: uid('li'), value: '' });
+        }
+        return common;
+      }) : [];
+
+      const faqs = isFAQ ? sec.faqs.map((f, fi) => {
+        const qRefId = f.id + '-question', aRefId = f.id + '-answer';
+        const updAns = (v) => this.updateFAQ(sec.id, f.id, 'answer', v, true);
+        return {
+          id: f.id, question: f.question, answer: f.answer, isEmptyAnswer: !f.answer,
+          qRef: this.getRef(qRefId), aRichRef: this.richRef(aRefId, f.answer),
+          onQuestionChange: (e) => this.updateFAQ(sec.id, f.id, 'question', e.target.value),
+          onAnswerRichInput: this.onRichInput(aRefId, updAns),
+          onToolbarMouseDown: this.onToolbarMouseDown,
+          onDelete: () => this.deleteFAQ(sec.id, f.id), onDuplicate: () => this.duplicateFAQ(sec.id, f.id),
+          onMoveUp: () => this.moveFAQ(sec.id, f.id, -1), onMoveDown: () => this.moveFAQ(sec.id, f.id, 1),
+          onBold: () => this.applyRichFormat(aRefId, updAns, 'bold'),
+          onItalic: () => this.applyRichFormat(aRefId, updAns, 'italic'),
+          onCode: () => this.applyRichFormat(aRefId, updAns, 'code'),
+          onLink: () => this.applyRichFormat(aRefId, updAns, 'link'),
+          onDragStart: () => this.onItemDragStart('faq', sec.id, null, fi), onDragOver: (e) => this.onItemDragOver('faq', sec.id, null, fi, e), onDrop: (e) => this.onItemDrop('faq', sec.id, null, fi, e),
+          borderColor: (s.dragOverItem && s.dragOverItem.kind === 'faq' && s.dragOverItem.sectionId === sec.id && s.dragOverItem.index === fi) ? '#3858E9' : '#E7E2D9'
+        };
+      }) : [];
+
+      const screenshots = isScreenshots ? sec.screenshots.map((sh, i) => ({
+        id: sh.id, number: i + 1, description: sh.description, suggestedName: `screenshot-${i + 1}.png`,
+        ref: this.getRef(sh.id + '-desc'),
+        onDescriptionChange: (e) => this.updateScreenshot(sec.id, sh.id, 'description', e.target.value),
+        onDelete: () => this.deleteScreenshot(sec.id, sh.id),
+        onDragStart: () => this.onItemDragStart('screenshot', sec.id, null, i), onDragOver: (e) => this.onItemDragOver('screenshot', sec.id, null, i, e), onDrop: (e) => this.onItemDrop('screenshot', sec.id, null, i, e),
+        borderColor: (s.dragOverItem && s.dragOverItem.kind === 'screenshot' && s.dragOverItem.sectionId === sec.id && s.dragOverItem.index === i) ? '#3858E9' : '#E7E2D9',
+        onMoveUp: () => this.moveScreenshot(sec.id, sh.id, -1), onMoveDown: () => this.moveScreenshot(sec.id, sh.id, 1)
+      })) : [];
+
+      const versions = isChangelog ? sec.versions.map((v, vi) => {
+        const dRefId = v.id + '-description'; const updDesc = (val) => this.updateVersionField(sec.id, v.id, 'description', val, true);
+        return {
+          id: v.id, version: v.version, vRef: this.getRef(v.id + '-version'),
+          onVersionChange: (e) => this.updateVersionField(sec.id, v.id, 'version', e.target.value, true),
+          onDelete: () => this.deleteVersion(sec.id, v.id),
+          onMoveUp: () => this.moveVersion(sec.id, v.id, -1), onMoveDown: () => this.moveVersion(sec.id, v.id, 1),
+          isEmptyDescription: !v.description, descRichRef: this.richRef(dRefId, v.description), onDescRichInput: this.onRichInput(dRefId, updDesc),
+          onToolbarMouseDown: this.onToolbarMouseDown,
+          onBold: () => this.applyRichFormat(dRefId, updDesc, 'bold'), onItalic: () => this.applyRichFormat(dRefId, updDesc, 'italic'),
+          onCode: () => this.applyRichFormat(dRefId, updDesc, 'code'), onLink: () => this.applyRichFormat(dRefId, updDesc, 'link'),
+          onDragStart: () => this.onItemDragStart('version', sec.id, null, vi), onDragOver: (e) => this.onItemDragOver('version', sec.id, null, vi, e), onDrop: (e) => this.onItemDrop('version', sec.id, null, vi, e),
+          borderColor: (s.dragOverItem && s.dragOverItem.kind === 'version' && s.dragOverItem.sectionId === sec.id && s.dragOverItem.index === vi) ? '#3858E9' : '#E7E2D9'
+        };
+      }) : [];
+
+      const notices = isUpgradeNotice ? sec.notices.map((n, ni) => {
+        const dRefId = n.id + '-description'; const updDesc = (val) => this.updateNoticeField(sec.id, n.id, 'description', val, true);
+        return {
+          id: n.id, version: n.version,
+          onVersionChange: (e) => this.updateNoticeField(sec.id, n.id, 'version', e.target.value, true),
+          onDelete: () => this.deleteNotice(sec.id, n.id),
+          onMoveUp: () => this.moveNotice(sec.id, n.id, -1), onMoveDown: () => this.moveNotice(sec.id, n.id, 1),
+          isEmptyDescription: !n.description, descRichRef: this.richRef(dRefId, n.description), onDescRichInput: this.onRichInput(dRefId, updDesc),
+          onToolbarMouseDown: this.onToolbarMouseDown,
+          onBold: () => this.applyRichFormat(dRefId, updDesc, 'bold'), onItalic: () => this.applyRichFormat(dRefId, updDesc, 'italic'),
+          onCode: () => this.applyRichFormat(dRefId, updDesc, 'code'), onLink: () => this.applyRichFormat(dRefId, updDesc, 'link'),
+          onDragStart: () => this.onItemDragStart('notice', sec.id, null, ni), onDragOver: (e) => this.onItemDragOver('notice', sec.id, null, ni, e), onDrop: (e) => this.onItemDrop('notice', sec.id, null, ni, e),
+          borderColor: (s.dragOverItem && s.dragOverItem.kind === 'notice' && s.dragOverItem.sectionId === sec.id && s.dragOverItem.index === ni) ? '#3858E9' : '#E7E2D9'
+        };
+      }) : [];
+
+      const addOpen = !!(s.addMenu && s.addMenu.sectionId === sec.id);
+      return {
+        id: sec.id, anchorId: 'sec-' + sec.id, title: sec.title, kind: sec.kind,
+        enabled: sec.enabled, opacity: sec.enabled ? 1 : 0.5,
+        headerBorder: expanded ? '1px solid #E7E2D9' : 'none',
+        expanded, chevronRotate: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+        onToggleCollapse: () => this.toggleCollapse(sec.id),
+        toggleLabel: sec.enabled ? 'Disable section' : 'Enable section',
+        toggleBg: sec.enabled ? '#3858E9' : '#D9D4C8', toggleKnobLeft: sec.enabled ? '18px' : '2px',
+        canToggle: sec.kind !== 'description',
+        onToggleEnabled: () => this.toggleSectionEnabled(sec.id),
+        onClear: () => this.clearSection(sec.id),
+        onEmptyDragOver: (e) => e.preventDefault(), onEmptyDrop: (e) => this.onEmptyDrop(sec.id, e),
+        addMenuOpen: addOpen, onOpenAddMenu: (e) => { if (addOpen) this.closeAddMenu(); else this.openAddMenu(sec.id, e); },
+        addBorderColor: addOpen ? '#3858E9' : '#DBD6CC', addBg: addOpen ? '#F5F7FE' : '#FCFBF9', addColor: addOpen ? '#3858E9' : '#7E7668',
+        isGeneric, isFAQ, isScreenshots, isChangelog, isUpgradeNotice,
+        blocks, faqs, screenshots, versions, notices,
+        hasIssue: !!worst, issueColor: worst === 'error' ? '#B91C1C' : '#B45309',
+        onAddFAQ: () => this.addFAQ(sec.id), onAddScreenshot: () => this.addScreenshot(sec.id),
+        onAddVersion: () => this.addVersion(sec.id), onNewFromPrevious: () => this.newVersionFromPrevious(sec.id),
+        onAddNotice: () => this.addNotice(sec.id),
+        railOpacity: sec.enabled ? 1 : 0.5,
+        onJumpTo: () => { this.setState(st => ({ collapsed: { ...st.collapsed, [sec.id]: false } })); const el = document.getElementById('sec-' + sec.id); requestAnimationFrame(() => { if (el) el.style.boxShadow = '0 0 0 2px #3858E9'; setTimeout(() => { if (el) el.style.boxShadow = 'none'; }, 900); }); }
+      };
+    });
+
+    const descSection = project.sections.find(sc => sc.kind === 'description');
+    const installSection = project.sections.find(sc => sc.kind === 'installation');
+    const shotsSectionP = project.sections.find(sc => sc.kind === 'screenshots');
+    const faqSectionP = project.sections.find(sc => sc.kind === 'faq');
+    const changelogSectionP = project.sections.find(sc => sc.kind === 'changelog');
+
+    const previewDetailsBlocks = descSection && descSection.enabled ? mapPreviewBlocks(descSection.blocks) : [];
+    const previewInstallationBlocks = installSection && installSection.enabled ? mapPreviewBlocks(installSection.blocks) : [];
+    const previewScreenshots = shotsSectionP && shotsSectionP.enabled ? shotsSectionP.screenshots.map((sh, i) => ({ number: i + 1, description: sh.description })) : [];
+    const previewFaqs = faqSectionP && faqSectionP.enabled ? faqSectionP.faqs.map(f => ({ question: f.question, tokens: tokenizeMultiline(f.answer) })) : [];
+    const previewVersions = changelogSectionP && changelogSectionP.enabled ? changelogSectionP.versions.map(v => ({ version: v.version, tokens: tokenizeMultiline(v.description) })) : [];
+    const upgradeSectionP = project.sections.find(sc => sc.kind === 'upgradeNotice');
+    const previewNotices = upgradeSectionP && upgradeSectionP.enabled ? upgradeSectionP.notices.map(n => ({ version: n.version, tokens: tokenizeMultiline(n.description) })) : [];
+    const previewContributors = project.meta.contributors.map(c => ({ name: c, initial: (c[0] || '?').toUpperCase() }));
+
+    const setPreviewTab = (key) => this.setState({ previewTab: key });
+    const previewTabs = [
+      { key: 'details', label: 'Details' }, { key: 'installation', label: 'Installation' },
+      { key: 'development', label: 'Development' }
+    ].map(t => ({ label: t.label, borderColor: s.previewTab === t.key ? '#3858E9' : 'transparent', color: s.previewTab === t.key ? '#3858E9' : '#3C434A', cursor: 'pointer', inert: false, onClick: () => setPreviewTab(t.key) }));
+    previewTabs.push({ label: 'Reviews', borderColor: 'transparent', color: '#A7AAAD', cursor: 'default', inert: true, onClick: null });
+
+    const rawLines = rawText.split('\n').map((line, i) => {
+      let color = '#3B362D', weight = '400';
+      if (/^===.+===$/.test(line)) { color = '#3858E9'; weight = '700'; }
+      else if (/^==[^=].*==$/.test(line)) { color = '#3858E9'; weight = '700'; }
+      else if (/^=[^=].*=$/.test(line)) { color = '#3858E9'; weight = '700'; }
+      else if (/^[A-Za-z ]+:\s/.test(line)) { color = '#948C7E'; weight = '600'; }
+      const match = s.rawSearch && s.rawSearch.length > 1 && line.toLowerCase().includes(s.rawSearch.toLowerCase());
+      return { num: i + 1, text: line || ' ', color, weight, matchBg: match ? '#FFF6D8' : 'transparent' };
+    });
+
+    const shortDescLen = (project.meta.shortDescription || '').length;
+
+    const templateOptions = [
+      { key: 'empty', label: 'Empty' }, { key: 'basic', label: 'Basic Plugin' }, { key: 'woocommerce', label: 'WooCommerce Extension' },
+      { key: 'gutenberg', label: 'Gutenberg Block Plugin' }, { key: 'utility', label: 'Utility Plugin' }
+    ].map(t => ({ label: t.label, onSelect: () => { const proj = makeTemplateProject(t.key); this.setState({ project: proj, history: [deepClone(proj)], historyIndex: 0, newProjectOpen: false }); } }));
+
+    return {
+      ariaLiveMessage: s.ariaLiveMessage,
+      projectName: project.name, onProjectNameChange: (e) => this.updateName(e.target.value),
+      saveStatus: s.saveStatus,
+      undoDisabled: s.historyIndex <= 0, redoDisabled: s.historyIndex >= s.history.length - 1,
+      onUndo: () => this.undo(), onRedo: () => this.redo(),
+      errorCount, warningCount, recommendationCount: recCount, hasErrors: errorCount > 0, hasWarnings: errorCount === 0 && warningCount > 0, allClear: errorCount === 0 && warningCount === 0,
+      errorCountLabel: `${errorCount} ${errorCount === 1 ? 'error' : 'errors'}`, warningCountLabel: `${warningCount} ${warningCount === 1 ? 'warning' : 'warnings'}`,
+      issueCount: issues.length,
+      onCopy: () => this.copyReadme(), onDownload: () => this.downloadReadme(),
+      copyLabel: s.copiedFlash ? 'Copied!' : 'Copy',
+      onOpenNewProject: () => this.setState({ newProjectOpen: true }), newProjectOpen: s.newProjectOpen, onCloseNewProject: () => this.setState({ newProjectOpen: false }), templateOptions,
+      onDialogKeyDown: (e) => { if (e.key === 'Escape') this.setState({ newProjectOpen: false, importOpen: false, previewExpanded: false }); },
+      onOpenImport: () => this.setState({ importOpen: true }), importOpen: s.importOpen, onCloseImport: () => this.setState({ importOpen: false }),
+      importText: s.importText, onImportTextChange: (e) => this.setState({ importText: e.target.value }),
+      onImportFileChange: (e) => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => this.importReadme(r.result); r.readAsText(f); },
+      onImportSubmit: () => { if (s.importText.trim()) this.importReadme(s.importText); },
+      onImportJSONFileChange: (e) => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => this.importProjectJSON(r.result); r.readAsText(f); },
+      onExportJSON: () => this.exportProjectJSON(),
+      hasUnparsed: s.unparsed.length > 0, unparsedText: s.unparsed.join('\n'),
+
+      refName: this.getRef('meta-name'), refRequiresAtLeast: this.getRef('meta-requiresAtLeast'),
+      refStableTag: this.getRef('meta-stableTag'), refLicense: this.getRef('meta-license'), refShortDescription: this.getRef('meta-shortDescription'),
+      refContributors: this.getRef('meta-contributors'),
+      meta: project.meta,
+      onDonateLinkChange: (e) => this.updateMeta('donateLink', e.target.value, true),
+      onRequiresPHPChange: (e) => this.updateMeta('requiresPHP', e.target.value, true),
+      onRequiresAtLeastChange: (e) => this.updateMeta('requiresAtLeast', e.target.value, true),
+      onTestedUpToChange: (e) => this.updateMeta('testedUpTo', e.target.value, true),
+      onStableTagChange: (e) => this.updateMeta('stableTag', e.target.value, true),
+      onLicenseChange: (e) => this.updateMeta('license', e.target.value, true),
+      onLicenseURIChange: (e) => this.updateMeta('licenseURI', e.target.value, true),
+      onShortDescriptionChange: (e) => this.updateMeta('shortDescription', e.target.value, true),
+      shortDescCount: shortDescLen, shortDescCounterColor: shortDescLen > 150 ? '#B45309' : '#948C7E',
+
+      contributorsChips: chip('contributors', project.meta.contributors), contributorsDraft: s.chipDraft.contributors,
+      contributorsLine: project.meta.contributors.join(', ') || '(none)',
+      onContributorsDraftChange: (e) => { const v = e.target.value; if (v.includes(',')) { this.addChip('contributors', v); this.setState(st => ({ chipDraft: { ...st.chipDraft, contributors: '' } })); } else this.setState(st => ({ chipDraft: { ...st.chipDraft, contributors: v } })); },
+      onContributorsKeyDown: (e) => { if (e.key === 'Enter') { e.preventDefault(); if (s.chipDraft.contributors.trim()) this.addChip('contributors', s.chipDraft.contributors); this.setState(st => ({ chipDraft: { ...st.chipDraft, contributors: '' } })); } else if (e.key === 'Backspace' && !s.chipDraft.contributors && project.meta.contributors.length) { this.removeChip('contributors', project.meta.contributors.length - 1); } },
+      onContributorsBlur: () => { if (s.chipDraft.contributors.trim()) { this.addChip('contributors', s.chipDraft.contributors); this.setState(st => ({ chipDraft: { ...st.chipDraft, contributors: '' } })); } },
+
+      customMetaRows: project.meta.custom.map(cm => ({
+        id: cm.id, name: cm.name, value: cm.value,
+        onNameChange: (e) => this.updateCustomMeta(cm.id, 'name', e.target.value),
+        onValueChange: (e) => this.updateCustomMeta(cm.id, 'value', e.target.value),
+        onRemove: () => this.removeCustomMeta(cm.id)
+      })),
+      onAddCustomMeta: () => this.addCustomMeta(),
+
+      tagsChips: chip('tags', project.meta.tags), tagsDraft: s.chipDraft.tags,
+      tagsLine: project.meta.tags.join(', ') || '(none)',
+      onTagsDraftChange: (e) => { const v = e.target.value; if (v.includes(',')) { this.addChip('tags', v); this.setState(st => ({ chipDraft: { ...st.chipDraft, tags: '' } })); } else this.setState(st => ({ chipDraft: { ...st.chipDraft, tags: v } })); },
+      onTagsKeyDown: (e) => { if (e.key === 'Enter') { e.preventDefault(); if (s.chipDraft.tags.trim()) this.addChip('tags', s.chipDraft.tags); this.setState(st => ({ chipDraft: { ...st.chipDraft, tags: '' } })); } else if (e.key === 'Backspace' && !s.chipDraft.tags && project.meta.tags.length) { this.removeChip('tags', project.meta.tags.length - 1); } },
+      onTagsBlur: () => { if (s.chipDraft.tags.trim()) { this.addChip('tags', s.chipDraft.tags); this.setState(st => ({ chipDraft: { ...st.chipDraft, tags: '' } })); } },
+
+      sections,
+
+      addMenuOpen: !!s.addMenu,
+      addMenuTop: s.addMenu ? s.addMenu.top + 'px' : '0px',
+      addMenuLeft: s.addMenu ? s.addMenu.left + 'px' : '0px',
+      addMenuTitle: 'Elements',
+      onCloseAddMenu: () => this.closeAddMenu(),
+      onStopPropagation: (e) => e.stopPropagation(),
+      addMenuItems: LIBRARY_BLOCK_TYPES.map(t => ({
+        label: t.label,
+        icon: { paragraph: ICON.paragraph, subheading: ICON.heading, list: ICON.bulleted, blockquote: ICON.quote, code: ICON.brace, video: ICON.play }[t.type],
+        onClick: () => { const m = this.state.addMenu; if (m) { this.addBlock(m.sectionId, t.type, null); this.setState({ addMenu: null }); } }
+      })),
+      showPreviewTab: s.activeTab === 'preview', showRawTab: s.activeTab === 'raw', showValidationTab: s.activeTab === 'validation',
+      tabPreviewColor: s.activeTab === 'preview' ? '#3858E9' : '#948C7E', tabPreviewBorder: s.activeTab === 'preview' ? '#3858E9' : 'transparent',
+      tabRawColor: s.activeTab === 'raw' ? '#3858E9' : '#948C7E', tabRawBorder: s.activeTab === 'raw' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.activeTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.activeTab === 'validation' ? '#3858E9' : 'transparent',
+      onSetRightTabPreview: () => this.setState({ activeTab: 'preview' }), onSetRightTabRaw: () => this.setState({ activeTab: 'raw' }), onSetRightTabValidation: () => this.setState({ activeTab: 'validation' }),
+
+      previewTabs,
+      showPreviewDetails: s.previewTab === 'details', showPreviewInstallation: s.previewTab === 'installation', showPreviewDevelopment: s.previewTab === 'development',
+      previewName: project.name, previewInitial: (project.name[0] || '?').toUpperCase(),
+      previewByline: project.meta.contributors.length ? `By ${project.meta.contributors[0]}` : '',
+      previewShortDescription: project.meta.shortDescription,
+      previewVersion: project.meta.stableTag, previewRequiresAtLeast: project.meta.requiresAtLeast, previewTestedUpTo: project.meta.testedUpTo, previewRequiresPHP: project.meta.requiresPHP,
+      previewDonateLink: project.meta.donateLink, hasDonateLink: !!project.meta.donateLink,
+      previewCustomMeta: project.meta.custom.filter(c => c.name && c.name.trim()).map(c => ({ name: c.name, value: c.value })),
+      previewTagChips: project.meta.tags.map(t => ({ label: t })),
+      previewDetailsBlocks, previewInstallationBlocks, previewScreenshots, previewFaqs, previewVersions, previewNotices, previewContributors,
+      hasScreenshots: previewScreenshots.length > 0, hasFaqs: previewFaqs.length > 0,
+      previewExpanded: s.previewExpanded, onExpandPreview: () => this.setState({ previewExpanded: true }), onCollapsePreview: () => this.setState({ previewExpanded: false }),
+
+      rawSearch: s.rawSearch, onRawSearchChange: (e) => this.setState({ rawSearch: e.target.value }),
+      rawLines,
+      showRawReadOnly: true,
+
+      filterChips: ['all', 'error', 'warning', 'recommendation'].map(f => ({
+        label: f === 'all' ? `All (${issues.length})` : `${f[0].toUpperCase() + f.slice(1)} (${issues.filter(i => i.severity === f).length})`,
+        borderColor: s.validationFilter === f ? '#3858E9' : '#E7E2D9', bg: s.validationFilter === f ? '#EEF1FE' : '#fff', color: s.validationFilter === f ? '#3858E9' : '#4A4438',
+        onClick: () => this.setState({ validationFilter: f })
+      })),
+      validationIssues: filteredIssues.map(iss => ({
+        id: iss.id, message: iss.message, color: severityColor[iss.severity], icon: severityIcon[iss.severity],
+        fixable: !!iss.fixKey, onFix: () => this.applyFix(iss), onFocus: () => this.focusIssue(iss)
+      })),
+      noIssues: filteredIssues.length === 0,
+
+      iconUndo: ICON.undo, iconRedo: ICON.redo, iconDrag: ICON.drag, iconChevronDown: ICON.chevronDown, iconChevronUp: ICON.chevronUp,
+      iconDuplicate: ICON.duplicate, iconClear: ICON.clear, iconTrash: ICON.trash, iconLink: ICON.link, iconCode: ICON.code,
+      iconPlay: ICON.play, iconPlus: ic('plus', 15), iconClose: ic('close', 13), iconBulleted: ICON.bulleted, iconNumbered: ICON.numbered, iconExpand: ic('expand'),
+
+      toolCount: 38,
+      trueVal: true,
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      showPaneResizer: s.viewportWidth >= 1024,
+      refWorkspace: this.getRef('workspace'),
+      onPaneResizeStart: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [
+        { key: 'editor', label: 'Editor' }, { key: 'output', label: 'Preview & Output' }
+      ].map(t => ({
+        label: t.label, active: s.mobilePane === t.key,
+        bg: s.mobilePane === t.key ? '#3858E9' : '#fff', color: s.mobilePane === t.key ? '#fff' : '#4A4438',
+        onClick: () => this.setState({ mobilePane: t.key })
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

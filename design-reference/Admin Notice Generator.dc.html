@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Admin Notice Generator — admin_notices — Generator for WP</title>
+  <meta name="description" content="Generate admin notices that stay dismissed: screen-scoped, capability-gated, with the AJAX handler and user meta that make the X button mean something." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=admin" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Admin</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Admin Notice</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Admin Notice Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Notices that appear on the right screens, to the right people, and stay gone when dismissed — the AJAX handler and nonce included.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F0F0F1; border:1px solid #E7E2D9; border-radius:8px; padding:16px; margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:10px;">Live preview</div>
+        <div style="background:#fff; border:1px solid #C3C4C7; border-left:4px solid {{ noticeAccent }}; padding:1px 12px; display:flex; gap:10px; align-items:flex-start;">
+          <div style="flex:1; min-width:0; padding:8px 0;">
+            <p style="margin:0; font-size:13px; line-height:1.6; color:#2C3338;">
+              <sc-if value="{{ hasStrong }}" hint-placeholder-val="{{ true }}">
+                <strong style="font-weight:700;">{{ an.strong }}</strong>
+              </sc-if>
+              {{ an.message }}
+            </p>
+            <sc-if value="{{ hasAction }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:9px 0 8px;">
+                <span style="display:inline-block; background:#2271B1; color:#fff; font-size:13px; padding:4px 12px; border-radius:3px;">{{ an.actionLabel }}</span>
+              </p>
+            </sc-if>
+          </div>
+          <sc-if value="{{ an.dismissible }}" hint-placeholder-val="{{ true }}">
+            <span style="flex-shrink:0; font-size:16px; color:#787C82; padding:6px 2px; line-height:1;">×</span>
+          </sc-if>
+        </div>
+        <div style="margin-top:9px; font-size:11.5px; color:#787C82; line-height:1.5;">{{ previewNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The notice</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+          <sc-for list="{{ typeChips }}" as="tc" hint-placeholder-count="4">
+            <button onClick="{{ tc.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ tc.borderColor }}; background:{{ tc.bg }}; color:{{ tc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ tc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Lead-in (bold)</label>
+            <input value="{{ an.strong }}" onChange="{{ onStrongChange }}" placeholder="Acme Toolkit:" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">notice id</label>
+            <input value="{{ an.id }}" onChange="{{ onIdChange }}" spellCheck="false" placeholder="acme_setup" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ idBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Message</label>
+            <textarea value="{{ an.message }}" onChange="{{ onMessageChange }}" rows="2" placeholder="Add your API key to finish setting up." style="width:100%; font-size:13px; line-height:1.6; padding:9px 10px; border-radius:6px; border:1px solid {{ messageBorder }}; resize:vertical; background:#FCFBF9;" style-focus="outline:2px solid #3858E9;"></textarea>
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Button label</label>
+            <input value="{{ an.actionLabel }}" onChange="{{ onActionLabelChange }}" placeholder="Open settings" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">button target</label>
+            <input value="{{ an.actionPage }}" onChange="{{ onActionPageChange }}" spellCheck="false" placeholder="options-general.php?page=acme" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Where it shows</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ scopeNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:13px;">
+          <sc-for list="{{ screenChips }}" as="sc" hint-placeholder-count="7">
+            <button onClick="{{ sc.onToggle }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ sc.borderColor }}; background:{{ sc.bg }}; color:{{ sc.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ sc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">capability</label>
+            <select value="{{ an.capability }}" onChange="{{ onCapabilityChange }}" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <sc-for list="{{ capabilityOptions }}" as="co" hint-placeholder-count="4">
+                <option value="{{ co.value }}">{{ co.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">remembers dismissal</label>
+            <select value="{{ an.persist }}" onChange="{{ onPersistChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid {{ persistBorder }}; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="none">Not at all — returns on reload</option>
+              <option value="user">Per user, forever (user meta)</option>
+              <option value="user-days">Per user, snoozed (transient)</option>
+              <option value="site">Site-wide (option)</option>
+            </select>
+          </div>
+          <sc-if value="{{ isSnoozed }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">snooze (days)</label>
+              <input value="{{ an.snoozeDays }}" onChange="{{ onSnoozeChange }}" spellCheck="false" placeholder="30" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </sc-if>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">prefix</label>
+            <input value="{{ an.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ an.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:11px; font-size:12px; color:#5C564B; line-height:1.55;">{{ persistNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Behaviour</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="2">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">admin_notices</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Fires after the admin header, before the page content</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The classes core styles</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refClasses }}" as="rc" hint-placeholder-count="5">
+              <div style="display:flex; gap:10px; align-items:flex-start; border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <span style="flex-shrink:0; width:4px; align-self:stretch; background:{{ rc.color }}; border-radius:2px;"></span>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ rc.name }}</div>
+                  <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:3px;">{{ rc.description }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Where notices land</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Core moves the first element carrying a notice class to just under the page h1, so anything printed on admin_notices ends up there. If the notice belongs inline — inside your own settings page, under a specific field — add notice-inline and print it yourself rather than on the hook.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Screen ids you can scope to</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refScreens }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Dismissal, honestly</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">is-dismissible only hides the notice in the DOM — reload and it is back. Anything that should stay dismissed needs a round trip: the AJAX handler and user meta this generator writes. Storing it site-wide instead means the first admin to click X dismisses it for the whole team.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on this notice.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;snippet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const TYPES = [
+  ['success', 'Success', '#00A32A'],
+  ['info', 'Info', '#72AEE6'],
+  ['warning', 'Warning', '#DBA617'],
+  ['error', 'Error', '#D63638']
+];
+const TYPE_COLOR = {};
+TYPES.forEach(function (t) { TYPE_COLOR[t[0]] = t[2]; });
+const SCREENS = [
+  ['dashboard', 'Dashboard'], ['plugins', 'Plugins'], ['edit-post', 'Posts list'], ['post', 'Post editor'],
+  ['options-general', 'Settings → General'], ['themes', 'Themes'], ['upload', 'Media']
+];
+const CAPS = [
+  ['manage_options', 'manage_options — admins'],
+  ['edit_others_posts', 'edit_others_posts — editors'],
+  ['edit_posts', 'edit_posts — contributors and up'],
+  ['activate_plugins', 'activate_plugins — admins']
+];
+const OPEN_SCRIPT = '<' + 'script>';
+const CLOSE_SCRIPT = '</' + 'script>';
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function pascal(s) { return String(s || '').split(/[^A-Za-z0-9]+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join('_'); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(an) {
+  const pre = fnSlug(an.prefix) || 'acme';
+  return {
+    pre: pre, td: slugify(an.textDomain) || pre.replace(/_/g, '-'),
+    id: fnSlug(an.id) || pre + '_notice',
+    cls: (pascal(an.prefix || 'Acme') || 'Acme') + '_Admin_Notice',
+    isClass: an.codeStyle === 'class',
+    key: pre + '_' + ((fnSlug(an.id) || 'notice').replace(new RegExp('^' + pre + '_?'), '') || 'notice') + '_dismissed',
+    screens: an.screens || [],
+    ajax: an.dismissible && an.persist !== 'none'
+  };
+}
+
+function buildCode(an, mode) {
+  const d = derive(an);
+  const pre = d.pre, td = d.td, isClass = d.isClass;
+  const blocks = [];
+  const cls = 'notice notice-' + an.type + (an.dismissible ? ' is-dismissible' : '') + (an.altStyle ? ' notice-alt' : '');
+  const t = function (s) { return "esc_html__( '" + esc(s) + "', '" + td + "' )"; };
+
+  let guards = '';
+  if (an.capability) guards += "if ( ! current_user_can( '" + esc(an.capability) + "' ) ) {\n\treturn;\n}\n\n";
+  if (d.screens.length) {
+    guards += '$screen = get_current_screen();\n\nif ( ! $screen || ! in_array( $screen->id, array( ' + d.screens.map(function (s) { return "'" + s + "'"; }).join(', ') + " ), true ) ) {\n\treturn;\n}\n\n";
+  }
+  if (an.persist === 'user') guards += "if ( get_user_meta( get_current_user_id(), '" + d.key + "', true ) ) {\n\treturn;\n}\n\n";
+  else if (an.persist === 'user-days') guards += "if ( get_transient( '" + d.key + "_' . get_current_user_id() ) ) {\n\treturn;\n}\n\n";
+  else if (an.persist === 'site') guards += "if ( get_option( '" + d.key + "' ) ) {\n\treturn;\n}\n\n";
+  let body = guards;
+
+  let inner = '<p>';
+  const args = [];
+  if (an.strong) { inner += '<strong>%1$s</strong> %2$s'; args.push(t(an.strong)); args.push(t(an.message || '')); }
+  else { inner += '%1$s'; args.push(t(an.message || '')); }
+  inner += '</p>';
+  if (an.actionLabel) {
+    const n = args.length + 1;
+    inner += '<p><a href="%' + (n + 1) + '$s" class="button button-primary">%' + n + '$s</a></p>';
+    args.push(t(an.actionLabel));
+    args.push("esc_url( admin_url( '" + esc(an.actionPage || 'options-general.php') + "' ) )");
+  }
+  body += 'printf(\n\t\'<div class="' + cls + '" data-notice="' + d.id + '">' + inner + '</div>\',\n' + indent(args.join(',\n'), 1) + '\n);';
+  blocks.push({ name: 'notice', hook: 'admin_notices', doc: '/**\n * Print the notice.\n */\n', body: body });
+
+  if (d.ajax) {
+    blocks.push({
+      name: 'dismiss_script', hook: 'admin_footer',
+      doc: '/**\n * Send the dismissal back so it sticks. Printed only where the notice itself would appear.\n */\n',
+      body: guards + "$nonce = wp_create_nonce( '" + d.key + "' );\n?>\n" + OPEN_SCRIPT + "\ndocument.addEventListener( 'click', function ( event ) {\n\tvar button = event.target.closest( '[data-notice=\"" + d.id + "\"] .notice-dismiss' );\n\n\tif ( ! button ) {\n\t\treturn;\n\t}\n\n\twindow.fetch( ajaxurl, {\n\t\tmethod: 'POST',\n\t\tcredentials: 'same-origin',\n\t\theaders: { 'Content-Type': 'application/x-www-form-urlencoded' },\n\t\tbody: new URLSearchParams( {\n\t\t\taction: '" + pre + "_dismiss_notice',\n\t\t\tnonce: '<?php echo esc_js( $nonce ); ?>'\n\t\t} )\n\t} );\n} );\n" + CLOSE_SCRIPT + '\n<?php'
+    });
+    let handler = "check_ajax_referer( '" + d.key + "', 'nonce' );\n\nif ( ! is_user_logged_in() ) {\n\twp_send_json_error( null, 403 );\n}\n\n";
+    if (an.persist === 'user') handler += "update_user_meta( get_current_user_id(), '" + d.key + "', time() );";
+    else if (an.persist === 'user-days') handler += "set_transient( '" + d.key + "_' . get_current_user_id(), time(), " + (parseInt(an.snoozeDays, 10) || 30) + ' * DAY_IN_SECONDS );';
+    else handler += "update_option( '" + d.key + "', time(), false );";
+    handler += '\n\nwp_send_json_success();';
+    blocks.push({ name: 'dismiss', hook: 'wp_ajax_' + pre + '_dismiss_notice', doc: '/**\n * Store the dismissal.\n */\n', body: handler });
+  }
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + (an.strong || 'Admin notice') + '\n * Description:       Shows an admin notice' + (d.screens.length ? ' on ' + d.screens.length + ' screen' + (d.screens.length === 1 ? '' : 's') : '') + '.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Text Domain:       ' + td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+
+  if (isClass) {
+    out += 'final class ' + d.cls + ' {\n\n';
+    const hookLines = blocks.map(function (b) { return "add_action( '" + b.hook + "', array( $this, '" + b.name + "' ) );"; });
+    out += '\t/**\n\t * Wire the class into WordPress.\n\t */\n\tpublic function hooks() {\n' + indent(hookLines.join('\n'), 2) + '\n\t}\n\n';
+    blocks.forEach(function (b) { out += indent(b.doc, 1) + '\tpublic function ' + b.name + '() {\n' + indent(b.body, 2) + '\n\t}\n\n'; });
+    out += '}\n\n( new ' + d.cls + '() )->hooks();\n';
+  } else {
+    out += blocks.map(function (b) {
+      return b.doc + 'function ' + pre + '_' + b.name + '() {\n' + indent(b.body, 1) + '\n}\n' + "add_action( '" + b.hook + "', '" + pre + '_' + b.name + "' );\n";
+    }).join('\n');
+  }
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit|static|new|class|final|public|private|if|else|foreach|var|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(an) {
+  const d = derive(an);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!String(an.message || '').trim()) add('error', 'The notice has no message — it will render as an empty coloured bar.');
+  if (!String(an.id || '').trim()) add('error', 'A notice id is required: it keys the dismissal record and the data-notice hook the script listens on.');
+  if (!d.screens.length) add('warning', 'No screens selected, so this notice appears on every single admin page — the fastest way to make a client stop reading your notices.', 'scopeDashboard', 'Limit to the dashboard');
+  if (an.dismissible && an.persist === 'none') add('warning', 'The notice is dismissible but nothing is stored, so it comes straight back on the next page load. That reads as broken.', 'persistUser', 'Remember per user');
+  if (!an.dismissible && an.persist !== 'none') add('recommendation', 'Dismissal is stored but there is no X to click. Turn dismissible on or drop the persistence.');
+  if (an.persist === 'site') add('warning', 'Storing dismissal site-wide means the first admin to close it closes it for everyone, including people who never saw it.', 'persistUser', 'Store per user');
+  if (an.type === 'error' && !/error|fail|cannot|missing|expired|invalid/i.test(String(an.message) + String(an.strong))) add('recommendation', 'An error notice for something that is not an error trains people to ignore the red ones. warning or info usually fits better.');
+  if (an.type === 'success' && an.persist === 'user') add('recommendation', 'A success notice remembered forever is unusual — most confirmations should appear once and go.');
+  if (/<[a-z]/i.test(String(an.message || ''))) add('warning', 'The message contains HTML. The generated code escapes it with esc_html, so tags will print as text. Use the lead-in and button fields instead.');
+  if (String(an.message || '').length > 200) add('recommendation', 'At ' + String(an.message).length + ' characters this is a paragraph, not a notice. Notices work when they are one line and one action.');
+  if (an.actionLabel && !String(an.actionPage || '').trim()) add('error', 'The button has a label but no target, so it will link to the admin root.');
+  if (!an.capability) add('warning', 'No capability check, so every role that can see the admin sees this notice.', 'setCap', 'Require manage_options');
+  if (an.persist === 'user-days') {
+    const days = parseInt(an.snoozeDays, 10);
+    if (!days) add('error', 'Set a snooze length in days, or the transient expires immediately and the notice never goes away.');
+    else if (days > 365) add('recommendation', days + ' days is effectively forever — user meta is simpler than a year-long transient.');
+  }
+  if (an.altStyle) add('recommendation', 'notice-alt gives the flat background core uses inside plugin rows. At the top of a page it looks unfinished.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'acme', textDomain: 'acme', codeStyle: 'procedural',
+    id: 'acme_setup', type: 'warning',
+    strong: 'Acme Toolkit:', message: 'add your API key to finish setting up.',
+    actionLabel: 'Open settings', actionPage: 'options-general.php?page=acme-toolkit',
+    dismissible: true, persist: 'user', snoozeDays: '30', altStyle: false,
+    capability: 'manage_options', screens: ['dashboard', 'plugins']
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    an: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'snippet', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('admin-notice-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.id) this.setState({ an: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(an) { try { localStorage.setItem('admin-notice-generator-v1', JSON.stringify(an)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.an));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { an: next, past: coalesce ? s.past : s.past.concat([s.an]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.an));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { an: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.an].concat(s.future) }; }, () => this.persist(this.state.an)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { an: s.future[0], past: s.past.concat([s.an]), future: s.future.slice(1) }; }, () => this.persist(this.state.an)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'scopeDashboard') p.screens = ['dashboard'];
+      if (kind === 'persistUser') { p.persist = 'user'; p.dismissible = true; }
+      if (kind === 'setCap') p.capability = 'manage_options';
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.an, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const an = this.state.an, mode = this.state.outputMode;
+    let code = buildCode(an, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = (fnSlug(an.id) || 'admin-notice').replace(/_/g, '-') + '-notice.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, an = s.an, self = this;
+    const d = derive(an);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(an);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    return {
+      toolCount: 38, trueVal: true, an: an,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (fnSlug(an.id) || 'admin-notice').replace(/_/g, '-') + '-notice.php',
+
+      noticeAccent: TYPE_COLOR[an.type] || '#72AEE6',
+      hasStrong: !!String(an.strong || '').trim(),
+      hasAction: !!String(an.actionLabel || '').trim(),
+      previewNote: (d.screens.length ? 'Shown on ' + d.screens.length + ' screen' + (d.screens.length === 1 ? '' : 's') : 'Shown on every admin screen')
+        + (an.capability ? ' · ' + an.capability : ' · no capability check')
+        + ' · ' + { none: 'not remembered', user: 'dismissal saved per user', 'user-days': 'snoozed ' + (parseInt(an.snoozeDays, 10) || 30) + ' days', site: 'dismissed site-wide' }[an.persist],
+
+      typeChips: TYPES.map(function (t) {
+        const on = an.type === t[0];
+        return { label: t[1], borderColor: on ? t[2] : '#E7E2D9', bg: on ? '#F7F5F0' : '#fff', color: on ? '#26221C' : '#5C564B', onSelect: function () { self.set('type', t[0]); } };
+      }),
+      onStrongChange: function (ev) { self.set('strong', ev.target.value, true); },
+      onIdChange: function (ev) { self.set('id', ev.target.value, true); },
+      idBorder: String(an.id || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onMessageChange: function (ev) { self.set('message', ev.target.value, true); },
+      messageBorder: String(an.message || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onActionLabelChange: function (ev) { self.set('actionLabel', ev.target.value, true); },
+      onActionPageChange: function (ev) { self.set('actionPage', ev.target.value, true); },
+
+      scopeNote: d.screens.length ? d.screens.length + ' screen' + (d.screens.length === 1 ? '' : 's') : 'everywhere',
+      screenChips: SCREENS.map(function (sc) {
+        const on = d.screens.indexOf(sc[0]) >= 0;
+        return {
+          label: sc[0], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B',
+          onToggle: function () { self.commit(function (p) { p.screens = p.screens || []; const i = p.screens.indexOf(sc[0]); if (i >= 0) p.screens.splice(i, 1); else p.screens.push(sc[0]); }); }
+        };
+      }),
+      onCapabilityChange: function (ev) { self.set('capability', ev.target.value); },
+      capabilityOptions: CAPS.map(function (c) { return { value: c[0], label: c[1] }; }),
+      onPersistChange: function (ev) { self.set('persist', ev.target.value); },
+      persistBorder: an.dismissible && an.persist === 'none' ? '#B45309' : '#E7E2D9',
+      isSnoozed: an.persist === 'user-days',
+      onSnoozeChange: function (ev) { self.set('snoozeDays', ev.target.value, true); },
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      persistNote: {
+        none: 'Clicking the X hides it in the DOM only. Next page load, it is back.',
+        user: 'Writes ' + d.key + ' to user meta over AJAX — each person dismisses their own copy, permanently.',
+        'user-days': 'A per-user transient, so the notice returns after ' + (parseInt(an.snoozeDays, 10) || 30) + ' days. Right for “finish setting this up” nudges.',
+        site: 'One option for the whole site. Simple, but whoever clicks first decides for everyone.'
+      }[an.persist],
+
+      extraToggles: [
+        { key: 'dismissible', label: 'Dismissible', help: 'Adds is-dismissible so core prints the X button.', on: an.dismissible },
+        { key: 'altStyle', label: 'notice-alt styling', help: 'The flat variant core uses inside plugin table rows.', on: an.altStyle }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(an, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: d.ajax ? 'Three functions: the notice, the dismiss script and the AJAX handler.' : 'Paste into a plugin, an mu-plugin, or a functionality plugin.', functions: 'Ready for your theme’s functions.php.', plugin: 'A complete single-file plugin with a header.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new notice' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refClasses: [
+        { name: 'notice notice-success', color: '#00A32A', description: 'Green. Something finished. Core uses it for saves and updates.' },
+        { name: 'notice notice-info', color: '#72AEE6', description: 'Blue. Context the user did not ask for but might want.' },
+        { name: 'notice notice-warning', color: '#DBA617', description: 'Amber. Something needs attention but nothing is broken yet — the right class for setup nudges.' },
+        { name: 'notice notice-error', color: '#D63638', description: 'Red. Something failed or will fail. Spend it carefully.' },
+        { name: 'is-dismissible', color: '#787C82', description: 'Core adds the X button and hides the notice on click. Client side only.' },
+        { name: 'notice-alt', color: '#787C82', description: 'Flat background, no white card. Meant for notices inside other UI.' }
+      ],
+      refScreens: SCREENS.map(function (sc) { return padTo(sc[0], 22) + sc[1]; }).join('\n') + '\n' + padTo('edit-<post_type>', 22) + 'Any post type list\n' + padTo('<post_type>', 22) + 'That post type’s editor\n' + padTo('settings_page_<slug>', 22) + 'Your own settings page',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Editor'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

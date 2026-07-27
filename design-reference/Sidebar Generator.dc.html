@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Sidebar Generator — register_sidebar() &amp; dynamic_sidebar() — Generator for WP</title>
+  <meta name="description" content="Generate widget areas with correct before/after markup, the widgets_init hook, and the sidebar.php call that renders them." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=design" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Design</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Sidebar</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Sidebar Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Widget areas with the wrapper markup your theme actually needs — placeholders intact, tags closed, and the template call that renders them.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Widget areas</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ areasNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:13px;">
+          <sc-for list="{{ startPresets }}" as="qp" hint-placeholder-count="4">
+            <button onClick="{{ qp.onPick }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; color:#5C564B; border-radius:20px; padding:4px 11px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ qp.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:9px;">
+          <sc-for list="{{ areaRows }}" as="ar" hint-placeholder-count="3">
+            <div style="border:1px solid #EDE8DF; border-radius:7px; padding:11px; background:#FFFFFF;">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input value="{{ ar.name }}" onChange="{{ ar.onNameChange }}" placeholder="Footer 1" style="flex:1.2; min-width:120px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid {{ ar.nameBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ ar.id }}" onChange="{{ ar.onIdChange }}" spellCheck="false" placeholder="footer-1" style="width:130px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ ar.idBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ ar.description }}" onChange="{{ ar.onDescriptionChange }}" placeholder="Shown in the first footer column." style="flex:1.6; min-width:150px; font-size:12px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                <div style="display:flex; gap:3px; flex-shrink:0;">
+                  <button aria-label="Move up" onClick="{{ ar.onMoveUp }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ ar.iconUp }}</button>
+                  <button aria-label="Move down" onClick="{{ ar.onMoveDown }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ ar.iconDown }}</button>
+                  <button aria-label="Remove widget area" onClick="{{ ar.onRemove }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ ar.iconRemove }}</button>
+                </div>
+              </div>
+              <sc-if value="{{ ar.showMarkup }}" hint-placeholder-val="{{ false }}">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:8px; margin-top:9px; padding-top:9px; border-top:1px dashed #EDE8DF;">
+                  <sc-for list="{{ ar.markupFields }}" as="amf" hint-placeholder-count="4">
+                    <div>
+                      <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#948C7E; margin-bottom:3px;">{{ amf.label }}</label>
+                      <input value="{{ amf.value }}" onChange="{{ amf.onChange }}" spellCheck="false" style="width:100%; font-size:11.5px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ amf.border }};" style-focus="outline:2px solid #3858E9;" />
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <div style="margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E;">{{ ar.tagNote }}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noAreas }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No widget areas — the Widgets screen will show nothing to drop into.</div>
+          </sc-if>
+        </div>
+        <button onClick="{{ onAddArea }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add widget area</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Wrapper markup</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ markupScopeNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+          <sc-for list="{{ markupPresets }}" as="mp" hint-placeholder-count="4">
+            <button onClick="{{ mp.onPick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ mp.borderColor }}; background:{{ mp.bg }}; color:{{ mp.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-hover="border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ mp.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ sb.sharedMarkup }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:11px;">
+            <sc-for list="{{ sharedMarkupFields }}" as="smf" hint-placeholder-count="4">
+              <div>
+                <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">{{ smf.label }}</label>
+                <input value="{{ smf.value }}" onChange="{{ smf.onChange }}" spellCheck="false" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ smf.border }};" style-focus="outline:2px solid #3858E9;" />
+                <div style="font-size:11px; color:#948C7E; margin-top:4px; line-height:1.45;">{{ smf.help }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="display:flex; align-items:flex-start; gap:14px; margin-top:14px; padding-top:13px; border-top:1px solid #F0ECE4;">
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:13.5px; font-weight:650; color:#26221C;">One set of markup for every area</div>
+            <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">Off lets each area carry its own wrappers — useful when the footer columns and the main sidebar look nothing alike.</div>
+          </div>
+          <button role="switch" aria-checked="{{ sb.sharedMarkup }}" aria-label="One set of markup for every area" onClick="{{ onToggleShared }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ sharedToggleBg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+            <span style="position:absolute; top:2px; left:{{ sharedToggleKnob }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+          </button>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Naming &amp; shape</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+            <input value="{{ sb.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="mytheme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ sb.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="mytheme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E;">Shape</span>
+          <sc-for list="{{ styleChips }}" as="syc" hint-placeholder-count="3">
+            <button onClick="{{ syc.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ syc.borderColor }}; background:{{ syc.bg }}; color:{{ syc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ syc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="margin-top:11px; font-size:12px; color:#5C564B; line-height:1.55;">{{ styleNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Template output</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="4">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabTemplate }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabTemplateColor }}; border-bottom:2px solid {{ tabTemplateBorder }};" style-focus="outline:2px solid #3858E9;">Template</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showTemplateTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap; align-items:center;">
+            <sc-for list="{{ areaChips }}" as="ac" hint-placeholder-count="3">
+              <button onClick="{{ ac.onClick }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ ac.borderColor }}; background:{{ ac.bg }}; color:{{ ac.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ ac.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopyTemplate }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyTemplateLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">Drop into {{ templateFileHint }} where the widget area belongs.</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 18px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre-wrap; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ templateTokens }}" as="tt" hint-placeholder-count="12"><span style="color:{{ tt.color }}; font-style:{{ tt.italic }};">{{ tt.text }}</span></sc-for></pre>
+            <div style="border-top:1px solid #E7E2D9; background:#FFFFFF; padding:12px 16px 8px;">
+              <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:7px;">What one widget renders as</div>
+              <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; white-space:pre-wrap; word-break:break-word;"><sc-for list="{{ htmlTokens }}" as="ht" hint-placeholder-count="10"><span style="color:{{ ht.color }};">{{ ht.text }}</span></sc-for></pre>
+            </div>
+            <div style="border-top:1px solid #E7E2D9; background:#FFFFFF; padding:12px 16px 30px;">
+              <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:9px;">Roughly, on the page</div>
+              <div style="border:1px dashed #DCD7CE; border-radius:7px; padding:14px; background:#FCFBF9;">
+                <div style="font-size:{{ previewTitleSize }}; font-weight:650; color:#26221C; margin-bottom:7px; line-height:1.3;">Recent Posts</div>
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                  <span style="font-size:12.5px; color:#3858E9;">Hello world!</span>
+                  <span style="font-size:12.5px; color:#3858E9;">A second post</span>
+                </div>
+                <div style="margin-top:9px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#B3ACA0;">{{ previewWrapperNote }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">register_sidebar()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Runs on widgets_init — earlier and the Widgets screen never sees it.</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refSignature }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Arguments</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The two placeholders</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">before_widget is run through sprintf() with the widget’s id and its class name. Drop <span style="font-family:'JetBrains Mono',monospace; background:#F3F1EC; padding:1px 4px; border-radius:3px;">%1$s</span> where the id goes and <span style="font-family:'JetBrains Mono',monospace; background:#F3F1EC; padding:1px 4px; border-radius:3px;">%2$s</span> where the class goes. Lose them and every widget renders with no id and no widget_* class — CSS and JS that target widgets both stop working.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Registered areas</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refRegistered }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Block themes</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">A block theme has no sidebar.php. Widget areas still register and still appear under Appearance → Widgets, but a block theme normally uses a template part with a Widget Area block instead. Classic themes, child themes and plugins are where this code belongs.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in these widget areas.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;snippet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const PRESETS = {
+  classic: { label: 'Classic aside', beforeWidget: '<aside id="%1$s" class="widget %2$s">', afterWidget: '</aside>', beforeTitle: '<h2 class="widget-title">', afterTitle: '</h2>' },
+  section: { label: 'Section + h2', beforeWidget: '<section id="%1$s" class="widget %2$s">', afterWidget: '</section>', beforeTitle: '<h2 class="widget-title">', afterTitle: '</h2>' },
+  card: { label: 'Card', beforeWidget: '<div id="%1$s" class="card widget %2$s"><div class="card-body">', afterWidget: '</div></div>', beforeTitle: '<h3 class="card-title widget-title">', afterTitle: '</h3>' },
+  minimal: { label: 'Minimal div', beforeWidget: '<div id="%1$s" class="%2$s">', afterWidget: '</div>', beforeTitle: '<h2>', afterTitle: '</h2>' }
+};
+const MARKUP_KEYS = [
+  ['beforeWidget', 'before_widget', 'sprintf()-ed with the widget id and class.'],
+  ['afterWidget', 'after_widget', 'Must close everything before_widget opened.'],
+  ['beforeTitle', 'before_title', 'Wraps the widget title. h2 is the accessible default.'],
+  ['afterTitle', 'after_title', 'Closes the title tag.']
+];
+const START_PRESETS = [
+  ['Single sidebar', [['sidebar-1', 'Sidebar', 'The main sidebar on posts and pages.']]],
+  ['Footer × 3', [['footer-1', 'Footer 1', 'First footer column.'], ['footer-2', 'Footer 2', 'Second footer column.'], ['footer-3', 'Footer 3', 'Third footer column.']]],
+  ['Sidebar + footer', [['sidebar-1', 'Sidebar', 'The main sidebar.'], ['footer-1', 'Footer 1', 'First footer column.'], ['footer-2', 'Footer 2', 'Second footer column.']]],
+  ['Shop bundle', [['shop-sidebar', 'Shop Sidebar', 'Filters and categories on shop archives.'], ['product-below', 'Below Product', 'Trust badges under the add-to-cart form.']]]
+];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function pascal(s) { return String(s || '').split(/[^A-Za-z0-9]+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join('_'); }
+function indent(text, depth) { const pad = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? pad + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+function openTags(html) { return (String(html || '').match(/<([a-z][a-z0-9]*)/gi) || []).map(function (x) { return x.slice(1).toLowerCase(); }); }
+function closeTags(html) { return (String(html || '').match(/<\/([a-z][a-z0-9]*)/gi) || []).map(function (x) { return x.slice(2).toLowerCase(); }); }
+function unclosed(before, after) {
+  const closes = closeTags(after);
+  return openTags(before).filter(function (tag) {
+    const i = closes.indexOf(tag);
+    if (i === -1) return true;
+    closes.splice(i, 1);
+    return false;
+  });
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) {
+  if (out.indexOf('<?php\n') === 0) return '<?php\n' + CREDIT + out.slice(6);
+  return CREDIT + out;
+}
+
+function markupFor(sb, area) {
+  if (sb.sharedMarkup || !area || !area.markup) return sb.markup;
+  return Object.assign({}, sb.markup, area.markup);
+}
+
+function derive(sb) {
+  const pre = fnSlug(sb.prefix) || 'mytheme';
+  const areas = (sb.areas || []).map(function (a) {
+    return { id: slugify(a.id) || 'sidebar-1', name: a.name || 'Sidebar', description: a.description || '', markup: markupFor(sb, a) };
+  });
+  return {
+    pre: pre,
+    td: slugify(sb.textDomain) || pre.replace(/_/g, '-'),
+    cls: (pascal(sb.prefix || 'MyTheme') || 'MyTheme') + '_Widget_Areas',
+    style: sb.codeStyle || 'loop',
+    areas: areas
+  };
+}
+
+function buildCode(sb, mode) {
+  const d = derive(sb);
+  const pre = d.pre, td = d.td;
+  const t = function (s) { return "__( '" + esc(s) + "', '" + td + "' )"; };
+  const argPairs = function (a, withMarkup) {
+    const p = [['id', "'" + esc(a.id) + "'"], ['name', t(a.name)]];
+    if (a.description) p.push(['description', t(a.description)]);
+    if (withMarkup) {
+      p.push(['before_widget', "'" + esc(a.markup.beforeWidget) + "'"]);
+      p.push(['after_widget', "'" + esc(a.markup.afterWidget) + "'"]);
+      p.push(['before_title', "'" + esc(a.markup.beforeTitle) + "'"]);
+      p.push(['after_title', "'" + esc(a.markup.afterTitle) + "'"]);
+    }
+    return p;
+  };
+  const sameMarkup = sb.sharedMarkup && d.areas.length > 1;
+
+  let body = '';
+  if (sameMarkup && d.style !== 'single') {
+    const m = d.areas[0].markup;
+    body += '$defaults = array(\n' + indent(aligned([
+      ['before_widget', "'" + esc(m.beforeWidget) + "'"],
+      ['after_widget', "'" + esc(m.afterWidget) + "'"],
+      ['before_title', "'" + esc(m.beforeTitle) + "'"],
+      ['after_title', "'" + esc(m.afterTitle) + "'"]
+    ]), 1) + '\n);\n\n';
+    body += '$areas = array(\n' + indent(d.areas.map(function (a) {
+      return 'array(\n' + indent(aligned(argPairs(a, false)), 1) + '\n),';
+    }).join('\n'), 1) + '\n);\n\nforeach ( $areas as $area ) {\n\tregister_sidebar( array_merge( $defaults, $area ) );\n}';
+  } else {
+    body += d.areas.map(function (a) {
+      return 'register_sidebar(\n' + indent('array(\n' + indent(aligned(argPairs(a, true)), 1) + '\n)', 1) + '\n);';
+    }).join('\n\n');
+  }
+  if (!d.areas.length) body = '// Add a widget area to generate the registration call.';
+
+  const doc = '/**\n * Register the theme’s widget areas.\n */\n';
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + (d.areas.length ? d.areas[0].name : 'Widget') + ' areas\n * Description:       Registers ' + d.areas.length + ' widget area' + (d.areas.length === 1 ? '' : 's') + '.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Text Domain:       ' + td + '\n */\n\ndefined( \'ABSPATH\' ) || exit;\n\n';
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+
+  if (d.style === 'class') {
+    out += 'final class ' + d.cls + ' {\n\n\t/**\n\t * Wire the class into WordPress.\n\t */\n\tpublic function hooks() {\n\t\tadd_action( \'widgets_init\', array( $this, \'register\' ) );\n\t}\n\n' + indent(doc, 1) + '\tpublic function register() {\n' + indent(body, 2) + '\n\t}\n}\n\n( new ' + d.cls + '() )->hooks();\n';
+  } else {
+    out += doc + 'function ' + pre + '_widget_areas() {\n' + indent(body, 1) + '\n}\n' + "add_action( 'widgets_init', '" + pre + "_widget_areas' );\n";
+  }
+  return withCredit(out);
+}
+
+function buildTemplate(sb, area) {
+  const d = derive(sb);
+  if (!area) return '<?php\n// Add a widget area first.\n';
+  const id = area.id;
+  const wrapClass = 'widget-area ' + id;
+  let out = '';
+  if (sb.activeGuard) {
+    out += "<?php if ( is_active_sidebar( '" + esc(id) + "' ) ) : ?>\n";
+    out += '\t<div class="' + wrapClass + '">\n\t\t<?php dynamic_sidebar( \'' + esc(id) + '\' ); ?>\n\t</div>\n';
+    if (sb.fallback) {
+      out += '<?php else : ?>\n\t<div class="' + wrapClass + ' is-empty">\n\t\t' + area.markup.beforeWidget.replace('%1$s', id + '-fallback').replace('%2$s', 'widget_text') + '\n\t\t\t' + area.markup.beforeTitle + '<?php esc_html_e( \'Nothing here yet\', \'' + d.td + '\' ); ?>' + area.markup.afterTitle + '\n\t\t\t<p><?php esc_html_e( \'Add a widget under Appearance → Widgets.\', \'' + d.td + '\' ); ?></p>\n\t\t' + area.markup.afterWidget + '\n\t</div>\n';
+    }
+    out += '<?php endif; ?>\n';
+  } else {
+    out += '<div class="' + wrapClass + '">\n\t<?php dynamic_sidebar( \'' + esc(id) + '\' ); ?>\n</div>\n';
+  }
+  if (sb.getSidebar) {
+    out += '\n<?php\n// Or keep it in its own template part and call:\n// get_sidebar( \'' + esc(id.replace(/^sidebar-?/, '') || 'main') + '\' ); // loads sidebar-' + esc(id.replace(/^sidebar-?/, '') || 'main') + '.php\n';
+  }
+  return out;
+}
+
+function sampleHTML(area) {
+  const m = area.markup;
+  return m.beforeWidget.replace('%1$s', 'recent-posts-2').replace('%2$s', 'widget_recent_entries')
+    + '\n\t' + m.beforeTitle + 'Recent Posts' + m.afterTitle
+    + '\n\t<ul>\n\t\t<li><a href="/hello-world/">Hello world!</a></li>\n\t\t<li><a href="/second/">A second post</a></li>\n\t</ul>\n'
+    + m.afterWidget;
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit|static|new|class|final|public|private|if|else|foreach|endif|endforeach|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+const HTML_RE = /(<\/?[a-z][a-z0-9]*)|([a-z-]+)(?==")|("(?:[^"]*)")|(>)/gi;
+function tokenizeHTML(code) {
+  const C = { tag: '#B3439A', attr: '#8A5B00', string: '#1F7A4C', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color) { if (text) out.push({ text: text, color: color }); };
+  HTML_RE.lastIndex = 0;
+  while ((m = HTML_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.tag);
+    else if (m[2]) push(m[2], C.attr);
+    else if (m[3]) push(m[3], C.string);
+    else push(m[4], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(sb) {
+  const d = derive(sb);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!d.areas.length) add('error', 'No widget areas registered — nothing will appear under Appearance → Widgets.');
+  const seen = {};
+  (sb.areas || []).forEach(function (a) {
+    const id = slugify(a.id);
+    if (!String(a.id || '').trim()) add('error', 'A widget area is missing its id. Without one WordPress generates sidebar-1, sidebar-2… and your dynamic_sidebar() call will not match.', 'fixIds', 'Derive ids from names');
+    else if (String(a.id).trim() !== id) add('error', '“' + a.id + '” is not a safe id. Core runs it through sanitize_title(), so the id you saved and the id you call will differ.', 'fixIds', 'Use ' + id);
+    if (seen[id]) add('error', 'Two areas share the id “' + id + '”. The second registration overwrites the first.');
+    seen[id] = true;
+    if (!String(a.name || '').trim()) add('warning', 'The area “' + id + '” has no name, so the Widgets screen shows an unlabelled box.');
+    if (!String(a.description || '').trim()) add('recommendation', 'No description on “' + id + '” — the Widgets screen has room for one line telling the site owner where it appears.');
+  });
+  const markups = sb.sharedMarkup ? [{ label: 'the shared markup', m: sb.markup }] : d.areas.map(function (a) { return { label: '“' + a.id + '”', m: a.markup }; });
+  markups.forEach(function (entry) {
+    const m = entry.m;
+    if (String(m.beforeWidget || '').indexOf('%1$s') === -1 || String(m.beforeWidget || '').indexOf('%2$s') === -1) {
+      add('error', 'before_widget in ' + entry.label + ' is missing %1$s or %2$s. Widgets render with no id and no widget_* class, so theme CSS and most widget JS stop matching.', 'fixPlaceholders', 'Restore both');
+    }
+    const openW = unclosed(m.beforeWidget, m.afterWidget);
+    if (openW.length) add('error', 'before_widget in ' + entry.label + ' opens <' + openW.join('>, <') + '> that after_widget never closes. Every widget in the area leaks an unclosed tag into the page.', 'closeWidget', 'Close ' + openW.map(function (x) { return '</' + x + '>'; }).join(''));
+    const openT = unclosed(m.beforeTitle, m.afterTitle);
+    if (openT.length) add('error', 'before_title in ' + entry.label + ' opens <' + openT.join('>, <') + '> with no matching close in after_title.', 'closeTitle', 'Close ' + openT.map(function (x) { return '</' + x + '>'; }).join(''));
+    const heading = (openTags(m.beforeTitle).filter(function (x) { return /^h[1-6]$/.test(x); }))[0];
+    if (!heading) add('warning', 'The title in ' + entry.label + ' is not a heading. Screen readers use widget titles to navigate a sidebar — h2 is the convention.');
+    else if (heading === 'h1') add('warning', 'A widget title in ' + entry.label + ' uses h1. There should be one h1 per page and it belongs to the content, not a widget.');
+    else if (heading === 'h4' || heading === 'h5' || heading === 'h6') add('recommendation', 'Widget titles in ' + entry.label + ' are ' + heading + '. That skips heading levels on most templates — style an h2 down instead.');
+    if (/class="[^"]*"/.test(m.beforeWidget) && String(m.beforeWidget).indexOf('%2$s') === -1) add('recommendation', 'The wrapper in ' + entry.label + ' has a class attribute but no %2$s, so the per-widget class never lands in it.');
+  });
+  if (!sb.activeGuard) add('warning', 'The template call has no is_active_sidebar() guard, so an empty area still prints its wrapper div — which usually shows up as an unexplained gap.', 'enableGuard', 'Add the guard');
+  if (sb.fallback && !sb.activeGuard) add('recommendation', 'Fallback content needs the is_active_sidebar() guard to have an else branch to live in.');
+  if (d.areas.length > 6) add('recommendation', d.areas.length + ' widget areas is a lot of surface to support. Areas nobody fills still cost you template branches forever.');
+  if (d.td !== d.pre.replace(/_/g, '-')) add('recommendation', 'The text domain “' + d.td + '” has to match the theme or plugin folder name, or none of these strings translate.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'mytheme', textDomain: 'mytheme', codeStyle: 'loop', preset: 'classic', sharedMarkup: true,
+    markup: {
+      beforeWidget: PRESETS.classic.beforeWidget, afterWidget: PRESETS.classic.afterWidget,
+      beforeTitle: PRESETS.classic.beforeTitle, afterTitle: PRESETS.classic.afterTitle
+    },
+    areas: [
+      { id: 'sidebar-1', name: 'Sidebar', description: 'The main sidebar on posts and pages.' },
+      { id: 'footer-1', name: 'Footer 1', description: 'First footer column.' },
+      { id: 'footer-2', name: 'Footer 2', description: 'Second footer column.' }
+    ],
+    activeGuard: true, fallback: false, getSidebar: false
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    sb: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'snippet', validationFilter: 'all', templateArea: '',
+    copiedFlash: false, copiedTemplateFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('sidebar-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.areas) this.setState({ sb: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(sb) { try { localStorage.setItem('sidebar-generator-v1', JSON.stringify(sb)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.sb));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { sb: next, past: coalesce ? s.past : s.past.concat([s.sb]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.sb));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { sb: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.sb].concat(s.future) }; }, () => this.persist(this.state.sb)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { sb: s.future[0], past: s.past.concat([s.sb]), future: s.future.slice(1) }; }, () => this.persist(this.state.sb)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyPreset(key) {
+    this.commit(function (p) {
+      p.preset = key;
+      p.markup = { beforeWidget: PRESETS[key].beforeWidget, afterWidget: PRESETS[key].afterWidget, beforeTitle: PRESETS[key].beforeTitle, afterTitle: PRESETS[key].afterTitle };
+      p.areas.forEach(function (a) { delete a.markup; });
+    });
+  }
+
+  applyFix(kind) {
+    const targets = function (p) { return p.sharedMarkup ? [p.markup] : p.areas.map(function (a) { a.markup = Object.assign({}, p.markup, a.markup || {}); return a.markup; }); };
+    this.commit(function (p) {
+      if (kind === 'fixIds') p.areas.forEach(function (a) { a.id = slugify(a.id) || slugify(a.name) || 'sidebar-1'; });
+      if (kind === 'enableGuard') p.activeGuard = true;
+      if (kind === 'fixPlaceholders') {
+        targets(p).forEach(function (m) {
+          if (String(m.beforeWidget).indexOf('%1$s') === -1 || String(m.beforeWidget).indexOf('%2$s') === -1) {
+            const tag = openTags(m.beforeWidget)[0] || 'aside';
+            m.beforeWidget = '<' + tag + ' id="%1$s" class="widget %2$s">';
+          }
+        });
+      }
+      if (kind === 'closeWidget') targets(p).forEach(function (m) { unclosed(m.beforeWidget, m.afterWidget).reverse().forEach(function (tag) { m.afterWidget = m.afterWidget + '</' + tag + '>'; }); });
+      if (kind === 'closeTitle') targets(p).forEach(function (m) { unclosed(m.beforeTitle, m.afterTitle).reverse().forEach(function (tag) { m.afterTitle = m.afterTitle + '</' + tag + '>'; }); });
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.sb, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  copyTemplate(area) {
+    try { navigator.clipboard.writeText(buildTemplate(this.state.sb, area)); } catch (err) { /* ignore */ }
+    this.setState({ copiedTemplateFlash: true, ariaLiveMessage: 'Template code copied' });
+    setTimeout(() => this.setState({ copiedTemplateFlash: false }), 1600);
+  }
+  download() {
+    const sb = this.state.sb, mode = this.state.outputMode;
+    let code = buildCode(sb, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = (fnSlug(sb.prefix) || 'theme').replace(/_/g, '-') + '-widget-areas.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, sb = s.sb, self = this;
+    const d = derive(sb);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), up: ic('\ue555', 12), down: ic('\ue54f', 12), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(sb);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    const activeArea = d.areas.filter(function (a) { return a.id === s.templateArea; })[0] || d.areas[0] || null;
+    const activeMarkup = activeArea ? activeArea.markup : sb.markup;
+    const titleTag = (openTags(activeMarkup.beforeTitle).filter(function (x) { return /^h[1-6]$/.test(x); }))[0] || 'div';
+    const titleSizes = { h1: '20px', h2: '16px', h3: '14.5px', h4: '13.5px', h5: '13px', h6: '12.5px', div: '13.5px' };
+
+    return {
+      toolCount: 38, trueVal: true, sb: sb,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (fnSlug(sb.prefix) || 'theme').replace(/_/g, '-') + '-widget-areas.php',
+
+      areasNote: d.areas.length + (d.areas.length === 1 ? ' area' : ' areas') + ' · ' + (sb.sharedMarkup ? 'shared markup' : 'per-area markup'),
+      noAreas: d.areas.length === 0,
+      startPresets: START_PRESETS.map(function (sp) {
+        return { label: sp[0], onPick: function () { self.commit(function (p) { p.areas = sp[1].map(function (a) { return { id: a[0], name: a[1], description: a[2] }; }); }); } };
+      }),
+      areaRows: (sb.areas || []).map(function (a, i) {
+        const m = markupFor(sb, a);
+        const openW = unclosed(m.beforeWidget, m.afterWidget);
+        return {
+          name: a.name, id: a.id, description: a.description,
+          nameBorder: String(a.name || '').trim() ? '#E7E2D9' : '#B91C1C',
+          idBorder: String(a.id || '').trim() && String(a.id).trim() === slugify(a.id) ? '#E7E2D9' : '#B91C1C',
+          iconUp: ICON.up, iconDown: ICON.down, iconRemove: ICON.close,
+          showMarkup: !sb.sharedMarkup,
+          tagNote: openW.length ? 'Unclosed: <' + openW.join('>, <') + '>' : m.beforeWidget.replace('%1$s', a.id || 'id').replace('%2$s', 'widget_recent_entries'),
+          markupFields: MARKUP_KEYS.map(function (k) {
+            return {
+              label: k[1], value: m[k[0]],
+              border: (k[0] === 'beforeWidget' && (String(m.beforeWidget).indexOf('%1$s') === -1 || String(m.beforeWidget).indexOf('%2$s') === -1)) ? '#B91C1C' : '#E7E2D9',
+              onChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.areas[i].markup = Object.assign({}, p.markup, p.areas[i].markup || {}); p.areas[i].markup[k[0]] = v; }, 'a-' + i + '-' + k[0]); }
+            };
+          }),
+          onNameChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.areas[i].name = v; }, 'a-' + i + '-n'); },
+          onIdChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.areas[i].id = v; }, 'a-' + i + '-i'); },
+          onDescriptionChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.areas[i].description = v; }, 'a-' + i + '-d'); },
+          onMoveUp: function () { self.commit(function (p) { if (i === 0) return; const t2 = p.areas[i - 1]; p.areas[i - 1] = p.areas[i]; p.areas[i] = t2; }); },
+          onMoveDown: function () { self.commit(function (p) { if (i >= p.areas.length - 1) return; const t2 = p.areas[i + 1]; p.areas[i + 1] = p.areas[i]; p.areas[i] = t2; }); },
+          onRemove: function () { self.commit(function (p) { p.areas.splice(i, 1); }); }
+        };
+      }),
+      onAddArea: function () {
+        self.commit(function (p) {
+          const n = p.areas.length + 1;
+          p.areas.push({ id: 'widget-area-' + n, name: 'Widget Area ' + n, description: '' });
+        });
+      },
+
+      markupScopeNote: sb.sharedMarkup ? 'Applied to every area' : 'Edit each area above',
+      markupPresets: Object.keys(PRESETS).map(function (k) {
+        const on = sb.preset === k;
+        return { label: PRESETS[k].label, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onPick: function () { self.applyPreset(k); } };
+      }),
+      sharedMarkupFields: MARKUP_KEYS.map(function (k) {
+        return {
+          label: k[1], value: sb.markup[k[0]], help: k[2],
+          border: (k[0] === 'beforeWidget' && (String(sb.markup.beforeWidget).indexOf('%1$s') === -1 || String(sb.markup.beforeWidget).indexOf('%2$s') === -1)) ? '#B91C1C' : '#E7E2D9',
+          onChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.markup[k[0]] = v; p.preset = 'custom'; }, 'm-' + k[0]); }
+        };
+      }),
+      onToggleShared: function () { self.commit(function (p) { p.sharedMarkup = !p.sharedMarkup; }); },
+      sharedToggleBg: sb.sharedMarkup ? '#3858E9' : '#D9D4C8',
+      sharedToggleKnob: sb.sharedMarkup ? '19px' : '2px',
+
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      styleChips: [['loop', 'Array + loop'], ['single', 'One call each'], ['class', 'Class']].map(function (c) {
+        const on = d.style === c[0];
+        return { label: c[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onSelect: function () { self.set('codeStyle', c[0]); } };
+      }),
+      styleNote: d.style === 'loop'
+        ? 'Shared markup lives in one $defaults array and each area only carries what makes it different. Adding a fourth footer column is one line.'
+        : d.style === 'single'
+          ? 'A separate register_sidebar() per area, every argument spelled out. Verbose, but each block is independent and easy to lift.'
+          : 'Wrapped in a class with the hook in one place — the shape most plugins ship.',
+
+      extraToggles: [
+        { key: 'activeGuard', label: 'is_active_sidebar() guard', help: 'Skips the wrapper entirely when the area is empty, so no phantom gap.', on: sb.activeGuard },
+        { key: 'fallback', label: 'Fallback content', help: 'An else branch that tells the site owner where to add widgets.', on: sb.fallback },
+        { key: 'getSidebar', label: 'get_sidebar() note', help: 'Adds the template-part alternative as a comment.', on: sb.getSidebar }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(sb, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: 'Paste into functions.php or a plugin — the hook is included.', functions: 'Ready for your theme’s functions.php.', plugin: 'A complete single-file plugin with a header.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new set of widget areas' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      areaChips: d.areas.map(function (a) {
+        const on = activeArea && a.id === activeArea.id;
+        return { label: a.id, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onClick: function () { self.setState({ templateArea: a.id }); } };
+      }),
+      templateTokens: tokenizePHP(buildTemplate(sb, activeArea)),
+      templateFileHint: activeArea && activeArea.id.indexOf('footer') === 0 ? 'footer.php' : activeArea && activeArea.id.indexOf('sidebar') === 0 ? 'sidebar.php' : 'the template',
+      htmlTokens: tokenizeHTML(activeArea ? sampleHTML(activeArea) : '<!-- add a widget area -->'),
+      copyTemplateLabel: s.copiedTemplateFlash ? 'Copied' : 'Copy',
+      onCopyTemplate: function () { self.copyTemplate(activeArea); },
+      previewTitleSize: titleSizes[titleTag] || '13.5px',
+      previewWrapperNote: '<' + (openTags(activeMarkup.beforeWidget)[0] || 'div') + '> wrapper · title in <' + titleTag + '>',
+
+      refSignature: "register_sidebar(\n\tarray(\n\t\t'id'            => '" + (activeArea ? activeArea.id : 'sidebar-1') + "',\n\t\t'name'          => __( '" + (activeArea ? esc(activeArea.name) : 'Sidebar') + "', '" + d.td + "' ),\n\t\t'description'   => '',\n\t\t'before_widget' => '',\n\t\t'after_widget'  => '',\n\t\t'before_title'  => '',\n\t\t'after_title'   => '',\n\t)\n);",
+      refArgs: [
+        ['id', 'string', 'The handle you pass to dynamic_sidebar() and is_active_sidebar(). Run through sanitize_title(), so keep it lowercase with dashes and never change it after launch — widget assignments are stored against it.'],
+        ['name', 'string', 'What the site owner sees under Appearance → Widgets. Translate it.'],
+        ['description', 'string', 'One line of guidance shown under the name. Skipped by most themes and missed by every client.'],
+        ['class', 'string', 'Added to the widget’s class list. Rarely useful — %2$s already carries widget_text, widget_nav_menu and friends.'],
+        ['before_widget / after_widget', 'string', 'The wrapper around each widget. before_widget goes through sprintf(), so %1$s becomes the widget id and %2$s the widget class.'],
+        ['before_title / after_title', 'string', 'The wrapper around the widget title. A heading tag here is what makes a sidebar navigable by screen reader.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+      refRegistered: d.areas.length
+        ? d.areas.map(function (a) { return padTo(a.id, 16) + ' ' + a.name; }).join('\n')
+        : 'Nothing registered yet.',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showTemplateTab: s.rightTab === 'template', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabTemplate: function () { self.setState({ rightTab: 'template', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabTemplateColor: s.rightTab === 'template' ? '#3858E9' : '#948C7E', tabTemplateBorder: s.rightTab === 'template' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Editor'], ['output', 'PHP & Template']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

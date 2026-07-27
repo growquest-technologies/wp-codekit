@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>oEmbed Provider Generator — wp_oembed_add_provider() — Generator for WP</title>
+  <meta name="description" content="Register oEmbed providers so bare URLs auto-embed, with a fallback handler for services that have no oEmbed endpoint at all." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=core" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Core</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">oEmbed Provider</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">oEmbed Provider Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Paste a URL, get an embed. For services with a real oEmbed endpoint that is one line; for the ones without, this writes the regex handler instead.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:11px;">Which kind</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+          <sc-for list="{{ modeChips }}" as="mc" hint-placeholder-count="2">
+            <button onClick="{{ mc.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ mc.borderColor }}; background:{{ mc.bg }}; color:{{ mc.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font-size:12px; color:#5C564B; line-height:1.6;">{{ modeNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">{{ detailsTitle }}</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ detailsNote }}</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Service name</label>
+            <input value="{{ oe.name }}" onChange="{{ onNameChange }}" placeholder="Acme Video" style="width:100%; font-size:13.5px; padding:8px 10px; border-radius:6px; border:1px solid {{ nameBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+            <input value="{{ oe.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">URL pattern the user pastes</label>
+            <input value="{{ oe.pattern }}" onChange="{{ onPatternChange }}" spellCheck="false" placeholder="https://video.example.com/watch/*" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ patternBorder }};" style-focus="outline:2px solid #3858E9;" />
+            <div style="font-size:11px; color:#948C7E; margin-top:4px; line-height:1.45;">{{ patternHelp }}</div>
+          </div>
+          <sc-if value="{{ isProvider }}" hint-placeholder-val="{{ true }}">
+            <div style="grid-column:1 / -1;">
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">oEmbed endpoint</label>
+              <input value="{{ oe.endpoint }}" onChange="{{ onEndpointChange }}" spellCheck="false" placeholder="https://video.example.com/oembed" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ endpointBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <div style="font-size:11px; color:#948C7E; margin-top:4px; line-height:1.45;">WordPress appends ?url= and &amp;format=json itself. Do not include either.</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isHandler }}" hint-placeholder-val="{{ false }}">
+            <div style="grid-column:1 / -1;">
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">embed URL template</label>
+              <input value="{{ oe.embedTemplate }}" onChange="{{ onEmbedTemplateChange }}" spellCheck="false" placeholder="https://video.example.com/embed/%1$s" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ templateBorder }};" style-focus="outline:2px solid #3858E9;" />
+              <div style="font-size:11px; color:#948C7E; margin-top:4px; line-height:1.45;">%1$s is the first capture group from your regex — usually the video or item id.</div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Embed frame</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">aspect ratio</label>
+            <select value="{{ oe.ratio }}" onChange="{{ onRatioChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="16-9">16 : 9</option>
+              <option value="4-3">4 : 3</option>
+              <option value="1-1">1 : 1</option>
+              <option value="9-16">9 : 16 — vertical</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">cache lifetime (hours)</label>
+            <input value="{{ oe.cacheHours }}" onChange="{{ onCacheChange }}" spellCheck="false" placeholder="24" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:13px;">
+          <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="4">
+            <div style="display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-top:1px solid #F0ECE4;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+                <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+              </div>
+              <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+                <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#FBFAF7; border:1px solid #E7E2D9; border-radius:8px; padding:16px 18px; margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Test URL</div>
+        <input value="{{ oe.testUrl }}" onChange="{{ onTestUrlChange }}" spellCheck="false" placeholder="https://video.example.com/watch/abc123" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+        <div style="margin-top:10px; display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+          <span style="font-size:11.5px; font-weight:700; color:{{ matchColor }};">{{ matchLabel }}</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5C564B;">{{ matchDetail }}</span>
+        </div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">{{ refFunction }}</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Registered on init or plugins_loaded — before any content is rendered</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Provider or handler</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">A provider is for services that publish an oEmbed endpoint: WordPress calls it, gets JSON back, and prints whatever html the service returned. A handler is for services that do not — you match the URL with a regex and build the iframe yourself. Providers are one line and always correct; handlers are your responsibility forever.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Arguments</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="5">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:3px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Caching</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Successful oEmbed responses are cached in post meta under _oembed_{hash} and never expire on their own. Failures are cached too, for a shorter window. If you change the endpoint, existing posts keep the old embed until the meta is cleared — the generated code includes the delete_post_meta_by_key call for that.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Testing it</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; color:#26221C; white-space:pre-wrap; word-break:break-all; font-variant-ligatures:none;">{{ refTesting }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on this provider.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;plugin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const RATIOS = { '16-9': '56.25%', '4-3': '75%', '1-1': '100%', '9-16': '177.78%' };
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function patternToRegex(pattern) {
+  const raw = String(pattern || '').trim();
+  if (!raw) return '#^$#i';
+  const escaped = raw.replace(/[.\\+?^$(){}|\[\]\/]/g, function (c) { return '\\' + c; });
+  const body = escaped.replace(/\*/g, '([^\\/\\?&]+)');
+  return '#' + body + '#i';
+}
+
+function derive(oe) {
+  const pre = fnSlug(oe.prefix) || 'acme';
+  return {
+    pre: pre,
+    slug: slugify(oe.name) || 'acme-video',
+    regex: patternToRegex(oe.pattern),
+    isProvider: oe.mode !== 'handler'
+  };
+}
+
+function testMatch(oe) {
+  const url = String(oe.testUrl || '').trim();
+  if (!url) return { ok: null, detail: 'Paste a URL to test the pattern.' };
+  const raw = String(oe.pattern || '').trim();
+  if (!raw) return { ok: false, detail: 'No pattern to match against.' };
+  try {
+    const jsRe = new RegExp(patternToRegex(raw).replace(/^#|#i$/g, ''), 'i');
+    const m = url.match(jsRe);
+    if (!m) return { ok: false, detail: 'The pattern does not match this URL.' };
+    return { ok: true, detail: m[1] ? 'Captured: ' + m[1] : 'Matched, but no capture group — a handler needs one.' };
+  } catch (err) {
+    return { ok: false, detail: 'The pattern produces an invalid regex.' };
+  }
+}
+
+function buildCode(oe, mode) {
+  const d = derive(oe);
+  const pre = d.pre;
+  const hours = parseInt(oe.cacheHours, 10) || 24;
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + (oe.name || 'oEmbed provider') + ' embeds\n * Description:       Auto-embeds ' + (oe.name || 'the service') + ' URLs pasted into the editor.\n * Version:           1.0.0\n * Requires PHP:      7.4\n */\n\ndefined( \'ABSPATH\' ) || exit;\n\n';
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  } else {
+    out += '<?php\n\n';
+  }
+
+  if (d.isProvider) {
+    out += '/**\n * Register the ' + (oe.name || 'service') + ' oEmbed provider.\n *\n * WordPress appends ?url= and &format=json itself.\n */\nfunction ' + pre + '_register_provider() {\n\twp_oembed_add_provider(\n\t\t\'' + esc(String(oe.pattern || '').trim()) + "',\n\t\t'" + esc(String(oe.endpoint || '').trim()) + "',\n\t\t" + (oe.isRegex ? 'true' : 'false') + " // Whether the first argument is a regex.\n\t);\n}\nadd_action( 'init', '" + pre + "_register_provider' );\n";
+  } else {
+    out += '/**\n * Turn a ' + (oe.name || 'service') + ' URL into an embed.\n *\n * @param array  $matches The regex captures.\n * @param array  $attr    Embed attributes.\n * @param string $url     The original URL.\n * @return string\n */\nfunction ' + pre + '_embed_handler( $matches, $attr, $url ) {\n\tif ( empty( $matches[1] ) ) {\n\t\treturn esc_url( $url );\n\t}\n\n\t$src = sprintf(\n\t\t\'' + esc(String(oe.embedTemplate || 'https://example.com/embed/%1$s').trim()) + "',\n\t\trawurlencode( $matches[1] )\n\t);\n\n\t$iframe = sprintf(\n\t\t'<iframe src=\"%1$s\" title=\"%2$s\" frameborder=\"0\" loading=\"lazy\"" + (oe.allowFullscreen ? ' allowfullscreen' : '') + ' allow="encrypted-media; picture-in-picture"></iframe>\',\n\t\tesc_url( $src ),\n\t\tesc_attr( sprintf(\n\t\t\t/* translators: %s: the item id. */\n\t\t\t__( \'' + esc(oe.name || 'Embedded') + ' item %s\', \'' + d.slug + "' ),\n\t\t\t$matches[1]\n\t\t) )\n\t);\n\n";
+    if (oe.responsiveWrapper) {
+      out += '\treturn sprintf(\n\t\t\'<div class="' + d.slug + '-embed" style="position:relative;padding-bottom:' + RATIOS[oe.ratio] + ';height:0;overflow:hidden;">%s</div>\',\n\t\tstr_replace( \'<iframe \', \'<iframe style="position:absolute;top:0;left:0;width:100%%;height:100%%;" \', $iframe )\n\t);\n}\n';
+    } else {
+      out += '\treturn $iframe;\n}\n';
+    }
+    out += "add_action( 'init', function () {\n\twp_embed_register_handler(\n\t\t'" + d.slug + "',\n\t\t'" + esc(d.regex) + "',\n\t\t'" + pre + "_embed_handler'\n\t);\n} );\n";
+  }
+
+  if (oe.cacheNote) {
+    out += '\n/**\n * Cached embeds live in post meta and never expire on their own.\n * Run this once after changing the endpoint or the markup.\n */\nfunction ' + pre + "_flush_embed_cache() {\n\tglobal $wpdb;\n\n\t// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching\n\t$wpdb->query( \"DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_oembed_%'\" );\n}\n";
+  }
+  if (oe.filterTtl) {
+    out += '\n/**\n * How long a failed lookup is remembered before WordPress retries.\n *\n * @return int\n */\nfunction ' + pre + '_oembed_ttl() {\n\treturn ' + hours + " * HOUR_IN_SECONDS;\n}\nadd_filter( 'oembed_ttl', '" + pre + "_oembed_ttl' );\n";
+  }
+  if (oe.allowUnsafe) {
+    out += '\n/**\n * Allow this host to be embedded even when it is not a known provider.\n *\n * @param string[] $hosts Allowed hosts.\n * @return string[]\n */\nfunction ' + pre + '_allowed_hosts( $hosts ) {\n\t$hosts[] = \'' + esc(String(oe.pattern || '').replace(/^https?:\/\//, '').split('/')[0]) + "';\n\n\treturn $hosts;\n}\nadd_filter( 'allowed_redirect_hosts', '" + pre + "_allowed_hosts' );\n";
+  }
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\$[A-Za-z_]\w*|\{\$[^}]+\})|\b(function|array|true|false|null|return|if|else|empty|global|defined|exit)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(oe) {
+  const d = derive(oe);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const pattern = String(oe.pattern || '').trim();
+  if (!String(oe.name || '').trim()) add('warning', 'No service name, so the handler id and the iframe title both read as generic.');
+  if (!pattern) add('error', 'A URL pattern is required — without it nothing is ever matched.');
+  else {
+    if (!/^https?:\/\//.test(pattern)) add('error', 'The pattern must start with http:// or https://.');
+    if (pattern.indexOf('*') === -1) add('warning', 'No wildcard in the pattern, so only that exact URL matches. Add * where the id varies.', 'addWildcard', 'Add a wildcard');
+    if (pattern.indexOf('http://') === 0) add('warning', 'An http pattern will not match the https URLs users actually paste.', 'useHttps', 'Use https');
+    if (/\*\*/.test(pattern)) add('warning', 'Two consecutive wildcards produce a greedy capture that swallows the rest of the URL.');
+  }
+  if (d.isProvider) {
+    const ep = String(oe.endpoint || '').trim();
+    if (!ep) add('error', 'A provider needs its oEmbed endpoint URL.');
+    else {
+      if (!/^https:\/\//.test(ep)) add('error', 'The endpoint must be https — WordPress will not call an insecure oEmbed endpoint from a secure site.');
+      if (/[?&](url|format)=/.test(ep)) add('error', 'The endpoint already contains url= or format=. WordPress appends both, so this produces a malformed request.', 'stripQuery', 'Strip the query');
+    }
+    add('recommendation', 'Providers depend on the service staying up. If the endpoint 404s, the URL renders as a plain link — which is a reasonable failure, unlike a broken iframe.');
+  } else {
+    const tpl = String(oe.embedTemplate || '').trim();
+    if (!tpl) add('error', 'A handler needs an embed URL template.');
+    else {
+      if (tpl.indexOf('%1$s') === -1) add('error', 'The template has no %1$s, so the captured id is never inserted.');
+      if (!/^https:\/\//.test(tpl)) add('error', 'The embed URL must be https, or browsers will block it as mixed content.');
+    }
+    if (pattern.indexOf('*') === -1) add('error', 'A handler needs at least one wildcard, since %1$s comes from the first capture group.');
+    add('recommendation', 'A handler builds the iframe itself, so its markup, sizing and privacy attributes are yours to maintain. Check whether the service publishes an oEmbed endpoint first.');
+  }
+  const test = testMatch(oe);
+  if (test.ok === false && String(oe.testUrl || '').trim()) add('warning', 'The test URL does not match the pattern: ' + test.detail);
+  if (!oe.responsiveWrapper && !d.isProvider) add('recommendation', 'A bare iframe keeps whatever fixed size you give it. The responsive wrapper is what stops embeds overflowing on phones.', 'addWrapper', 'Add the wrapper');
+  if (!oe.allowFullscreen && !d.isProvider) add('recommendation', 'No allowfullscreen, so a video embed cannot go full screen.');
+  if (oe.allowUnsafe) add('warning', 'Adding the host to allowed_redirect_hosts is unrelated to embedding and widens what wp_safe_redirect() will follow. Only keep it if you know you need it.', 'dropUnsafe', 'Remove it');
+  if (!oe.cacheNote) add('recommendation', 'Embed responses are cached in post meta indefinitely. Without a flush routine, changing the endpoint leaves old posts showing the old embed.', 'addFlush', 'Include the flush');
+  const hours = parseInt(oe.cacheHours, 10);
+  if (oe.filterTtl && (!hours || hours < 1)) add('error', 'Set a cache lifetime of at least one hour.');
+  if (oe.filterTtl && hours > 720) add('recommendation', hours + ' hours is over a month. oembed_ttl only governs failed lookups — a long window means a service outage keeps embeds broken for weeks.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    mode: 'provider', name: 'Acme Video', prefix: 'acme',
+    pattern: 'https://video.example.com/watch/*',
+    endpoint: 'https://video.example.com/oembed',
+    embedTemplate: 'https://video.example.com/embed/%1$s',
+    isRegex: false, ratio: '16-9', cacheHours: '24',
+    responsiveWrapper: true, allowFullscreen: true, cacheNote: true, filterTtl: false, allowUnsafe: false,
+    testUrl: 'https://video.example.com/watch/abc123'
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    oe: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('oembed-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.pattern) this.setState({ oe: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(oe) { try { localStorage.setItem('oembed-generator-v1', JSON.stringify(oe)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.oe));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { oe: next, past: coalesce ? s.past : s.past.concat([s.oe]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.oe));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { oe: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.oe].concat(s.future) }; }, () => this.persist(this.state.oe)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { oe: s.future[0], past: s.past.concat([s.oe]), future: s.future.slice(1) }; }, () => this.persist(this.state.oe)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'addWildcard') p.pattern = String(p.pattern || '').replace(/\/?$/, '/*');
+      if (kind === 'useHttps') { p.pattern = String(p.pattern || '').replace(/^http:\/\//, 'https://'); }
+      if (kind === 'stripQuery') p.endpoint = String(p.endpoint || '').split('?')[0];
+      if (kind === 'addWrapper') p.responsiveWrapper = true;
+      if (kind === 'dropUnsafe') p.allowUnsafe = false;
+      if (kind === 'addFlush') p.cacheNote = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.oe, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const d = derive(this.state.oe);
+    const code = buildCode(this.state.oe, this.state.outputMode);
+    const name = d.slug + '-embeds.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, oe = s.oe, self = this;
+    const d = derive(oe);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(oe);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const test = testMatch(oe);
+
+    return {
+      toolCount: 38, trueVal: true, oe: oe,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: d.slug + '-embeds.php',
+
+      modeChips: [['provider', 'The service has an oEmbed endpoint'], ['handler', 'It does not — build the iframe']].map(function (m) {
+        const on = (oe.mode || 'provider') === m[0];
+        return { label: m[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onSelect: function () { self.set('mode', m[0]); } };
+      }),
+      modeNote: d.isProvider
+        ? 'wp_oembed_add_provider() — one call. WordPress fetches the endpoint, caches the response and prints whatever html the service returns. Check the service docs for /oembed or a .well-known entry before assuming it has none.'
+        : 'wp_embed_register_handler() — your regex, your iframe. Necessary for services with no oEmbed support, and permanently your maintenance problem when their embed URL changes.',
+      isProvider: d.isProvider, isHandler: !d.isProvider,
+      detailsTitle: d.isProvider ? 'Provider details' : 'Handler details',
+      detailsNote: d.isProvider ? 'endpoint + pattern' : 'regex + iframe template',
+
+      onNameChange: function (ev) { self.set('name', ev.target.value, true); },
+      nameBorder: String(oe.name || '').trim() ? '#E7E2D9' : '#B45309',
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onPatternChange: function (ev) { self.set('pattern', ev.target.value, true); },
+      patternBorder: /^https?:\/\//.test(String(oe.pattern || '').trim()) ? '#E7E2D9' : '#B91C1C',
+      patternHelp: d.isProvider
+        ? 'A glob with * wildcards, or a regex if you turn that on below.'
+        : 'Compiled to ' + d.regex + ' — each * becomes a capture group.',
+      onEndpointChange: function (ev) { self.set('endpoint', ev.target.value, true); },
+      endpointBorder: /^https:\/\//.test(String(oe.endpoint || '').trim()) && !/[?&](url|format)=/.test(String(oe.endpoint || '')) ? '#E7E2D9' : '#B91C1C',
+      onEmbedTemplateChange: function (ev) { self.set('embedTemplate', ev.target.value, true); },
+      templateBorder: String(oe.embedTemplate || '').indexOf('%1$s') >= 0 && /^https:\/\//.test(String(oe.embedTemplate || '').trim()) ? '#E7E2D9' : '#B91C1C',
+
+      onRatioChange: function (ev) { self.set('ratio', ev.target.value); },
+      onCacheChange: function (ev) { self.set('cacheHours', ev.target.value, true); },
+      extraToggles: [
+        { key: 'isRegex', label: 'Pattern is a regex', help: 'Passes true as the third argument, so your pattern is used verbatim.', on: oe.isRegex, providerOnly: true },
+        { key: 'responsiveWrapper', label: 'Responsive wrapper', help: 'Wraps the iframe in a padded box at your aspect ratio.', on: oe.responsiveWrapper },
+        { key: 'allowFullscreen', label: 'allowfullscreen', help: 'Lets a video embed go full screen.', on: oe.allowFullscreen },
+        { key: 'cacheNote', label: 'Cache-flush helper', help: 'A function that clears _oembed_ post meta after you change the markup.', on: oe.cacheNote },
+        { key: 'filterTtl', label: 'oembed_ttl filter', help: 'How long a failed lookup is remembered before WordPress retries.', on: oe.filterTtl },
+        { key: 'allowUnsafe', label: 'Trust the host for redirects', help: 'Adds it to allowed_redirect_hosts. Unrelated to embedding — only if you need it.', on: oe.allowUnsafe }
+      ].filter(function (tg) { return !tg.providerOnly || d.isProvider; }).map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      onTestUrlChange: function (ev) { self.set('testUrl', ev.target.value, true); },
+      matchLabel: test.ok === null ? 'No test yet' : test.ok ? 'Matches' : 'No match',
+      matchColor: test.ok === null ? '#948C7E' : test.ok ? '#1F7A4C' : '#B91C1C',
+      matchDetail: test.detail,
+
+      codeTokens: tokenizePHP(buildCode(oe, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: {
+        snippet: 'Registration plus whichever helpers you enabled.',
+        functions: 'Works in a theme — though embeds usually outlive the design.',
+        plugin: 'A single-file plugin, so pasted URLs keep working after a redesign.'
+      }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new provider' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refFunction: d.isProvider ? 'wp_oembed_add_provider()' : 'wp_embed_register_handler()',
+      refArgs: d.isProvider
+        ? [
+          ['$format', 'The URL pattern users paste. A glob with * by default, or a full regex when the third argument is true.'],
+          ['$provider', 'The oEmbed endpoint. WordPress appends ?url= and &format=json, so never include them.'],
+          ['$regex', 'Whether $format is a regex. Default false.'],
+          ['wp_oembed_remove_provider()', 'Takes the same pattern and unregisters it — the way to replace a core provider with your own.'],
+          ['oembed_result', 'Filters the html a provider returned, if you need to add a wrapper or strip an attribute.']
+        ].map(function (r) { return { name: r[0], description: r[1] }; })
+        : [
+          ['$id', 'A unique handler id. Also decides ordering against core’s own handlers.'],
+          ['$regex', 'A full PCRE pattern with delimiters. Capture groups become $matches in your callback.'],
+          ['$callback', 'Receives $matches, $attr, $url and $rawattr. Must return the final markup, escaped.'],
+          ['$priority', 'Lower runs first. Core’s own handlers sit at 10.'],
+          ['wp_embed_unregister_handler()', 'Removes a handler by id and priority.']
+        ].map(function (r) { return { name: r[0], description: r[1] }; }),
+      refTesting: '// In the editor, paste the bare URL on its own line.\n\n// Or check from WP-CLI:\nwp eval \'echo wp_oembed_get( "' + esc(String(oe.testUrl || 'https://example.com/watch/abc').trim()) + '" );\'\n\n// Clear one post’s cached embeds:\nwp post meta list <id> | grep _oembed',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Provider'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

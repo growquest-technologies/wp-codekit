@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Post Status Generator — register_post_status() — Generator for WP</title>
+  <meta name="description" content="Register a custom post status that actually appears in the editor and the posts list — with the two filters core forgets to give you." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=content" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Content</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Post Status</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Post Status Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">register_post_status() alone gets you a status nobody can select. This adds the editor dropdown, the list-table link and the label the display shows.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F0F0F1; border:1px solid #E7E2D9; border-radius:8px; padding:16px; margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:10px;">How the posts list reads</div>
+        <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:#2271B1; margin-bottom:12px;">
+          <span>All <span style="color:#787C82;">(24)</span></span>
+          <span>Published <span style="color:#787C82;">(18)</span></span>
+          <span style="font-weight:600; color:#1D2327;">{{ ps.label }} <span style="color:#787C82;">(3)</span></span>
+          <span>Drafts <span style="color:#787C82;">(3)</span></span>
+        </div>
+        <div style="background:#fff; border:1px solid #C3C4C7; border-radius:2px; padding:10px 12px;">
+          <div style="display:flex; gap:8px; align-items:baseline; flex-wrap:wrap;">
+            <span style="font-size:14px; font-weight:600; color:#2271B1;">The winter campaign brief</span>
+            <span style="font-size:13px; font-weight:600; color:#1D2327;">— {{ ps.label }}</span>
+          </div>
+          <div style="font-size:12.5px; color:#787C82; margin-top:4px;">{{ previewNote }}</div>
+        </div>
+      </div>
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">The status</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Label</label>
+            <input value="{{ ps.label }}" onChange="{{ onLabelChange }}" placeholder="In review" style="width:100%; font-size:14px; padding:8px 10px; border-radius:6px; border:1px solid {{ labelBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">status slug</label>
+            <input value="{{ ps.slug }}" onChange="{{ onSlugChange }}" spellCheck="false" placeholder="in-review" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ slugBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">prefix</label>
+            <input value="{{ ps.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ ps.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">label_count singular / plural</label>
+            <input value="{{ ps.countLabel }}" onChange="{{ onCountLabelChange }}" spellCheck="false" placeholder="In review <span class=&quot;count&quot;>(%s)</span>" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ countBorder }};" style-focus="outline:2px solid #3858E9;" />
+            <div style="font-size:11px; color:#948C7E; margin-top:4px;">%s is the count. Without it the number never shows in the list-table links.</div>
+          </div>
+        </div>
+        <div style="margin-top:13px;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:7px;">Post types that can use it</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+            <sc-for list="{{ postTypeChips }}" as="ptc" hint-placeholder-count="3">
+              <button onClick="{{ ptc.onToggle }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ ptc.borderColor }}; background:{{ ptc.bg }}; color:{{ ptc.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ ptc.label }}</button>
+            </sc-for>
+          </div>
+          <input value="{{ ps.customPostType }}" onChange="{{ onCustomPostTypeChange }}" spellCheck="false" placeholder="Or your own: brief, listing" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Visibility</div>
+        <sc-for list="{{ visibilityToggles }}" as="bt" hint-placeholder-count="5">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Make it usable</div>
+        <sc-for list="{{ wiringToggles }}" as="bt" hint-placeholder-count="3">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">register_post_status()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Called on init — and that is only half the job</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Arguments</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The part core leaves to you</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Nothing in register_post_status() adds your status to the editor’s Status dropdown or prints its name next to a post title. The classic editor needs a snippet of JavaScript in post_submitbox_misc_actions; the display label needs the display_post_states filter. Both are generated here.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The block editor</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">The block editor does not read post statuses registered in PHP at all. Custom statuses appear only through a plugin that registers them in JavaScript, or in the classic editor. The list-table filter link and display label do still work — which is often enough for an editorial workflow.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Querying it</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none;">{{ refQuery }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag on this status.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;default&quot;:&quot;plugin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const POST_TYPES = ['post', 'page', 'product'];
+const CORE_STATUSES = ['publish', 'draft', 'pending', 'private', 'future', 'trash', 'auto-draft', 'inherit'];
+const OPEN_SCRIPT = '<' + 'script>';
+const CLOSE_SCRIPT = '</' + 'script>';
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(ps) {
+  const pre = fnSlug(ps.prefix) || 'acme';
+  const types = (ps.postTypes || []).slice();
+  String(ps.customPostType || '').split(',').forEach(function (t) { const s = slugify(t); if (s && types.indexOf(s) === -1) types.push(s); });
+  return {
+    pre: pre, td: slugify(ps.textDomain) || pre.replace(/_/g, '-'),
+    slug: slugify(ps.slug) || 'in-review',
+    types: types
+  };
+}
+
+function buildCode(ps, mode) {
+  const d = derive(ps);
+  const pre = d.pre, td = d.td;
+  const label = ps.label || 'In review';
+  const countLabel = ps.countLabel || label + ' <span class="count">(%s)</span>';
+  const blocks = [];
+
+  const pairs = [
+    ['label', "_x( '" + esc(label) + "', 'post status', '" + td + "' )"],
+    ['label_count', "_n_noop(\n\t'" + esc(countLabel) + "',\n\t'" + esc(countLabel) + "',\n\t'" + td + "'\n)"],
+    ['public', ps.isPublic ? 'true' : 'false'],
+    ['internal', ps.internal ? 'true' : 'false'],
+    ['exclude_from_search', ps.excludeFromSearch ? 'true' : 'false'],
+    ['show_in_admin_all_list', ps.showInAllList ? 'true' : 'false'],
+    ['show_in_admin_status_list', ps.showInStatusList ? 'true' : 'false'],
+    ['date_floating', ps.dateFloating ? 'true' : 'false']
+  ];
+  if (d.types.length) pairs.push(['post_type', 'array( ' + d.types.map(function (t) { return "'" + esc(t) + "'"; }).join(', ') + ' )']);
+  blocks.push({
+    name: 'register_status', hook: 'init',
+    doc: '/**\n * Register the ' + label + ' status.\n */\n',
+    body: "register_post_status(\n\t'" + esc(d.slug) + "',\n\tarray(\n" + indent(aligned(pairs), 2) + '\n\t)\n);'
+  });
+
+  if (ps.displayState) {
+    blocks.push({
+      name: 'display_state', params: '$states, $post', hookArgs: 2, filter: 'display_post_states',
+      doc: '/**\n * Show the status beside the title in the posts list.\n *\n * @param string[] $states Existing state labels.\n * @param WP_Post  $post   The post.\n * @return string[]\n */\n',
+      body: "if ( '" + esc(d.slug) + "' === get_post_status( $post ) ) {\n\t$states['" + esc(d.slug) + "'] = _x( '" + esc(label) + "', 'post status', '" + td + "' );\n}\n\nreturn $states;"
+    });
+  }
+
+  if (ps.editorDropdown) {
+    const typeCheck = d.types.length ? 'in_array( $post->post_type, array( ' + d.types.map(function (t) { return "'" + esc(t) + "'"; }).join(', ') + " ), true )" : 'true';
+    blocks.push({
+      name: 'submitbox_status', params: '$post', hook: 'post_submitbox_misc_actions',
+      doc: '/**\n * Add the status to the classic editor dropdown.\n *\n * The block editor ignores PHP-registered statuses, so this only\n * affects the classic editor and Quick Edit.\n *\n * @param WP_Post $post The post being edited.\n */\n',
+      body: 'if ( ! ' + typeCheck + " ) {\n\treturn;\n}\n\n$label  = _x( '" + esc(label) + "', 'post status', '" + td + "' );\n$option = sprintf(\n\t'<option value=\"%1$s\"%2$s>%3$s</option>',\n\tesc_attr( '" + esc(d.slug) + "' ),\n\tselected( get_post_status( $post ), '" + esc(d.slug) + "', false ),\n\tesc_html( $label )\n);\n?>\n" + OPEN_SCRIPT + "\njQuery( function ( $ ) {\n\tvar option = <?php echo wp_json_encode( $option ); ?>;\n\tvar label  = <?php echo wp_json_encode( $label ); ?>;\n\n\t$( 'select#post_status' ).append( option );\n\n\t<?php if ( get_post_status( $post ) === '" + esc(d.slug) + "' ) : ?>\n\t\t$( '#post-status-display' ).text( label );\n\t<?php endif; ?>\n} );\n" + CLOSE_SCRIPT + '\n<?php'
+    });
+  }
+
+  if (ps.adminFilter) {
+    blocks.push({
+      name: 'default_query', params: '$query', hook: 'pre_get_posts',
+      doc: '/**\n * Include the status when the posts list shows “All”.\n *\n * @param WP_Query $query The query, by reference.\n */\n',
+      body: "if ( ! is_admin() || ! $query->is_main_query() ) {\n\treturn;\n}\n\n$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;\n\nif ( ! $screen || 'edit' !== $screen->base ) {\n\treturn;\n}\n\nif ( ! empty( $_GET['post_status'] ) ) {\n\treturn;\n}\n\n$statuses = (array) $query->get( 'post_status' );\n\nif ( $statuses && ! in_array( '" + esc(d.slug) + "', $statuses, true ) ) {\n\t$statuses[] = '" + esc(d.slug) + "';\n\t$query->set( 'post_status', $statuses );\n}"
+    });
+  }
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + label + ' post status\n * Description:       Registers the ' + d.slug + ' status' + (d.types.length ? ' for ' + d.types.join(', ') : '') + '.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Text Domain:       ' + td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\n";
+  }
+  out += blocks.map(function (b) {
+    let s = b.doc + 'function ' + pre + '_' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 1) + '\n}\n';
+    if (b.filter) s += "add_filter( '" + b.filter + "', '" + pre + '_' + b.name + "'" + (b.hookArgs ? ', 10, ' + b.hookArgs : '') + ' );\n';
+    else if (b.hook) s += "add_action( '" + b.hook + "', '" + pre + '_' + b.name + "' );\n";
+    return s;
+  }).join('\n');
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|if|else|foreach|endif|in_array|empty|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(ps) {
+  const d = derive(ps);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!String(ps.label || '').trim()) add('error', 'A label is required — it is what the editor and the posts list show.');
+  if (!String(ps.slug || '').trim()) add('error', 'A status slug is required. It is stored in the post_status column on every post that uses it.');
+  else if (String(ps.slug).trim() !== d.slug) add('error', '“' + ps.slug + '” is not a safe slug. Lowercase with dashes, since it goes straight into the database and the URL.', 'fixSlug', 'Use ' + d.slug);
+  if (CORE_STATUSES.indexOf(d.slug) >= 0) add('error', '“' + d.slug + '” is a core status. Registering it again overrides core behaviour across the whole site.');
+  if (d.slug.length > 20) add('error', 'post_status is a 20-character column. “' + d.slug + '” is ' + d.slug.length + ' characters and will be truncated.');
+  if (String(ps.countLabel || '').indexOf('%s') === -1) add('warning', 'label_count has no %s, so the posts list link will show the label with no number.', 'fixCount', 'Add the count');
+  if (!d.types.length) add('warning', 'No post type selected, so the status is registered globally. Harmless, but the editor dropdown and filters will offer it everywhere.', 'addPost', 'Limit to post');
+  if (ps.isPublic && ps.internal) add('error', 'public and internal contradict each other. internal statuses are for core plumbing like auto-draft and inherit.', 'notInternal', 'Turn off internal');
+  if (ps.isPublic && !ps.excludeFromSearch) add('warning', 'A public status that is not excluded from search means unfinished posts show up in site search and in feeds.', 'excludeSearch', 'Exclude from search');
+  if (!ps.isPublic && !ps.showInAllList && !ps.showInStatusList) add('error', 'The status is not public and appears in neither admin list, so nobody will ever see a post in it.', 'showLists', 'Show in both lists');
+  if (!ps.showInStatusList) add('warning', 'Without show_in_admin_status_list there is no filter link at the top of the posts list — the fastest way for a client to lose their in-progress work.', 'showStatus', 'Add the filter link');
+  if (!ps.showInAllList) add('recommendation', 'show_in_admin_all_list false hides these posts from the “All” view. Deliberate for archived content, confusing for a review step.');
+  if (!ps.displayState) add('warning', 'Without the display_post_states filter, a post in this status looks identical to a published one in the posts list.', 'addDisplay', 'Add the label');
+  if (!ps.editorDropdown) add('warning', 'Nothing adds this status to the editor’s Status dropdown, so an author cannot actually set it.', 'addDropdown', 'Add the dropdown');
+  if (ps.editorDropdown) add('recommendation', 'The dropdown snippet is classic-editor only and depends on jQuery. In the block editor the status can still be set programmatically or by Quick Edit.');
+  if (ps.dateFloating) add('recommendation', 'date_floating keeps the post date unset until publish — right for a draft-like status, wrong for anything users see dated.');
+  if (ps.adminFilter && ps.showInAllList) add('recommendation', 'The pre_get_posts helper only matters when show_in_admin_all_list is off. With it on, core already includes the status.');
+  if (d.td !== d.pre.replace(/_/g, '-')) add('recommendation', 'The text domain must match the plugin or theme folder, or the label never translates.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'acme', textDomain: 'acme',
+    label: 'In review', slug: 'in-review', countLabel: 'In review <span class="count">(%s)</span>',
+    postTypes: ['post'], customPostType: '',
+    isPublic: false, internal: false, excludeFromSearch: true,
+    showInAllList: true, showInStatusList: true, dateFloating: true,
+    displayState: true, editorDropdown: true, adminFilter: false
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    ps: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('post-status-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.slug) this.setState({ ps: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(ps) { try { localStorage.setItem('post-status-generator-v1', JSON.stringify(ps)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.ps));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { ps: next, past: coalesce ? s.past : s.past.concat([s.ps]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.ps));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { ps: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.ps].concat(s.future) }; }, () => this.persist(this.state.ps)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { ps: s.future[0], past: s.past.concat([s.ps]), future: s.future.slice(1) }; }, () => this.persist(this.state.ps)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'fixSlug') p.slug = slugify(p.slug);
+      if (kind === 'fixCount') p.countLabel = (p.label || 'In review') + ' <span class="count">(%s)</span>';
+      if (kind === 'addPost') { p.postTypes = p.postTypes || []; if (p.postTypes.indexOf('post') === -1) p.postTypes.push('post'); }
+      if (kind === 'notInternal') p.internal = false;
+      if (kind === 'excludeSearch') p.excludeFromSearch = true;
+      if (kind === 'showLists') { p.showInAllList = true; p.showInStatusList = true; }
+      if (kind === 'showStatus') p.showInStatusList = true;
+      if (kind === 'addDisplay') p.displayState = true;
+      if (kind === 'addDropdown') p.editorDropdown = true;
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.ps, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const ps = this.state.ps, mode = this.state.outputMode;
+    let code = buildCode(ps, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = (slugify(ps.slug) || 'post-status') + '-status.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, ps = s.ps, self = this;
+    const d = derive(ps);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(ps);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    return {
+      toolCount: 38, trueVal: true, ps: ps,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (slugify(ps.slug) || 'post-status') + '-status.php',
+
+      previewNote: (ps.isPublic ? 'Public — reachable on the front end' : 'Not public — admin only')
+        + (ps.excludeFromSearch ? ', hidden from search' : ', appears in search')
+        + (ps.showInStatusList ? ', has a filter link' : ', no filter link')
+        + (d.types.length ? ' · ' + d.types.join(', ') : ' · every post type'),
+
+      onLabelChange: function (ev) { self.set('label', ev.target.value, true); },
+      labelBorder: String(ps.label || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onSlugChange: function (ev) { self.set('slug', ev.target.value, true); },
+      slugBorder: String(ps.slug || '').trim() && String(ps.slug).trim() === d.slug && CORE_STATUSES.indexOf(d.slug) === -1 ? '#E7E2D9' : '#B91C1C',
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      onCountLabelChange: function (ev) { self.set('countLabel', ev.target.value, true); },
+      countBorder: String(ps.countLabel || '').indexOf('%s') >= 0 ? '#E7E2D9' : '#B45309',
+      postTypeChips: POST_TYPES.map(function (pt) {
+        const on = (ps.postTypes || []).indexOf(pt) >= 0;
+        return {
+          label: pt, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B',
+          onToggle: function () { self.commit(function (p) { p.postTypes = p.postTypes || []; const i = p.postTypes.indexOf(pt); if (i >= 0) p.postTypes.splice(i, 1); else p.postTypes.push(pt); }); }
+        };
+      }),
+      onCustomPostTypeChange: function (ev) { self.set('customPostType', ev.target.value, true); },
+
+      visibilityToggles: [
+        { key: 'isPublic', label: 'public', help: 'Posts in this status are viewable on the front end by anyone with the link.', on: ps.isPublic },
+        { key: 'internal', label: 'internal', help: 'For core plumbing only — auto-draft and inherit use this. Leave it off.', on: ps.internal },
+        { key: 'excludeFromSearch', label: 'exclude_from_search', help: 'Keeps these posts out of site search and feeds.', on: ps.excludeFromSearch },
+        { key: 'showInAllList', label: 'show_in_admin_all_list', help: 'Include them in the “All” view of the posts list.', on: ps.showInAllList },
+        { key: 'showInStatusList', label: 'show_in_admin_status_list', help: 'The filter link with a count at the top of the posts list.', on: ps.showInStatusList },
+        { key: 'dateFloating', label: 'date_floating', help: 'Leave the post date unset until it is published, the way drafts behave.', on: ps.dateFloating }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+      wiringToggles: [
+        { key: 'displayState', label: 'Label beside the post title', help: 'The display_post_states filter, so the list shows “— In review”.', on: ps.displayState },
+        { key: 'editorDropdown', label: 'Editor status dropdown', help: 'Adds the option to the classic editor Status select. The block editor ignores PHP statuses.', on: ps.editorDropdown },
+        { key: 'adminFilter', label: 'Include in the All view', help: 'A pre_get_posts helper for when show_in_admin_all_list is off but you still want it in All.', on: ps.adminFilter }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(ps, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: {
+        snippet: 'Registration plus whichever helpers you turned on.',
+        functions: 'Works in a theme, though a workflow status usually belongs in a plugin.',
+        plugin: 'The right home: the status should survive a theme switch.'
+      }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new post status' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refArgs: [
+        ['label', 'string', 'What people see. Register it with _x() and a “post status” context so translators know what it is.'],
+        ['label_count', 'array', 'Built with _n_noop() for the singular and plural forms. %s is the count in the list-table link.'],
+        ['public', 'bool', 'True makes posts in this status viewable on the front end. A review status should be false.'],
+        ['internal', 'bool', 'Reserved for core statuses like auto-draft. Setting it hides the status from everything.'],
+        ['exclude_from_search', 'bool', 'Keeps the posts out of search results and feeds. Almost always true for a non-public status.'],
+        ['show_in_admin_all_list', 'bool', 'Whether the posts appear in the All view of the list table.'],
+        ['show_in_admin_status_list', 'bool', 'Whether the status gets its own filter link with a count.'],
+        ['date_floating', 'bool', 'Leaves post_date unset until publish, the way draft does.'],
+        ['post_type', 'array', 'Which post types may use it. Since WordPress 5.3 — earlier versions ignore it.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+      refQuery: "// Query it like any other status.\n$in_review = new WP_Query(\n\tarray(\n\t\t'post_type'   => '" + (d.types[0] || 'post') + "',\n\t\t'post_status' => '" + d.slug + "',\n\t)\n);\n\n// Move a post into it.\nwp_update_post(\n\tarray(\n\t\t'ID'          => $post_id,\n\t\t'post_status' => '" + d.slug + "',\n\t)\n);",
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Status'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

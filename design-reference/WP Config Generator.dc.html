@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>wp-config.php Generator — constants, salts and debug flags — Generator for WP</title>
+  <meta name="description" content="Build an environment-aware wp-config.php: database, salts, debug flags, memory limits and the security constants worth setting." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=core" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Core</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">wp-config.php</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">wp-config.php Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">The file everyone copies from the last project. Pick an environment and it writes the debug, cache and security constants that suit it — and warns about the ones that do not.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onRegenSalts }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New salts</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Environment</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ envNote }}</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+          <sc-for list="{{ envChips }}" as="ec" hint-placeholder-count="4">
+            <button onClick="{{ ec.onSelect }}" style="font-size:12px; font-weight:650; border:1px solid {{ ec.borderColor }}; background:{{ ec.bg }}; color:{{ ec.color }}; border-radius:20px; padding:5px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ ec.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">DB_NAME</label>
+            <input value="{{ wc.dbName }}" onChange="{{ onDbNameChange }}" spellCheck="false" placeholder="acme_wp" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ dbNameBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">DB_USER</label>
+            <input value="{{ wc.dbUser }}" onChange="{{ onDbUserChange }}" spellCheck="false" placeholder="acme_wp" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ dbUserBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">DB_HOST</label>
+            <input value="{{ wc.dbHost }}" onChange="{{ onDbHostChange }}" spellCheck="false" placeholder="localhost" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">table prefix</label>
+            <input value="{{ wc.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="wp_" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ prefixBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">site URL</label>
+            <input value="{{ wc.siteUrl }}" onChange="{{ onSiteUrlChange }}" spellCheck="false" placeholder="https://example.com" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">memory limit</label>
+            <input value="{{ wc.memory }}" onChange="{{ onMemoryChange }}" spellCheck="false" placeholder="256M" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ memoryBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="margin-top:12px; padding:11px 13px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:7px; font-size:12px; color:#5C564B; line-height:1.6;">{{ envSummary }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:11px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Constants</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ constantsNote }}</div>
+        </div>
+        <sc-for list="{{ constantGroups }}" as="cg" hint-placeholder-count="4">
+          <div style="margin-bottom:14px;">
+            <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">{{ cg.label }}</div>
+            <div style="display:flex; flex-direction:column; gap:0;">
+              <sc-for list="{{ cg.items }}" as="ci" hint-placeholder-count="4">
+                <div style="display:flex; align-items:flex-start; gap:14px; padding:9px 0; border-top:1px solid #F0ECE4;">
+                  <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                      <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:650; color:#26221C;">{{ ci.name }}</span>
+                      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:{{ ci.valueColor }};">{{ ci.valueLabel }}</span>
+                    </div>
+                    <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ ci.help }}</div>
+                  </div>
+                  <button role="switch" aria-checked="{{ ci.on }}" aria-label="{{ ci.name }}" onClick="{{ ci.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ ci.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+                    <span style="position:absolute; top:2px; left:{{ ci.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+                  </button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Salts</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ saltNote }}</div>
+        </div>
+        <div style="font-size:12px; color:#5C564B; line-height:1.6;">Generated in your browser from crypto.getRandomValues — nothing is sent anywhere. Changing them logs every user out, which is the point after a compromise.</div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="2">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">wp-config.php</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Loaded before anything else — no hooks exist yet</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Order matters</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Everything must be defined before the require of wp-settings.php on the last line. A constant defined after it is ignored, silently — the most common reason a debug flag “does not work”.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Constants worth knowing</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:3px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Keep credentials out of the repo</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">The environment-variable mode reads DB details from getenv(), so the file itself is safe to commit. Whatever you do, wp-config.php should sit outside the web root or be denied by the server — it holds the keys to everything.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">WP_ENVIRONMENT_TYPE</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Since 5.5, core reads this and plugins can branch on wp_get_environment_type(). Valid values are local, development, staging and production. Setting it is how you stop a staging site emailing real customers.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this config.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+const ENVS = [['local', 'Local'], ['development', 'Development'], ['staging', 'Staging'], ['production', 'Production']];
+const SALT_KEYS = ['AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY', 'AUTH_SALT', 'SECURE_AUTH_SALT', 'LOGGED_IN_SALT', 'NONCE_SALT'];
+const GROUPS = [
+  ['Debugging', [
+    ['WP_DEBUG', 'The master switch. On means PHP notices are raised, and every deprecation is reported.'],
+    ['WP_DEBUG_LOG', 'Writes to wp-content/debug.log instead of the screen. The pair you want on a live site if you must debug at all.'],
+    ['WP_DEBUG_DISPLAY', 'Prints errors into the page. Leaks paths and query fragments to visitors.'],
+    ['SCRIPT_DEBUG', 'Loads unminified core CSS and JS. Only useful while working on core or a block.'],
+    ['SAVEQUERIES', 'Records every query for inspection. Expensive — memory grows with the page.']
+  ]],
+  ['Content and updates', [
+    ['DISALLOW_FILE_EDIT', 'Removes the plugin and theme file editors from the admin.'],
+    ['DISALLOW_FILE_MODS', 'Blocks all installs and updates from the admin — for sites deployed from git.'],
+    ['WP_AUTO_UPDATE_CORE', 'minor for security releases only, true for everything, false for none.'],
+    ['AUTOSAVE_INTERVAL', 'Seconds between editor autosaves. 60 is core’s default.'],
+    ['WP_POST_REVISIONS', 'How many revisions to keep. A number, or false to keep none.'],
+    ['EMPTY_TRASH_DAYS', 'How long trashed content survives before permanent deletion.']
+  ]],
+  ['Performance and cron', [
+    ['WP_CACHE', 'Tells a drop-in object or page cache to engage. Harmless without one.'],
+    ['DISABLE_WP_CRON', 'Stops cron running on page loads. Pair it with a real crontab or nothing runs.'],
+    ['WP_CRON_LOCK_TIMEOUT', 'Seconds before a stuck cron run is considered abandoned.'],
+    ['CONCATENATE_SCRIPTS', 'Combines admin scripts. Off helps when debugging admin JS.']
+  ]],
+  ['Security and URLs', [
+    ['FORCE_SSL_ADMIN', 'Forces https for logins and the admin.'],
+    ['WP_SITEURL', 'Hard-codes the site URL, so a database from another environment cannot redirect you away.'],
+    ['WP_HOME', 'Hard-codes the home URL alongside WP_SITEURL.'],
+    ['WP_MEMORY_LIMIT', 'PHP memory for the front end.'],
+    ['WP_MAX_MEMORY_LIMIT', 'A higher ceiling for admin tasks like image resizing.']
+  ]]
+];
+const PRESETS = {
+  local: { on: ['WP_DEBUG', 'WP_DEBUG_LOG', 'WP_DEBUG_DISPLAY', 'SCRIPT_DEBUG', 'SAVEQUERIES', 'WP_MEMORY_LIMIT', 'WP_MAX_MEMORY_LIMIT', 'AUTOSAVE_INTERVAL', 'DISABLE_WP_CRON', 'WP_CRON_LOCK_TIMEOUT'] },
+  development: { on: ['WP_DEBUG', 'WP_DEBUG_LOG', 'SCRIPT_DEBUG', 'WP_MEMORY_LIMIT', 'WP_MAX_MEMORY_LIMIT', 'DISALLOW_FILE_EDIT', 'WP_POST_REVISIONS'] },
+  staging: { on: ['WP_DEBUG', 'WP_DEBUG_LOG', 'DISALLOW_FILE_EDIT', 'DISALLOW_FILE_MODS', 'WP_MEMORY_LIMIT', 'WP_MAX_MEMORY_LIMIT', 'FORCE_SSL_ADMIN', 'WP_SITEURL', 'WP_HOME', 'WP_AUTO_UPDATE_CORE', 'WP_CACHE'] },
+  production: { on: ['DISALLOW_FILE_EDIT', 'DISALLOW_FILE_MODS', 'WP_MEMORY_LIMIT', 'WP_MAX_MEMORY_LIMIT', 'FORCE_SSL_ADMIN', 'WP_AUTO_UPDATE_CORE', 'WP_CACHE', 'WP_POST_REVISIONS', 'EMPTY_TRASH_DAYS', 'DISABLE_WP_CRON', 'WP_CRON_LOCK_TIMEOUT'] }
+};
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function randomSalt() {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_[]{}<>~`+=,.;:/?|';
+  let out = '';
+  const buf = new Uint32Array(64);
+  try { (window.crypto || window.msCrypto).getRandomValues(buf); } catch (err) { for (let i = 0; i < 64; i++) buf[i] = Math.floor(Math.random() * 4294967295); }
+  for (let i = 0; i < 64; i++) out += chars.charAt(buf[i] % chars.length);
+  return out;
+}
+function freshSalts() {
+  const out = {};
+  SALT_KEYS.forEach(function (k) { out[k] = randomSalt(); });
+  return out;
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+
+function constValue(wc, name) {
+  switch (name) {
+    case 'WP_DEBUG': return 'true';
+    case 'WP_DEBUG_LOG': return 'true';
+    case 'WP_DEBUG_DISPLAY': return 'true';
+    case 'SCRIPT_DEBUG': return 'true';
+    case 'SAVEQUERIES': return 'true';
+    case 'DISALLOW_FILE_EDIT': return 'true';
+    case 'DISALLOW_FILE_MODS': return 'true';
+    case 'WP_AUTO_UPDATE_CORE': return "'minor'";
+    case 'AUTOSAVE_INTERVAL': return '120';
+    case 'WP_POST_REVISIONS': return wc.env === 'production' ? '5' : '10';
+    case 'EMPTY_TRASH_DAYS': return '14';
+    case 'WP_CACHE': return 'true';
+    case 'DISABLE_WP_CRON': return 'true';
+    case 'WP_CRON_LOCK_TIMEOUT': return '300';
+    case 'CONCATENATE_SCRIPTS': return 'false';
+    case 'FORCE_SSL_ADMIN': return 'true';
+    case 'WP_SITEURL': return "'" + esc(String(wc.siteUrl || '').trim()) + "'";
+    case 'WP_HOME': return "'" + esc(String(wc.siteUrl || '').trim()) + "'";
+    case 'WP_MEMORY_LIMIT': return "'" + esc(String(wc.memory || '256M').trim()) + "'";
+    case 'WP_MAX_MEMORY_LIMIT': return "'512M'";
+    default: return 'true';
+  }
+}
+
+function buildCode(wc, mode) {
+  const on = wc.constants || [];
+  const has = function (n) { return on.indexOf(n) >= 0; };
+  let out = '<?php\n' + CREDIT + '/**\n * WordPress configuration — ' + wc.env + '.\n *\n * Everything must be defined before the require at the bottom.\n */\n\n';
+
+  out += '// ** Database ** //\n';
+  if (mode === 'env') {
+    out += "define( 'DB_NAME', getenv( 'DB_NAME' ) );\ndefine( 'DB_USER', getenv( 'DB_USER' ) );\ndefine( 'DB_PASSWORD', getenv( 'DB_PASSWORD' ) );\ndefine( 'DB_HOST', getenv( 'DB_HOST' ) ?: 'localhost' );\n";
+  } else {
+    out += "define( 'DB_NAME', '" + esc(String(wc.dbName || '').trim()) + "' );\ndefine( 'DB_USER', '" + esc(String(wc.dbUser || '').trim()) + "' );\ndefine( 'DB_PASSWORD', '" + esc(String(wc.dbPassword || '').trim()) + "' );\ndefine( 'DB_HOST', '" + esc(String(wc.dbHost || 'localhost').trim()) + "' );\n";
+  }
+  out += "define( 'DB_CHARSET', 'utf8mb4' );\ndefine( 'DB_COLLATE', '' );\n\n";
+  out += '$table_prefix = \'' + esc(String(wc.prefix || 'wp_').trim()) + "';\n\n";
+
+  out += '// ** Environment ** //\n';
+  out += "define( 'WP_ENVIRONMENT_TYPE', '" + wc.env + "' );\n\n";
+
+  const groups = [
+    ['Debugging', ['WP_DEBUG', 'WP_DEBUG_LOG', 'WP_DEBUG_DISPLAY', 'SCRIPT_DEBUG', 'SAVEQUERIES', 'CONCATENATE_SCRIPTS']],
+    ['Content and updates', ['DISALLOW_FILE_EDIT', 'DISALLOW_FILE_MODS', 'WP_AUTO_UPDATE_CORE', 'AUTOSAVE_INTERVAL', 'WP_POST_REVISIONS', 'EMPTY_TRASH_DAYS']],
+    ['Performance and cron', ['WP_CACHE', 'DISABLE_WP_CRON', 'WP_CRON_LOCK_TIMEOUT']],
+    ['Security and URLs', ['FORCE_SSL_ADMIN', 'WP_SITEURL', 'WP_HOME', 'WP_MEMORY_LIMIT', 'WP_MAX_MEMORY_LIMIT']]
+  ];
+  groups.forEach(function (g) {
+    const items = g[1].filter(has);
+    if (!items.length) return;
+    out += '// ** ' + g[0] + ' ** //\n';
+    const w = items.reduce(function (m, n) { return Math.max(m, n.length); }, 0);
+    items.forEach(function (n) {
+      if (n === 'WP_DEBUG_DISPLAY' && !has('WP_DEBUG')) return;
+      out += "define( '" + padTo(n + "',", w + 2) + ' ' + constValue(wc, n) + ' );\n';
+    });
+    if (has('WP_DEBUG') && has('WP_DEBUG_LOG') && !has('WP_DEBUG_DISPLAY') && g[0] === 'Debugging') {
+      out += "define( '" + padTo("WP_DEBUG_DISPLAY',", w + 2) + ' false );\n@ini_set( \'display_errors\', 0 );\n';
+    }
+    out += '\n';
+  });
+
+  out += '// ** Authentication salts — unique to this site ** //\n';
+  const saltW = SALT_KEYS.reduce(function (m, k) { return Math.max(m, k.length); }, 0);
+  SALT_KEYS.forEach(function (k) {
+    out += "define( '" + padTo(k + "',", saltW + 2) + " '" + esc((wc.salts && wc.salts[k]) || '') + "' );\n";
+  });
+  out += '\n';
+
+  out += "// ** Absolute path and bootstrap ** //\nif ( ! defined( 'ABSPATH' ) ) {\n\tdefine( 'ABSPATH', __DIR__ . '/' );\n}\n\nrequire_once ABSPATH . 'wp-settings.php';\n";
+  return out;
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(define|require_once|if|defined|true|false|null|getenv)\b|\b(\d+)\b|([A-Za-z_@]\w*)(?=\s*\()|(<\?php|::|=>|->|[{}()\[\];,]|=|\.|\?:)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(wc) {
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const on = wc.constants || [];
+  const has = function (n) { return on.indexOf(n) >= 0; };
+  const prod = wc.env === 'production' || wc.env === 'staging';
+
+  if (wc.mode !== 'env') {
+    if (!String(wc.dbName || '').trim()) add('error', 'DB_NAME is empty — WordPress cannot connect.');
+    if (!String(wc.dbUser || '').trim()) add('error', 'DB_USER is empty.');
+    if (!String(wc.dbPassword || '').trim()) add('warning', 'DB_PASSWORD is empty. Fine on a local box with a socket, wrong anywhere else.');
+    if (prod) add('warning', 'Credentials are hard-coded in a ' + wc.env + ' config. Reading them from environment variables keeps them out of the repo.', 'useEnv', 'Read from getenv()');
+  }
+  if (!/_$/.test(String(wc.prefix || ''))) add('error', 'The table prefix must end with an underscore, or table names run together.', 'fixPrefix', 'Add the underscore');
+  if (String(wc.prefix || '') === 'wp_' && prod) add('recommendation', 'wp_ is the default prefix. Changing it is weak security on its own, but it does stop the laziest automated attacks.');
+  if (String(wc.memory || '') && !/^\d+M$/.test(String(wc.memory).trim())) add('error', 'WP_MEMORY_LIMIT should look like 256M.');
+  else if (parseInt(wc.memory, 10) < 128) add('warning', 'A memory limit under 128M will fail on image-heavy uploads and large plugin sets.');
+
+  if (has('WP_DEBUG_DISPLAY') && prod) add('error', 'WP_DEBUG_DISPLAY on a ' + wc.env + ' site prints PHP errors, file paths and sometimes queries to visitors.', 'hideErrors', 'Turn it off');
+  if (has('WP_DEBUG') && prod && !has('WP_DEBUG_LOG')) add('warning', 'WP_DEBUG is on without WP_DEBUG_LOG, so errors have nowhere to go but the page.', 'logOnly', 'Log to file');
+  if (has('SAVEQUERIES') && prod) add('error', 'SAVEQUERIES keeps every query in memory for every request. On a live site that is a measurable slowdown for no benefit.', 'dropSaveQueries', 'Turn it off');
+  if (has('SCRIPT_DEBUG') && prod) add('warning', 'SCRIPT_DEBUG serves unminified core assets to every visitor.', 'dropScriptDebug', 'Turn it off');
+  if (has('WP_DEBUG_LOG') && !has('WP_DEBUG')) add('warning', 'WP_DEBUG_LOG does nothing without WP_DEBUG.', 'enableDebug', 'Turn WP_DEBUG on');
+  if (!has('DISALLOW_FILE_EDIT') && prod) add('warning', 'The plugin and theme file editors are available in the admin. One compromised admin account becomes arbitrary PHP.', 'noFileEdit', 'Disable the editors');
+  if (has('DISALLOW_FILE_MODS') && !prod) add('recommendation', 'DISALLOW_FILE_MODS blocks plugin installs from the admin — deliberate for deployed sites, painful while developing.');
+  if (has('DISABLE_WP_CRON') && !has('WP_CRON_LOCK_TIMEOUT')) add('recommendation', 'With WP-Cron disabled you need a real crontab hitting wp-cron.php. Nothing scheduled runs otherwise.');
+  if (!has('FORCE_SSL_ADMIN') && prod) add('warning', 'Logins are not forced over https, so credentials can travel in the clear.', 'forceSsl', 'Force SSL for admin');
+  if (has('WP_SITEURL') && !String(wc.siteUrl || '').trim()) add('error', 'WP_SITEURL is enabled but no URL is set.');
+  if (String(wc.siteUrl || '').indexOf('http://') === 0 && prod) add('warning', 'The site URL uses http on a ' + wc.env + ' environment.');
+  if (has('WP_AUTO_UPDATE_CORE') && wc.env === 'production') add('recommendation', 'minor keeps security releases automatic while leaving major versions to you. That is the sane default for a client site.');
+  const salts = wc.salts || {};
+  const missing = SALT_KEYS.filter(function (k) { return !salts[k] || String(salts[k]).length < 60; });
+  if (missing.length) add('error', missing.length + ' salt' + (missing.length === 1 ? '' : 's') + ' missing or too short. Generate a fresh set.', 'regenSalts', 'Generate salts');
+  if (wc.env === 'local' && has('FORCE_SSL_ADMIN')) add('warning', 'FORCE_SSL_ADMIN on a local site without a certificate will lock you out of the admin.', 'dropSsl', 'Turn it off');
+  if (has('WP_POST_REVISIONS') === false && !prod) add('recommendation', 'Revisions are unlimited. On a busy editorial site that is thousands of rows in wp_posts.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    env: 'production', mode: 'inline',
+    dbName: 'acme_wp', dbUser: 'acme_wp', dbPassword: '', dbHost: 'localhost', prefix: 'wp_',
+    siteUrl: 'https://example.com', memory: '256M',
+    constants: PRESETS.production.on.slice(),
+    salts: freshSalts()
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    wc: freshProject(), past: [], future: [],
+    rightTab: 'code', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('wp-config-generator-v1');
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved && saved.env) {
+          const next = Object.assign(freshProject(), saved);
+          if (!next.salts || !next.salts.AUTH_KEY) next.salts = freshSalts();
+          this.setState({ wc: next });
+        }
+      }
+    } catch (err) { /* ignore */ }
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(wc) { try { localStorage.setItem('wp-config-generator-v1', JSON.stringify(wc)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.wc));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { wc: next, past: coalesce ? s.past : s.past.concat([s.wc]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.wc));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { wc: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.wc].concat(s.future) }; }, () => this.persist(this.state.wc)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { wc: s.future[0], past: s.past.concat([s.wc]), future: s.future.slice(1) }; }, () => this.persist(this.state.wc)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      p.constants = p.constants || [];
+      const drop = function (n) { const i = p.constants.indexOf(n); if (i >= 0) p.constants.splice(i, 1); };
+      const addC = function (n) { if (p.constants.indexOf(n) === -1) p.constants.push(n); };
+      if (kind === 'useEnv') p.mode = 'env';
+      if (kind === 'fixPrefix') p.prefix = String(p.prefix || 'wp').replace(/_*$/, '') + '_';
+      if (kind === 'hideErrors') drop('WP_DEBUG_DISPLAY');
+      if (kind === 'logOnly') { addC('WP_DEBUG_LOG'); drop('WP_DEBUG_DISPLAY'); }
+      if (kind === 'dropSaveQueries') drop('SAVEQUERIES');
+      if (kind === 'dropScriptDebug') drop('SCRIPT_DEBUG');
+      if (kind === 'enableDebug') addC('WP_DEBUG');
+      if (kind === 'noFileEdit') addC('DISALLOW_FILE_EDIT');
+      if (kind === 'forceSsl') addC('FORCE_SSL_ADMIN');
+      if (kind === 'dropSsl') drop('FORCE_SSL_ADMIN');
+      if (kind === 'regenSalts') p.salts = freshSalts();
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.wc, this.state.wc.mode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'Config copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const code = buildCode(this.state.wc, this.state.wc.mode);
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'wp-config.php'; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded wp-config.php' });
+  }
+
+  renderVals() {
+    const s = this.state, wc = s.wc, self = this;
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(wc);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+    const on = wc.constants || [];
+    const risky = { WP_DEBUG_DISPLAY: true, SAVEQUERIES: true, SCRIPT_DEBUG: true };
+    const prod = wc.env === 'production' || wc.env === 'staging';
+
+    return {
+      toolCount: 38, trueVal: true, wc: wc,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: 'wp-config.php',
+
+      envNote: on.length + ' constant' + (on.length === 1 ? '' : 's') + ' set',
+      envChips: ENVS.map(function (e) {
+        const active = wc.env === e[0];
+        return {
+          label: e[1], borderColor: active ? '#3858E9' : '#E7E2D9', bg: active ? '#EEF1FE' : '#fff', color: active ? '#2A46C4' : '#5C564B',
+          onSelect: function () { self.commit(function (p) { p.env = e[0]; p.constants = PRESETS[e[0]].on.slice(); }); }
+        };
+      }),
+      onDbNameChange: function (ev) { self.set('dbName', ev.target.value, true); },
+      onDbUserChange: function (ev) { self.set('dbUser', ev.target.value, true); },
+      onDbHostChange: function (ev) { self.set('dbHost', ev.target.value, true); },
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onSiteUrlChange: function (ev) { self.set('siteUrl', ev.target.value, true); },
+      onMemoryChange: function (ev) { self.set('memory', ev.target.value, true); },
+      dbNameBorder: wc.mode === 'env' || String(wc.dbName || '').trim() ? '#E7E2D9' : '#B91C1C',
+      dbUserBorder: wc.mode === 'env' || String(wc.dbUser || '').trim() ? '#E7E2D9' : '#B91C1C',
+      prefixBorder: /_$/.test(String(wc.prefix || '')) ? '#E7E2D9' : '#B91C1C',
+      memoryBorder: /^\d+M$/.test(String(wc.memory || '').trim()) ? '#E7E2D9' : '#B91C1C',
+      envSummary: 'WP_ENVIRONMENT_TYPE is ' + wc.env + ', so wp_get_environment_type() reports it and plugins can behave accordingly. '
+        + (prod ? 'Debug output is kept off the page.' : 'Errors are visible while you work.')
+        + (wc.mode === 'env' ? ' Database credentials come from environment variables.' : ' Database credentials are written into the file.'),
+
+      constantsNote: on.length + ' of ' + GROUPS.reduce(function (n, g) { return n + g[1].length; }, 0),
+      constantGroups: GROUPS.map(function (g) {
+        return {
+          label: g[0],
+          items: g[1].map(function (c) {
+            const isOn = on.indexOf(c[0]) >= 0;
+            const bad = isOn && risky[c[0]] && prod;
+            return {
+              name: c[0], help: c[1], on: isOn,
+              valueLabel: isOn ? constValue(wc, c[0]).replace(/'/g, '') : '—',
+              valueColor: bad ? '#B91C1C' : isOn ? '#1F7A4C' : '#C9C2B4',
+              bg: isOn ? (bad ? '#B91C1C' : '#3858E9') : '#D9D4C8',
+              knobLeft: isOn ? '19px' : '2px',
+              onToggle: function () { self.commit(function (p) { p.constants = p.constants || []; const i = p.constants.indexOf(c[0]); if (i >= 0) p.constants.splice(i, 1); else p.constants.push(c[0]); }); }
+            };
+          })
+        };
+      }),
+
+      saltNote: SALT_KEYS.filter(function (k) { return (wc.salts || {})[k]; }).length + ' of 8 generated',
+      onRegenSalts: function () { self.commit(function (p) { p.salts = freshSalts(); }); self.setState({ ariaLiveMessage: 'New salts generated' }); },
+
+      codeTokens: tokenizePHP(buildCode(wc, wc.mode)),
+      outputModes: [['inline', 'Credentials inline'], ['env', 'From getenv()']].map(function (m) {
+        const active = wc.mode === m[0];
+        return { label: m[1], onClick: function () { self.set('mode', m[0]); }, borderColor: active ? '#3858E9' : '#E7E2D9', bg: active ? '#EEF1FE' : '#fff', color: active ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: wc.mode === 'env'
+        ? 'Safe to commit — the credentials live in the environment, not the file.'
+        : 'Keep this file out of version control, or switch to environment variables.',
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new config' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refArgs: [
+        ['WP_DEBUG with WP_DEBUG_LOG', 'The only debug pairing safe on a live site: errors are recorded, never printed. Add WP_DEBUG_DISPLAY false to be certain.'],
+        ['WP_ENVIRONMENT_TYPE', 'local, development, staging or production. Core reads it; plugins should.'],
+        ['DISALLOW_FILE_EDIT / DISALLOW_FILE_MODS', 'The first removes the file editors, the second blocks all installs and updates. Both belong on a deployed site.'],
+        ['$table_prefix', 'A variable, not a constant, and it must end in an underscore.'],
+        ['FORCE_SSL_ADMIN', 'Forces https for login and admin. Behind a proxy you may also need to trust HTTP_X_FORWARDED_PROTO.'],
+        ['WP_SITEURL / WP_HOME', 'Hard-coding these stops a copied database redirecting you to the wrong domain — and makes the Settings fields read-only.'],
+        ['Salts', 'Eight random strings that key cookies and nonces. Changing them invalidates every session immediately.']
+      ].map(function (r) { return { name: r[0], description: r[1] }; }),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const active = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: active ? '#3858E9' : '#E7E2D9', bg: active ? '#EEF1FE' : '#fff', color: active ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Constants'], ['output', 'PHP & Checks']].map(function (tb) {
+        const active = s.mobilePane === tb[0];
+        return { label: tb[1], bg: active ? '#3858E9' : '#fff', color: active ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

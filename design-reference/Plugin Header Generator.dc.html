@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Plugin Header Generator — the file header WordPress reads — Generator for WP</title>
+  <meta name="description" content="The plugin file header with every field WordPress and the directory read, plus an optional bootstrap class and folder structure." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=core" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Core</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Plugin Header</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Plugin Header Generator</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Fourteen header fields, a guard clause, path constants and — if you want it — a singleton bootstrap. The file every plugin starts from, written properly once.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F0F0F1; border:1px solid #E7E2D9; border-radius:8px; padding:16px; margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:10px;">How the Plugins screen reads</div>
+        <div style="background:#fff; border:1px solid #C3C4C7; border-radius:2px; padding:12px 14px;">
+          <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:14px; font-weight:600; color:#2271B1;">{{ ph.name }}</span>
+            <span style="font-size:12.5px; color:#787C82;">Deactivate | Settings</span>
+          </div>
+          <div style="font-size:13px; color:#2C3338; line-height:1.6; margin-top:6px;">{{ ph.description }}</div>
+          <div style="font-size:12.5px; color:#787C82; margin-top:6px;">{{ metaLine }}</div>
+        </div>
+      </div>
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Identity</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;">
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Plugin Name</label>
+            <input value="{{ ph.name }}" onChange="{{ onNameChange }}" placeholder="Acme Toolkit" style="width:100%; font-size:14.5px; padding:9px 11px; border-radius:6px; border:1px solid {{ nameBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div style="grid-column:1 / -1;">
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Description</label>
+            <input value="{{ ph.description }}" onChange="{{ onDescriptionChange }}" placeholder="What it does, in one sentence a client would understand." style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid {{ descBorder }};" style-focus="outline:2px solid #3858E9;" />
+            <div style="font-size:11px; color:#948C7E; margin-top:4px;">{{ descCount }}</div>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">plugin folder / slug</label>
+            <input value="{{ ph.slug }}" onChange="{{ onSlugChange }}" spellCheck="false" placeholder="acme-toolkit" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ slugBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">Version</label>
+            <input value="{{ ph.version }}" onChange="{{ onVersionChange }}" spellCheck="false" placeholder="1.0.0" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ versionBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">Author</label>
+            <input value="{{ ph.author }}" onChange="{{ onAuthorChange }}" placeholder="GrowQuest" style="width:100%; font-size:13px; padding:7px 9px; border-radius:6px; border:1px solid {{ authorBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">Author URI</label>
+            <input value="{{ ph.authorUri }}" onChange="{{ onAuthorUriChange }}" spellCheck="false" placeholder="https://growquest.io" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">Plugin URI</label>
+            <input value="{{ ph.pluginUri }}" onChange="{{ onPluginUriChange }}" spellCheck="false" placeholder="https://example.com/acme-toolkit" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Requirements and licence</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">Requires at least</label>
+            <input value="{{ ph.minWp }}" onChange="{{ onMinWpChange }}" spellCheck="false" placeholder="6.0" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">Tested up to</label>
+            <input value="{{ ph.testedUp }}" onChange="{{ onTestedUpChange }}" spellCheck="false" placeholder="6.8" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">Requires PHP</label>
+            <input value="{{ ph.minPhp }}" onChange="{{ onMinPhpChange }}" spellCheck="false" placeholder="7.4" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">License</label>
+            <select value="{{ ph.license }}" onChange="{{ onLicenseChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="GPL-2.0-or-later">GPL-2.0-or-later</option>
+              <option value="GPL-3.0-or-later">GPL-3.0-or-later</option>
+              <option value="MIT">MIT</option>
+              <option value="proprietary">Proprietary — not for the directory</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">Text Domain</label>
+            <input value="{{ ph.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme-toolkit" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ tdBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">Update URI</label>
+            <input value="{{ ph.updateUri }}" onChange="{{ onUpdateUriChange }}" spellCheck="false" placeholder="false for private plugins" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">What else goes in the file</div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="5">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabTree }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabTreeColor }}; border-bottom:2px solid {{ tabTreeBorder }};" style-focus="outline:2px solid #3858E9;">Structure</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="2">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showTreeTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; padding:14px 16px 40px;">
+          <div style="font-size:10.5px; color:#948C7E; margin-bottom:11px;">A structure that survives growing past one file.</div>
+          <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.8; color:#3B362D; white-space:pre;">{{ treeText }}</pre>
+          <div style="margin-top:14px; font-size:12.5px; color:#3B362D; line-height:1.65;">The main file stays a header, a guard, constants and a require. Everything else lives in includes/ — which is what makes the plugin readable a year later.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">Plugin file header</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Parsed from the first 8 kB of the main file</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Fields</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="8">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:3px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Only the first block counts</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">WordPress reads the first 8 kB of the main file and stops at the first matching field. A second Plugin Name later in the file is ignored — and a Plugin Name in any other PHP file in the folder makes WordPress list that file as a separate plugin.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Update URI</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Since 5.8, setting Update URI to false — or to a domain you control — stops wordpress.org offering an update for a plugin whose slug happens to match something in the directory. Essential for private client plugins.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this header.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;plugin&quot;,&quot;readme&quot;],&quot;default&quot;:&quot;plugin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function constName(s) { return String(s || 'acme').toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, ''); }
+function pascal(s) { return String(s || '').split(/[^A-Za-z0-9]+/).filter(Boolean).map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join('_'); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+
+const CREDIT = ' * Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+const LICENSE_URI = {
+  'GPL-2.0-or-later': 'https://www.gnu.org/licenses/gpl-2.0.html',
+  'GPL-3.0-or-later': 'https://www.gnu.org/licenses/gpl-3.0.html',
+  MIT: 'https://opensource.org/licenses/MIT',
+  proprietary: ''
+};
+
+function derive(ph) {
+  const slug = slugify(ph.slug) || 'acme-plugin';
+  return {
+    slug: slug,
+    CONST: constName(slug),
+    cls: pascal(slug) || 'Acme_Plugin',
+    td: slugify(ph.textDomain) || slug
+  };
+}
+
+function buildHeader(ph) {
+  const d = derive(ph);
+  const fields = [];
+  fields.push(['Plugin Name', ph.name || 'Acme Plugin']);
+  if (String(ph.pluginUri || '').trim()) fields.push(['Plugin URI', String(ph.pluginUri).trim()]);
+  fields.push(['Description', ph.description || '']);
+  fields.push(['Version', String(ph.version || '1.0.0').trim()]);
+  if (String(ph.minWp || '').trim()) fields.push(['Requires at least', String(ph.minWp).trim()]);
+  if (String(ph.testedUp || '').trim()) fields.push(['Tested up to', String(ph.testedUp).trim()]);
+  if (String(ph.minPhp || '').trim()) fields.push(['Requires PHP', String(ph.minPhp).trim()]);
+  fields.push(['Author', ph.author || '']);
+  if (String(ph.authorUri || '').trim()) fields.push(['Author URI', String(ph.authorUri).trim()]);
+  if (ph.license !== 'proprietary') {
+    fields.push(['License', ph.license]);
+    fields.push(['License URI', LICENSE_URI[ph.license] || '']);
+  } else {
+    fields.push(['License', 'Proprietary — all rights reserved']);
+  }
+  fields.push(['Text Domain', d.td]);
+  if (ph.domainPath) fields.push(['Domain Path', '/languages']);
+  if (String(ph.updateUri || '').trim()) fields.push(['Update URI', String(ph.updateUri).trim()]);
+  if (ph.networkOnly) fields.push(['Network', 'true']);
+  const w = fields.reduce(function (m, f) { return Math.max(m, f[0].length); }, 0);
+  return fields.map(function (f) { return (' * ' + padTo(f[0] + ':', w + 2) + ' ' + f[1]).replace(/\s+$/, ''); }).join('\n');
+}
+
+function buildCode(ph, mode) {
+  const d = derive(ph);
+  if (mode === 'readme') {
+    let out = '=== ' + (ph.name || 'Acme Plugin') + ' ===\n';
+    out += 'Contributors: ' + slugify(ph.author) + '\n';
+    out += 'Tags: \nRequires at least: ' + (ph.minWp || '6.0') + '\nTested up to: ' + (ph.testedUp || '6.8') + '\nRequires PHP: ' + (ph.minPhp || '7.4') + '\nStable tag: ' + (ph.version || '1.0.0') + '\nLicense: ' + ph.license + '\n';
+    if (LICENSE_URI[ph.license]) out += 'License URI: ' + LICENSE_URI[ph.license] + '\n';
+    out += '\n' + (ph.description || '') + '\n\n== Description ==\n\nWrite the long description here — this is what the directory page shows.\n\n== Installation ==\n\n1. Upload the plugin folder to /wp-content/plugins/.\n2. Activate it through the Plugins screen.\n\n== Changelog ==\n\n= ' + (ph.version || '1.0.0') + ' =\n* First release.\n';
+    return out;
+  }
+
+  let out = '<?php\n/**\n' + buildHeader(ph) + '\n *\n' + CREDIT + ' *\n * @package ' + d.cls + '\n */\n\n';
+  out += "defined( 'ABSPATH' ) || exit;\n\n";
+  out += '// Fail loudly here rather than fatally later.\n';
+  if (String(ph.minPhp || '').trim()) {
+    out += "if ( version_compare( PHP_VERSION, '" + esc(String(ph.minPhp).trim()) + "', '<' ) ) {\n\treturn;\n}\n\n";
+  }
+  const W = ['VERSION', 'FILE', 'PATH', 'URL', 'BASENAME'].reduce(function (m, k) { return Math.max(m, (d.CONST + '_' + k).length); }, 0);
+  out += "define( '" + padTo(d.CONST + "_VERSION',", W + 3) + " '" + esc(String(ph.version || '1.0.0').trim()) + "' );\ndefine( '" + padTo(d.CONST + "_FILE',", W + 3) + ' __FILE__ );\ndefine( \'' + padTo(d.CONST + "_PATH',", W + 3) + ' plugin_dir_path( __FILE__ ) );\ndefine( \'' + padTo(d.CONST + "_URL',", W + 3) + ' plugin_dir_url( __FILE__ ) );\ndefine( \'' + padTo(d.CONST + "_BASENAME',", W + 3) + ' plugin_basename( __FILE__ ) );\n\n';
+
+  if (ph.textdomainLoad) {
+    out += '/**\n * Load translations.\n *\n * Since WordPress 4.6 core loads directory-hosted translations for you;\n * this is for the ones you ship yourself.\n */\nfunction ' + d.slug.replace(/-/g, '_') + '_load_textdomain() {\n\tload_plugin_textdomain( \'' + d.td + "', false, dirname( " + d.CONST + "_BASENAME ) . '/languages' );\n}\nadd_action( 'init', '" + d.slug.replace(/-/g, '_') + "_load_textdomain' );\n\n";
+  }
+
+  if (ph.bootstrap) {
+    out += '/**\n * The plugin, as one object.\n */\nfinal class ' + d.cls + ' {\n\n\t/**\n\t * The single instance.\n\t *\n\t * @var ' + d.cls + '|null\n\t */\n\tprivate static $instance = null;\n\n\t/**\n\t * Get the instance, creating it on first call.\n\t *\n\t * @return ' + d.cls + '\n\t */\n\tpublic static function instance() {\n\t\tif ( null === self::$instance ) {\n\t\t\tself::$instance = new self();\n\t\t\tself::$instance->boot();\n\t\t}\n\n\t\treturn self::$instance;\n\t}\n\n\t/**\n\t * Load the pieces and wire the hooks.\n\t */\n\tprivate function boot() {\n\t\t$this->includes();\n\t\t$this->hooks();\n\t}\n\n\t/**\n\t * Require the plugin’s own files.\n\t */\n\tprivate function includes() {\n\t\trequire_once ' + d.CONST + "_PATH . 'includes/class-settings.php';\n\t\trequire_once " + d.CONST + "_PATH . 'includes/class-assets.php';\n\t}\n\n\t/**\n\t * Everything this plugin hooks into.\n\t */\n\tprivate function hooks() {\n\t\tadd_action( 'init', array( $this, 'register' ) );\n\t}\n\n\t/**\n\t * Registration that belongs on init.\n\t */\n\tpublic function register() {\n\t\t// Post types, taxonomies and shortcodes go here.\n\t}\n}\n\n" + d.cls + '::instance();\n';
+  } else {
+    out += '// Load the plugin’s own files.\nrequire_once ' + d.CONST + "_PATH . 'includes/functions.php';\n";
+  }
+  return out;
+}
+
+const TOKEN_RE = /(\/\*\*[\s\S]*?\*\/|\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|class|final|private|public|static|self|new|null|return|if|define|defined|exit|require_once|var)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(ph) {
+  const d = derive(ph);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (!String(ph.name || '').trim()) add('error', 'Plugin Name is the one required field. Without it WordPress does not list the file as a plugin at all.');
+  if (!String(ph.description || '').trim()) add('warning', 'No description, so the Plugins screen shows a blank line under the name.');
+  else if (String(ph.description).length > 140) add('warning', 'The description is ' + String(ph.description).length + ' characters. The Plugins screen truncates around 140.');
+  if (!/^\d+\.\d+(\.\d+)?$/.test(String(ph.version || '').trim())) add('error', 'Version must be a comparable version string like 1.0.0 — the update system uses version_compare().');
+  if (!String(ph.author || '').trim()) add('warning', 'No author. The Plugins screen shows “By” followed by nothing.');
+  if (String(ph.slug || '').trim() !== d.slug) add('error', '“' + ph.slug + '” is not a safe folder slug. Lowercase with dashes — it becomes the folder name and the text domain.', 'fixSlug', 'Use ' + d.slug);
+  if (d.td !== d.slug) add('error', 'The text domain must match the plugin folder name exactly, or WordPress will not load your translation files.', 'matchTd', 'Use ' + d.slug);
+  if (String(ph.pluginUri || '').trim() && !/^https?:\/\//.test(String(ph.pluginUri).trim())) add('error', 'Plugin URI must be a full URL.');
+  if (String(ph.authorUri || '').trim() && !/^https?:\/\//.test(String(ph.authorUri).trim())) add('error', 'Author URI must be a full URL.');
+  if (!String(ph.minPhp || '').trim()) add('warning', 'No Requires PHP, so WordPress cannot stop an old host from activating the plugin and fatalling.');
+  if (!String(ph.minWp || '').trim()) add('recommendation', 'No Requires at least. Users on old WordPress will install it and discover the problem themselves.');
+  if (!String(ph.testedUp || '').trim()) add('recommendation', 'No Tested up to. The directory shows a compatibility warning without it.');
+  if (ph.license === 'proprietary') add('warning', 'A proprietary licence cannot be hosted on wordpress.org — the directory requires GPL-compatible licensing. Fine for a client plugin.');
+  if (!String(ph.updateUri || '').trim()) add('recommendation', 'No Update URI. If the slug ever collides with a directory plugin, wordpress.org will happily overwrite this one. Set it to false for private plugins.', 'setUpdateFalse', 'Set it to false');
+  if (String(ph.updateUri || '').trim() === 'false') add('recommendation', 'Update URI is false, so nothing external can offer an update. Correct for a client plugin, wrong for a distributed one.');
+  if (ph.networkOnly) add('recommendation', 'Network true means the plugin can only be activated network-wide on multisite. It disappears from individual sites’ plugin lists.');
+  if (!ph.textdomainLoad) add('recommendation', 'No load_plugin_textdomain(). Core loads directory-hosted translations automatically, but not the .mo files you ship yourself.');
+  if (ph.bootstrap) add('recommendation', 'The bootstrap requires includes/class-settings.php and includes/class-assets.php — create them or trim the includes() method.');
+  if (!ph.bootstrap) add('recommendation', 'No bootstrap class. Fine for a small plugin; past a few hundred lines a single entry object saves you from a file of loose functions.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    name: 'Acme Toolkit', slug: 'acme-toolkit', description: 'Editorial tools for the Acme site: briefs, review workflow and a weekly digest.',
+    version: '1.0.0', author: 'GrowQuest', authorUri: 'https://growquest.io', pluginUri: '',
+    minWp: '6.0', testedUp: '6.8', minPhp: '7.4', license: 'GPL-2.0-or-later',
+    textDomain: 'acme-toolkit', updateUri: 'false',
+    domainPath: true, textdomainLoad: true, bootstrap: true, networkOnly: false
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    ph: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('plugin-header-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.slug) this.setState({ ph: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(ph) { try { localStorage.setItem('plugin-header-generator-v1', JSON.stringify(ph)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.ph));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { ph: next, past: coalesce ? s.past : s.past.concat([s.ph]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.ph));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { ph: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.ph].concat(s.future) }; }, () => this.persist(this.state.ph)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { ph: s.future[0], past: s.past.concat([s.ph]), future: s.future.slice(1) }; }, () => this.persist(this.state.ph)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'fixSlug') p.slug = slugify(p.slug);
+      if (kind === 'matchTd') p.textDomain = slugify(p.slug);
+      if (kind === 'setUpdateFalse') p.updateUri = 'false';
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.ph, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'Copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const d = derive(this.state.ph);
+    const code = buildCode(this.state.ph, this.state.outputMode);
+    const name = this.state.outputMode === 'readme' ? 'readme.txt' : d.slug + '.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, ph = s.ph, self = this;
+    const d = derive(ph);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(ph);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    return {
+      toolCount: 38, trueVal: true, ph: ph,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: s.outputMode === 'readme' ? 'readme.txt' : d.slug + '.php',
+
+      metaLine: 'Version ' + (ph.version || '1.0.0') + ' | By ' + (ph.author || '—') + (String(ph.minPhp || '').trim() ? ' | Requires PHP ' + ph.minPhp : ''),
+      onNameChange: function (ev) { self.set('name', ev.target.value, true); },
+      nameBorder: String(ph.name || '').trim() ? '#E7E2D9' : '#B91C1C',
+      onDescriptionChange: function (ev) { self.set('description', ev.target.value, true); },
+      descBorder: String(ph.description || '').trim() ? (String(ph.description).length > 140 ? '#B45309' : '#E7E2D9') : '#B45309',
+      descCount: String(ph.description || '').length + ' characters — the Plugins screen truncates around 140.',
+      onSlugChange: function (ev) { self.set('slug', ev.target.value, true); },
+      slugBorder: String(ph.slug || '').trim() === d.slug && d.slug ? '#E7E2D9' : '#B91C1C',
+      onVersionChange: function (ev) { self.set('version', ev.target.value, true); },
+      versionBorder: /^\d+\.\d+(\.\d+)?$/.test(String(ph.version || '').trim()) ? '#E7E2D9' : '#B91C1C',
+      onAuthorChange: function (ev) { self.set('author', ev.target.value, true); },
+      authorBorder: String(ph.author || '').trim() ? '#E7E2D9' : '#B45309',
+      onAuthorUriChange: function (ev) { self.set('authorUri', ev.target.value, true); },
+      onPluginUriChange: function (ev) { self.set('pluginUri', ev.target.value, true); },
+      onMinWpChange: function (ev) { self.set('minWp', ev.target.value, true); },
+      onTestedUpChange: function (ev) { self.set('testedUp', ev.target.value, true); },
+      onMinPhpChange: function (ev) { self.set('minPhp', ev.target.value, true); },
+      onLicenseChange: function (ev) { self.set('license', ev.target.value); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      tdBorder: d.td === d.slug ? '#E7E2D9' : '#B91C1C',
+      onUpdateUriChange: function (ev) { self.set('updateUri', ev.target.value, true); },
+
+      extraToggles: [
+        { key: 'domainPath', label: 'Domain Path', help: 'Points core at /languages for your own translation files.', on: ph.domainPath },
+        { key: 'textdomainLoad', label: 'load_plugin_textdomain()', help: 'Loads the .mo files you ship, which core does not do for you.', on: ph.textdomainLoad },
+        { key: 'bootstrap', label: 'Bootstrap class', help: 'A single-instance entry object with includes() and hooks().', on: ph.bootstrap },
+        { key: 'networkOnly', label: 'Network only', help: 'Network: true — activatable network-wide on multisite only.', on: ph.networkOnly }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(ph, s.outputMode)),
+      outputModes: [['plugin', d.slug + '.php'], ['readme', 'readme.txt']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: s.outputMode === 'plugin'
+        ? 'Save as ' + d.slug + '/' + d.slug + '.php — the folder name must match the text domain.'
+        : 'The directory readme, seeded from the header. Readme Studio is the full editor for it.',
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new plugin header' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      treeText: d.slug + '/\n├── ' + d.slug + '.php          header, guard, constants\n├── uninstall.php' + new Array(Math.max(1, d.slug.length - 8)).join(' ') + '   deletion, on delete only\n├── readme.txt\n├── languages/\n│   └── ' + d.td + '.pot\n├── includes/\n│   ├── class-settings.php\n│   ├── class-assets.php\n│   └── functions.php\n├── admin/\n│   └── class-admin.php\n└── assets/\n    ├── css/\n    └── js/',
+
+      refArgs: [
+        ['Plugin Name', 'The only required field. Everything else is optional, and its absence is silent.'],
+        ['Description', 'One sentence, shown in the Plugins list. Truncated around 140 characters.'],
+        ['Version', 'Compared with version_compare() for updates, so 1.10 is newer than 1.9.'],
+        ['Requires at least / Requires PHP', 'Core refuses to activate the plugin when the environment is below these. Cheap insurance against a support ticket.'],
+        ['Text Domain', 'Must equal the plugin folder name for translations to load.'],
+        ['Domain Path', 'Where your own .mo files live, relative to the plugin folder.'],
+        ['Update URI', 'Since 5.8. false, or a domain you control, stops wordpress.org offering updates for a slug collision.'],
+        ['Network', 'true restricts activation to network-wide on multisite.']
+      ].map(function (r) { return { name: r[0], description: r[1] }; }),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showTreeTab: s.rightTab === 'tree', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabTree: function () { self.setState({ rightTab: 'tree', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabTreeColor: s.rightTab === 'tree' ? '#3858E9' : '#948C7E', tabTreeBorder: s.rightTab === 'tree' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Header'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

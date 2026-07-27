@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Generator for WP — WordPress code generators</title>
+  <meta name="description" content="Fill in a form, get production-ready WordPress PHP. Post types, taxonomies, queries, hooks, readme.txt and more. Live previews, no signup." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; text-decoration: none; }
+    a:hover { color: #213FD4; }
+    input, textarea, select, button { font-family: inherit; }
+    h1, h2, h3, h4, p { margin: 0; text-wrap: pretty; }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-track { background: #F3F1EC; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C9C2B5; }
+    pre, code, .gfw-mono { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+    @keyframes gfw-caret { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
+  
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    button, select, textarea, input { font-family: inherit; }
+  </style>
+</helmet>
+
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C;">
+
+  <dc-import name="SiteHeader" base="" active="{{ activeNav }}" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <main style="flex:1;">
+
+  <!-- ══════════ HOME ══════════ -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div>
+
+    <!-- Hero -->
+    <section style="max-width:1200px; margin:0 auto; padding:clamp(44px,6vw,76px) 28px 56px; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,380px),1fr)); gap:clamp(32px,4vw,56px); align-items:center;">
+      <div>
+        <div style="display:inline-flex; align-items:center; gap:8px; border:1px solid #E7E2D9; background:#FFFFFF; border-radius:20px; padding:5px 12px 5px 8px; font-size:11.5px; font-weight:650; color:#6B6459; margin-bottom:22px;">
+          <span style="width:6px; height:6px; border-radius:50%; background:#1F7A4C;"></span>
+          {{ heroBadgeLabel }}
+        </div>
+        <h1 style="font-size:clamp(34px,5vw,57px); line-height:1.03; letter-spacing:-0.033em; font-weight:700; color:#1C1A15; margin-bottom:20px; max-width:15ch;">Every WordPress generator, one place.</h1>
+        <p style="font-size:clamp(16px,1.5vw,18.5px); line-height:1.5; color:#5C564B; max-width:520px; margin-bottom:30px;">Fill in a form, get production-ready PHP. Post types, taxonomies, queries, hooks, readme files — with live previews of what you're actually building.</p>
+
+        <form onSubmit="{{ onHeroSearchSubmit }}" style="display:flex; gap:10px; max-width:520px; margin-bottom:18px;">
+          <div style="flex:1; display:flex; align-items:center; gap:10px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:0 14px; box-shadow:0 1px 2px rgba(38,34,28,0.04);">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:17px; line-height:1; color:#A79F91; flex-shrink:0;">&#xf241;</span>
+            <input aria-label="Search generators" placeholder="register_post_type, taxonomy, WP_Query…" value="{{ heroQuery }}" onChange="{{ onHeroQueryChange }}" style="flex:1; border:none; outline:none; background:none; font-size:15px; padding:13px 0; color:#26221C; min-width:0;" />
+          </div>
+          <button type="submit" style="background:#26221C; color:#fff; border:none; border-radius:10px; padding:0 22px; font-size:14.5px; font-weight:650; cursor:pointer; flex-shrink:0;" style-hover="background:#3B362D;" style-focus="outline:2px solid #3858E9; outline-offset:2px;">Search</button>
+        </form>
+
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12.5px; color:#948C7E;">
+          <span style="font-weight:600;">Popular:</span>
+          <sc-for list="{{ popularSearches }}" as="ps" hint-placeholder-count="4">
+            <a href="{{ ps.href }}" style="border:1px solid #E7E2D9; background:#FFFFFF; border-radius:14px; padding:4px 11px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#4A4438;" style-hover="border-color:#3858E9; background:#EEF1FE; color:#213FD4;">{{ ps.label }}</a>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- Hero code panel -->
+      <div style="background:#1C1A15; border-radius:14px; padding:0; overflow:hidden; box-shadow:0 18px 40px -18px rgba(28,26,21,0.45), 0 2px 6px rgba(28,26,21,0.12);">
+        <div style="display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid #322E26;">
+          <span style="width:9px; height:9px; border-radius:50%; background:#4A4438;"></span>
+          <span style="width:9px; height:9px; border-radius:50%; background:#4A4438;"></span>
+          <span style="width:9px; height:9px; border-radius:50%; background:#4A4438;"></span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8C8474; margin-left:6px;">post-type.php</span>
+          <div style="flex:1;"></div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.08em; color:#3858E9;">GENERATED</span>
+        </div>
+        <pre style="margin:0; padding:20px 18px 22px; font-family:'JetBrains Mono',monospace; font-size:clamp(10.5px,1.15vw,12.5px); line-height:1.75; color:#C9C2B5; overflow-x:auto;"><span style="color:#7C7565;">// Register the "Recipe" post type
+</span><span style="color:#8FA9FF;">add_action</span>( <span style="color:#B7D48A;">'init'</span>, <span style="color:#8FA9FF;">function</span>() {
+  <span style="color:#8FA9FF;">register_post_type</span>( <span style="color:#B7D48A;">'recipe'</span>, [
+    <span style="color:#B7D48A;">'labels'</span>       => [
+      <span style="color:#B7D48A;">'name'</span>          => <span style="color:#B7D48A;">'Recipes'</span>,
+      <span style="color:#B7D48A;">'singular_name'</span> => <span style="color:#B7D48A;">'Recipe'</span>,
+    ],
+    <span style="color:#B7D48A;">'public'</span>       => <span style="color:#E0A87A;">true</span>,
+    <span style="color:#B7D48A;">'has_archive'</span>  => <span style="color:#E0A87A;">true</span>,
+    <span style="color:#B7D48A;">'menu_icon'</span>    => <span style="color:#B7D48A;">'dashicons-carrot'</span>,
+    <span style="color:#B7D48A;">'supports'</span>     => [ <span style="color:#B7D48A;">'title'</span>, <span style="color:#B7D48A;">'editor'</span>, <span style="color:#B7D48A;">'thumbnail'</span> ],
+    <span style="color:#B7D48A;">'show_in_rest'</span> => <span style="color:#E0A87A;">true</span>,
+  ] );
+} );<span style="animation:gfw-caret 1.1s steps(1) infinite; color:#3858E9;">▍</span></pre>
+      </div>
+    </section>
+
+    <!-- Value props -->
+    <section style="border-top:1px solid #E7E2D9; border-bottom:1px solid #E7E2D9; background:#FFFFFF;">
+      <div style="max-width:1200px; margin:0 auto; padding:52px 28px; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,240px),1fr)); gap:28px 0;">
+        <sc-for list="{{ valueProps }}" as="vp" hint-placeholder-count="3">
+          <div style="padding-right:clamp(18px,2.4vw,34px); padding-left:{{ vp.padLeft }}; border-left:{{ vp.borderLeft }};">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#3858E9; letter-spacing:0.06em; margin-bottom:14px;">{{ vp.num }}</div>
+            <h3 style="font-size:19px; font-weight:700; letter-spacing:-0.015em; color:#1C1A15; margin-bottom:9px;">{{ vp.title }}</h3>
+            <p style="font-size:14.5px; line-height:1.6; color:#5C564B;">{{ vp.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Featured tool -->
+    <section style="max-width:1200px; margin:0 auto; padding:64px 28px 0;">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:22px;">
+        <h2 style="font-size:13px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#948C7E;">Start here</h2>
+        <div style="flex:1; height:1px; background:#E7E2D9;"></div>
+        <a href="#/tools" style="font-size:13px; font-weight:650;">{{ liveCountLink }}</a>
+      </div>
+
+      <a href="./Readme%20Studio.dc.html" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,340px),1fr)); gap:0; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:14px; overflow:hidden; box-shadow:0 1px 3px rgba(38,34,28,0.05);" style-hover="border-color:#3858E9; box-shadow:0 12px 28px -14px rgba(56,88,233,0.3);">
+        <div style="padding:clamp(26px,3vw,38px) clamp(24px,3vw,40px) 40px;">
+          <div style="display:flex; align-items:center; gap:9px; margin-bottom:16px;">
+            <span style="display:inline-flex; align-items:center; gap:6px; background:#EEF1FE; color:#2A46C4; border-radius:5px; padding:3px 8px; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">Most used</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#A79F91;">core · readme.txt</span>
+          </div>
+          <h3 style="font-size:31px; font-weight:700; letter-spacing:-0.025em; color:#1C1A15; margin-bottom:12px;">Readme Studio</h3>
+          <p style="font-size:15.5px; line-height:1.6; color:#5C564B; margin-bottom:24px; max-width:440px;">A drag-and-drop editor for <span style="font-family:'JetBrains Mono',monospace; font-size:14px;">readme.txt</span>. Write your description, FAQ and changelog in a real WYSIWYG editor, watch the WordPress.org listing render live beside it, then export a file the plugin directory accepts on the first try.</p>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; margin-bottom:28px;">
+            <sc-for list="{{ readmeFeatures }}" as="rf" hint-placeholder-count="4">
+              <span style="border:1px solid #E7E2D9; background:#FCFBF9; border-radius:6px; padding:5px 10px; font-size:12px; font-weight:600; color:#4A4438;">{{ rf.label }}</span>
+            </sc-for>
+          </div>
+          <span style="display:inline-flex; align-items:center; gap:8px; background:#3858E9; color:#fff; font-size:14.5px; font-weight:650; padding:11px 20px; border-radius:9px;">
+            Open the generator
+            <span aria-hidden="true" style="font-family:lineicons; font-size:15px; line-height:1; color:currentColor;">&#xe0da;</span>
+          </span>
+        </div>
+        <div style="background:#F7F5F0; border-left:1px solid #E7E2D9; padding:28px; display:flex; flex-direction:column; gap:12px; justify-content:center;">
+          <div style="background:#fff; border:1px solid #E7E2D9; border-radius:9px; padding:14px 16px;">
+            <div style="font-size:15px; font-weight:700; color:#1C1A15; margin-bottom:3px;">Recipe Card Blocks</div>
+            <div style="font-size:12px; color:#948C7E; margin-bottom:10px;">By Kitchen Labs</div>
+            <div style="display:flex; gap:3px; align-items:center; margin-bottom:9px;">
+              <sc-for list="{{ previewStars }}" as="st" hint-placeholder-count="5">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:12px; line-height:1; color:#F0A82E;">&#xf3cd;</span>
+              </sc-for>
+              <span style="font-size:11px; color:#948C7E; margin-left:4px;">(112)</span>
+            </div>
+            <div style="height:1px; background:#EFEBE3; margin-bottom:9px;"></div>
+            <div style="font-size:12.5px; line-height:1.55; color:#5C564B;">Add structured, print-friendly recipe cards to any post with a single block.</div>
+          </div>
+          <div style="background:#1C1A15; border-radius:9px; padding:13px 15px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.7; color:#C9C2B5; white-space:pre; overflow-x:auto; overflow-y:hidden; font-variant-ligatures:none; font-feature-settings:'liga' 0, 'calt' 0;"><span style="color:#7C7565;">=== Recipe Card Blocks ===</span>
+Contributors: kitchenlabs
+Tested up to: 6.8
+Stable tag: 2.1.0
+License: GPLv2 or later</div>
+          <div style="text-align:center; font-size:11.5px; color:#948C7E; font-weight:600;">Listing preview · generated file</div>
+        </div>
+      </a>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%,240px),1fr)); gap:12px; margin-top:12px;">
+        <sc-for list="{{ featuredTools }}" as="lt" hint-placeholder-count="12">
+          <a href="{{ lt.href }}" style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:11px; padding:16px 18px; display:flex; flex-direction:column; gap:6px; text-decoration:none; color:#26221C;" style-hover="border-color:#3858E9; background:#FCFCFE; box-shadow:0 8px 20px -14px rgba(56,88,233,0.4);">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">{{ lt.categoryLabel }}</span>
+            <span style="font-size:15px; font-weight:700; color:#1C1A15; letter-spacing:-0.01em;">{{ lt.name }}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#3858E9;">{{ lt.fn }}</span>
+            <span style="font-size:12.5px; line-height:1.5; color:#7E7668;">{{ lt.blurb }}</span>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Browse by category -->
+    <section style="max-width:1200px; margin:0 auto; padding:64px 28px 0;">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:22px;">
+        <h2 style="font-size:13px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#948C7E;">Browse by category</h2>
+        <div style="flex:1; height:1px; background:#E7E2D9;"></div>
+        <a href="#/tools" style="font-size:13px; font-weight:650;">{{ liveCountLink }}</a>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,180px),1fr)); gap:12px;">
+        <sc-for list="{{ categoryCards }}" as="cc" hint-placeholder-count="5">
+          <a href="{{ cc.href }}" style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:11px; padding:20px 18px 18px; display:flex; flex-direction:column; gap:8px; min-height:150px;" style-hover="border-color:#3858E9; background:#FCFCFE; color:#26221C;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:#3858E9; letter-spacing:-0.02em;">{{ cc.count }}</div>
+            <div style="font-size:15px; font-weight:700; color:#1C1A15; letter-spacing:-0.01em;">{{ cc.label }}</div>
+            <div style="font-size:12.5px; line-height:1.5; color:#948C7E;">{{ cc.blurb }}</div>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Coming next -->
+    <sc-if value="{{ allShipped }}" hint-placeholder-val="{{ false }}">
+    <section style="max-width:1200px; margin:0 auto; padding:64px 28px 84px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:14px; padding:clamp(26px,3vw,38px) clamp(24px,3vw,40px); display:flex; align-items:center; gap:clamp(20px,3vw,44px); flex-wrap:wrap;">
+        <div style="min-width:240px; flex:1;">
+          <div style="font-size:13px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#948C7E; margin-bottom:10px;">The build list</div>
+          <div style="font-size:clamp(20px,2.2vw,26px); font-weight:700; letter-spacing:-0.02em; color:#1C1A15; margin-bottom:8px; max-width:24ch; text-wrap:pretty;">{{ allShippedTitle }}</div>
+          <p style="font-size:14.5px; line-height:1.6; color:#5C564B; max-width:52ch; text-wrap:pretty;">Every generator on the roadmap is live. What gets built next is whatever people keep writing by hand — tell us which function that is for you.</p>
+        </div>
+        <a href="#/contact" style="display:inline-flex; align-items:center; gap:8px; background:#26221C; color:#fff; font-size:14.5px; font-weight:650; padding:12px 22px; border-radius:9px; flex-shrink:0;" style-hover="background:#3858E9; color:#fff;">
+          Request a generator
+          <span aria-hidden="true" style="font-family:lineicons; font-size:15px; line-height:1; color:currentColor;">&#xe0da;</span>
+        </a>
+      </div>
+    </section>
+    </sc-if>
+    <sc-if value="{{ hasShippingNext }}" hint-placeholder-val="{{ true }}">
+    <section style="max-width:1200px; margin:0 auto; padding:64px 28px 84px;">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:22px;">
+        <h2 style="font-size:13px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#948C7E;">Shipping next</h2>
+        <div style="flex:1; height:1px; background:#E7E2D9;"></div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,220px),1fr)); gap:12px;">
+        <sc-for list="{{ shippingNext }}" as="sn" hint-placeholder-count="4">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:11px; padding:18px; display:flex; flex-direction:column; gap:9px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">{{ sn.category }}</span>
+              <span style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#948C7E; background:#F3F1EC; border-radius:4px; padding:3px 6px;">{{ sn.eta }}</span>
+            </div>
+            <div style="font-size:16px; font-weight:700; color:#1C1A15; letter-spacing:-0.012em;">{{ sn.name }}</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#3858E9; word-break:break-all;">{{ sn.fn }}</div>
+            <div style="font-size:12.5px; line-height:1.5; color:#5C564B;">{{ sn.desc }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+    </sc-if>
+
+  </div>
+  </sc-if>
+
+  <!-- ══════════ TOOLS INDEX ══════════ -->
+  <sc-if value="{{ isTools }}" hint-placeholder-val="{{ false }}">
+  <div>
+    <section style="border-bottom:1px solid #E7E2D9; background:#FFFFFF;">
+      <div style="max-width:1200px; margin:0 auto; padding:48px 28px 34px;">
+        <h1 style="font-size:clamp(29px,3.4vw,38px); font-weight:700; letter-spacing:-0.028em; color:#1C1A15; margin-bottom:10px;">Generators</h1>
+        <p style="font-size:16px; line-height:1.55; color:#5C564B; max-width:560px; margin-bottom:26px;">Search by function name, WordPress concept, or what you're trying to build. Everything runs in your browser — nothing is uploaded.</p>
+
+        <div style="display:flex; align-items:center; gap:11px; background:#FAF9F7; border:1px solid #E7E2D9; border-radius:11px; padding:0 16px; max-width:640px; box-shadow:0 1px 2px rgba(38,34,28,0.04);">
+          <span aria-hidden="true" style="font-family:lineicons; font-size:18px; line-height:1; color:#A79F91; flex-shrink:0;">&#xf241;</span>
+          <input aria-label="Search generators" placeholder="Try “custom fields”, “cron”, or “WP_Query”" value="{{ query }}" onChange="{{ onQueryChange }}" ref="{{ refSearch }}" style="flex:1; border:none; outline:none; background:none; font-size:15.5px; padding:15px 0; color:#26221C; min-width:0;" />
+          <sc-if value="{{ hasQuery }}">
+            <button aria-label="Clear search" onClick="{{ onClearQuery }}" style="border:none; background:#E7E2D9; width:20px; height:20px; border-radius:50%; cursor:pointer; color:#5C564B; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:13px; line-height:1; padding:0;" style-hover="background:#D5CFC3;">×</button>
+          </sc-if>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-top:20px;">
+          <sc-for list="{{ categoryChips }}" as="ch" hint-placeholder-count="6">
+            <button onClick="{{ ch.onClick }}" style="border:1px solid {{ ch.border }}; background:{{ ch.bg }}; color:{{ ch.color }}; border-radius:18px; padding:7px 14px; font-size:12.5px; font-weight:650; cursor:pointer; display:flex; align-items:center; gap:7px;" style-hover="border-color:#3858E9;" style-focus="outline:2px solid #3858E9; outline-offset:2px;">
+              {{ ch.label }}
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; opacity:0.6;">{{ ch.count }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section style="max-width:1200px; margin:0 auto; padding:26px 28px 84px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px;">
+        <div style="font-size:13px; color:#948C7E; font-weight:600;">{{ resultsLabel }}</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:12px; color:#A79F91; font-weight:600;">Sort</span>
+          <sc-for list="{{ sortOptions }}" as="so" hint-placeholder-count="2">
+            <button onClick="{{ so.onClick }}" style="border:1px solid {{ so.border }}; background:{{ so.bg }}; color:{{ so.color }}; border-radius:6px; padding:5px 10px; font-size:12px; font-weight:650; cursor:pointer;" style-focus="outline:2px solid #3858E9; outline-offset:1px;">{{ so.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%,270px),1fr)); gap:12px; align-items:start;">
+        <sc-for list="{{ results }}" as="t" hint-placeholder-count="12">
+          <a href="{{ t.href }}" style="background:{{ t.cardBg }}; border:1px solid {{ t.cardBorder }}; border-radius:11px; padding:{{ t.cardPad }}; display:flex; flex-direction:column; gap:9px; cursor:{{ t.cursor }};" style-hover="border-color:#3858E9; box-shadow:0 8px 22px -12px rgba(56,88,233,0.28); color:#26221C;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">{{ t.categoryLabel }}</span>
+              <div style="flex:1;"></div>
+              <span style="display:inline-flex; align-items:center; gap:5px; background:{{ t.badgeBg }}; color:{{ t.badgeColor }}; border-radius:5px; padding:3px 7px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">{{ t.badgeLabel }}</span>
+            </div>
+            <div style="font-size:16.5px; font-weight:700; color:#1C1A15; letter-spacing:-0.014em; line-height:1.2;">{{ t.name }}</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#3858E9; word-break:break-all; line-height:1.4;">{{ t.fn }}</div>
+            <div style="font-size:13px; line-height:1.5; color:#5C564B;">{{ t.desc }}</div>
+            <sc-if value="{{ t.showPreviewNote }}">
+              <div style="display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; color:#948C7E; margin-top:2px;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:currentColor;">&#xe957;</span>
+                Live preview
+              </div>
+            </sc-if>
+          </a>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px dashed #DCD7CE; border-radius:12px; padding:56px 28px; text-align:center; background:#FCFBF9;">
+          <div style="font-size:18px; font-weight:700; color:#1C1A15; margin-bottom:8px;">No generator for “{{ query }}” yet</div>
+          <p style="font-size:14px; color:#5C564B; margin-bottom:22px; line-height:1.55;">Tell us what you need and it goes on the build list.</p>
+          <a href="#/contact" style="display:inline-flex; background:#3858E9; color:#fff; font-size:14px; font-weight:650; padding:10px 18px; border-radius:8px;" style-hover="background:#213FD4; color:#fff;">Request this generator</a>
+        </div>
+      </sc-if>
+    </section>
+  </div>
+  </sc-if>
+
+  <!-- ══════════ ABOUT ══════════ -->
+  <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1200px; margin:0 auto; padding:60px 28px 90px; display:flex; flex-wrap:wrap; gap:clamp(34px,4vw,64px);">
+    <div style="flex:1 1 420px; min-width:0;">
+      <h1 style="font-size:clamp(30px,3.8vw,40px); font-weight:700; letter-spacing:-0.03em; color:#1C1A15; margin-bottom:18px; max-width:600px; line-height:1.08;">Generators that show you what you're building.</h1>
+      <p style="font-size:clamp(16px,1.55vw,18px); line-height:1.6; color:#5C564B; max-width:620px; margin-bottom:40px;">Most WordPress code generators are a form and a text area. You fill in twenty fields, get a wall of PHP, paste it into your plugin, reload the admin and find out whether you guessed right. We think that's backwards.</p>
+
+      <sc-for list="{{ aboutSections }}" as="ab" hint-placeholder-count="4">
+        <div style="border-top:1px solid #E7E2D9; padding:28px 0;">
+          <div style="display:flex; flex-wrap:wrap; gap:14px 28px;">
+            <h2 style="flex:0 0 150px; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#948C7E; padding-top:4px;">{{ ab.label }}</h2>
+            <div style="flex:1 1 300px; min-width:0;">
+              <h3 style="font-size:21px; font-weight:700; letter-spacing:-0.018em; color:#1C1A15; margin-bottom:11px;">{{ ab.title }}</h3>
+              <p style="font-size:15.5px; line-height:1.65; color:#5C564B; margin-bottom:14px;">{{ ab.body }}</p>
+              <sc-if value="{{ ab.hasPoints }}">
+                <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;">
+                  <sc-for list="{{ ab.points }}" as="pt" hint-placeholder-count="3">
+                    <li style="display:flex; gap:10px; font-size:14.5px; line-height:1.55; color:#4A4438;">
+                      <span style="color:#3858E9; font-weight:700; flex-shrink:0;">—</span>
+                      <span>{{ pt.text }}</span>
+                    </li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <aside style="flex:0 1 300px; display:flex; flex-direction:column; gap:14px; min-width:0;">
+      <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:12px; padding:22px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#948C7E; margin-bottom:16px;">By the numbers</div>
+        <sc-for list="{{ aboutStats }}" as="as" hint-placeholder-count="4">
+          <div style="padding:11px 0; border-bottom:1px solid #EFEBE3; display:flex; align-items:baseline; justify-content:space-between; gap:10px;">
+            <span style="font-size:13.5px; color:#5C564B;">{{ as.label }}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; color:#1C1A15;">{{ as.value }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#1C1A15; border-radius:12px; padding:22px; color:#E7E2D9;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#8C8474; margin-bottom:12px;">Missing a generator?</div>
+        <p style="font-size:14px; line-height:1.6; color:#C9C2B5; margin-bottom:18px;">The build order is set by what people ask for. Send us the function you keep writing by hand.</p>
+        <a href="#/contact" style="display:inline-flex; background:#3858E9; color:#fff; font-size:13.5px; font-weight:650; padding:9px 16px; border-radius:8px;" style-hover="background:#4C6AF0; color:#fff;">Request a generator</a>
+      </div>
+    </aside>
+  </div>
+  </sc-if>
+
+  <!-- ══════════ CONTACT ══════════ -->
+  <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1200px; margin:0 auto; padding:60px 28px 90px; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,320px),1fr)); gap:clamp(34px,4vw,64px); align-items:start;">
+    <div>
+      <h1 style="font-size:clamp(30px,3.8vw,40px); font-weight:700; letter-spacing:-0.03em; color:#1C1A15; margin-bottom:14px; line-height:1.08;">Get in touch</h1>
+      <p style="font-size:17px; line-height:1.6; color:#5C564B; max-width:520px; margin-bottom:34px;">Bug reports, generator requests, and “your output is wrong on WordPress 6.9” all welcome. We read everything.</p>
+
+      <sc-if value="{{ contactSent }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#E4F3EA; border:1px solid #B9DFC8; border-radius:12px; padding:30px 28px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <span style="width:22px; height:22px; border-radius:50%; background:#1F7A4C; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#fff;">&#xe539;</span>
+            </span>
+            <h2 style="font-size:19px; font-weight:700; color:#14532D;">Message sent</h2>
+          </div>
+          <p style="font-size:14.5px; line-height:1.6; color:#1F5136; margin-bottom:20px;">Thanks — we reply to most messages within two working days.</p>
+          <button onClick="{{ onResetContact }}" style="border:1px solid #1F7A4C; background:none; color:#1F7A4C; font-size:13.5px; font-weight:650; padding:8px 15px; border-radius:8px; cursor:pointer;" style-hover="background:#D2EBDB;">Send another</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ contactOpen }}" hint-placeholder-val="{{ true }}">
+      <form onSubmit="{{ onContactSubmit }}" style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:14px; padding:clamp(20px,2.4vw,28px); display:flex; flex-direction:column; gap:18px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,190px),1fr)); gap:18px;">
+          <div>
+            <label for="gfw-name" style="display:block; font-size:12.5px; font-weight:700; color:#6B6459; margin-bottom:6px;">Name</label>
+            <input id="gfw-name" value="{{ contactName }}" onChange="{{ onContactNameChange }}" placeholder="Ada Lovelace" style="width:100%; font-size:14.5px; padding:11px 13px; border-radius:9px; border:1px solid #E7E2D9; background:#FCFBF9; color:#26221C; outline:none;" style-focus="border-color:#3858E9; background:#fff; box-shadow:0 0 0 3px #DCE3FE;" />
+          </div>
+          <div>
+            <label for="gfw-email" style="display:block; font-size:12.5px; font-weight:700; color:#6B6459; margin-bottom:6px;">Email</label>
+            <input id="gfw-email" type="email" value="{{ contactEmail }}" onChange="{{ onContactEmailChange }}" placeholder="you@example.com" style="width:100%; font-size:14.5px; padding:11px 13px; border-radius:9px; border:1px solid #E7E2D9; background:#FCFBF9; color:#26221C; outline:none;" style-focus="border-color:#3858E9; background:#fff; box-shadow:0 0 0 3px #DCE3FE;" />
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:12.5px; font-weight:700; color:#6B6459; margin-bottom:8px;">What's this about?</div>
+          <div style="display:flex; flex-wrap:wrap; gap:7px;">
+            <sc-for list="{{ contactTopics }}" as="ct" hint-placeholder-count="5">
+              <button type="button" onClick="{{ ct.onClick }}" style="border:1px solid {{ ct.border }}; background:{{ ct.bg }}; color:{{ ct.color }}; border-radius:18px; padding:7px 14px; font-size:12.5px; font-weight:650; cursor:pointer;" style-focus="outline:2px solid #3858E9; outline-offset:2px;">{{ ct.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ showWpDevNotice }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; gap:11px; background:#EEF1FE; border:1px solid #C7D2FE; border-radius:10px; padding:13px 15px;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:15px; line-height:1.45; color:#3858E9; flex-shrink:0;">&#xec79;</span>
+            <p style="font-size:13px; line-height:1.6; color:#2A46C4; text-wrap:pretty;">Development enquiries are routed to <a href="https://growquest.io" target="_blank" rel="noopener" style="font-weight:700; color:#213FD4;">GrowQuest</a>, our development brand — migration, custom builds and ongoing support. Your reply will come from a GrowQuest address.</p>
+          </div>
+        </sc-if>
+
+        <div>
+          <label for="gfw-msg" style="display:block; font-size:12.5px; font-weight:700; color:#6B6459; margin-bottom:6px;">Message</label>
+          <textarea id="gfw-msg" rows="7" value="{{ contactMessage }}" onChange="{{ onContactMessageChange }}" placeholder="Which generator, what you expected, what you got…" style="width:100%; font-size:14.5px; line-height:1.6; padding:12px 13px; border-radius:9px; border:1px solid #E7E2D9; background:#FCFBF9; color:#26221C; outline:none; resize:vertical;" style-focus="border-color:#3858E9; background:#fff; box-shadow:0 0 0 3px #DCE3FE;"></textarea>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+          <button type="submit" style="background:#3858E9; color:#fff; border:none; border-radius:9px; padding:12px 24px; font-size:14.5px; font-weight:700; cursor:pointer;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE; outline-offset:2px;">Send message</button>
+          <span style="font-size:12.5px; color:#948C7E;">{{ contactHint }}</span>
+        </div>
+      </form>
+      </sc-if>
+    </div>
+
+    <aside style="display:flex; flex-direction:column; gap:12px; min-width:0;">
+      <sc-for list="{{ contactChannels }}" as="cc" hint-placeholder-count="3">
+        <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:12px; padding:20px 22px;">
+          <div style="font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#948C7E; margin-bottom:9px;">{{ cc.label }}</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:500; color:#3858E9; margin-bottom:7px; word-break:break-all;">{{ cc.value }}</div>
+          <p style="font-size:13px; line-height:1.55; color:#5C564B;">{{ cc.note }}</p>
+        </div>
+      </sc-for>
+      <div style="background:#1C1A15; border-radius:12px; padding:20px 22px; color:#E7E2D9;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#8C8474; margin-bottom:10px;">Need a team, not a snippet?</div>
+        <p style="font-size:13.5px; line-height:1.6; color:#C9C2B5; margin-bottom:14px; text-wrap:pretty;">Generator for WP is built by GrowQuest — WordPress migration, custom development and support, plus product design, web apps, branding and ecommerce.</p>
+        <a href="https://growquest.io" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:7px; font-size:13.5px; font-weight:650; color:#93A9FF;" style-hover="color:#BCC8FF;">growquest.io<span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1;">&#xe0da;</span></a>
+      </div>
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:12px; padding:20px 22px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#948C7E; margin-bottom:12px;">Before you write in</div>
+        <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ contactFaq }}" as="cf" hint-placeholder-count="3">
+            <li style="font-size:13px; line-height:1.55; color:#4A4438;"><span style="font-weight:700; color:#1C1A15;">{{ cf.q }}</span> {{ cf.a }}</li>
+          </sc-for>
+        </ul>
+      </div>
+    </aside>
+  </div>
+  </sc-if>
+
+  </main>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer style="background:#1C1A15; color:#B3ACA0; margin-top:auto;">
+    <sc-if value="{{ showFooterSitemap }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:1200px; margin:0 auto; padding:56px 28px 40px; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,168px),1fr)); gap:32px 28px;">
+      <sc-for list="{{ footerColumns }}" as="fc" hint-placeholder-count="5">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#F0EDE6; margin-bottom:14px;">{{ fc.title }}</div>
+          <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px;">
+            <sc-for list="{{ fc.links }}" as="fl" hint-placeholder-count="6">
+              <li><a href="{{ fl.href }}" style="font-size:13px; color:#B3ACA0; line-height:1.4;" style-hover="color:#fff;">{{ fl.label }}</a></li>
+            </sc-for>
+          </ul>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <div style="border-top:1px solid #322E26;">
+      <dc-import name="SiteFooter" base="" show-browse-row="{{ falseVal }}" hint-size="100%,88px"></dc-import>
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#3858E9&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#3858E9&quot;,&quot;#0B7A75&quot;,&quot;#B4451F&quot;,&quot;#5B21B6&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;cardDensity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;comfortable&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tools index&quot;},&quot;showFooterSitemap&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout&quot;}}">
+const CATS = [
+  { id: 'content', label: 'Content', blurb: 'Post types, taxonomies, fields, shortcodes' },
+  { id: 'admin', label: 'Admin', blurb: 'Settings pages, widgets, menus, toolbars' },
+  { id: 'query', label: 'Query', blurb: 'WP_Query and every companion query class' },
+  { id: 'design', label: 'Design', blurb: 'Sidebars, menus, theme support, theme.json' },
+  { id: 'core', label: 'Core', blurb: 'Hooks, config, scripts, cron, REST routes' },
+];
+
+const TOOLS = [
+  ['readme', 'Readme Studio', 'core', 'readme.txt', 'Drag-and-drop editor for the plugin directory readme file, with a live listing preview.', 'live', true, ['readme', 'plugin directory', 'wordpress.org', 'changelog', 'markdown']],
+  ['post-type', 'Post Type', 'content', 'register_post_type()', 'Custom post types with labels, supports, rewrite rules and REST exposure.', 'live', true, ['cpt', 'custom post type', 'recipe', 'portfolio']],
+  ['taxonomy', 'Taxonomy', 'content', 'register_taxonomy()', 'Hierarchical or flat taxonomies wired to any post type.', 'live', true, ['category', 'tag', 'term', 'cpt']],
+  ['shortcode', 'Shortcode', 'content', 'add_shortcode()', 'Shortcodes with typed attributes, defaults and enclosing content.', 'live', true, ['sc', 'attributes', 'embed']],
+  ['meta-box', 'Meta Box', 'content', 'add_meta_box()', 'Editor meta boxes with fields, nonces and sanitised save handlers.', 'live', true, ['custom field', 'postmeta', 'editor panel']],
+  ['post-meta', 'Post Meta', 'content', 'register_post_meta()', 'Register typed post meta with REST support and auth callbacks.', 'live', true, ['custom field', 'meta key', 'rest']],
+  ['term-meta', 'Term Meta', 'content', 'register_term_meta()', 'Extra fields on taxonomy terms, including the add and edit forms.', 'live', true, ['taxonomy field', 'term']],
+  ['post-status', 'Post Status', 'content', 'register_post_status()', 'Custom statuses that show up correctly in the posts list and editor.', 'live', true, ['draft', 'pending', 'workflow']],
+  ['block-pattern', 'Block Pattern', 'content', 'register_block_pattern()', 'Register reusable block patterns and pattern categories.', 'live', true, ['gutenberg', 'pattern', 'blocks']],
+  ['settings-page', 'Settings Page', 'admin', 'add_menu_page()', 'Admin pages with tabs, sections and the Settings API already wired up.', 'live', true, ['options', 'admin menu', 'settings api']],
+  ['dashboard-widget', 'Dashboard Widget', 'admin', 'wp_add_dashboard_widget()', 'Dashboard widgets with capability checks and configuration callbacks.', 'live', true, ['dashboard', 'admin home']],
+  ['admin-notice', 'Admin Notice', 'admin', 'admin_notices', 'Dismissible notices scoped to screens, roles and transients.', 'live', true, ['warning', 'error', 'dismissible']],
+  ['toolbar', 'Toolbar Node', 'admin', 'WP_Admin_Bar::add_node()', 'Admin bar menus and nested nodes with capability gating.', 'live', true, ['admin bar', 'wp_admin_bar']],
+  ['list-table', 'List Table', 'admin', 'WP_List_Table', 'Sortable, searchable admin tables with bulk actions.', 'live', true, ['table', 'columns', 'bulk action']],
+  ['quicktags', 'Quicktags', 'admin', 'QTags.addButton()', 'Buttons for the classic editor text tab.', 'live', true, ['classic editor', 'text tab']],
+  ['user-contact', 'User Contact Methods', 'admin', 'user_contact_methods', 'Extra contact fields on the user profile screen.', 'live', true, ['profile', 'user meta']],
+  ['user-role', 'Role & Capability', 'admin', 'add_role()', 'Custom roles and capability maps, with a migration routine.', 'live', true, ['permissions', 'capabilities', 'editor role']],
+  ['wp-query', 'WP_Query', 'query', 'new WP_Query()', 'Every argument the loop accepts, with the generated loop included.', 'live', true, ['loop', 'posts', 'pagination']],
+  ['tax-query', 'WP_Tax_Query', 'query', 'tax_query', 'Nested taxonomy clauses with the right relation operators.', 'live', true, ['taxonomy', 'terms', 'relation']],
+  ['meta-query', 'WP_Meta_Query', 'query', 'meta_query', 'Meta comparisons with correct types and casting.', 'live', true, ['custom field', 'compare', 'numeric']],
+  ['date-query', 'WP_Date_Query', 'query', 'date_query', 'Date ranges, relative windows and column targeting.', 'live', true, ['before', 'after', 'inclusive']],
+  ['user-query', 'WP_User_Query', 'query', 'new WP_User_Query()', 'Query users by role, meta, capability and search columns.', 'live', true, ['users', 'role', 'author']],
+  ['term-query', 'WP_Term_Query', 'query', 'new WP_Term_Query()', 'Fetch terms with hide_empty, ordering and meta clauses.', 'live', true, ['terms', 'taxonomy']],
+  ['comment-query', 'WP_Comment_Query', 'query', 'new WP_Comment_Query()', 'Comment queries by status, type, post and hierarchy.', 'live', true, ['comments', 'moderation']],
+  ['sidebar', 'Sidebar', 'design', 'register_sidebar()', 'Widget areas with correct before/after markup for your theme.', 'live', true, ['widget area', 'footer', 'theme']],
+  ['nav-menu', 'Nav Menu', 'design', 'register_nav_menus()', 'Menu locations plus the wp_nav_menu() call to output them.', 'live', true, ['navigation', 'menu location']],
+  ['theme-support', 'Theme Support', 'design', 'add_theme_support()', 'Feature flags for thumbnails, HTML5, editor styles and more.', 'live', true, ['features', 'post thumbnails']],
+  ['widget', 'Widget Class', 'design', 'WP_Widget', 'A full widget class with form, update and widget methods.', 'live', true, ['sidebar', 'legacy widget']],
+  ['theme-json', 'theme.json', 'design', 'theme.json', 'Block theme settings and style layers as valid JSON.', 'live', true, ['block theme', 'palette', 'typography']],
+  ['default-headers', 'Default Theme Headers', 'design', 'register_default_headers()', 'Header image options bundled with your theme.', 'live', true, ['custom header', 'banner']],
+  ['hooks', 'Hooks', 'core', 'add_action() / add_filter()', 'Correctly signed callbacks with priority and accepted args.', 'live', true, ['action', 'filter', 'priority']],
+  ['wp-config', 'wp-config.php', 'core', 'define()', 'Environment-aware config with salts, debug flags and memory limits.', 'live', true, ['debug', 'salts', 'constants']],
+  ['enqueue', 'Scripts & Styles', 'core', 'wp_enqueue_script()', 'Register and enqueue assets with deps, versions and conditionals.', 'live', true, ['enqueue', 'css', 'js', 'assets']],
+  ['cron', 'Cron Event', 'core', 'wp_schedule_event()', 'Scheduled events with custom intervals and clean deactivation.', 'live', true, ['wp-cron', 'schedule', 'recurring']],
+  ['rest-route', 'REST Route', 'core', 'register_rest_route()', 'Namespaced endpoints with args schema and permission callbacks.', 'live', true, ['api', 'endpoint', 'json']],
+  ['activation', 'Activation Hooks', 'core', 'register_activation_hook()', 'Activation, deactivation and uninstall routines that clean up after themselves.', 'live', true, ['install', 'uninstall', 'flush rules']],
+  ['plugin-header', 'Plugin Header', 'core', 'Plugin Name:', 'The file header WordPress reads, plus a starter bootstrap class.', 'live', true, ['boilerplate', 'plugin file', 'scaffold']],
+  ['oembed', 'oEmbed Provider', 'core', 'wp_oembed_add_provider()', 'Register providers so bare URLs auto-embed.', 'live', true, ['embed', 'video', 'provider']],
+];
+
+const CAT_MAP = {};
+CATS.forEach(function (c) { CAT_MAP[c.id] = c; });
+
+const TOOL_URLS = { readme: './Readme%20Studio.dc.html', 'post-type': './Post%20Type%20Generator.dc.html', taxonomy: './Taxonomy%20Generator.dc.html', 'wp-query': './WP%20Query%20Builder.dc.html', shortcode: './Shortcode%20Generator.dc.html', enqueue: './Enqueue%20Generator.dc.html', 'rest-route': './REST%20Route%20Generator.dc.html', hooks: './Hooks%20Generator.dc.html', 'settings-page': './Settings%20Page%20Generator.dc.html', sidebar: './Sidebar%20Generator.dc.html', 'nav-menu': './Nav%20Menu%20Generator.dc.html', 'dashboard-widget': './Dashboard%20Widget%20Generator.dc.html', 'admin-notice': './Admin%20Notice%20Generator.dc.html', 'meta-box': './Meta%20Box%20Generator.dc.html', cron: './Cron%20Event%20Generator.dc.html', 'tax-query': './Tax%20Query%20Builder.dc.html', 'meta-query': './Meta%20Query%20Builder.dc.html', 'date-query': './Date%20Query%20Builder.dc.html', 'user-query': './User%20Query%20Builder.dc.html', 'term-query': './Term%20Query%20Builder.dc.html', 'comment-query': './Comment%20Query%20Builder.dc.html', 'theme-support': './Theme%20Support%20Generator.dc.html', 'post-status': './Post%20Status%20Generator.dc.html', 'user-role': './Role%20Capability%20Generator.dc.html', toolbar: './Toolbar%20Node%20Generator.dc.html', 'post-meta': './Post%20Meta%20Generator.dc.html', 'term-meta': './Term%20Meta%20Generator.dc.html', 'block-pattern': './Block%20Pattern%20Generator.dc.html', widget: './Widget%20Class%20Generator.dc.html', 'theme-json': './Theme%20JSON%20Generator.dc.html', 'wp-config': './WP%20Config%20Generator.dc.html', activation: './Activation%20Hooks%20Generator.dc.html', 'plugin-header': './Plugin%20Header%20Generator.dc.html', oembed: './oEmbed%20Provider%20Generator.dc.html', 'list-table': './List%20Table%20Generator.dc.html', quicktags: './Quicktags%20Generator.dc.html', 'user-contact': './User%20Contact%20Methods%20Generator.dc.html', 'default-headers': './Default%20Theme%20Headers%20Generator.dc.html' };
+const BADGES = {
+  live: { label: 'Live', bg: '#E4F3EA', color: '#1F7A4C' },
+  next: { label: 'In build', bg: '#EEF1FE', color: '#2A46C4' },
+  soon: { label: 'Planned', bg: '#F3F1EC', color: '#8C8474' },
+};
+
+function editDistance(a, b) {
+  if (a === b) return 0;
+  if (!a.length || !b.length) return Math.max(a.length, b.length);
+  // Damerau–Levenshtein: counts an adjacent transposition ("feild"/"field")
+  // as one edit, which plain Levenshtein scores as two.
+  let prev2 = null;
+  let prev = [];
+  for (let j = 0; j <= b.length; j++) prev[j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (prev2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        cur[j] = Math.min(cur[j], prev2[j - 2] + 1);
+      }
+    }
+    prev2 = prev;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+
+// Score one query word against a tool. Substring passes search everything;
+// the loose passes (subsequence, typo tolerance) only search names, function
+// signatures and keywords — never the prose description, which matches anything.
+function scoreWord(q, tool) {
+  const name = tool.name.toLowerCase();
+  const fn = tool.fn.toLowerCase();
+  const desc = tool.desc.toLowerCase();
+  const kw = tool.keywords.join(' ');
+  if (name === q || fn === q) return 1000;
+  if (name.indexOf(q) === 0) return 900;
+  if (fn.indexOf(q) === 0) return 860;
+  if (name.indexOf(q) > -1) return 780;
+  if (fn.indexOf(q) > -1) return 700;
+  if (kw.indexOf(q) > -1) return 620;
+  if (desc.indexOf(q) > -1) return 460;
+
+  // Subsequence, but only when it lands densely — "crn" may hit "Cron Event",
+  // not "Shortcode". Requires >=3 chars and a span under 2.2x the query length.
+  if (q.length >= 3) {
+    const sub = function (hay, weight) {
+      let i = 0, first = -1, last = -1;
+      for (let c = 0; c < hay.length && i < q.length; c++) {
+        if (hay[c] === q[i]) { if (first < 0) first = c; last = c; i++; }
+      }
+      if (i < q.length) return 0;
+      const span = last - first + 1;
+      if (span > Math.max(q.length * 2.2, q.length + 2)) return 0;
+      return Math.max(weight - (span - q.length) * 12, 120);
+    };
+    const best = Math.max(sub(name, 400), sub(fn, 370), sub(kw, 300));
+    if (best) return best;
+  }
+
+  // Typo tolerance: one edit for short words, two for longer ones.
+  if (q.length >= 4) {
+    const budget = q.length >= 7 ? 2 : 1;
+    const words = (name + ' ' + fn.replace(/[^a-z0-9_ ]/g, ' ') + ' ' + kw).split(/[\s_()]+/);
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i];
+      if (!w || Math.abs(w.length - q.length) > budget) continue;
+      if (editDistance(q, w) <= budget) return 340;
+    }
+  }
+  return 0;
+}
+
+function fuzzyScore(needle, tool) {
+  const q = needle.toLowerCase().trim();
+  if (!q) return 1;
+  const words = q.split(/\s+/).filter(Boolean);
+  // Whole-phrase match wins outright.
+  const whole = scoreWord(q, tool);
+  if (words.length < 2) return whole;
+  let total = 0;
+  for (let i = 0; i < words.length; i++) {
+    const sc = scoreWord(words[i], tool);
+    if (!sc) return whole; // every word must land, else fall back to the phrase
+    total += sc;
+  }
+  return Math.max(whole, Math.round(total / words.length) + 60);
+}
+
+class Component extends DCLogic {
+  state = {
+    route: 'home',
+    query: '',
+    category: 'all',
+    sort: 'relevance',
+    heroQuery: '',
+    contactSent: false,
+    contactName: '',
+    contactEmail: '',
+    contactMessage: '',
+    contactTopic: 'Generator request',
+  };
+
+  componentDidMount() {
+    this._onHash = () => this.readHash();
+    window.addEventListener('hashchange', this._onHash);
+    this.readHash();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('hashchange', this._onHash);
+  }
+
+  readHash() {
+    const raw = (window.location.hash || '').replace(/^#\/?/, '');
+    const [path, qs] = raw.split('?');
+    const seg = (path || '').split('/')[0];
+    const route = ['tools', 'about', 'contact'].indexOf(seg) > -1 ? seg : 'home';
+    const params = new URLSearchParams(qs || '');
+    const next = { route };
+    if (route === 'tools') {
+      next.query = params.get('q') || '';
+      next.category = params.get('cat') || 'all';
+    }
+    this.setState(next);
+    if (window.scrollY > 0) window.scrollTo(0, 0);
+  }
+
+  toolsHref(q, cat) {
+    const p = [];
+    if (q) p.push('q=' + encodeURIComponent(q));
+    if (cat && cat !== 'all') p.push('cat=' + cat);
+    return '#/tools' + (p.length ? '?' + p.join('&') : '');
+  }
+
+  go(href) { window.location.hash = href.replace(/^#/, ''); }
+
+  tools() {
+    return TOOLS.map(function (t) {
+      return { id: t[0], name: t[1], cat: t[2], fn: t[3], desc: t[4], status: t[5], preview: t[6], keywords: t[7] };
+    });
+  }
+
+  filtered() {
+    const q = this.state.query;
+    const cat = this.state.category;
+    let list = this.tools().filter(function (t) { return cat === 'all' || t.cat === cat; });
+    list = list.map(function (t) { return { t: t, s: fuzzyScore(q, t) }; }).filter(function (r) { return r.s > 0; });
+    if (q) {
+      // Drop the long tail: anything far below the best hit is noise.
+      const top = list.reduce(function (m, r) { return Math.max(m, r.s); }, 0);
+      const floor = Math.max(top * 0.45, 300);
+      list = list.filter(function (r) { return r.s >= floor; });
+    }
+    if (this.state.sort === 'az' || !q) {
+      list.sort(function (a, b) {
+        const rank = { live: 0, next: 1, soon: 2 };
+        if (a.t.status !== b.t.status && !q) return rank[a.t.status] - rank[b.t.status];
+        return a.t.name.localeCompare(b.t.name);
+      });
+    }
+    if (q && this.state.sort === 'relevance') list.sort(function (a, b) { return b.s - a.s || a.t.name.localeCompare(b.t.name); });
+    return list.map(function (r) { return r.t; });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const self = this;
+    const accent = this.props.accentColor || '#3858E9';
+    const dense = (this.props.cardDensity || 'comfortable') === 'compact';
+    const all = this.tools();
+    const results = this.filtered();
+    const liveCount = all.filter(function (t) { return t.status === 'live'; }).length;
+
+    return {
+      isHome: s.route === 'home',
+      isTools: s.route === 'tools',
+      isAbout: s.route === 'about',
+      isContact: s.route === 'contact',
+      activeNav: s.route === 'home' ? '' : s.route,
+      toolCount: all.length,
+      falseVal: false,
+      showFooterSitemap: this.props.showFooterSitemap !== false,
+
+      heroQuery: s.heroQuery,
+      onHeroQueryChange: function (e) { self.setState({ heroQuery: e.target.value }); },
+      onHeroSearchSubmit: function (e) { e.preventDefault(); self.go(self.toolsHref(s.heroQuery, 'all')); },
+      popularSearches: ['register_post_type', 'taxonomy', 'WP_Query', 'shortcode', 'cron'].map(function (p) {
+        return { label: p, href: self.toolsHref(p, 'all') };
+      }),
+
+      valueProps: [
+        { num: '01', title: 'See it before you ship it', body: 'Generators render a live preview of the result — a WordPress.org listing, an admin screen, a query result set — next to the code, so you catch mistakes here instead of in staging.' },
+        { num: '02', title: 'Editors, not just forms', body: 'Long-form fields are real editors. Drag blocks around, format text, reorder sections. The PHP or txt output regenerates as you work.' },
+        { num: '03', title: 'Output you can actually use', body: 'Copy the snippet, download a single .php file, or take a zip-ready plugin scaffold with the header, folder structure and hooks already in place.' },
+      ].map(function (vp, i) {
+        return Object.assign({}, vp, {
+          padLeft: i === 0 ? '0' : 'clamp(18px,2.4vw,34px)',
+          borderLeft: i === 0 ? 'none' : '1px solid #EFEBE3'
+        });
+      }),
+
+      readmeFeatures: [
+        { label: 'Drag-and-drop blocks' },
+        { label: 'WYSIWYG editing' },
+        { label: 'Live listing preview' },
+        { label: 'Validation warnings' },
+        { label: 'Import existing readme' },
+      ],
+      previewStars: [1, 2, 3, 4, 5].map(function (n) { return { n: n }; }),
+
+      categoryCards: CATS.map(function (c) {
+        return {
+          label: c.label,
+          blurb: c.blurb,
+          count: all.filter(function (t) { return t.cat === c.id; }).length,
+          href: self.toolsHref('', c.id),
+        };
+      }),
+
+      shippingNext: all.filter(function (t) { return t.status === 'next'; }).slice(0, 4).map(function (t) {
+        return { name: t.name, fn: t.fn, desc: t.desc, category: CAT_MAP[t.cat].label, eta: 'Next up' };
+      }),
+      hasShippingNext: all.filter(function (t) { return t.status !== 'live'; }).length > 0,
+      allShipped: all.filter(function (t) { return t.status !== 'live'; }).length === 0,
+      allShippedTitle: 'All ' + liveCount + ' generators are live.',
+
+      query: s.query,
+      hasQuery: !!s.query,
+      onQueryChange: function (e) { self.setState({ query: e.target.value }); },
+      onClearQuery: function () { self.setState({ query: '' }); },
+      categoryChips: [{ id: 'all', label: 'All' }].concat(CATS).map(function (c) {
+        const on = s.category === c.id;
+        return {
+          label: c.label,
+          count: c.id === 'all' ? all.length : all.filter(function (t) { return t.cat === c.id; }).length,
+          border: on ? accent : '#E7E2D9',
+          bg: on ? '#EEF1FE' : '#FFFFFF',
+          color: on ? '#213FD4' : '#4A4438',
+          onClick: function () { self.setState({ category: c.id }); },
+        };
+      }),
+      sortOptions: [
+        { id: 'relevance', label: 'Relevance' },
+        { id: 'az', label: 'A–Z' },
+      ].map(function (o) {
+        const on = s.sort === o.id;
+        return {
+          label: o.label,
+          border: on ? accent : '#E7E2D9',
+          bg: on ? '#EEF1FE' : '#FFFFFF',
+          color: on ? '#213FD4' : '#6B6459',
+          onClick: function () { self.setState({ sort: o.id }); },
+        };
+      }),
+      resultsLabel: results.length + (results.length === 1 ? ' generator' : ' generators') + (s.query ? ' matching “' + s.query + '”' : '') + ' · ' + results.filter(function (t) { return t.status === 'live'; }).length + ' live',
+      hasResults: results.length > 0,
+      noResults: results.length === 0,
+      results: results.map(function (t) {
+        const b = BADGES[t.status];
+        return {
+          name: t.name,
+          fn: t.fn,
+          desc: t.desc,
+          categoryLabel: CAT_MAP[t.cat].label,
+          badgeLabel: b.label,
+          badgeBg: b.bg,
+          badgeColor: b.color,
+          href: t.status === 'live' ? (TOOL_URLS[t.id] || '#/contact') : '#/contact',
+          cardBg: t.status === 'live' ? '#FFFFFF' : '#FCFBF9',
+          cardBorder: t.status === 'live' ? '#C7D2FE' : '#E7E2D9',
+          cardPad: dense ? '14px 16px' : '18px 20px',
+          cursor: 'pointer',
+          showPreviewNote: t.preview,
+        };
+      }),
+
+      aboutSections: [
+        {
+          label: 'The idea', title: 'A generator should teach you the API', hasPoints: true,
+          body: 'Every field is labelled with the argument it maps to, so the form doubles as documentation. You leave knowing which key does what — not just holding a snippet you are afraid to edit.',
+          points: [{ text: 'Argument names shown beside every input' }, { text: 'Defaults match WordPress core defaults, not our opinions' }, { text: 'Links to the developer handbook on every generated function' }],
+        },
+        {
+          label: 'How it works', title: 'Entirely in your browser', hasPoints: true,
+          body: 'There is no account, no server-side rendering and no telemetry on your inputs. The generators are JavaScript; your plugin details never leave the tab.',
+          points: [{ text: 'Nothing uploaded, nothing stored remotely' }, { text: 'Work persists locally so a refresh does not lose it' }, { text: 'Works offline once the page has loaded' }],
+        },
+        {
+          label: 'Output', title: 'Three ways out', hasPoints: true,
+          body: 'A snippet is fine for a functions.php tweak. A file is better for a plugin. A scaffold is what you want when the generator is the start of something real.',
+          points: [{ text: 'Copy to clipboard, formatted to WordPress coding standards' }, { text: 'Download a single .php or .txt file' }, { text: 'Zip-ready plugin scaffold with header, folders and bootstrap' }],
+        },
+      ],
+      heroBadgeLabel: liveCount === all.length ? 'All ' + liveCount + ' generators live · nothing behind a login'
+        : liveCount === 1 ? 'Readme Studio is live · ' + (all.length - 1) + ' more generators in build'
+          : liveCount + ' generators live · ' + (all.length - liveCount) + ' more in build',
+      liveCountLink: 'All ' + all.length + ' generators →',
+      featuredTools: ['post-type', 'wp-query', 'shortcode', 'meta-box', 'settings-page', 'taxonomy', 'enqueue', 'rest-route', 'post-meta', 'cron', 'hooks', 'plugin-header']
+        .map(function (id) { return all.filter(function (t) { return t.id === id; })[0]; })
+        .filter(Boolean)
+        .map(function (t) {
+          return { name: t.name, fn: t.fn, blurb: t.desc, categoryLabel: CAT_MAP[t.cat].label, href: TOOL_URLS[t.id] || '#/tools' };
+        }),
+      aboutStats: [
+        { label: 'Generators planned', value: String(all.length) },
+        { label: 'Live today', value: String(liveCount) },
+        { label: 'Accounts required', value: '0' },
+        { label: 'Data sent to us', value: 'None' },
+      ],
+
+      contactSent: s.contactSent,
+      contactOpen: !s.contactSent,
+      contactName: s.contactName,
+      contactEmail: s.contactEmail,
+      contactMessage: s.contactMessage,
+      onContactNameChange: function (e) { self.setState({ contactName: e.target.value }); },
+      onContactEmailChange: function (e) { self.setState({ contactEmail: e.target.value }); },
+      onContactMessageChange: function (e) { self.setState({ contactMessage: e.target.value }); },
+      onContactSubmit: function (e) { e.preventDefault(); self.setState({ contactSent: true }); },
+      onResetContact: function () { self.setState({ contactSent: false, contactName: '', contactEmail: '', contactMessage: '' }); },
+      contactHint: 'Usually answered within two working days.',
+      growquestServices: [
+        { name: 'WordPress', body: 'Migration, custom development, and support & maintenance you can rely on.' },
+        { name: 'Product Design', body: 'UI/UX for intuitive, multi-screen products that delight and convert.' },
+        { name: 'Website Applications', body: 'Website development and custom web apps, built fast and built to scale.' },
+        { name: 'Branding & Identity', body: 'Authentic brands with a clear story and a bold, confident look.' },
+        { name: 'Ecommerce', body: 'Shopify, WooCommerce and Magento storefronts that convert and keep up at peak.' },
+      ],
+
+      showWpDevNotice: s.contactTopic === 'WordPress development',
+      contactTopics: ['Generator request', 'Bug report', 'Wrong output', 'WordPress development', 'Something else'].map(function (t) {
+        const on = s.contactTopic === t;
+        return {
+          label: t,
+          border: on ? accent : '#E7E2D9',
+          bg: on ? '#EEF1FE' : '#FCFBF9',
+          color: on ? '#213FD4' : '#4A4438',
+          onClick: function () { self.setState({ contactTopic: t }); },
+        };
+      }),
+      contactChannels: [
+        { label: 'Email', value: 'hello@generatorforwp.com', note: 'Best for anything with a code sample attached.' },
+        { label: 'Bug tracker', value: 'github.com/generatorforwp', note: 'Wrong output, malformed PHP, escaping mistakes.' },
+        { label: 'Changelog', value: '/changelog', note: 'What shipped, weekly.' },
+      ],
+      contactFaq: [
+        { q: 'Is there an API?', a: 'Not yet. It is on the list once the generator set is complete.' },
+        { q: 'Can I self-host this?', a: 'The generators are client-side, so yes — ask and we will send the build.' },
+        { q: 'Do you store my plugin details?', a: 'No. Everything stays in your browser.' },
+      ],
+
+      footerColumns: CATS.map(function (c) {
+        return {
+          title: c.label + ' generators',
+          links: all.filter(function (t) { return t.cat === c.id; }).map(function (t) {
+            return { label: t.name, href: t.status === 'live' ? (TOOL_URLS[t.id] || self.toolsHref(t.name, c.id)) : self.toolsHref(t.name, c.id) };
+          }),
+        };
+      }),
+    };
+  }
+}
+</script>
+</body>
+</html>

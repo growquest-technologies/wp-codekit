@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Comment Query Builder — WP_Comment_Query — Generator for WP</title>
+  <meta name="description" content="Query comments by status, type, post and hierarchy — with the threading, count and spam caveats that make comment queries surprising." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=query" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Query</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">WP_Comment_Query</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Comment Query Builder</h1>
+          <span style="display:inline-flex; align-items:center; gap:5px; background:#E4F3EA; color:#1F7A4C; border-radius:5px; padding:3px 8px; font-size:9.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#1F7A4C;"></span>Live
+          </span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:420px;">Status, type, author and hierarchy — with the two things that catch everyone: pingbacks counting as comments, and hierarchical mode changing what you get back.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:11px;">Status and type</div>
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:7px;">Status</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+          <sc-for list="{{ statusChips }}" as="sc" hint-placeholder-count="5">
+            <button onClick="{{ sc.onSelect }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ sc.borderColor }}; background:{{ sc.bg }}; color:{{ sc.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ sc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:7px;">Type</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <sc-for list="{{ typeChips }}" as="tc" hint-placeholder-count="4">
+            <button onClick="{{ tc.onSelect }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ tc.borderColor }}; background:{{ tc.bg }}; color:{{ tc.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ tc.label }}</button>
+          </sc-for>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#5C564B; line-height:1.55;">{{ typeNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Scope</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(175px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post_id</label>
+            <input value="{{ cq.postId }}" onChange="{{ onPostIdChange }}" spellCheck="false" placeholder="empty for all posts" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ postIdBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">post_type</label>
+            <input value="{{ cq.postType }}" onChange="{{ onPostTypeChange }}" spellCheck="false" placeholder="post" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">user_id — logged-in author</label>
+            <input value="{{ cq.userId }}" onChange="{{ onUserIdChange }}" spellCheck="false" placeholder="empty for anyone" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ userIdBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">author_email</label>
+            <input value="{{ cq.authorEmail }}" onChange="{{ onAuthorEmailChange }}" spellCheck="false" placeholder="someone@example.com" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ emailBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">search</label>
+            <input value="{{ cq.search }}" onChange="{{ onSearchChange }}" spellCheck="false" placeholder="in content, author, email, url" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">parent</label>
+            <input value="{{ cq.parent }}" onChange="{{ onParentChange }}" spellCheck="false" placeholder="0 for top level" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Order and shape</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">number</label>
+            <input value="{{ cq.number }}" onChange="{{ onNumberChange }}" spellCheck="false" placeholder="10" style="width:100%; font-size:12.5px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid {{ numberBorder }};" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">orderby</label>
+            <select value="{{ cq.orderby }}" onChange="{{ onOrderbyChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="comment_date_gmt">comment_date_gmt</option>
+              <option value="comment_date">comment_date</option>
+              <option value="comment_karma">comment_karma</option>
+              <option value="comment_post_ID">comment_post_ID</option>
+              <option value="comment_ID">comment_ID</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">order</label>
+            <select value="{{ cq.order }}" onChange="{{ onOrderChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="DESC">DESC — newest first</option>
+              <option value="ASC">ASC — oldest first</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">fields</label>
+            <select value="{{ cq.fields }}" onChange="{{ onFieldsChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="all">all — comment objects</option>
+              <option value="ids">ids</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">hierarchical</label>
+            <select value="{{ cq.hierarchical }}" onChange="{{ onHierarchicalChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="false">false — flat list</option>
+              <option value="threaded">threaded — nested</option>
+              <option value="flat">flat — parents then children</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:13px;">
+          <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="3">
+            <div style="display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-top:1px solid #F0ECE4;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+                <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+              </div>
+              <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+                <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:#FBFAF7; border:1px solid #E7E2D9; border-radius:8px; padding:16px 18px; margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">In plain English</div>
+        <div style="font-size:13px; line-height:1.65; color:#3B362D;">{{ plainEnglish }}</div>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 6px; font-size:12px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13.5px; font-weight:700; color:#26221C; margin-bottom:4px;">new WP_Comment_Query()</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">get_comments() is the wrapper around it</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Arguments</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refArgs }}" as="ra" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid #F0ECE4; padding-bottom:9px;">
+                <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:#26221C;">{{ ra.name }}</span>
+                  <span style="font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#3858E9; background:#EEF1FE; border-radius:4px; padding:2px 6px;">{{ ra.type }}</span>
+                </div>
+                <div style="font-size:12px; color:#5C564B; line-height:1.5; margin-top:4px;">{{ ra.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Statuses</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refStatuses }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Trackbacks are comments</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">wp_comments holds pingbacks and trackbacks alongside real comments, so “latest comments” without a type filter eventually shows a pingback from a scraper site. type comment is the filter almost every front-end list wants.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Threading changes the shape</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">With hierarchical set, WP_Comment_Query returns only top-level comments and attaches children to each one — so a number of 10 means 10 threads, not 10 comments. Flat mode returns parents followed by their children in one list.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag in this query.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;query&quot;,&quot;get_comments&quot;,&quot;args&quot;],&quot;default&quot;:&quot;query&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Output&quot;}}">
+const STATUSES = [['approve', 'approve'], ['hold', 'hold'], ['spam', 'spam'], ['trash', 'trash'], ['all', 'all']];
+const TYPES = [['comment', 'comment'], ['pingback', 'pingback'], ['trackback', 'trackback'], ['', 'any type']];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+
+function buildArgs(cq) {
+  const pairs = [['status', "'" + cq.status + "'"]];
+  if (cq.type) pairs.push(['type', "'" + cq.type + "'"]);
+  if (String(cq.postId || '').trim()) pairs.push(['post_id', String(parseInt(cq.postId, 10) || 0)]);
+  if (String(cq.postType || '').trim()) pairs.push(['post_type', "'" + esc(slugify(cq.postType)) + "'"]);
+  if (String(cq.userId || '').trim()) pairs.push(['user_id', String(parseInt(cq.userId, 10) || 0)]);
+  if (String(cq.authorEmail || '').trim()) pairs.push(['author_email', "'" + esc(String(cq.authorEmail).trim()) + "'"]);
+  if (String(cq.search || '').trim()) pairs.push(['search', "'" + esc(String(cq.search).trim()) + "'"]);
+  if (String(cq.parent || '').trim() !== '') pairs.push(['parent', String(parseInt(cq.parent, 10) || 0)]);
+  const num = parseInt(cq.number, 10);
+  if (num) pairs.push(['number', String(num)]);
+  pairs.push(['orderby', "'" + cq.orderby + "'"]);
+  if (cq.order !== 'DESC') pairs.push(['order', "'" + cq.order + "'"]);
+  if (cq.fields === 'ids') pairs.push(['fields', "'ids'"]);
+  if (cq.hierarchical !== 'false') pairs.push(['hierarchical', "'" + cq.hierarchical + "'"]);
+  if (cq.countOnly) pairs.push(['count', 'true']);
+  if (!cq.updateCache) pairs.push(['update_comment_meta_cache', 'false']);
+  if (cq.noFoundRows) pairs.push(['no_found_rows', 'true']);
+  return 'array(\n' + indent(aligned(pairs), 1) + '\n)';
+}
+
+function buildCode(cq, mode) {
+  const args = buildArgs(cq);
+  let out = CREDIT;
+  if (mode === 'args') return out + '$args = ' + args + ';\n';
+  if (mode === 'get_comments') {
+    out += '$comments = get_comments( ' + indent(args, 0) + ' );\n\n';
+    if (cq.countOnly) return out + 'printf(\n\t\'<p>%s</p>\',\n\tesc_html( number_format_i18n( (int) $comments ) )\n);\n';
+    out += 'if ( $comments ) {\n\techo \'<ol class="comment-list">\';\n\twp_list_comments(\n\t\tarray(\n\t\t\t\'style\'      => \'ol\',\n\t\t\t\'short_ping\' => true,\n\t\t\t\'avatar_size\' => 40,\n\t\t),\n\t\t$comments\n\t);\n\techo \'</ol>\';\n}\n';
+    return out;
+  }
+  out += '$query = new WP_Comment_Query();\n\n$comments = $query->query( ' + indent(args, 0) + ' );\n\n';
+  if (cq.countOnly) {
+    out += 'printf(\n\t\'<p>%s</p>\',\n\tesc_html( number_format_i18n( (int) $comments ) )\n);\n';
+    return out;
+  }
+  if (cq.fields === 'ids') {
+    out += 'foreach ( $comments as $comment_id ) {\n\t// Only ids were fetched — get_comment( $comment_id ) if you need the object.\n}\n';
+    return out;
+  }
+  out += 'if ( $comments ) {\n\techo \'<ul class="recent-comments">\';\n\n\tforeach ( $comments as $comment ) {\n\t\tprintf(\n\t\t\t\'<li><a href="%1$s">%2$s</a> on %3$s<p>%4$s</p></li>\',\n\t\t\tesc_url( get_comment_link( $comment ) ),\n\t\t\tesc_html( get_comment_author( $comment ) ),\n\t\t\tesc_html( get_the_title( $comment->comment_post_ID ) ),\n\t\t\tesc_html( wp_trim_words( $comment->comment_content, 20 ) )\n\t\t);\n\t}\n\n\techo \'</ul>\';\n} else {\n\tesc_html_e( \'No comments yet.\', \'mytheme\' );\n}\n';
+  return out;
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|new|if|else|foreach|as)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(cq) {
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  if (cq.status === 'all') add('warning', 'status all includes held, spam and trashed comments. On a public page that publishes spam.', 'statusApprove', 'Only approved');
+  if (cq.status === 'spam') add('recommendation', 'Querying spam is an admin-side job. Make sure this never renders on the front end.');
+  if (!cq.type) add('warning', 'No type filter, so pingbacks and trackbacks appear alongside real comments — the usual reason a “recent comments” list shows link spam.', 'typeComment', 'Only comments');
+  if (cq.type === 'pingback' || cq.type === 'trackback') add('recommendation', 'A list of ' + cq.type + 's is unusual on the front end. Most themes hide them entirely.');
+  const num = parseInt(cq.number, 10);
+  if (!num) add('warning', 'No number set. WP_Comment_Query has no default limit, so a busy site returns every comment row.', 'setTen', 'Limit to 10');
+  else if (num > 100) add('recommendation', num + ' comments in one query with full objects is a lot of memory. ids plus lazy loading is cheaper.');
+  if (cq.hierarchical !== 'false' && num) add('warning', 'With hierarchical set, number counts top-level comments, not total comments. Ten threads can be a hundred rows.', 'flatList', 'Use a flat list');
+  if (cq.hierarchical !== 'false' && String(cq.parent || '').trim() !== '') add('error', 'hierarchical and parent contradict each other: parent asks for one level, hierarchical builds the tree.', 'clearParent', 'Clear parent');
+  if (cq.countOnly && cq.fields === 'ids') add('warning', 'count returns a single number; fields ids is ignored alongside it.');
+  if (cq.countOnly && num) add('warning', 'count with number limits the rows counted, which makes the count wrong.', 'clearNumber', 'Clear number');
+  if (String(cq.authorEmail || '').trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(cq.authorEmail).trim())) add('error', '“' + cq.authorEmail + '” is not a valid email address, so this matches nothing.');
+  if (String(cq.userId || '').trim() && !/^\d+$/.test(String(cq.userId).trim())) add('error', 'user_id takes a numeric user ID.');
+  if (String(cq.postId || '').trim() && !/^\d+$/.test(String(cq.postId).trim())) add('error', 'post_id takes a numeric post ID. Use post_type or post_name for anything else.');
+  if (String(cq.userId || '').trim() && String(cq.authorEmail || '').trim()) add('recommendation', 'user_id and author_email together only match comments where both agree — logged-in comments where the email was not changed.');
+  if (cq.orderby === 'comment_date' && cq.status === 'approve') add('recommendation', 'comment_date is stored in site time; comment_date_gmt sorts consistently across a timezone change. Prefer the GMT column for ordering.', 'orderGmt', 'Order by GMT');
+  if (String(cq.search || '').trim()) add('recommendation', 'search runs LIKE %term% across content, author, email and url. There is no index for that — fine in the admin, slow on a public endpoint.');
+  if (!cq.updateCache && cq.fields === 'all') add('recommendation', 'Skipping the comment meta cache means any get_comment_meta() in your loop queries per comment.');
+  if (cq.fields === 'ids' && cq.updateCache) add('recommendation', 'You are fetching ids only, so priming the meta cache does nothing useful.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    status: 'approve', type: 'comment',
+    postId: '', postType: '', userId: '', authorEmail: '', search: '', parent: '',
+    number: '10', orderby: 'comment_date_gmt', order: 'DESC', fields: 'all', hierarchical: 'false',
+    countOnly: false, updateCache: true, noFoundRows: false
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    cq: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'query', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 520, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('comment-query-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.status) this.setState({ cq: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(cq) { try { localStorage.setItem('comment-query-generator-v1', JSON.stringify(cq)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.cq));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { cq: next, past: coalesce ? s.past : s.past.concat([s.cq]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.cq));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { cq: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.cq].concat(s.future) }; }, () => this.persist(this.state.cq)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { cq: s.future[0], past: s.past.concat([s.cq]), future: s.future.slice(1) }; }, () => this.persist(this.state.cq)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'statusApprove') p.status = 'approve';
+      if (kind === 'typeComment') p.type = 'comment';
+      if (kind === 'setTen') p.number = '10';
+      if (kind === 'flatList') p.hierarchical = 'false';
+      if (kind === 'clearParent') p.parent = '';
+      if (kind === 'clearNumber') p.number = '';
+      if (kind === 'orderGmt') p.orderby = 'comment_date_gmt';
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.cq, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const code = '<?php\n\n' + buildCode(this.state.cq, this.state.outputMode);
+    const name = 'comment-query.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, cq = s.cq, self = this;
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(cq);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    return {
+      toolCount: 38, trueVal: true, cq: cq,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: 'comment-query.php',
+
+      statusChips: STATUSES.map(function (st) {
+        const on = cq.status === st[0];
+        const danger = st[0] === 'all' || st[0] === 'spam';
+        return { label: st[1], borderColor: on ? (danger ? '#B45309' : '#3858E9') : '#E7E2D9', bg: on ? (danger ? '#FDF4E7' : '#EEF1FE') : '#fff', color: on ? (danger ? '#B45309' : '#2A46C4') : '#5C564B', onSelect: function () { self.set('status', st[0]); } };
+      }),
+      typeChips: TYPES.map(function (t) {
+        const on = cq.type === t[0];
+        const danger = t[0] === '';
+        return { label: t[1], borderColor: on ? (danger ? '#B45309' : '#3858E9') : '#E7E2D9', bg: on ? (danger ? '#FDF4E7' : '#EEF1FE') : '#fff', color: on ? (danger ? '#B45309' : '#2A46C4') : '#5C564B', onSelect: function () { self.set('type', t[0]); } };
+      }),
+      typeNote: cq.type === 'comment'
+        ? 'Only real comments. Pingbacks and trackbacks are excluded, which is what a front-end list wants.'
+        : cq.type === ''
+          ? 'Every row in wp_comments, including pingbacks and trackbacks from other sites.'
+          : 'Only ' + cq.type + ' rows.',
+
+      onPostIdChange: function (ev) { self.set('postId', ev.target.value, true); },
+      postIdBorder: String(cq.postId || '').trim() && !/^\d+$/.test(String(cq.postId).trim()) ? '#B91C1C' : '#E7E2D9',
+      onPostTypeChange: function (ev) { self.set('postType', ev.target.value, true); },
+      onUserIdChange: function (ev) { self.set('userId', ev.target.value, true); },
+      userIdBorder: String(cq.userId || '').trim() && !/^\d+$/.test(String(cq.userId).trim()) ? '#B91C1C' : '#E7E2D9',
+      onAuthorEmailChange: function (ev) { self.set('authorEmail', ev.target.value, true); },
+      emailBorder: String(cq.authorEmail || '').trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(cq.authorEmail).trim()) ? '#B91C1C' : '#E7E2D9',
+      onSearchChange: function (ev) { self.set('search', ev.target.value, true); },
+      onParentChange: function (ev) { self.set('parent', ev.target.value, true); },
+
+      onNumberChange: function (ev) { self.set('number', ev.target.value, true); },
+      numberBorder: parseInt(cq.number, 10) ? '#E7E2D9' : '#B45309',
+      onOrderbyChange: function (ev) { self.set('orderby', ev.target.value); },
+      onOrderChange: function (ev) { self.set('order', ev.target.value); },
+      onFieldsChange: function (ev) { self.set('fields', ev.target.value); },
+      onHierarchicalChange: function (ev) { self.set('hierarchical', ev.target.value); },
+      extraToggles: [
+        { key: 'countOnly', label: 'count only', help: 'Returns a single number instead of rows.', on: cq.countOnly },
+        { key: 'updateCache', label: 'Prime the comment meta cache', help: 'One query for all comment meta instead of one per comment.', on: cq.updateCache },
+        { key: 'noFoundRows', label: 'no_found_rows', help: 'Skips the total count when you are not paginating.', on: cq.noFoundRows }
+      ].map(function (tg) {
+        return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+      }),
+      plainEnglish: (function () {
+        const bits = [];
+        bits.push(cq.status === 'all' ? 'of every status' : cq.status === 'approve' ? 'that are approved' : 'with status ' + cq.status);
+        if (cq.type) bits.push('of type ' + cq.type);
+        if (String(cq.postId || '').trim()) bits.push('on post ' + String(cq.postId).trim());
+        if (String(cq.postType || '').trim()) bits.push('on ' + slugify(cq.postType) + ' entries');
+        if (String(cq.userId || '').trim()) bits.push('written by user ' + String(cq.userId).trim());
+        if (String(cq.authorEmail || '').trim()) bits.push('from ' + String(cq.authorEmail).trim());
+        if (String(cq.search || '').trim()) bits.push('containing “' + String(cq.search).trim() + '”');
+        if (String(cq.parent || '').trim() !== '') bits.push(parseInt(cq.parent, 10) === 0 ? 'that are not replies' : 'replying to comment ' + parseInt(cq.parent, 10));
+        const num = parseInt(cq.number, 10);
+        return (cq.countOnly ? 'Count comments ' : 'Fetch comments ') + bits.join(', ') + '. '
+          + (cq.countOnly ? 'Returns a single number.' : (num ? 'At most ' + num + (cq.hierarchical !== 'false' ? ' threads' : ' comments') : 'No limit') + ', ' + (cq.order === 'DESC' ? 'newest' : 'oldest') + ' first' + (cq.hierarchical !== 'false' ? ', nested as a tree.' : '.'));
+      })(),
+
+      codeTokens: tokenizePHP(buildCode(cq, s.outputMode)),
+      outputModes: [['query', 'WP_Comment_Query'], ['get_comments', 'get_comments()'], ['args', 'Args array']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: {
+        query: 'The class, with a loop that links each comment back to its post.',
+        get_comments: 'The wrapper, feeding wp_list_comments() for themed output.',
+        args: 'Just the args array.'
+      }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new comment query' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      refArgs: [
+        ['status', 'string|array', 'approve, hold, spam, trash or all. all is not “all public” — it includes spam.'],
+        ['type / type__in / type__not_in', 'string|array', 'comment, pingback, trackback, or a custom type. Omitting it returns everything, pingbacks included.'],
+        ['post_id / post_type / post_status', 'mixed', 'Filter by what the comment is attached to. post_id is a single numeric id; post__in takes a list.'],
+        ['user_id / author_email / author_url', 'mixed', 'user_id only matches logged-in commenters. Guests are identified by email alone.'],
+        ['parent / parent__in', 'int|array', 'Direct replies to a comment. parent 0 means top-level only.'],
+        ['hierarchical', 'string|bool', 'false, threaded or flat. Anything but false changes what number counts.'],
+        ['number / offset / paged', 'int', 'No default limit — always set number on a site with real traffic.'],
+        ['count', 'bool', 'Returns an integer instead of rows. Ignores fields, and a number makes it wrong.']
+      ].map(function (r) { return { name: r[0], type: r[1], description: r[2] }; }),
+      refStatuses: padTo('approve', 12) + 'visible on the site\n' + padTo('hold', 12) + 'awaiting moderation\n' + padTo('spam', 12) + 'flagged, hidden\n' + padTo('trash', 12) + 'deleted but recoverable\n' + padTo('all', 12) + 'every one of the above',
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Filters'], ['output', 'PHP & Checks']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
