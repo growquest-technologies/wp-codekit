@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon, GLYPH } from '../components/ui/Icon';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const CONTACT_TOPICS = ['Generator request', 'Bug report', 'Wrong output', 'WordPress development', 'Something else'];
 
@@ -16,6 +17,8 @@ const CONTACT_FAQ = [
 ];
 
 export function Contact() {
+  usePageMeta('Contact', 'Request a generator, report a bug, or ask a WordPress development question.', '/contact');
+
   const [sent, setSent] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

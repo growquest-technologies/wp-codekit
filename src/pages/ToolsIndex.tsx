@@ -2,10 +2,13 @@ import { useMemo, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Icon, GLYPH } from '../components/ui/Icon';
 import { CATS, CAT_MAP, TOOLS, TOOL_ROUTES, fuzzyScore, type Tool } from '../data/tools';
+import { usePageMeta } from '../lib/usePageMeta';
 
 type SortMode = 'relevance' | 'az';
 
 export function ToolsIndex() {
+  usePageMeta('All Generators', `Browse all ${TOOLS.length} WordPress code generators — post types, queries, hooks, admin screens and WooCommerce.`, '/tools');
+
   const [params, setParams] = useSearchParams();
   const query = params.get('q') || '';
   const category = params.get('cat') || 'all';

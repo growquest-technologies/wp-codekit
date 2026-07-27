@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, GLYPH } from '../components/ui/Icon';
 import { CATS, CAT_MAP, TOOLS, TOOL_ROUTES, toolsHref } from '../data/tools';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const VALUE_PROPS = [
   { num: '01', title: 'See it before you ship it', body: "Generators render a live preview of the result — a WordPress.org listing, an admin screen, a query result set — next to the code, so you catch mistakes here instead of in staging." },
@@ -16,6 +17,12 @@ const ABOUT_STATS_POPULAR = ['register_post_type', 'taxonomy', 'WP_Query', 'shor
 export function Home() {
   const navigate = useNavigate();
   const [heroQuery, setHeroQuery] = useState('');
+
+  usePageMeta(
+    'WP CodeKit',
+    "Fill in a form, get production-ready WordPress PHP. Post types, taxonomies, queries, hooks, readme.txt and more. Live previews, no signup.",
+    '/',
+  );
 
   const featuredTools = FEATURED_IDS.map((id) => TOOLS.find((t) => t.id === id)).filter((t): t is NonNullable<typeof t> => !!t);
 

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TOOLS } from '../data/tools';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const ABOUT_SECTIONS = [
   {
@@ -35,6 +36,12 @@ const ABOUT_SECTIONS = [
 ];
 
 export function About() {
+  usePageMeta(
+    'About',
+    'WP CodeKit is a client-side WordPress code generator — no accounts, nothing uploaded, every field labelled with the argument it maps to.',
+    '/about',
+  );
+
   const stats = [
     { label: 'Generators', value: String(TOOLS.length) },
     { label: 'Accounts required', value: '0' },
