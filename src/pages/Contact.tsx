@@ -16,22 +16,41 @@ const CONTACT_FAQ = [
   { q: 'Do you store my plugin details?', a: 'No. Everything stays in your browser.' },
 ];
 
+const CONTACT_WEBHOOK_URL = 'https://webhook.ottokit.com/ottokit/eeb0c52b-03c3-411e-abe0-80460d1c819c';
+
 export function Contact() {
   usePageMeta('Contact', 'Request a generator, report a bug, or ask a WordPress development question.', '/contact');
 
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [topic, setTopic] = useState('Generator request');
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSent(true);
+    setError('');
+    setSending(true);
+    try {
+      const res = await fetch(CONTACT_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, topic, message, source: 'wpcodekit.com/contact' }),
+      });
+      if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
+      setSent(true);
+    } catch {
+      setError("Couldn't send your message — please try again, or email hello@wpcodekit.com directly.");
+    } finally {
+      setSending(false);
+    }
   }
 
   function reset() {
     setSent(false);
+    setError('');
     setName('');
     setEmail('');
     setMessage('');
@@ -65,11 +84,11 @@ export function Contact() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%,190px),1fr))', gap: 18 }}>
               <div>
                 <label htmlFor="gfw-name" className="field-label">Name</label>
-                <input id="gfw-name" className="marketing-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace" />
+                <input id="gfw-name" required className="marketing-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ada Lovelace" />
               </div>
               <div>
                 <label htmlFor="gfw-email" className="field-label">Email</label>
-                <input id="gfw-email" type="email" className="marketing-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+                <input id="gfw-email" type="email" required className="marketing-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
               </div>
             </div>
 
@@ -96,11 +115,18 @@ export function Contact() {
 
             <div>
               <label htmlFor="gfw-msg" className="field-label">Message</label>
-              <textarea id="gfw-msg" rows={7} className="marketing-textarea" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Which generator, what you expected, what you got…" />
+              <textarea id="gfw-msg" rows={7} required className="marketing-textarea" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Which generator, what you expected, what you got…" />
             </div>
 
+            {error && (
+              <div style={{ display: 'flex', gap: 10, background: '#FBEAE3', border: '1px solid var(--gfw-border)', borderRadius: 10, padding: '11px 14px' }}>
+                <Icon name={GLYPH.warning} size={15} style={{ color: 'var(--gfw-danger)', flexShrink: 0, marginTop: 1 }} />
+                <p style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--gfw-danger)', margin: 0 }}>{error}</p>
+              </div>
+            )}
+
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-              <button type="submit" className="btn btn-primary">Send message</button>
+              <button type="submit" className="btn btn-primary" disabled={sending}>{sending ? 'Sending…' : 'Send message'}</button>
               <span style={{ fontSize: 12.5, color: 'var(--gfw-text-mutest)' }}>Usually answered within two working days.</span>
             </div>
           </form>
