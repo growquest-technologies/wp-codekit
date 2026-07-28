@@ -1,6 +1,6 @@
 # Generator for WP
 
-A WordPress code-generator site: 38 tools (Readme Studio + 37 `register_*`/`WP_Query`-style
+A WordPress code-generator site: 49 tools (Readme Studio + 48 `register_*`/`WP_Query`-style
 generators) that turn a form into copy-pasteable, production-ready PHP. Every generator runs
 entirely client-side — no backend, no accounts, nothing uploaded.
 
@@ -33,8 +33,14 @@ port looks incomplete or wrong, the original logic is there to check against.
 
 ```
 src/
-  data/tools.ts          catalog of all 38 tools (id, name, category, fuzzy-search) — single
-                          source of truth for Home/ToolsIndex/SiteHeader/SiteFooter
+  data/
+    tools.ts             catalog of all 49 tools (id, name, category, fuzzy-search) — single
+                          source of truth for Home/ToolsIndex/SiteHeader/SiteFooter, plus
+                          toolPageTitle() for the <title>/<h1> overrides
+    toolContentTypes.ts   the ToolContent interface every tool's SEO section satisfies
+    toolContent/          one file per tool + a GENERATED index.ts (npm run content-index)
+    afterYouCopy.ts       universal post-click FAQs appended to every tool
+    contentMeta.ts        CONTENT_REVIEWED / TESTED_ON — visible freshness line + dateModified
   lib/
     codegen.ts            shared codegen helpers: slugify, escPhp, alignBlock (aligns PHP `=>`),
                            withCredit, tokenizePHP (the PHP syntax highlighter used by every
@@ -42,6 +48,10 @@ src/
     useEditorState.ts      the hook every generator uses for its form state: commit()/undo()/
                             redo()/reset(), localStorage persistence, and a "Saved just now"
                             label — the undo history and autosave chrome every toolbar shows
+    useListOps.ts          move/remove/reorder for repeatable lists — see RepeatableCard below
+    dragReorder.ts         drag-to-reorder binding, shared by every generator
+    usePageMeta.ts         title/description/canonical/OG + clampDescription + robots directive
+    useJsonLd.ts           route-level JSON-LD injection
     auth/                 AuthContext + ProtectedRoute — see Auth section below
   generators/
     registry.tsx           tool id -> lazy-loaded page component. Add one line here per tool.
@@ -81,10 +91,12 @@ Every generator page is code-split and looked up by id at `/tools/:toolId` via
    `applyFix()`) and `src/pages/generators/<Name>Generator.tsx` (the page — see the pattern below).
 2. Add one line to `GENERATOR_REGISTRY` in `src/generators/registry.tsx` mapping the tool's `id`
    (from `src/data/tools.ts`) to a lazy import of the new page.
+3. **Write `src/data/toolContent/<tool-id>.ts`** — the tool is not finished without it. See the
+   "Tool content" section below; `npm run build` fails if any tool is missing one.
 
-That's it — `src/router.tsx` never changes per tool; it only has the single `/tools/:toolId` catch-all
+`src/router.tsx` never changes per tool; it only has the single `/tools/:toolId` catch-all
 route. This was deliberately kept as one shared file so parallel work on different tools never
-touches the same lines.
+touches the same lines — same reason `toolContent/` is one file per tool with a generated index.
 
 ### The page pattern (every tool follows this — `PostTypeGenerator.tsx` is the canonical example)
 
@@ -158,6 +170,71 @@ are neither — a computed table, a file tree, URL examples, or a genuine second
 `CSS vars`, `Raw readme.txt`) — keep their own names, because calling them "Preview" would
 misdescribe them.
 
+## Tool content (the SEO layer — every tool needs one)
+
+Under each generator's workspace, `ToolContentSection` renders the page's long-form prose:
+About + a spec card, "why this beats a hand-written snippet" (6 feature cards), a 4-step
+how-it-works with a real worked example and an official-docs sidebar, an FAQ, and same-category
+related tools. It is driven by `src/data/toolContent/<tool-id>.ts` typed against
+`src/data/toolContentTypes.ts`, and `src/data/toolContent/index.ts` is **generated** — run
+`npm run content-index`, never hand-edit it.
+
+This exists because the tool itself is an interactive app that crawlers and answer engines
+cannot evaluate. Before this layer a tool page had ~25 words of prose (one `description` line
+plus form labels) and 49 of 59 indexable URLs were the same template; each page now carries
+~1,700 words. For calibration, the category incumbent's tool pages have roughly 90 words of
+editorial content and no `<h2>` at all.
+
+`src/data/afterYouCopy.ts` appends the universal post-click questions (where do I paste this,
+why is it 404ing, can I use it commercially) to every tool's FAQ — interpolated per tool, not
+byte-identical, since 49 pages sharing three verbatim paragraphs is a duplicate-content signal.
+Add a new tool's id to its `REWRITE_TOOLS` set if the tool registers URLs. Don't restate those
+questions in a tool's own `faqs`.
+
+**Writing the content is also a correctness audit, and should be treated as one.** Every feature
+card must map to a real check in that tool's `validate()`, and `example.code` must be actual
+`buildCode()` output produced by running the generator — not a paraphrase. Doing this across the
+49 tools surfaced three genuine bugs, including User Contact Methods emitting
+`add_filter( 'user_contact_methods', … )`, which is not a WordPress hook at all (the real filter
+is `user_contactmethods`, one word), so that generator's output silently did nothing. When the
+content and the code disagree, assume the code is wrong until proven otherwise.
+
+Every `refLinks` URL must be HTTP-verified before shipping and must point at official docs.
+Watch out for `developer.woocommerce.com`: it is a Docusaurus SPA that returns **200 for pages
+that don't exist**, so check response size rather than status code.
+
+`src/data/contentMeta.ts` holds `CONTENT_REVIEWED` / `TESTED_ON`, which drive both the visible
+"Reviewed … · Output tested on …" line and the schema `dateModified`. Bump it only on a genuine
+re-check — freshness is a real competitive lever here (the incumbent's pages still carry a 2016
+`dateModified`), and a false claim is worse than an honest older date.
+
+## SEO conventions
+
+- **Titles**: `<keyword> — Free, No Login | WP CodeKit`, 50-60 chars. "Free, No Login" is the one
+  claim the incumbents can't make — they all gate saving behind an account. A page's `<title>`
+  must agree with its `<h1>`; `toolPageTitle()` in `src/data/tools.ts` carries the overrides for
+  the 10 tools whose catalogue `name` and on-page H1 differ (the H1 is the better keyword).
+- **Descriptions** must fit 120-160 chars. `clampDescription()` enforces it, but write to fit —
+  the clamp trims the differentiating tail, not the boilerplate.
+- **External links are `nofollow` everywhere except growquest.io** (the advertised agency), which
+  stays followed. Anything rendered from user input — Readme Studio's donate link, rich-text
+  links — also needs `ugc`.
+- **Schema**: per-tool `WebApplication` + `HowTo` + `FAQPage` + `BreadcrumbList` from
+  `GeneratorRoute`; sitewide `Organization` + `WebSite`/`SearchAction` static in `index.html`;
+  `ItemList` on `/tools` and the category hubs. FAQ rich results stopped appearing in Google on
+  2026-05-07 and HowTo was deprecated in 2023 — we still emit both because LLM crawlers parse
+  them, but **don't invest further there**; `WebApplication` and `BreadcrumbList` are what still
+  earn anything. Anything in the FAQ schema must match what the page actually renders.
+- `middleware.ts` validates *every* path, not just `/tools` and `/category` — the SPA rewrite
+  serves the prerendered homepage, so an unknown URL used to return 200 plus full homepage
+  content with a canonical pointing at `/`.
+- The sitemap's `lastmod` comes from git history per route. It previously stamped today's date on
+  all 59 URLs on every run, which is how Google learns to ignore `lastmod` altogether.
+
+**Known gap:** `GeneratorShell` renders only the *active* tab, so the Reference/Permalinks/Checks
+panels — genuinely keyword-dense text — are invisible to crawlers. Rendering them hidden rather
+than conditionally is an open win.
+
 ### Section wrapping: `.field-card` / `.field-subcard`
 
 Every logical form section is wrapped in a bordered card, matching the source's exact grouping —
@@ -199,7 +276,7 @@ no copy button at all — check the source's own `onCopy`/`copyCode()` before ad
 a copy button just because a tab exists.
 
 `ValidationList` (the shared Checks-tab panel) has its own severity filter chip row (All/Errors/
-Warnings/Tips counts, local `useState`) — this is automatic for all 38 tools since they all render
+Warnings/Tips counts, local `useState`) — this is automatic for all 49 tools since they all render
 through the same component; don't re-implement filtering per tool.
 
 Every icon-only button (no visible text label) must have a `title` attribute so a native tooltip
@@ -249,14 +326,16 @@ chase down. Tiptap's `editor.view`/`.commands` can throw if accessed after the e
 (React StrictMode's dev-only mount/cleanup/remount) even though the `editor` object itself is still
 non-null — guard with `editor.isDestroyed`, not just `!editor`.
 
-Two escape hatches exist on `GeneratorShellProps` for tools that don't fit the code-preview mold:
+Three escape hatches exist on `GeneratorShellProps` for tools that don't fit the code-preview mold:
 `primaryTabLabel`/`primaryTabContent` (override the primary tab's content entirely — Readme
-Studio uses this for its rendered Listing Preview instead of a code panel) and `extraActions`
-(extra toolbar buttons before New/Copy/Download — Readme Studio's single "Import" button, which
-opens a `position:fixed` modal containing both the readme.txt import UI and the project-JSON
-export/import buttons — Export is not a separate toolbar button, matching source). Both exist for
-exactly one tool today; reach for them only when a tool is genuinely not a single code output, not
-as a general escape from the pattern above.
+Studio uses this for its rendered wp.org listing "Preview", and Child Theme for its multi-file
+"Files" browser, instead of a single code panel), `extraActions` (extra toolbar buttons before
+New/Copy/Download — Readme Studio's single "Import" button, which opens a `position:fixed` modal
+containing both the readme.txt import UI and the project-JSON export/import buttons — Export is
+not a separate toolbar button, matching source), and `downloadOverride` (replaces the toolbar's
+primary Download button — Child Theme uses it to emit a `.zip` instead of a single text file).
+Reach for any of them only when a tool is genuinely not a single code output, not as a general
+escape from the pattern above.
 
 `GeneratorShell`'s workspace has no fixed max-height — the whole page grows when a form section
 (e.g. an "Advanced" `Collapsible`) expands, rather than scrolling inside a viewport-clamped box.
@@ -271,7 +350,7 @@ from the source's own IDE-in-a-box height clamp, per explicit user preference, n
 bug.
 
 There is no build-status/roadmap concept anywhere in the app — `Tool` (`src/data/tools.ts`) has no
-`status` field (all 38 tools are equally "done"; the field was removed, not just hidden) and no
+`status` field (all 49 tools are equally "done"; the field was removed, not just hidden) and no
 page shows a "Live"/"In build"/"Planned" badge. Home.tsx's featured section is a plain grid of the
 12 most useful tools (`FEATURED_IDS`) with categories below and a link to all tools — no special
 single-tool spotlight card, no "N live / N in build" hero copy. Don't reintroduce status-based
@@ -294,7 +373,12 @@ filtering, sorting, or badging when adding new tools or editing these pages.
   chasing individual codepoint mismatches, the whole icon system moved to Heroicons, which has
   real `ListBulletIcon`/`NumberedListIcon` and everything else needed. The `lineicons.woff*` font
   files and its `@font-face` block are gone; don't reintroduce them.
-- No automated tests yet.
+- No automated tests yet. The nearest things to a test suite are `npm run build` (which fails on a
+  tool with no content), the prerender crawl (which fails if any route errors while rendering, so
+  it doubles as a 61-route smoke test), and each generator's own `validate()`.
+- The WooCommerce tools and Child Theme were built before their design handoffs existed, so their
+  `design-reference/*.dc.html` files only cover Cart Fees and Product Fields. The rest were
+  designed from the real WooCommerce APIs; check against those, not against a missing handoff.
 - PHP syntax highlighting (`tokenizePHP` in `src/lib/codegen.ts`) is a regex tokenizer ported from
   the source design, not a full parser — fine for generated code (which is narrow and predictable)
   but don't expect it to handle arbitrary PHP correctly.
@@ -334,7 +418,7 @@ crawlers/social scrapers, not a build-config toggle — Google's own guidance fo
 endorses this "static rendering" pattern as an alternative to full SSR.
 
 - `scripts/routes.ts` — the single source of truth for every public route (home, tools index,
-  about, contact, login, pricing, all 6 category hubs, all 48+ tool pages), derived directly from
+  about, contact, login, pricing, all 6 category hubs, all 49 tool pages), derived directly from
   `src/data/tools.ts`. Add a tool there and it automatically appears in the sitemap and the
   prerender crawl — nothing else to maintain by hand.
 - `npm run sitemap` — regenerates `public/sitemap.xml` from `routes.ts` (only routes marked
@@ -393,7 +477,7 @@ would have double-fired against the manual tracking below if both were left on).
   `trackPageView`) at the end of its effect, using the exact title/path it just set — every page
   already calls this hook, so there's no separate route-listener component to keep in sync.
 - `src/lib/analytics.ts`'s `trackEvent()` is wired into `GeneratorShell`'s copy/download buttons
-  (`code_copied`/`code_downloaded`) — since all 48+ tools share that one component, this covers
+  (`code_copied`/`code_downloaded`) — since all 49 tools share that one component, this covers
   every generator from a single call site. Add further events here the same way; `window.gtag?.()`
   optionally-chains, so calls are always safe even when analytics is off or blocked.
 - The bootstrap script also no-ops whenever `?_prerender=1` is present in the URL — the prerender
@@ -414,10 +498,11 @@ would have double-fired against the manual tracking below if both were left on).
 ## Commands
 
 ```
-npm run dev          # vite dev server
-npm run build        # tsc -b && vite build && overlay prerendered/ onto dist/ — what Vercel runs
-npm run lint          # eslint
-npm run sitemap       # regenerate public/sitemap.xml from scripts/routes.ts
+npm run dev            # vite dev server
+npm run build          # content-index --strict && tsc -b && vite build && overlay prerendered/ onto dist/ — what Vercel runs
+npm run lint           # eslint
+npm run content-index  # regenerate src/data/toolContent/index.ts; --strict fails if a tool has no content
+npm run sitemap        # regenerate public/sitemap.xml from scripts/routes.ts (lastmod from git history)
 npm run prerender      # vite build + crawl every route with Playwright into prerendered/ — LOCAL ONLY, never run on Vercel
-npm run refresh-seo   # sitemap + prerender together — run this locally before pushing a change that should show up to crawlers
+npm run refresh-seo    # sitemap + prerender together — run this locally before pushing a change that should show up to crawlers
 ```
