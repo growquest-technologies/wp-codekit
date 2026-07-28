@@ -53,6 +53,10 @@ interface GeneratorShellProps {
   primaryTabContent?: ReactNode;
   /** Extra toolbar buttons rendered before New/Copy/Download — for tool-specific actions (e.g. Readme Studio's Import / Export project). */
   extraActions?: ReactNode;
+  /** Overrides the toolbar's primary Download button (label + click handler) entirely — for a
+   * tool whose real output isn't the `code`/`filename` text blob (e.g. Child Theme's .zip
+   * download). Only Child Theme uses this today. */
+  downloadOverride?: { label: string; onClick: () => void };
 }
 
 type RightTab = 'code' | 'checks' | `secondary-${number}`;
@@ -85,6 +89,7 @@ export function GeneratorShell({
   primaryTabLabel,
   primaryTabContent,
   extraActions,
+  downloadOverride,
 }: GeneratorShellProps) {
   const cat = CAT_MAP[category];
   const [tab, setTab] = useState<RightTab>('code');
@@ -214,8 +219,8 @@ export function GeneratorShell({
             {extraActions}
             <button onClick={editor.onNew} className="gen-toolbar-btn">New</button>
             <button onClick={copy} className="gen-toolbar-btn">{copyFlash.label}</button>
-            <button onClick={download} className="gen-toolbar-btn-primary">
-              Download {filename.slice(filename.lastIndexOf('.'))}
+            <button onClick={downloadOverride ? downloadOverride.onClick : download} className="gen-toolbar-btn-primary">
+              {downloadOverride ? downloadOverride.label : `Download ${filename.slice(filename.lastIndexOf('.'))}`}
             </button>
           </div>
 

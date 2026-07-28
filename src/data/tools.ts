@@ -59,6 +59,7 @@ const RAW_TOOLS: [string, string, ToolCategory, string, string, boolean, string[
   ['widget', 'Widget Class', 'design', 'WP_Widget', 'A full widget class with form, update and widget methods.', true, ['sidebar', 'legacy widget']],
   ['theme-json', 'theme.json', 'design', 'theme.json', 'Block theme settings and style layers as valid JSON.', true, ['block theme', 'palette', 'typography']],
   ['default-headers', 'Default Theme Headers', 'design', 'register_default_headers()', 'Header image options bundled with your theme.', true, ['custom header', 'banner']],
+  ['child-theme', 'Child Theme', 'design', 'Template: parent-slug', 'Search wordpress.org for the parent theme and get a complete child theme — style.css, functions.php, theme.json — as a ready .zip.', true, ['child theme', 'parent theme', 'style.css', 'template header', 'wordpress.org']],
   ['hooks', 'Hooks', 'core', 'add_action() / add_filter()', 'Correctly signed callbacks with priority and accepted args.', true, ['action', 'filter', 'priority']],
   ['wp-config', 'wp-config.php', 'core', 'define()', 'Environment-aware config with salts, debug flags and memory limits.', true, ['debug', 'salts', 'constants']],
   ['enqueue', 'Scripts & Styles', 'core', 'wp_enqueue_script()', 'Register and enqueue assets with deps, versions and conditionals.', true, ['enqueue', 'css', 'js', 'assets']],

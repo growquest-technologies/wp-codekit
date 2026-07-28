@@ -201,6 +201,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.wpcodekit.com/tools/child-theme</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.wpcodekit.com/tools/hooks</loc>
     <lastmod>2026-07-28</lastmod>
     <priority>0.8</priority>

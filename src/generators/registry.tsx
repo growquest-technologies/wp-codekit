@@ -36,6 +36,7 @@ export const GENERATOR_REGISTRY: Record<string, () => Promise<{ default: Compone
   widget: () => import('../pages/generators/WidgetClassGenerator').then((m) => ({ default: m.WidgetClassGenerator })),
   'theme-json': () => import('../pages/generators/ThemeJsonGenerator').then((m) => ({ default: m.ThemeJsonGenerator })),
   'default-headers': () => import('../pages/generators/DefaultThemeHeadersGenerator').then((m) => ({ default: m.DefaultThemeHeadersGenerator })),
+  'child-theme': () => import('../pages/generators/ChildThemeGenerator').then((m) => ({ default: m.ChildThemeGenerator })),
   hooks: () => import('../pages/generators/HooksGenerator').then((m) => ({ default: m.HooksGenerator })),
   'wp-config': () => import('../pages/generators/WpConfigGenerator').then((m) => ({ default: m.WpConfigGenerator })),
   enqueue: () => import('../pages/generators/EnqueueGenerator').then((m) => ({ default: m.EnqueueGenerator })),
