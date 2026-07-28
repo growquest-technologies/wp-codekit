@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Product Fields Generator — add fields to WooCommerce products — Generator for WP</title>
+  <meta name="description" content="Add custom fields to the WooCommerce Product Data box — an existing tab or a new one — with a save handler wired to woocommerce_process_product_meta, plus an optional frontend display." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=woocommerce" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">WooCommerce</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Product Fields</span>
+        </div>
+        <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Product Fields Generator</h1>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:440px;">Fields in an existing Product Data tab or a new one, plus the save handler that writes them — through the product's own CRUD methods, not a raw postmeta write.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Placement</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+          <sc-for list="{{ placementChips }}" as="plc" hint-placeholder-count="4">
+            <button onClick="{{ plc.onClick }}" style="font-size:12.5px; font-weight:650; border:1px solid {{ plc.borderColor }}; background:{{ plc.bg }}; color:{{ plc.color }}; border-radius:20px; padding:7px 14px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ plc.label }}</button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ showCustomTabFields }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px; margin-bottom:14px;">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">tab label</label>
+              <input value="{{ pf.customTabLabel }}" onChange="{{ onCustomTabLabelChange }}" placeholder="Product Details" style="width:100%; font-size:13px; padding:8px 10px; border-radius:6px; border:1px solid {{ tabLabelBorder }};" style-focus="outline:2px solid #3858E9;" />
+            </div>
+            <div>
+              <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">tab id</label>
+              <input value="{{ pf.customTabId }}" onChange="{{ onCustomTabIdChange }}" spellCheck="false" placeholder="product_details" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:8px 10px; border-radius:6px; border:1px solid {{ tabIdBorder }};" style-focus="outline:2px solid #3858E9;" />
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">meta key prefix</label>
+            <input value="{{ pf.metaPrefix }}" onChange="{{ onMetaPrefixChange }}" spellCheck="false" placeholder="_acme_" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+            <input value="{{ pf.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ pf.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:7px;">Limit to product types</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <sc-for list="{{ productTypeChips }}" as="ptc" hint-placeholder-count="4">
+              <button onClick="{{ ptc.onToggle }}" style="font-size:11.5px; font-weight:600; font-family:'JetBrains Mono',monospace; border:1px solid {{ ptc.borderColor }}; background:{{ ptc.bg }}; color:{{ ptc.color }}; border-radius:20px; padding:4px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ ptc.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#5C564B; line-height:1.55;">{{ placementNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Fields</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ fieldsNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ fieldRows }}" as="fr" hint-placeholder-count="4">
+            <div style="border:1px solid #EDE8DF; border-radius:7px; padding:11px; background:#FCFBF9;">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input value="{{ fr.label }}" onChange="{{ fr.onLabelChange }}" placeholder="Warranty length" style="flex:1.5; min-width:130px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                <input value="{{ fr.id }}" onChange="{{ fr.onIdChange }}" spellCheck="false" placeholder="warranty_length" style="width:140px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ fr.idBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <select value="{{ fr.type }}" onChange="{{ fr.onTypeChange }}" style="width:104px; font-size:12px; padding:6px 6px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <sc-for list="{{ fieldTypeOptions }}" as="fto" hint-placeholder-count="7">
+                    <option value="{{ fto.value }}">{{ fto.label }}</option>
+                  </sc-for>
+                </select>
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:#5C564B; white-space:nowrap;">
+                  <input type="checkbox" checked="{{ fr.tooltip }}" onChange="{{ fr.onTooltipChange }}" style="width:14px; height:14px; accent-color:#3858E9;" />
+                  tooltip
+                </label>
+                <div style="display:flex; gap:3px; flex-shrink:0;">
+                  <button aria-label="Move field up" onClick="{{ fr.onMoveUp }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ fr.iconUp }}</button>
+                  <button aria-label="Move field down" onClick="{{ fr.onMoveDown }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="color:#3858E9; border-color:#3858E9;" style-focus="outline:2px solid #3858E9;">{{ fr.iconDown }}</button>
+                  <button aria-label="Remove field" onClick="{{ fr.onRemove }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ fr.iconRemove }}</button>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:7px;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#B3ACA0; white-space:nowrap;">{{ fr.metaKey }}</span>
+                <input value="{{ fr.description }}" onChange="{{ fr.onDescriptionChange }}" placeholder="Shown as a tooltip or helper text." style="flex:1; min-width:150px; font-size:12px; padding:6px 8px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+              </div>
+              <sc-if value="{{ fr.needsChoices }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:7px;">
+                  <input value="{{ fr.choices }}" onChange="{{ fr.onChoicesChange }}" spellCheck="false" placeholder="easy:Easy, moderate:Moderate, advanced:Advanced" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ fr.choicesBorder }};" style-focus="outline:2px solid #3858E9;" />
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noFields }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No fields — the tab will render an empty panel.</div>
+          </sc-if>
+        </div>
+        <button onClick="{{ onAddField }}" style="margin-top:11px; font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add field</button>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Save method</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; padding-bottom:12px; border-bottom:1px solid #F0ECE4;">
+          <sc-for list="{{ saveMethodChips }}" as="smc" hint-placeholder-count="2">
+            <button onClick="{{ smc.onClick }}" style="font-size:12px; font-weight:650; border:1px solid {{ smc.borderColor }}; background:{{ smc.bg }}; color:{{ smc.color }}; border-radius:20px; padding:6px 13px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ smc.label }}</button>
+          </sc-for>
+        </div>
+        <sc-for list="{{ extraToggles }}" as="bt" hint-placeholder-count="3">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ bt.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ bt.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ bt.on }}" aria-label="{{ bt.label }}" onClick="{{ bt.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ bt.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ bt.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+        <sc-if value="{{ showFrontendPlacement }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:11px 0; border-top:1px solid #F0ECE4;">
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:5px;">where on the page</label>
+            <select value="{{ pf.frontendPlacement }}" onChange="{{ onFrontendPlacementChange }}" style="width:100%; max-width:320px; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="meta_end">After SKU / categories / tags row</option>
+              <option value="after_summary">After the short description</option>
+            </select>
+          </div>
+        </sc-if>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabScreen }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabScreenColor }}; border-bottom:2px solid {{ tabScreenBorder }};" style-focus="outline:2px solid #3858E9;">Product data</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showScreenTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; background:#F0F0F1; padding:16px 18px 40px;">
+          <div style="font-size:10.5px; color:#787C82; margin-bottom:10px;">{{ screenNote }}</div>
+          <div style="background:#fff; border:1px solid #C3C4C7; border-radius:2px;">
+            <div style="padding:9px 12px; border-bottom:1px solid #F0F0F1; display:flex; justify-content:space-between; gap:8px; align-items:center;">
+              <span style="font-size:14px; font-weight:600; color:#1D2327;">Product data</span>
+              <span style="font-size:12px; color:#2271B1; font-weight:500;">{{ previewProductTypeLabel }}</span>
+            </div>
+            <div style="display:flex; min-height:230px;">
+              <div style="width:148px; flex-shrink:0; background:#FAFAFA; border-right:1px solid #E2E4E7; padding:10px 0;">
+                <sc-for list="{{ previewTabs }}" as="pt" hint-placeholder-count="7">
+                  <div style="padding:9px 12px; font-size:12px; font-weight:{{ pt.weight }}; color:{{ pt.color }}; background:{{ pt.bg }}; border-left:3px solid {{ pt.borderColor }};">{{ pt.label }}</div>
+                </sc-for>
+              </div>
+              <div style="flex:1; padding:14px 18px; min-width:0;">
+                <sc-for list="{{ previewFields }}" as="pvf" hint-placeholder-count="4">
+                  <div style="display:flex; gap:14px; align-items:flex-start; padding:9px 0; border-top:1px dashed #E2E4E7;">
+                    <div style="width:140px; flex-shrink:0; font-size:13px; font-weight:600; color:#1D2327; padding-top:6px; display:flex; align-items:center; gap:5px;">
+                      {{ pvf.label }}
+                      <sc-if value="{{ pvf.tooltip }}" hint-placeholder-val="{{ false }}">
+                        <span title="{{ pvf.description }}" style="width:15px; height:15px; border-radius:50%; background:#DCDCDE; color:#50575E; font-size:10px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; cursor:help;">?</span>
+                      </sc-if>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                      <sc-if value="{{ pvf.isInput }}" hint-placeholder-val="{{ true }}">
+                        <input value="" placeholder="{{ pvf.placeholder }}" readOnly="{{ trueVal }}" style="width:100%; max-width:280px; font-size:13.5px; padding:5px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff;" />
+                      </sc-if>
+                      <sc-if value="{{ pvf.isTextarea }}" hint-placeholder-val="{{ false }}">
+                        <textarea value="" rows="3" readOnly="{{ trueVal }}" style="width:100%; font-size:13px; padding:6px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff; resize:vertical;"></textarea>
+                      </sc-if>
+                      <sc-if value="{{ pvf.isCheckbox }}" hint-placeholder-val="{{ false }}">
+                        <label style="display:inline-flex; align-items:center; gap:7px; font-size:13.5px; color:#2C3338;">
+                          <input type="checkbox" readOnly="{{ trueVal }}" style="width:16px; height:16px; accent-color:#2271B1;" />
+                        </label>
+                      </sc-if>
+                      <sc-if value="{{ pvf.isSelect }}" hint-placeholder-val="{{ false }}">
+                        <select style="font-size:13.5px; padding:4px 8px; border:1px solid #8C8F94; border-radius:3px; background:#fff; min-width:160px;">
+                          <sc-for list="{{ pvf.choices }}" as="pvfc" hint-placeholder-count="2">
+                            <option value="{{ pvfc.value }}">{{ pvfc.label }}</option>
+                          </sc-for>
+                        </select>
+                      </sc-if>
+                      <sc-if value="{{ pvf.hasInlineDescription }}" hint-placeholder-val="{{ false }}">
+                        <p style="margin:5px 0 0; font-size:12.5px; color:#646970; font-style:italic; line-height:1.5;">{{ pvf.description }}</p>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ noPreviewFields }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:30px 10px; text-align:center; color:#787C82; font-size:13px;">No fields yet.</div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px; font-size:11.5px; color:#787C82; line-height:1.6;">{{ frontendNote }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#26221C; margin-bottom:4px; word-break:break-word;">{{ refTitle }}</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Registered on init, saved on woocommerce_process_product_meta</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refSignature }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Why there's no nonce or capability check here</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refFlow }}" as="rf" hint-placeholder-count="4">
+              <div style="display:flex; gap:9px; align-items:flex-start;">
+                <span style="flex-shrink:0; width:19px; height:19px; border-radius:50%; background:#EEF1FE; color:#2A46C4; font-size:10.5px; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ rf.n }}</span>
+                <span style="flex:1; font-size:12.5px; line-height:1.55; color:#3B362D;">{{ rf.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Meta keys written</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refKeys }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Checkboxes save “yes” / “no”</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">woocommerce_wp_checkbox() follows WooCommerce's own convention: the stored value is the string yes or no, never 1 or 0. Check it with === 'yes' — a loose truthy test also passes on '0', which is a non-empty string.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">CRUD vs. update_post_meta()</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">{{ crudNote }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Need this per variation instead?</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">A field added here lives on the product itself, shared by every variation. A field that varies per variation is a different box entirely — woocommerce_variation_options_pricing (or _product_after_variable_attributes) to render it, woocommerce_save_product_variation to save it.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag here.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const FIELD_TYPES = [
+  ['text', 'Text'], ['textarea', 'Textarea'], ['number', 'Number'], ['price', 'Price'],
+  ['checkbox', 'Checkbox'], ['select', 'Select'], ['url', 'URL']
+];
+const SANITIZE = { text: 'wc_clean', textarea: 'sanitize_textarea_field', number: 'absint', price: 'wc_format_decimal', checkbox: null, select: 'sanitize_key', url: 'esc_url_raw' };
+const CORE_KEYS = ['_price', '_regular_price', '_sale_price', '_sku', '_stock', '_stock_status', '_manage_stock', '_backorders', '_sold_individually', '_weight', '_length', '_width', '_height', '_tax_status', '_tax_class', '_downloadable', '_virtual', '_download_limit', '_download_expiry', '_upsell_ids', '_crosssell_ids', '_purchase_note', '_default_attributes', '_product_attributes', '_featured', '_wc_average_rating', '_wc_review_count'];
+const RESERVED_TAB_IDS = ['general', 'inventory', 'shipping', 'linked_product', 'attribute', 'attributes', 'variations', 'advanced'];
+const PRODUCT_TYPES = ['simple', 'variable', 'grouped', 'external'];
+const PLACEMENT_LABEL = { general: 'General', inventory: 'Inventory', shipping: 'Shipping' };
+const HOOK_BY_PLACEMENT = { general: 'woocommerce_product_options_general_product_data', inventory: 'woocommerce_product_options_inventory_product_data', shipping: 'woocommerce_product_options_shipping_product_data' };
+const BASE_TABS = [['general', 'General'], ['inventory', 'Inventory'], ['shipping', 'Shipping'], ['linked_product', 'Linked Products'], ['attribute', 'Attributes'], ['advanced', 'Advanced']];
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function metaSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_'); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function aligned(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo("'" + p[0] + "'", w + 2) + ' => ' + p[1] + ','; }).join('\n');
+}
+function parseChoices(str) {
+  return String(str || '').split(',').map(function (part) {
+    const p = part.trim();
+    if (!p) return null;
+    const i = p.indexOf(':');
+    const v = slugify(i >= 0 ? p.slice(0, i) : p);
+    const l = i >= 0 ? p.slice(i + 1).trim() : p.charAt(0).toUpperCase() + p.slice(1);
+    return v ? { value: v, label: l || v } : null;
+  }).filter(Boolean);
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function derive(pf) {
+  const pre = fnSlug(pf.prefix) || 'acme';
+  const td = slugify(pf.textDomain) || pre.replace(/_/g, '-');
+  const metaPrefix = metaSlug(pf.metaPrefix) || ('_' + pre + '_');
+  const tabId = fnSlug(pf.customTabId) || fnSlug(pf.customTabLabel) || pre + '_tab';
+  const fields = (pf.fields || []).map(function (f) {
+    const id = fnSlug(f.id) || 'field';
+    return Object.assign({}, f, { id: id, parsed: parseChoices(f.choices), key: metaPrefix + id });
+  });
+  return { pre: pre, td: td, metaPrefix: metaPrefix, tabId: tabId, types: (pf.productTypes || []).slice(), fields: fields, isCustomTab: pf.placement === 'custom' };
+}
+
+function fieldArgsBlock(pairs) { return 'array(\n' + indent(aligned(pairs), 1) + '\n)'; }
+
+function renderField(f, d) {
+  const label = "__( '" + esc(f.label || f.id) + "', '" + d.td + "' )";
+  const descPair = f.description ? ['description', "__( '" + esc(f.description) + "', '" + d.td + "' )"] : null;
+  const tipPair = f.tooltip ? ['desc_tip', 'true'] : null;
+  const common = [['id', "'" + f.key + "'"], ['label', label]];
+
+  if (f.type === 'checkbox') {
+    const pairs = common.slice();
+    if (descPair) pairs.push(descPair);
+    return 'woocommerce_wp_checkbox( ' + fieldArgsBlock(pairs) + ' );';
+  }
+  if (f.type === 'select') {
+    const opts = f.parsed.length ? f.parsed.map(function (c) { return [c.value, "__( '" + esc(c.label) + "', '" + d.td + "' )"]; }) : [['value', "__( 'Label', '" + d.td + "' )"]];
+    const pairs = common.concat([['options', 'array(\n' + indent(aligned(opts), 1) + '\n)']]);
+    if (tipPair) pairs.push(tipPair);
+    if (descPair) pairs.push(descPair);
+    return 'woocommerce_wp_select( ' + fieldArgsBlock(pairs) + ' );';
+  }
+  if (f.type === 'textarea') {
+    const pairs = common.slice();
+    if (tipPair) pairs.push(tipPair);
+    if (descPair) pairs.push(descPair);
+    return 'woocommerce_wp_textarea_input( ' + fieldArgsBlock(pairs) + ' );';
+  }
+  const pairs = common.slice();
+  if (f.type === 'number') pairs.push(['type', "'number'"], ['custom_attributes', 'array(\n' + indent(aligned([['step', "'1'"], ['min', "'0'"]]), 1) + '\n)']);
+  else if (f.type === 'price') pairs.push(['data_type', "'price'"]);
+  else if (f.type === 'url') pairs.push(['type', "'url'"]);
+  if (tipPair) pairs.push(tipPair);
+  if (descPair) pairs.push(descPair);
+  return 'woocommerce_wp_text_input( ' + fieldArgsBlock(pairs) + ' );';
+}
+
+function saveFunctionBody(pf, d) {
+  const lines = ['$product = wc_get_product( $post_id );', '', 'if ( ! $product ) {\n\treturn;\n}'];
+  if (d.types.length) lines.push('', 'if ( ! in_array( $product->get_type(), array( ' + d.types.map(function (t) { return "'" + t + "'"; }).join(', ') + ' ), true ) ) {\n\treturn;\n}');
+  lines.push('');
+  d.fields.forEach(function (f) {
+    const post = "$_POST['" + f.key + "']";
+    let stmt;
+    if (f.type === 'checkbox') {
+      stmt = pf.saveMethod === 'legacy'
+        ? "update_post_meta( $post_id, '" + f.key + "', isset( " + post + " ) ? 'yes' : 'no' );"
+        : "$product->update_meta_data( '" + f.key + "', isset( " + post + " ) ? 'yes' : 'no' );";
+    } else if (f.type === 'select' && f.parsed.length) {
+      const allowed = f.parsed.map(function (c) { return "'" + c.value + "'"; }).join(', ');
+      const write = pf.saveMethod === 'legacy'
+        ? "update_post_meta( $post_id, '" + f.key + "', sanitize_key( " + post + " ) );"
+        : "$product->update_meta_data( '" + f.key + "', sanitize_key( " + post + " ) );";
+      stmt = 'if ( isset( ' + post + ' ) && in_array( sanitize_key( ' + post + ' ), array( ' + allowed + ' ), true ) ) {\n\t' + write + '\n}';
+    } else {
+      const sanitized = (SANITIZE[f.type] || 'wc_clean') + '( wp_unslash( ' + post + ' ) )';
+      const write = pf.saveMethod === 'legacy'
+        ? "update_post_meta( $post_id, '" + f.key + "', " + sanitized + ' );'
+        : "$product->update_meta_data( '" + f.key + "', " + sanitized + ' );';
+      stmt = 'if ( isset( ' + post + ' ) ) {\n\t' + write + '\n}';
+    }
+    lines.push(stmt, '');
+  });
+  if (!d.fields.length) lines.push('// Nothing to save yet.', '');
+  if (pf.saveMethod !== 'legacy') lines.push('$product->save();');
+  while (lines.length && lines[lines.length - 1] === '') lines.pop();
+  return lines.join('\n');
+}
+
+function frontendBody(pf, d) {
+  const lines = ['global $product;', '', 'if ( ! $product ) {\n\treturn;\n}', ''];
+  d.fields.forEach(function (f) {
+    const cls = d.pre + '-' + f.id.replace(/_/g, '-');
+    if (f.type === 'checkbox') {
+      lines.push("if ( 'yes' === $product->get_meta( '" + f.key + "', true ) ) {\n\tprintf( '<span class=\"" + cls + "\">%s</span>', esc_html__( '" + esc(f.label || f.id) + "', '" + d.td + "' ) );\n}");
+    } else {
+      const v = '$' + f.id;
+      let block = v + " = $product->get_meta( '" + f.key + "', true );\n";
+      const printLine = "printf( '<span class=\"" + cls + "\"><strong>%1$s:</strong> %2$s</span>', esc_html__( '" + esc(f.label || f.id) + "', '" + d.td + "' ), esc_html( " + v + ' ) );';
+      block += pf.hideIfEmpty ? "if ( '' !== " + v + ' ) {\n\t' + printLine + '\n}' : printLine;
+      lines.push(block);
+    }
+    lines.push('');
+  });
+  while (lines.length && lines[lines.length - 1] === '') lines.pop();
+  return lines.join('\n');
+}
+
+function buildCode(pf, mode) {
+  const d = derive(pf);
+  const pre = d.pre;
+  const blocks = [];
+
+  if (d.isCustomTab) {
+    const wrapClasses = d.types.length ? 'array( ' + d.types.map(function (t) { return "'show_if_" + t + "'"; }).join(', ') + ' )' : 'array()';
+    blocks.push({
+      name: 'add_product_tab', hook: 'woocommerce_product_data_tabs', isFilter: true, params: '$tabs',
+      doc: '/**\n * Add the ' + esc(pf.customTabLabel || 'custom') + ' tab.\n *\n * @param array $tabs Existing tabs.\n * @return array\n */\n',
+      body: "$tabs['" + d.tabId + "'] = array(\n" + indent(aligned([
+        ['label', "__( '" + esc(pf.customTabLabel || 'Details') + "', '" + d.td + "' )"],
+        ['target', "'" + d.tabId + "_data'"],
+        ['class', wrapClasses],
+        ['priority', '21'],
+      ]), 1) + '\n);\n\nreturn $tabs;'
+    });
+    blocks.push({
+      name: 'product_tab_panel', hook: 'woocommerce_product_data_panels',
+      doc: '/**\n * Render the panel.\n */\n',
+      body: "echo '<div id=\"" + d.tabId + "_data\" class=\"panel woocommerce_options_panel\">';\necho '<div class=\"options_group\">';\n\n"
+        + (d.fields.length ? d.fields.map(function (f) { return renderField(f, d); }).join('\n\n') : '// Add a field to generate the form markup.')
+        + "\n\necho '</div>';\necho '</div>';"
+    });
+  } else {
+    const wrapClasses = d.types.length ? ' ' + d.types.map(function (t) { return 'show_if_' + t; }).join(' ') : '';
+    blocks.push({
+      name: 'add_product_fields', hook: HOOK_BY_PLACEMENT[pf.placement],
+      doc: '/**\n * Add the fields to the ' + PLACEMENT_LABEL[pf.placement] + ' tab.\n */\n',
+      body: "echo '<div class=\"options_group" + wrapClasses + "\">';\n\n"
+        + (d.fields.length ? d.fields.map(function (f) { return renderField(f, d); }).join('\n\n') : '// Add a field to generate the form markup.')
+        + "\n\necho '</div>';"
+    });
+  }
+
+  blocks.push({
+    name: 'save_product_fields', hook: 'woocommerce_process_product_meta', params: '$post_id',
+    doc: '/**\n * Save the fields.\n *\n * @param int $post_id Product ID.\n */\n',
+    body: saveFunctionBody(pf, d)
+  });
+
+  if (pf.showFrontend && d.fields.length) {
+    blocks.push({
+      name: 'display_product_fields',
+      hook: pf.frontendPlacement === 'after_summary' ? 'woocommerce_single_product_summary' : 'woocommerce_product_meta_end',
+      priority: pf.frontendPlacement === 'after_summary' ? 25 : null,
+      doc: '/**\n * Show the values on the single product page.\n */\n',
+      body: frontendBody(pf, d)
+    });
+  }
+
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       ' + esc(pf.customTabLabel || 'Product fields') + '\n * Description:       Adds custom fields to WooCommerce products and saves their values.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Requires Plugins:  woocommerce\n * Text Domain:       ' + d.td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\nif ( ! class_exists( 'WooCommerce' ) ) {\n\treturn;\n}\n\n";
+  } else {
+    out += "if ( ! class_exists( 'WooCommerce' ) ) {\n\treturn;\n}\n\n";
+  }
+
+  out += blocks.map(function (b) {
+    let s = b.doc + 'function ' + pre + '_' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 1) + '\n}\n';
+    s += (b.isFilter ? 'add_filter' : 'add_action') + "( '" + b.hook + "', '" + pre + '_' + b.name + "'" + (b.priority ? ', ' + b.priority : '') + ' );\n';
+    return s;
+  }).join('\n');
+
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|static|if|else|foreach|defined|exit|as|in_array|isset)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function validate(pf) {
+  const d = derive(pf);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+
+  if (!d.fields.length) add('warning', 'No fields yet — nothing will render or save.');
+  if (pf.placement === 'custom') {
+    if (!String(pf.customTabLabel || '').trim()) add('error', 'The new tab needs a label — it is what shows in the product data tab list.', 'addTabLabel', 'Add a label');
+    if (RESERVED_TAB_IDS.indexOf(d.tabId) >= 0) add('error', '“' + d.tabId + '” collides with a built-in tab id. Pick a more specific tab id.', 'renameTabId', 'Rename the tab id');
+  }
+  const seenKeys = {};
+  d.fields.forEach(function (f) {
+    if (!String(f.id || '').trim()) { add('error', 'A field is missing its id.'); return; }
+    if (seenKeys[f.key]) add('error', 'Two fields save to “' + f.key + '” — one will overwrite the other.');
+    seenKeys[f.key] = true;
+    if (CORE_KEYS.indexOf(f.key) >= 0) add('error', '“' + f.key + '” is a core WooCommerce meta key. Reusing it will corrupt ' + (['_price', '_regular_price', '_sale_price'].indexOf(f.key) >= 0 ? 'pricing' : (f.key === '_stock' || f.key === '_stock_status' ? 'stock levels' : 'product data')) + ' — pick a different key.');
+    if (!String(f.label || '').trim()) add('warning', 'The field “' + f.id + '” has no label, so it renders with a blank one.');
+    if (f.type === 'select' && !f.parsed.length) add('error', 'The select “' + f.id + '” has no choices, so it renders empty and never saves.', 'addChoices', 'Add two choices');
+    if (f.tooltip && !String(f.description || '').trim()) add('recommendation', '“' + f.id + '” has a tooltip enabled but no description — the ? icon has nothing to show.');
+  });
+  if (d.metaPrefix.charAt(0) !== '_') add('recommendation', 'The meta key prefix does not start with an underscore. Product meta never shows in a Custom Fields panel either way, but the leading underscore is still the convention WooCommerce itself follows.', 'protectKeys', 'Add the underscore');
+  if (pf.saveMethod === 'legacy') add('recommendation', 'update_post_meta() writes straight to postmeta, bypassing the product object WooCommerce may already hold in memory for this save. The CRUD toggle — update_meta_data() plus save() — is what core and every extension use.', 'useCrud', 'Switch to CRUD');
+  if (pf.placement === 'shipping') add('recommendation', 'WooCommerce hides the Shipping tab entirely for Grouped and External/Affiliate products — fields added here will not be reachable on those types.');
+  if (d.types.length && pf.placement !== 'custom') add('recommendation', 'Limiting to ' + d.types.join(', ') + ' hides the fields with CSS (show_if_ classes) and skips saving them on other types — the tab itself still opens for every product type.');
+  if (pf.showFrontend && !d.fields.length) add('recommendation', 'Frontend display is on, but there is nothing to show yet.');
+  if (!pf.showFrontend && d.fields.length) add('recommendation', 'These values are admin-only right now — turn on the frontend toggle if shoppers should see them.');
+  if (!pf.uninstallCleanup && d.fields.length) add('recommendation', 'Nothing deletes these keys on uninstall. delete_post_meta_by_key() per key in uninstall.php keeps postmeta clean.');
+  return out;
+}
+
+function freshProject() {
+  return {
+    prefix: 'acme', textDomain: 'acme',
+    placement: 'custom', customTabLabel: 'Product Details', customTabId: 'product_details',
+    metaPrefix: '_acme_', productTypes: ['simple', 'variable'],
+    fields: [
+      { id: 'manufacturer_part_no', label: 'Manufacturer part number', type: 'text', description: 'Printed on the packing slip.', tooltip: true, choices: '' },
+      { id: 'assembly_required', label: 'Assembly required', type: 'checkbox', description: 'Shows an assembly notice on the product page.', tooltip: false, choices: '' },
+      { id: 'difficulty', label: 'Assembly difficulty', type: 'select', description: '', tooltip: false, choices: 'easy:Easy, moderate:Moderate, advanced:Advanced' },
+      { id: 'care_instructions', label: 'Care instructions', type: 'textarea', description: '', tooltip: false, choices: '' }
+    ],
+    saveMethod: 'crud', showFrontend: true, frontendPlacement: 'meta_end', hideIfEmpty: true, uninstallCleanup: true
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    pf: freshProject(), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 540, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('product-fields-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.fields) this.setState({ pf: Object.assign(freshProject(), saved) }); }
+    } catch (err) { /* ignore */ }
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(pf) { try { localStorage.setItem('product-fields-generator-v1', JSON.stringify(pf)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.pf));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { pf: next, past: coalesce ? s.past : s.past.concat([s.pf]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.pf));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { pf: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.pf].concat(s.future) }; }, () => this.persist(this.state.pf)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { pf: s.future[0], past: s.past.concat([s.pf]), future: s.future.slice(1) }; }, () => this.persist(this.state.pf)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+
+  applyFix(kind) {
+    this.commit(function (p) {
+      if (kind === 'addChoices') p.fields.forEach(function (f) { if (f.type === 'select' && !parseChoices(f.choices).length) f.choices = 'first:First, second:Second'; });
+      if (kind === 'protectKeys') p.metaPrefix = '_' + metaSlug(p.metaPrefix);
+      if (kind === 'useCrud') p.saveMethod = 'crud';
+      if (kind === 'addTabLabel') p.customTabLabel = p.customTabLabel || 'Product Details';
+      if (kind === 'renameTabId') p.customTabId = (fnSlug(p.customTabId) || fnSlug(p.customTabLabel) || 'product') + '_fields';
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.pf, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const pf = this.state.pf, mode = this.state.outputMode, d = derive(pf);
+    let code = buildCode(pf, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = (d.isCustomTab ? d.tabId : (pf.placement + '-fields')).replace(/_/g, '-') + '.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, pf = s.pf, self = this;
+    const d = derive(pf);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), up: ic('\ue555', 12), down: ic('\ue54f', 12), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+
+    const issues = validate(pf);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    let placementNote = pf.placement === 'custom' ? 'Adds a new “' + (pf.customTabLabel || 'Untitled') + '” tab.' : 'Adds to the existing ' + PLACEMENT_LABEL[pf.placement] + ' tab.';
+    placementNote += d.types.length ? ' Limited to ' + d.types.join(', ') + ' products — hidden elsewhere and skipped on save.' : ' Visible and saved for every product type.';
+
+    const previewTabsList = BASE_TABS.slice();
+    if (d.isCustomTab) { const idx = previewTabsList.findIndex(function (t) { return t[0] === 'advanced'; }); previewTabsList.splice(idx, 0, ['custom', pf.customTabLabel || 'Custom']); }
+
+    return {
+      toolCount: 40, trueVal: true, pf: pf,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus,
+      fileName: (d.isCustomTab ? d.tabId : (pf.placement + '-fields')).replace(/_/g, '-') + '.php',
+
+      placementChips: [['general', 'General'], ['inventory', 'Inventory'], ['shipping', 'Shipping'], ['custom', 'New tab']].map(function (p) {
+        const on = pf.placement === p[0];
+        return { label: p[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onClick: function () { self.set('placement', p[0]); } };
+      }),
+      showCustomTabFields: pf.placement === 'custom',
+      tabLabelBorder: String(pf.customTabLabel || '').trim() ? '#E7E2D9' : '#B91C1C',
+      tabIdBorder: RESERVED_TAB_IDS.indexOf(d.tabId) >= 0 ? '#B91C1C' : '#E7E2D9',
+      onCustomTabLabelChange: function (ev) { self.set('customTabLabel', ev.target.value, true); },
+      onCustomTabIdChange: function (ev) { self.set('customTabId', ev.target.value, true); },
+      onMetaPrefixChange: function (ev) { self.set('metaPrefix', ev.target.value, true); },
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      productTypeChips: PRODUCT_TYPES.map(function (t) {
+        const on = (pf.productTypes || []).indexOf(t) >= 0;
+        return {
+          label: t.charAt(0).toUpperCase() + t.slice(1), borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B',
+          onToggle: function () { self.commit(function (p) { p.productTypes = p.productTypes || []; const i = p.productTypes.indexOf(t); if (i >= 0) p.productTypes.splice(i, 1); else p.productTypes.push(t); }); }
+        };
+      }),
+      placementNote: placementNote,
+
+      fieldsNote: d.fields.length + (d.fields.length === 1 ? ' field' : ' fields') + ' · keys prefixed ' + d.metaPrefix,
+      noFields: d.fields.length === 0,
+      fieldTypeOptions: FIELD_TYPES.map(function (f) { return { value: f[0], label: f[1] }; }),
+      fieldRows: (pf.fields || []).map(function (f, i) {
+        const needsChoices = f.type === 'select';
+        const key = d.metaPrefix + (fnSlug(f.id) || 'field');
+        const dupe = (pf.fields || []).filter(function (o) { return fnSlug(o.id) === fnSlug(f.id); }).length > 1;
+        return {
+          label: f.label, id: f.id, type: f.type, description: f.description, choices: f.choices, tooltip: !!f.tooltip,
+          metaKey: key, needsChoices: needsChoices,
+          idBorder: (!String(f.id || '').trim() || dupe) ? '#B91C1C' : '#E7E2D9',
+          choicesBorder: needsChoices && !parseChoices(f.choices).length ? '#B91C1C' : '#E7E2D9',
+          iconUp: ICON.up, iconDown: ICON.down, iconRemove: ICON.close,
+          onLabelChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].label = v; }, 'f-' + i + '-l'); },
+          onIdChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].id = v; }, 'f-' + i + '-i'); },
+          onTypeChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].type = v; if (v === 'select' && !p.fields[i].choices) p.fields[i].choices = 'first:First, second:Second'; }); },
+          onTooltipChange: function () { self.commit(function (p) { p.fields[i].tooltip = !p.fields[i].tooltip; }); },
+          onDescriptionChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].description = v; }, 'f-' + i + '-d'); },
+          onChoicesChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.fields[i].choices = v; }, 'f-' + i + '-c'); },
+          onMoveUp: function () { self.commit(function (p) { if (i === 0) return; const t = p.fields[i - 1]; p.fields[i - 1] = p.fields[i]; p.fields[i] = t; }); },
+          onMoveDown: function () { self.commit(function (p) { if (i >= p.fields.length - 1) return; const t = p.fields[i + 1]; p.fields[i + 1] = p.fields[i]; p.fields[i] = t; }); },
+          onRemove: function () { self.commit(function (p) { p.fields.splice(i, 1); }); }
+        };
+      }),
+      onAddField: function () { self.commit(function (p) { const n = p.fields.length + 1; p.fields.push({ id: 'field_' + n, label: 'Field ' + n, type: 'text', description: '', tooltip: false, choices: '' }); }); },
+
+      saveMethodChips: [['crud', 'CRUD (recommended)'], ['legacy', 'Legacy update_post_meta()']].map(function (m) {
+        const on = pf.saveMethod === m[0];
+        return { label: m[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onClick: function () { self.set('saveMethod', m[0]); } };
+      }),
+      extraToggles: [
+        { key: 'showFrontend', label: 'Show on the single product page', help: 'Prints the values on the frontend, read back through $product->get_meta().', on: pf.showFrontend },
+      ].concat(pf.showFrontend ? [{ key: 'hideIfEmpty', label: 'Hide the row when empty', help: 'Skips the frontend output for a field with no saved value.', on: pf.hideIfEmpty }] : [])
+        .concat([{ key: 'uninstallCleanup', label: 'Clean up on uninstall', help: 'delete_post_meta_by_key() for each key, as an uninstall.php comment.', on: pf.uninstallCleanup }])
+        .map(function (tg) {
+          return { label: tg.label, help: tg.help, on: tg.on, bg: tg.on ? '#3858E9' : '#D9D4C8', knobLeft: tg.on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[tg.key] = !p[tg.key]; }); } };
+        }),
+      showFrontendPlacement: !!pf.showFrontend,
+      onFrontendPlacementChange: function (ev) { self.set('frontendPlacement', ev.target.value); },
+
+      codeTokens: tokenizePHP(buildCode(pf, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: 'Guarded with a WooCommerce active-check — safe to drop in anywhere.', functions: "Add to your theme's functions.php — fine short-term, but product fields should outlive a theme switch.", plugin: 'A complete single-file plugin that declares WooCommerce as a dependency.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new field set' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      screenNote: 'Product data metabox · ' + (d.isCustomTab ? '“' + (pf.customTabLabel || 'Untitled') + '” tab (new)' : PLACEMENT_LABEL[pf.placement] + ' tab'),
+      previewProductTypeLabel: d.types.length ? d.types.map(function (t) { return t.charAt(0).toUpperCase() + t.slice(1); }).join(' / ') + ' product' : 'Simple product',
+      previewTabs: previewTabsList.map(function (t) {
+        const active = d.isCustomTab ? t[0] === 'custom' : t[0] === pf.placement;
+        return { label: t[1], weight: active ? 700 : 500, color: active ? '#2271B1' : '#50575E', bg: active ? '#fff' : 'transparent', borderColor: active ? '#2271B1' : 'transparent' };
+      }),
+      previewFields: d.fields.map(function (f) {
+        return {
+          label: f.label || f.id, description: f.description, tooltip: !!f.tooltip,
+          hasInlineDescription: !!f.description && !f.tooltip,
+          placeholder: '',
+          isInput: ['text', 'number', 'price', 'url'].indexOf(f.type) >= 0,
+          isTextarea: f.type === 'textarea', isCheckbox: f.type === 'checkbox', isSelect: f.type === 'select',
+          choices: f.parsed
+        };
+      }),
+      noPreviewFields: d.fields.length === 0,
+      frontendNote: pf.showFrontend
+        ? 'Shown on the single product page, ' + (pf.frontendPlacement === 'after_summary' ? 'after the short description (priority 25)' : 'in the meta row under Add to cart') + (pf.hideIfEmpty ? ', only when a value is set.' : ', even when empty.')
+        : 'Admin-only for now — turn on “Show on the single product page” to add a frontend hook.',
+
+      refTitle: d.isCustomTab ? 'woocommerce_product_data_tabs / woocommerce_product_data_panels' : HOOK_BY_PLACEMENT[pf.placement],
+      refSignature: d.isCustomTab
+        ? "add_filter( 'woocommerce_product_data_tabs', '" + d.pre + "_add_product_tab' );\nadd_action( 'woocommerce_product_data_panels', '" + d.pre + "_product_tab_panel' );"
+        : "add_action( '" + HOOK_BY_PLACEMENT[pf.placement] + "', '" + d.pre + "_add_product_fields' );",
+      refFlow: [
+        "WooCommerce's own Product Data metabox posts to post.php, and its save() method runs first — before your hook ever fires.",
+        "It checks the woocommerce_meta_nonce field against wp_verify_nonce(), so your handler doesn't have to.",
+        "It bails on autosaves and revisions, and checks current_user_can( 'edit_post', $post_id ) for this specific product.",
+        'Only then does it call woocommerce_process_product_meta — the hook this generator saves into.'
+      ].map(function (text, i) { return { n: String(i + 1), text: text }; }),
+      refKeys: d.fields.length
+        ? d.fields.map(function (f) { return padTo(f.key, 28) + padTo(f.type, 10) + (f.type === 'checkbox' ? 'yes / no' : (SANITIZE[f.type] || 'wc_clean') + '()'); }).join('\n')
+        : 'No fields yet.',
+      crudNote: pf.saveMethod === 'legacy'
+        ? 'This build writes with update_post_meta() directly. It works — products are posts under the hood — but it bypasses the in-memory product object WooCommerce may already be holding for this save. The CRUD toggle avoids that.'
+        : "update_meta_data() queues the value on the product object; save() writes it in one pass — the same path core and every extension use. Reading back with get_post_meta() would still work either way; it's only the write path that differs.",
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showScreenTab: s.rightTab === 'screen', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabScreen: function () { self.setState({ rightTab: 'screen', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabScreenColor: s.rightTab === 'screen' ? '#3858E9' : '#948C7E', tabScreenBorder: s.rightTab === 'screen' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Fields'], ['output', 'PHP & Preview']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

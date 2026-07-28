@@ -1,15 +1,18 @@
 import { escPhp, withCredit, type ValidationIssue } from '../lib/codegen';
 
 export type OutputMode = 'snippet' | 'functions' | 'plugin';
-export type FieldType = 'text' | 'number' | 'checkbox' | 'select' | 'textarea';
-export type ProductTab = 'general' | 'inventory' | 'shipping' | 'custom';
+export type FieldType = 'text' | 'textarea' | 'number' | 'price' | 'checkbox' | 'select' | 'url';
+export type Placement = 'general' | 'inventory' | 'shipping' | 'custom';
+export type SaveMethod = 'crud' | 'legacy';
+export type FrontendPlacement = 'meta_end' | 'after_summary';
+export type ProductType = 'simple' | 'variable' | 'grouped' | 'external';
 
 export interface ProductField {
-  key: string;
+  id: string;
   label: string;
   type: FieldType;
-  def: string;
   description: string;
+  tooltip: boolean;
   choices: string;
 }
 
@@ -17,33 +20,73 @@ export interface ProductFields {
   prefix: string;
   textDomain: string;
   metaPrefix: string;
-  tab: ProductTab;
+  placement: Placement;
   customTabLabel: string;
+  customTabId: string;
+  productTypes: ProductType[];
   fields: ProductField[];
+  saveMethod: SaveMethod;
+  showFrontend: boolean;
+  hideIfEmpty: boolean;
+  frontendPlacement: FrontendPlacement;
+  uninstallCleanup: boolean;
   exposeRest: boolean;
 }
 
-export const TYPES: [FieldType, string][] = [
+export const FIELD_TYPES: [FieldType, string][] = [
   ['text', 'Text'],
+  ['textarea', 'Textarea'],
   ['number', 'Number'],
+  ['price', 'Price'],
   ['checkbox', 'Checkbox'],
   ['select', 'Select'],
-  ['textarea', 'Textarea'],
+  ['url', 'URL'],
 ];
 
-export const TAB_HOOKS: Record<Exclude<ProductTab, 'custom'>, string> = {
+const SANITIZE: Record<FieldType, string | null> = {
+  text: 'wc_clean',
+  textarea: 'sanitize_textarea_field',
+  number: 'absint',
+  price: 'wc_format_decimal',
+  checkbox: null,
+  select: 'sanitize_key',
+  url: 'esc_url_raw',
+};
+
+// WooCommerce's own core product meta keys — reusing one of these corrupts pricing,
+// stock, or shipping data instead of adding a new field.
+const CORE_KEYS = [
+  '_price', '_regular_price', '_sale_price', '_sku', '_stock', '_stock_status', '_manage_stock',
+  '_backorders', '_sold_individually', '_weight', '_length', '_width', '_height', '_tax_status',
+  '_tax_class', '_downloadable', '_virtual', '_download_limit', '_download_expiry', '_upsell_ids',
+  '_crosssell_ids', '_purchase_note', '_default_attributes', '_product_attributes', '_featured',
+  '_wc_average_rating', '_wc_review_count',
+];
+
+const RESERVED_TAB_IDS = ['general', 'inventory', 'shipping', 'linked_product', 'attribute', 'attributes', 'variations', 'advanced'];
+
+export const PRODUCT_TYPES: ProductType[] = ['simple', 'variable', 'grouped', 'external'];
+
+export const PLACEMENT_LABEL: Record<Exclude<Placement, 'custom'>, string> = {
+  general: 'General',
+  inventory: 'Inventory',
+  shipping: 'Shipping',
+};
+
+export const HOOK_BY_PLACEMENT: Record<Exclude<Placement, 'custom'>, string> = {
   general: 'woocommerce_product_options_general_product_data',
   inventory: 'woocommerce_product_options_inventory_product_data',
   shipping: 'woocommerce_product_options_shipping_product_data',
 };
 
-const SANITIZE: Record<FieldType, string> = {
-  text: 'wc_clean',
-  number: 'wc_format_decimal',
-  checkbox: '',
-  select: 'sanitize_key',
-  textarea: 'sanitize_textarea_field',
-};
+export const BASE_TABS: [string, string][] = [
+  ['general', 'General'],
+  ['inventory', 'Inventory'],
+  ['shipping', 'Shipping'],
+  ['linked_product', 'Linked Products'],
+  ['attribute', 'Attributes'],
+  ['advanced', 'Advanced'],
+];
 
 function fnSlug(s: string): string {
   return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '');
@@ -52,7 +95,7 @@ function metaSlug(s: string): string {
   return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_');
 }
 export function slugify(s: string): string {
-  return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
+  return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
 }
 function indent(text: string, depth: number): string {
   const p = new Array(depth + 1).join('\t');
@@ -75,15 +118,15 @@ export function parseChoices(str: string): Choice[] {
     const p = part.trim();
     if (!p) return null;
     const i = p.indexOf(':');
-    const v = metaSlug(i >= 0 ? p.slice(0, i) : p);
+    const v = slugify(i >= 0 ? p.slice(0, i) : p);
     const l = i >= 0 ? p.slice(i + 1).trim() : p.charAt(0).toUpperCase() + p.slice(1);
     return v ? { value: v, label: l || v } : null;
   }).filter((x): x is Choice => x != null);
 }
 
 export interface DerivedField extends ProductField {
-  key: string;
   parsed: Choice[];
+  key: string;
 }
 
 export interface Derived {
@@ -91,107 +134,205 @@ export interface Derived {
   td: string;
   metaPrefix: string;
   tabId: string;
+  types: ProductType[];
   fields: DerivedField[];
+  isCustomTab: boolean;
 }
 
 export function derive(pf: ProductFields): Derived {
   const pre = fnSlug(pf.prefix) || 'acme';
-  return {
-    pre,
-    td: slugify(pf.textDomain || pf.prefix) || pre.replace(/_/g, '-'),
-    metaPrefix: metaSlug(pf.metaPrefix),
-    tabId: pre + '_extra',
-    fields: (pf.fields || []).map((f) => ({ ...f, key: metaSlug(f.key) || 'field', parsed: parseChoices(f.choices) })),
-  };
+  const td = slugify(pf.textDomain) || pre.replace(/_/g, '-');
+  const metaPrefix = metaSlug(pf.metaPrefix) || '_' + pre + '_';
+  const tabId = fnSlug(pf.customTabId) || fnSlug(pf.customTabLabel) || pre + '_tab';
+  const fields = (pf.fields || []).map((f) => {
+    const id = fnSlug(f.id) || 'field';
+    return { ...f, id, parsed: parseChoices(f.choices), key: metaPrefix + id };
+  });
+  return { pre, td, metaPrefix, tabId, types: (pf.productTypes || []).slice(), fields, isCustomTab: pf.placement === 'custom' };
 }
 
-function defLiteral(f: ProductField): string {
-  const v = String(f.def == null ? '' : f.def).trim();
-  if (f.type === 'checkbox') return v === '1' || v.toLowerCase() === 'yes' ? "'yes'" : "'no'";
-  return "'" + escPhp(v) + "'";
+function fieldArgsBlock(pairs: [string, string][]): string {
+  return 'array(\n' + indent(aligned(pairs), 1) + '\n)';
 }
 
-function fieldMarkup(d: Derived, f: DerivedField, td: string): string {
-  const id = d.metaPrefix + f.key;
-  const t = (s: string) => "__( '" + escPhp(s) + "', '" + td + "' )";
-  const common: [string, string][] = [['id', "'" + id + "'"], ['label', t(f.label || f.key)]];
-  if (f.description) common.push(['description', t(f.description)], ['desc_tip', 'true']);
+function renderField(f: DerivedField, td: string): string {
+  const label = "__( '" + escPhp(f.label || f.id) + "', '" + td + "' )";
+  const descPair: [string, string] | null = f.description ? ['description', "__( '" + escPhp(f.description) + "', '" + td + "' )"] : null;
+  const tipPair: [string, string] | null = f.tooltip ? ['desc_tip', 'true'] : null;
+  const common: [string, string][] = [['id', "'" + f.key + "'"], ['label', label]];
 
   if (f.type === 'checkbox') {
-    common.push(['value', "get_post_meta( $product->get_id(), '" + id + "', true ) ?: '" + (defLiteral(f) === "'yes'" ? 'yes' : 'no') + "'"]);
-    return 'woocommerce_wp_checkbox(\n' + indent('array(\n' + indent(aligned(common), 1) + '\n)', 1) + '\n);';
+    const pairs = common.slice();
+    if (descPair) pairs.push(descPair);
+    return 'woocommerce_wp_checkbox( ' + fieldArgsBlock(pairs) + ' );';
   }
   if (f.type === 'select') {
-    const options = f.parsed.length ? f.parsed : [{ value: 'a', label: 'Option A' }, { value: 'b', label: 'Option B' }];
-    common.push(['value', "get_post_meta( $product->get_id(), '" + id + "', true )"]);
-    common.push(['options', 'array(\n' + indent(aligned(options.map((c) => [c.value, t(c.label)] as [string, string])), 1) + '\n)']);
-    return 'woocommerce_wp_select(\n' + indent('array(\n' + indent(aligned(common), 1) + '\n)', 1) + '\n);';
+    const opts = f.parsed.length ? f.parsed.map((c): [string, string] => [c.value, "__( '" + escPhp(c.label) + "', '" + td + "' )"]) : [['value', "__( 'Label', '" + td + "' )"] as [string, string]];
+    const pairs = common.concat([['options', 'array(\n' + indent(aligned(opts), 1) + '\n)']]);
+    if (tipPair) pairs.push(tipPair);
+    if (descPair) pairs.push(descPair);
+    return 'woocommerce_wp_select( ' + fieldArgsBlock(pairs) + ' );';
   }
   if (f.type === 'textarea') {
-    common.push(['value', "get_post_meta( $product->get_id(), '" + id + "', true )"]);
-    return 'woocommerce_wp_textarea_input(\n' + indent('array(\n' + indent(aligned(common), 1) + '\n)', 1) + '\n);';
+    const pairs = common.slice();
+    if (tipPair) pairs.push(tipPair);
+    if (descPair) pairs.push(descPair);
+    return 'woocommerce_wp_textarea_input( ' + fieldArgsBlock(pairs) + ' );';
   }
-  if (f.type === 'number') {
-    common.push(['value', "get_post_meta( $product->get_id(), '" + id + "', true )"]);
-    common.push(['type', "'number'"]);
-    common.push(['custom_attributes', "array(\n\t'step' => 'any',\n\t'min'  => '0',\n)"]);
-    return 'woocommerce_wp_text_input(\n' + indent('array(\n' + indent(aligned(common), 1) + '\n)', 1) + '\n);';
-  }
-  common.push(['value', "get_post_meta( $product->get_id(), '" + id + "', true )"]);
-  return 'woocommerce_wp_text_input(\n' + indent('array(\n' + indent(aligned(common), 1) + '\n)', 1) + '\n);';
+  const pairs = common.slice();
+  if (f.type === 'number') pairs.push(['type', "'number'"], ['custom_attributes', 'array(\n' + indent(aligned([['step', "'1'"], ['min', "'0'"]]), 1) + '\n)']);
+  else if (f.type === 'price') pairs.push(['data_type', "'price'"]);
+  else if (f.type === 'url') pairs.push(['type', "'url'"]);
+  if (tipPair) pairs.push(tipPair);
+  if (descPair) pairs.push(descPair);
+  return 'woocommerce_wp_text_input( ' + fieldArgsBlock(pairs) + ' );';
 }
 
-function saveLine(d: Derived, f: DerivedField): string {
-  const id = d.metaPrefix + f.key;
-  const post = "wp_unslash( $_POST['" + id + "'] ?? '' )";
-  if (f.type === 'checkbox') return "update_post_meta( $post_id, '" + id + "', isset( $_POST['" + id + "'] ) ? 'yes' : 'no' );";
-  if (f.type === 'select') {
-    const values = (f.parsed.length ? f.parsed : [{ value: 'a', label: '' }]).map((c) => "'" + c.value + "'").join(', ');
-    return "$" + f.key + ' = ' + SANITIZE.select + '( ' + post + ' );\nupdate_post_meta( $post_id, \'' + id + "', in_array( $" + f.key + ', array( ' + values + ' ), true ) ? $' + f.key + ' : ' + defLiteral(f) + ' );';
-  }
-  return "update_post_meta( $post_id, '" + id + "', " + SANITIZE[f.type] + '( ' + post + ' ) );';
+function saveFunctionBody(pf: ProductFields, d: Derived): string {
+  const lines: string[] = ['$product = wc_get_product( $post_id );', '', 'if ( ! $product ) {\n\treturn;\n}'];
+  if (d.types.length) lines.push('', 'if ( ! in_array( $product->get_type(), array( ' + d.types.map((t) => "'" + t + "'").join(', ') + ' ), true ) ) {\n\treturn;\n}');
+  lines.push('');
+  d.fields.forEach((f) => {
+    const post = "$_POST['" + f.key + "']";
+    let stmt: string;
+    if (f.type === 'checkbox') {
+      stmt = pf.saveMethod === 'legacy'
+        ? "update_post_meta( $post_id, '" + f.key + "', isset( " + post + " ) ? 'yes' : 'no' );"
+        : "$product->update_meta_data( '" + f.key + "', isset( " + post + " ) ? 'yes' : 'no' );";
+    } else if (f.type === 'select' && f.parsed.length) {
+      const allowed = f.parsed.map((c) => "'" + c.value + "'").join(', ');
+      const write = pf.saveMethod === 'legacy'
+        ? "update_post_meta( $post_id, '" + f.key + "', sanitize_key( " + post + " ) );"
+        : "$product->update_meta_data( '" + f.key + "', sanitize_key( " + post + " ) );";
+      stmt = 'if ( isset( ' + post + ' ) && in_array( sanitize_key( ' + post + ' ), array( ' + allowed + ' ), true ) ) {\n\t' + write + '\n}';
+    } else {
+      const sanitized = (SANITIZE[f.type] || 'wc_clean') + '( wp_unslash( ' + post + ' ) )';
+      const write = pf.saveMethod === 'legacy'
+        ? "update_post_meta( $post_id, '" + f.key + "', " + sanitized + ' );'
+        : "$product->update_meta_data( '" + f.key + "', " + sanitized + ' );';
+      stmt = 'if ( isset( ' + post + ' ) ) {\n\t' + write + '\n}';
+    }
+    lines.push(stmt, '');
+  });
+  if (!d.fields.length) lines.push('// Nothing to save yet.', '');
+  if (pf.saveMethod !== 'legacy') lines.push('$product->save();');
+  while (lines.length && lines[lines.length - 1] === '') lines.pop();
+  return lines.join('\n');
+}
+
+function frontendBody(pf: ProductFields, d: Derived): string {
+  const lines: string[] = ['global $product;', '', 'if ( ! $product ) {\n\treturn;\n}', ''];
+  d.fields.forEach((f) => {
+    const cls = d.pre + '-' + f.id.replace(/_/g, '-');
+    if (f.type === 'checkbox') {
+      lines.push("if ( 'yes' === $product->get_meta( '" + f.key + "', true ) ) {\n\tprintf( '<span class=\"" + cls + "\">%s</span>', esc_html__( '" + escPhp(f.label || f.id) + "', '" + d.td + "' ) );\n}");
+    } else {
+      const v = '$' + f.id;
+      let block = v + " = $product->get_meta( '" + f.key + "', true );\n";
+      const printLine = "printf( '<span class=\"" + cls + "\"><strong>%1$s:</strong> %2$s</span>', esc_html__( '" + escPhp(f.label || f.id) + "', '" + d.td + "' ), esc_html( " + v + ' ) );';
+      block += pf.hideIfEmpty ? "if ( '' !== " + v + ' ) {\n\t' + printLine + '\n}' : printLine;
+      lines.push(block);
+    }
+    lines.push('');
+  });
+  while (lines.length && lines[lines.length - 1] === '') lines.pop();
+  return lines.join('\n');
+}
+
+interface Block {
+  name: string;
+  hook: string;
+  isFilter?: boolean;
+  params?: string;
+  priority?: number | null;
+  doc: string;
+  body: string;
 }
 
 export function buildCode(pf: ProductFields, mode: OutputMode): string {
   const d = derive(pf);
   const pre = d.pre;
-  const td = d.td;
-  const tabHook = pf.tab === 'custom' ? null : TAB_HOOKS[pf.tab];
+  const blocks: Block[] = [];
 
-  const panelBody = d.fields.length
-    ? d.fields.map((f) => fieldMarkup(d, f, td)).join('\n\n')
-    : '// Add a field to generate the form markup.';
+  if (d.isCustomTab) {
+    const wrapClasses = d.types.length ? 'array( ' + d.types.map((t) => "'show_if_" + t + "'").join(', ') + ' )' : 'array()';
+    blocks.push({
+      name: 'add_product_tab', hook: 'woocommerce_product_data_tabs', isFilter: true, params: '$tabs',
+      doc: '/**\n * Add the ' + escPhp(pf.customTabLabel || 'custom') + ' tab.\n *\n * @param array $tabs Existing tabs.\n * @return array\n */\n',
+      body: "$tabs['" + d.tabId + "'] = array(\n" + indent(aligned([
+        ['label', "__( '" + escPhp(pf.customTabLabel || 'Details') + "', '" + d.td + "' )"],
+        ['target', "'" + d.tabId + "_data'"],
+        ['class', wrapClasses],
+        ['priority', '21'],
+      ]), 1) + '\n);\n\nreturn $tabs;',
+    });
+    blocks.push({
+      name: 'product_tab_panel', hook: 'woocommerce_product_data_panels', params: undefined as unknown as string,
+      doc: '/**\n * Render the panel.\n */\n',
+      body: "echo '<div id=\"" + d.tabId + "_data\" class=\"panel woocommerce_options_panel\">';\necho '<div class=\"options_group\">';\n\n"
+        + (d.fields.length ? d.fields.map((f) => renderField(f, d.td)).join('\n\n') : '// Add a field to generate the form markup.')
+        + "\n\necho '</div>';\necho '</div>';",
+    });
+  } else {
+    const placement = pf.placement as Exclude<Placement, 'custom'>;
+    const wrapClasses = d.types.length ? ' ' + d.types.map((t) => 'show_if_' + t).join(' ') : '';
+    blocks.push({
+      name: 'add_product_fields', hook: HOOK_BY_PLACEMENT[placement], params: undefined as unknown as string,
+      doc: '/**\n * Add the fields to the ' + PLACEMENT_LABEL[placement] + ' tab.\n */\n',
+      body: "echo '<div class=\"options_group" + wrapClasses + "\">';\n\n"
+        + (d.fields.length ? d.fields.map((f) => renderField(f, d.td)).join('\n\n') : '// Add a field to generate the form markup.')
+        + "\n\necho '</div>';",
+    });
+  }
+
+  blocks.push({
+    name: 'save_product_fields', hook: 'woocommerce_process_product_meta', params: '$post_id',
+    doc: '/**\n * Save the fields.\n *\n * @param int $post_id Product ID.\n */\n',
+    body: saveFunctionBody(pf, d),
+  });
+
+  if (pf.showFrontend && d.fields.length) {
+    blocks.push({
+      name: 'display_product_fields',
+      hook: pf.frontendPlacement === 'after_summary' ? 'woocommerce_single_product_summary' : 'woocommerce_product_meta_end',
+      priority: pf.frontendPlacement === 'after_summary' ? 25 : null,
+      doc: '/**\n * Show the values on the single product page.\n */\n',
+      body: frontendBody(pf, d),
+    });
+  }
+
+  if (pf.exposeRest && d.fields.length) {
+    blocks.push({
+      name: 'register_product_meta', hook: 'init', params: undefined as unknown as string,
+      doc: '/**\n * Expose the fields to the REST API and the block editor.\n */\n',
+      body: d.fields.map((f) => {
+        const restType = f.type === 'checkbox' ? 'boolean' : (f.type === 'number' || f.type === 'price') ? 'number' : 'string';
+        const pairs: [string, string][] = [
+          ['type', "'" + restType + "'"],
+          ['single', 'true'],
+          ['show_in_rest', 'true'],
+          ['sanitize_callback', f.type === 'checkbox' ? "static function ( $value ) {\n\treturn $value ? 'yes' : 'no';\n}" : "'" + (SANITIZE[f.type] || 'sanitize_text_field') + "'"],
+          ['auth_callback', "static function ( $allowed, $meta_key, $post_id ) {\n\treturn current_user_can( 'edit_product', $post_id );\n}"],
+        ];
+        return 'register_post_meta(\n' + indent("'product',\n'" + escPhp(f.key) + "',\n" + fieldArgsBlock(pairs), 1) + '\n);';
+      }).join('\n\n'),
+    });
+  }
 
   let out = '';
   if (mode === 'plugin') {
-    out += '<?php\n/**\n * Plugin Name:       Product fields\n * Description:       Adds ' + d.fields.length + ' field' + (d.fields.length === 1 ? '' : 's') + ' to the Product Data metabox.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Requires Plugins:  woocommerce\n * Text Domain:       ' + td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+    out += '<?php\n/**\n * Plugin Name:       ' + escPhp(pf.customTabLabel || 'Product fields') + '\n * Description:       Adds custom fields to WooCommerce products and saves their values.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Requires Plugins:  woocommerce\n * Text Domain:       ' + d.td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
   } else if (mode === 'functions') {
-    out += "<?php\n// Add to your theme's functions.php.\n\n";
-  }
-
-  if (pf.tab === 'custom') {
-    out += '/**\n * Add the tab to the Product Data panel.\n *\n * @param array $tabs Existing tabs.\n * @return array\n */\nfunction ' + pre + "_product_tab( $tabs ) {\n\t$tabs['" + d.tabId + "'] = array(\n\t\t'label'    => __( '" + escPhp(pf.customTabLabel || 'Extra') + "', '" + td + "' ),\n\t\t'target'   => '" + d.tabId + "_data',\n\t\t'class'    => array(),\n\t\t'priority' => 80,\n\t);\n\n\treturn $tabs;\n}\n" + "add_filter( 'woocommerce_product_data_tabs', '" + pre + "_product_tab' );\n\n";
-    out += '/**\n * Render the tab panel.\n */\nfunction ' + pre + '_product_panel() {\n\tglobal $product_object;\n\n\t$product = $product_object;\n\n\techo \'<div id="\' . esc_attr( \'' + d.tabId + '_data\' ) . \'" class="panel woocommerce_options_panel">\';\n\n' + indent(panelBody, 1) + '\n\n\techo \'</div>\';\n}\n' + "add_action( 'woocommerce_product_data_panels', '" + pre + "_product_panel' );\n";
+    out += "<?php\n// Add to your theme's functions.php.\n\nif ( ! class_exists( 'WooCommerce' ) ) {\n\treturn;\n}\n\n";
   } else {
-    out += '/**\n * Render the fields in the ' + pf.tab + ' tab.\n */\nfunction ' + pre + '_product_fields() {\n\tglobal $product_object;\n\n\t$product = $product_object;\n\n' + indent(panelBody, 1) + '\n}\n' + "add_action( '" + tabHook + "', '" + pre + "_product_fields' );\n";
+    out += "if ( ! class_exists( 'WooCommerce' ) ) {\n\treturn;\n}\n\n";
   }
 
-  out += '\n/**\n * Save the fields. Fires after WooCommerce has already verified the\n * Product Data metabox nonce, so no extra nonce check belongs here.\n *\n * @param int $post_id Product post ID.\n */\nfunction ' + pre + '_save_product_fields( $post_id ) {\n' + indent(d.fields.length ? d.fields.map((f) => saveLine(d, f)).join('\n\n') : '// Nothing to save yet.', 1) + '\n}\n' + "add_action( 'woocommerce_process_product_meta', '" + pre + "_save_product_fields' );\n";
-
-  if (pf.exposeRest && d.fields.length) {
-    out += '\n/**\n * Expose the fields to the REST API and the block editor.\n */\nfunction ' + pre + '_register_product_meta() {\n' + indent(d.fields.map((f) => {
-      const id = d.metaPrefix + f.key;
-      const restType = f.type === 'checkbox' ? 'boolean' : f.type === 'number' ? 'number' : 'string';
-      const pairs: [string, string][] = [
-        ['type', "'" + restType + "'"],
-        ['single', 'true'],
-        ['show_in_rest', 'true'],
-        ['sanitize_callback', f.type === 'checkbox' ? "static function ( $value ) {\n\treturn $value ? 'yes' : 'no';\n}" : "'" + (SANITIZE[f.type] || 'sanitize_text_field') + "'"],
-        ['auth_callback', "static function ( $allowed, $meta_key, $post_id ) {\n\treturn current_user_can( 'edit_product', $post_id );\n}"],
-      ];
-      return 'register_post_meta(\n' + indent("'product',\n'" + escPhp(id) + "',\narray(\n" + indent(aligned(pairs), 1) + '\n)', 1) + '\n);';
-    }).join('\n\n'), 1) + '\n}\n' + "add_action( 'init', '" + pre + "_register_product_meta' );\n";
-  }
+  out += blocks.map((b) => {
+    let s = b.doc + 'function ' + pre + '_' + b.name + (b.params ? '( ' + b.params + ' )' : '()') + ' {\n' + indent(b.body, 1) + '\n}\n';
+    s += (b.isFilter ? 'add_filter' : 'add_action') + "( '" + b.hook + "', '" + pre + '_' + b.name + "'" + (b.priority ? ', ' + b.priority : '') + ' );\n';
+    return s;
+  }).join('\n');
 
   return withCredit(out);
 }
@@ -201,57 +342,77 @@ export function validate(pf: ProductFields): ValidationIssue[] {
   const out: ValidationIssue[] = [];
   const add = (severity: ValidationIssue['severity'], message: string, fix?: string, fixLabel?: string) => out.push({ severity, message, fix, fixLabel });
 
-  if (!d.fields.length) add('error', 'No fields yet — the panel renders empty.');
-  if (!d.metaPrefix) add('warning', 'No key prefix. Product meta keys are global across every plugin on the site.', 'addPrefix', 'Prefix the keys');
-  if (pf.tab === 'custom' && !pf.customTabLabel.trim()) add('error', 'A custom tab needs a label, or it renders as a blank pill in the tab strip.');
-
-  const seen: Record<string, boolean> = {};
+  if (!d.fields.length) add('warning', 'No fields yet — nothing will render or save.');
+  if (pf.placement === 'custom') {
+    if (!String(pf.customTabLabel || '').trim()) add('error', 'The new tab needs a label — it is what shows in the product data tab list.', 'addTabLabel', 'Add a label');
+    if (RESERVED_TAB_IDS.indexOf(d.tabId) >= 0) add('error', '“' + d.tabId + '” collides with a built-in tab id. Pick a more specific tab id.', 'renameTabId', 'Rename the tab id');
+  }
+  const seenKeys: Record<string, boolean> = {};
   d.fields.forEach((f) => {
-    const id = d.metaPrefix + f.key;
-    if (seen[id]) add('error', `Two fields save to "${id}". The second overwrites the first on save.`);
-    seen[id] = true;
-    if (!String(f.key || '').trim()) add('error', 'A field key is missing.');
-    if (f.type === 'select' && !f.parsed.length) add('error', `The select "${f.key}" has no choices, so it always falls back to its default.`, 'addChoices', 'Add two choices');
-    if (!f.description) add('recommendation', `No description on "${f.label || f.key}" — desc_tip only shows when there is text to show.`);
+    if (!String(f.id || '').trim()) { add('error', 'A field is missing its id.'); return; }
+    if (seenKeys[f.key]) add('error', 'Two fields save to “' + f.key + '” — one will overwrite the other.');
+    seenKeys[f.key] = true;
+    if (CORE_KEYS.indexOf(f.key) >= 0) add('error', '“' + f.key + '” is a core WooCommerce meta key. Reusing it will corrupt ' + (['_price', '_regular_price', '_sale_price'].indexOf(f.key) >= 0 ? 'pricing' : (f.key === '_stock' || f.key === '_stock_status' ? 'stock levels' : 'product data')) + ' — pick a different key.');
+    if (!String(f.label || '').trim()) add('warning', 'The field “' + f.id + '” has no label, so it renders with a blank one.');
+    if (f.type === 'select' && !f.parsed.length) add('error', 'The select “' + f.id + '” has no choices, so it renders empty and never saves.', 'addChoices', 'Add two choices');
+    if (f.tooltip && !String(f.description || '').trim()) add('recommendation', '“' + f.id + '” has a tooltip enabled but no description — the ? icon has nothing to show.');
   });
-
-  if (pf.tab !== 'custom' && d.fields.length > 6) add('recommendation', `${d.fields.length} fields in the ${pf.tab} tab is a lot to add to an existing WooCommerce panel — consider a custom tab instead so your fields don't crowd core's own.`);
+  if (d.metaPrefix.charAt(0) !== '_') add('recommendation', 'The meta key prefix does not start with an underscore. Product meta never shows in a Custom Fields panel either way, but the leading underscore is still the convention WooCommerce itself follows.', 'protectKeys', 'Add the underscore');
+  if (pf.saveMethod === 'legacy') add('recommendation', 'update_post_meta() writes straight to postmeta, bypassing the product object WooCommerce may already hold in memory for this save. The CRUD toggle — update_meta_data() plus save() — is what core and every extension use.', 'useCrud', 'Switch to CRUD');
+  if (pf.placement === 'shipping') add('recommendation', 'WooCommerce hides the Shipping tab entirely for Grouped and External/Affiliate products — fields added here will not be reachable on those types.');
+  if (d.types.length && pf.placement !== 'custom') add('recommendation', 'Limiting to ' + d.types.join(', ') + ' hides the fields with CSS (show_if_ classes) and skips saving them on other types — the tab itself still opens for every product type.');
+  if (pf.showFrontend && !d.fields.length) add('recommendation', 'Frontend display is on, but there is nothing to show yet.');
+  if (!pf.showFrontend && d.fields.length) add('recommendation', 'These values are admin-only right now — turn on the frontend toggle if shoppers should see them.');
+  if (!pf.uninstallCleanup && d.fields.length) add('recommendation', 'Nothing deletes these keys on uninstall. delete_post_meta_by_key() per key in uninstall.php keeps postmeta clean.');
   if (pf.exposeRest && !d.fields.length) add('warning', 'REST exposure is on but there are no fields to register meta for.');
   return out;
 }
 
 export function freshProject(): ProductFields {
   return {
-    prefix: 'acme',
-    textDomain: 'acme',
-    metaPrefix: 'acme_',
-    tab: 'general',
-    customTabLabel: 'Extra details',
+    prefix: 'acme', textDomain: 'acme',
+    placement: 'custom', customTabLabel: 'Product Details', customTabId: 'product_details',
+    metaPrefix: '_acme_', productTypes: ['simple', 'variable'],
     fields: [
-      { key: 'warranty_months', label: 'Warranty (months)', type: 'number', def: '12', description: 'Shown on the product page under the price.', choices: '' },
-      { key: 'gift_wrappable', label: 'Gift wrappable', type: 'checkbox', def: '0', description: 'Offers gift wrapping at checkout for this product.', choices: '' },
+      { id: 'manufacturer_part_no', label: 'Manufacturer part number', type: 'text', description: 'Printed on the packing slip.', tooltip: true, choices: '' },
+      { id: 'assembly_required', label: 'Assembly required', type: 'checkbox', description: 'Shows an assembly notice on the product page.', tooltip: false, choices: '' },
+      { id: 'difficulty', label: 'Assembly difficulty', type: 'select', description: '', tooltip: false, choices: 'easy:Easy, moderate:Moderate, advanced:Advanced' },
+      { id: 'care_instructions', label: 'Care instructions', type: 'textarea', description: '', tooltip: false, choices: '' },
     ],
+    saveMethod: 'crud', showFrontend: true, frontendPlacement: 'meta_end', hideIfEmpty: true, uninstallCleanup: true,
     exposeRest: true,
   };
 }
 
 export function applyFix(pf: ProductFields, kind: string): ProductFields {
   const p: ProductFields = JSON.parse(JSON.stringify(pf));
-  if (kind === 'addPrefix') p.metaPrefix = fnSlug(p.prefix) + '_';
-  if (kind === 'addChoices') p.fields.forEach((f) => { if (f.type === 'select' && !f.choices.trim()) f.choices = 'first:First, second:Second'; });
+  if (kind === 'addChoices') p.fields.forEach((f) => { if (f.type === 'select' && !parseChoices(f.choices).length) f.choices = 'first:First, second:Second'; });
+  if (kind === 'protectKeys') p.metaPrefix = '_' + metaSlug(p.metaPrefix);
+  if (kind === 'useCrud') p.saveMethod = 'crud';
+  if (kind === 'addTabLabel') p.customTabLabel = p.customTabLabel || 'Product Details';
+  if (kind === 'renameTabId') p.customTabId = (fnSlug(p.customTabId) || fnSlug(p.customTabLabel) || 'product') + '_fields';
   return p;
 }
 
-export interface RefArg {
-  name: string;
-  type: string;
-  description: string;
+export const REF_FLOW = [
+  "WooCommerce's own Product Data metabox posts to post.php, and its save() method runs first — before your hook ever fires.",
+  "It checks the woocommerce_meta_nonce field against wp_verify_nonce(), so your handler doesn't have to.",
+  "It bails on autosaves and revisions, and checks current_user_can( 'edit_post', $post_id ) for this specific product.",
+  'Only then does it call woocommerce_process_product_meta — the hook this generator saves into.',
+];
+
+export function refTitle(placement: Placement, d: Derived): string {
+  return d.isCustomTab ? 'woocommerce_product_data_tabs / woocommerce_product_data_panels' : HOOK_BY_PLACEMENT[placement as Exclude<Placement, 'custom'>];
 }
 
-export const REF_ARGS: RefArg[] = [
-  { name: 'woocommerce_product_options_general_product_data', type: 'action', description: 'Fires inside the General tab, after core\'s own price and SKU fields.' },
-  { name: 'woocommerce_product_options_inventory_product_data', type: 'action', description: 'Fires inside the Inventory tab.' },
-  { name: 'woocommerce_product_options_shipping_product_data', type: 'action', description: 'Fires inside the Shipping tab, after weight and dimensions.' },
-  { name: 'woocommerce_product_data_tabs / _panels', type: 'filter/action', description: 'Add a whole new tab (filter) and render its content (action) — used instead of the three hooks above when a custom tab is selected.' },
-  { name: 'woocommerce_process_product_meta', type: 'action', description: 'Fires once, after WooCommerce has already verified the Product Data metabox nonce — your save callback does not need its own.' },
-];
+export function refSignature(placement: Placement, d: Derived): string {
+  return d.isCustomTab
+    ? "add_filter( 'woocommerce_product_data_tabs', '" + d.pre + "_add_product_tab' );\nadd_action( 'woocommerce_product_data_panels', '" + d.pre + "_product_tab_panel' );"
+    : "add_action( '" + HOOK_BY_PLACEMENT[placement as Exclude<Placement, 'custom'>] + "', '" + d.pre + "_add_product_fields' );";
+}
+
+export function refKeys(d: Derived): string {
+  return d.fields.length
+    ? d.fields.map((f) => padTo(f.key, 28) + padTo(f.type, 10) + (f.type === 'checkbox' ? 'yes / no' : (SANITIZE[f.type] || 'wc_clean') + '()')).join('\n')
+    : 'No fields yet.';
+}
