@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Cart Fee &amp; Discount Generator — woocommerce_cart_calculate_fees — Generator for WP</title>
+  <meta name="description" content="Build conditional WooCommerce cart fees and negative-fee discounts on woocommerce_cart_calculate_fees, with a live cart totals preview and the traps flagged before you ship." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C; cursor:{{ resizingCursorStyle }}; user-select:{{ resizingSelectStyle }};">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div style="flex-shrink:0; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:15px 28px 16px; display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+      <div style="min-width:0;">
+        <div style="display:flex; align-items:center; gap:7px; font-size:11.5px; color:#A79F91; margin-bottom:5px; flex-wrap:wrap;">
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">Generators</a>
+          <span aria-hidden="true">/</span>
+          <a href="./Generator%20for%20WP.dc.html#/tools?cat=woocommerce" style="color:#948C7E; font-weight:600; text-decoration:none;" style-hover="color:#3858E9;">WooCommerce</a>
+          <span aria-hidden="true">/</span>
+          <span style="color:#5C564B; font-weight:600;">Cart Fees &amp; Discounts</span>
+        </div>
+        <h1 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.022em; color:#1C1A15;">Cart Fee &amp; Discount Generator</h1>
+      </div>
+      <div style="flex:1; min-width:12px;"></div>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:#5C564B; max-width:440px;">Conditional surcharges and negative-fee discounts on <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">woocommerce_cart_calculate_fees</span> — with a sample cart to prove the arithmetic before it reaches a shopper.</p>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:20px 28px 26px; flex-shrink:0;">
+  <div ref="{{ refWorkspace }}" style="height:max(420px, calc(100vh - 190px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid #E7E2D9; border-radius:12px; background:#FFFFFF; box-shadow:0 1px 3px rgba(38,34,28,0.05);">
+
+  <div aria-live="polite" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">{{ ariaLiveMessage }}</div>
+
+  <div style="height:56px; min-height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9; z-index:20; overflow-x:auto; overflow-y:hidden;">
+    <div style="display:flex; align-items:center; gap:7px; flex-shrink:0; background:#F3F1EC; border:1px solid #E7E2D9; border-radius:6px; padding:5px 9px;">
+      <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#948C7E; flex-shrink:0;">&#xe9cf;</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500; color:#4A4438; white-space:nowrap;">{{ fileName }}</span>
+    </div>
+    <div style="font-size:11px; color:#948C7E; white-space:nowrap; flex-shrink:0;">{{ saveStatus }}</div>
+    <div style="display:flex; gap:4px; margin-left:4px; flex-shrink:0;">
+      <button aria-label="Undo" onClick="{{ onUndo }}" disabled="{{ undoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconUndo }}</button>
+      <button aria-label="Redo" onClick="{{ onRedo }}" disabled="{{ redoDisabled }}" style="width:30px;height:30px;border:1px solid #E7E2D9;background:#fff;border-radius:6px;cursor:pointer;color:#4A4438;display:flex;align-items:center;justify-content:center;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ iconRedo }}</button>
+    </div>
+    <button onClick="{{ onSetTabValidation }}" style="display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; background:#fff; border-radius:20px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; color:#26221C; white-space:nowrap; flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">
+      <span style="width:8px;height:8px;border-radius:50%;background:{{ healthDot }};display:inline-block;"></span>
+      {{ errorCountLabel }} · {{ warningCountLabel }}
+    </button>
+    <div style="flex:1; min-width:8px;"></div>
+    <button onClick="{{ onReset }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">New</button>
+    <button onClick="{{ onCopy }}" style="border:1px solid #E7E2D9;background:#fff;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;color:#4A4438;white-space:nowrap;flex-shrink:0;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+    <button onClick="{{ onDownload }}" style="border:1px solid #3858E9;background:#3858E9;color:#fff;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;" style-hover="background:#213FD4;" style-focus="outline:2px solid #C7D2FE;">Download .php</button>
+  </div>
+
+  <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; gap:6px; padding:8px 12px; background:#FFFFFF; border-bottom:1px solid #E7E2D9;">
+      <sc-for list="{{ mobileTabs }}" as="mt" hint-placeholder-count="2">
+        <button onClick="{{ mt.onClick }}" style="flex:1; font-size:12px; font-weight:700; padding:8px; border-radius:6px; border:1px solid #E7E2D9; background:{{ mt.bg }}; color:{{ mt.color }}; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ mt.label }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1; display:flex; min-height:0;">
+
+    <sc-if value="{{ showCenter }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow-y:auto; padding:20px 24px 80px; min-width:0; overflow-x:hidden;">
+
+      <div style="background:#F7F5F0; border:1px solid #E7E2D9; border-radius:8px; padding:18px 20px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:12px;">Setup</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px;">
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">function prefix</label>
+            <input value="{{ cf.prefix }}" onChange="{{ onPrefixChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+          <div>
+            <label style="display:block; font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; margin-bottom:4px;">text domain</label>
+            <input value="{{ cf.textDomain }}" onChange="{{ onTextDomainChange }}" spellCheck="false" placeholder="acme" style="width:100%; font-size:13px; font-family:'JetBrains Mono',monospace; padding:7px 9px; border-radius:6px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:12px; margin-top:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">percentages are taken from</label>
+            <select value="{{ cf.basis }}" onChange="{{ onBasisChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="subtotal">get_subtotal() — items, before coupons</option>
+              <option value="after_discount">get_cart_contents_total() — after coupons</option>
+              <option value="subtotal_incl_tax">get_subtotal() + tax — items incl. tax</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; color:#948C7E; margin-bottom:4px;">country conditions read</label>
+            <select value="{{ cf.addressSource }}" onChange="{{ onAddressSourceChange }}" style="width:100%; font-size:12.5px; padding:7px 8px; border-radius:6px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+              <option value="shipping">the shipping country</option>
+              <option value="billing">the billing country</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:14px; font-size:12px; color:#5C564B; line-height:1.55;">{{ basisNote }}</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="font-size:13px; font-weight:700; color:#26221C;">Fees &amp; discounts</div>
+          <div style="font-size:11.5px; color:#948C7E;">{{ rulesNote }}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ ruleRows }}" as="rr" hint-placeholder-count="3">
+            <div style="border:1px solid #EDE8DF; border-left:3px solid {{ rr.accent }}; border-radius:7px; padding:11px; background:#FCFBF9;">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input value="{{ rr.label }}" onChange="{{ rr.onLabelChange }}" placeholder="Handling fee" style="flex:1.4; min-width:140px; font-size:12.5px; font-weight:600; padding:6px 8px; border-radius:5px; border:1px solid {{ rr.labelBorder }};" style-focus="outline:2px solid #3858E9;" />
+                <div style="display:flex; gap:3px; flex-shrink:0;">
+                  <sc-for list="{{ rr.modeChips }}" as="rmc" hint-placeholder-count="2">
+                    <button onClick="{{ rmc.onClick }}" style="font-size:11.5px; font-weight:650; border:1px solid {{ rmc.borderColor }}; background:{{ rmc.bg }}; color:{{ rmc.color }}; border-radius:16px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ rmc.label }}</button>
+                  </sc-for>
+                </div>
+                <select value="{{ rr.calc }}" onChange="{{ rr.onCalcChange }}" style="width:128px; font-size:12px; padding:6px 5px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                  <sc-for list="{{ calcOptions }}" as="co" hint-placeholder-count="4">
+                    <option value="{{ co.value }}">{{ co.label }}</option>
+                  </sc-for>
+                </select>
+                <div style="display:flex; align-items:center; gap:5px; flex-shrink:0;">
+                  <input value="{{ rr.amount }}" onChange="{{ rr.onAmountChange }}" spellCheck="false" placeholder="4.50" style="width:74px; font-size:12px; font-family:'JetBrains Mono',monospace; padding:6px 8px; border-radius:5px; border:1px solid {{ rr.amountBorder }};" style-focus="outline:2px solid #3858E9;" />
+                  <span style="font-size:11px; color:#948C7E; white-space:nowrap;">{{ rr.amountUnit }}</span>
+                </div>
+                <button aria-label="Remove" onClick="{{ rr.onRemove }}" style="width:26px; height:28px; border:1px solid #E7E2D9; background:#fff; border-radius:5px; cursor:pointer; color:#948C7E; display:flex; align-items:center; justify-content:center; flex-shrink:0;" style-hover="border-color:#B91C1C; color:#B91C1C;" style-focus="outline:2px solid #3858E9;">{{ rr.iconRemove }}</button>
+              </div>
+
+              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#B3ACA0; white-space:nowrap;">{{ rr.feeIdLabel }}</span>
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:#5C564B; white-space:nowrap;">
+                  <input type="checkbox" checked="{{ rr.taxable }}" onChange="{{ rr.onTaxableChange }}" style="width:14px; height:14px; accent-color:#3858E9;" />
+                  taxable
+                </label>
+                <sc-if value="{{ rr.taxable }}" hint-placeholder-val="{{ false }}">
+                  <select value="{{ rr.taxClass }}" onChange="{{ rr.onTaxClassChange }}" style="width:132px; font-size:11.5px; padding:5px; border-radius:5px; border:1px solid #E7E2D9; background:#fff;" style-focus="outline:2px solid #3858E9;">
+                    <sc-for list="{{ taxClassOptions }}" as="tco" hint-placeholder-count="3">
+                      <option value="{{ tco.value }}">{{ tco.label }}</option>
+                    </sc-for>
+                  </select>
+                </sc-if>
+                <sc-if value="{{ rr.showCap }}" hint-placeholder-val="{{ false }}">
+                  <label style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:#5C564B; white-space:nowrap;">
+                    cap at
+                    <input value="{{ rr.cap }}" onChange="{{ rr.onCapChange }}" spellCheck="false" placeholder="none" style="width:64px; font-size:11.5px; font-family:'JetBrains Mono',monospace; padding:5px 7px; border-radius:5px; border:1px solid #E7E2D9;" style-focus="outline:2px solid #3858E9;" />
+                  </label>
+                </sc-if>
+              </div>
+
+              <div style="margin-top:9px; padding-top:9px; border-top:1px dashed #EDE8DF;">
+                <div style="font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#A79F91; margin-bottom:6px;">Apply only when</div>
+                <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                  <sc-for list="{{ rr.conditionChips }}" as="rcc" hint-placeholder-count="8">
+                    <button onClick="{{ rcc.onToggle }}" style="font-size:11px; font-weight:600; border:1px solid {{ rcc.borderColor }}; background:{{ rcc.bg }}; color:{{ rcc.color }}; border-radius:16px; padding:4px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ rcc.label }}</button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ rr.hasConditions }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:9px;">
+                    <sc-for list="{{ rr.conditionInputs }}" as="rci" hint-placeholder-count="2">
+                      <div>
+                        <label style="display:block; font-size:10.5px; color:#948C7E; margin-bottom:3px;">{{ rci.label }}</label>
+                        <input value="{{ rci.value }}" onChange="{{ rci.onChange }}" spellCheck="false" placeholder="{{ rci.placeholder }}" style="width:{{ rci.width }}; font-size:11.5px; font-family:'JetBrains Mono',monospace; padding:5px 7px; border-radius:5px; border:1px solid {{ rci.border }};" style-focus="outline:2px solid #3858E9;" />
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <div style="margin-top:8px; font-size:11.5px; color:#948C7E; line-height:1.5;">{{ rr.summary }}</div>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noRules }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px; color:#948C7E;">No fees yet — the callback will run on every cart calculation and do nothing.</div>
+          </sc-if>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:11px; flex-wrap:wrap;">
+          <button onClick="{{ onAddFee }}" style="font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add fee</button>
+          <button onClick="{{ onAddDiscount }}" style="font-size:12px; font-weight:650; border:1px dashed #C9C2B4; background:#FCFBF9; color:#4A4438; border-radius:6px; padding:7px 12px; cursor:pointer;" style-hover="border-color:#3858E9; color:#3858E9;" style-focus="outline:2px solid #3858E9;">Add discount</button>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #E7E2D9; border-radius:8px; padding:6px 18px 14px; margin-bottom:16px;">
+        <div style="font-size:13px; font-weight:700; color:#26221C; padding:12px 0 2px;">Output</div>
+        <sc-for list="{{ outputToggles }}" as="ot" hint-placeholder-count="4">
+          <div style="display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-top:1px solid #F0ECE4;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:13.5px; font-weight:650; color:#26221C;">{{ ot.label }}</div>
+              <div style="font-size:11.5px; color:#948C7E; line-height:1.45; margin-top:2px;">{{ ot.help }}</div>
+            </div>
+            <button role="switch" aria-checked="{{ ot.on }}" aria-label="{{ ot.label }}" onClick="{{ ot.onToggle }}" style="flex-shrink:0; margin-top:3px; width:38px; height:21px; border-radius:11px; border:none; background:{{ ot.bg }}; position:relative; cursor:pointer; padding:0; transition:background .12s;" style-focus="outline:2px solid #3858E9;">
+              <span style="position:absolute; top:2px; left:{{ ot.knobLeft }}; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(38,34,28,.25); transition:left .12s;"></span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showPaneResizer }}" hint-placeholder-val="{{ false }}">
+      <div onMouseDown="{{ onPaneResizeStart }}" style="width:6px; cursor:col-resize; background:#E7E2D9; flex-shrink:0;" style-hover="background:#3858E9;"></div>
+    </sc-if>
+
+    <sc-if value="{{ showRightPane }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ rightPaneWidthStyle }}; min-width:{{ rightPaneMinWidthStyle }}; border-left:1px solid #E7E2D9; background:#FFFFFF; display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; border-bottom:1px solid #E7E2D9;">
+        <button onClick="{{ onSetTabCode }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabCodeColor }}; border-bottom:2px solid {{ tabCodeBorder }};" style-focus="outline:2px solid #3858E9;">PHP</button>
+        <button onClick="{{ onSetTabScreen }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabScreenColor }}; border-bottom:2px solid {{ tabScreenBorder }};" style-focus="outline:2px solid #3858E9;">Sample cart</button>
+        <button onClick="{{ onSetTabRef }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabRefColor }}; border-bottom:2px solid {{ tabRefBorder }};" style-focus="outline:2px solid #3858E9;">Reference</button>
+        <button onClick="{{ onSetTabValidation }}" style="flex:1; padding:12px 4px; font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer; color:{{ tabValidationColor }}; border-bottom:2px solid {{ tabValidationBorder }};" style-focus="outline:2px solid #3858E9;">Checks ({{ issueCount }})</button>
+      </div>
+
+      <sc-if value="{{ showCodeTab }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:4px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ outputModes }}" as="om" hint-placeholder-count="3">
+              <button onClick="{{ om.onClick }}" style="font-size:11.5px; font-weight:600; border:1px solid {{ om.borderColor }}; background:{{ om.bg }}; color:{{ om.color }}; border-radius:20px; padding:5px 11px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ om.label }}</button>
+            </sc-for>
+            <div style="flex:1; min-width:4px;"></div>
+            <button onClick="{{ onCopy }}" style="font-size:11.5px; font-weight:600; border:1px solid #E7E2D9; background:#fff; border-radius:5px; padding:5px 11px; cursor:pointer; color:#4A4438;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">{{ copyLabel }}</button>
+          </div>
+          <div style="padding:7px 12px; font-size:10.5px; color:#948C7E; background:#F7F5F0; border-bottom:1px solid #E7E2D9;">{{ outputHint }}</div>
+          <div style="flex:1; overflow:auto; background:#FBFAF7;">
+            <pre style="margin:0; padding:14px 16px 40px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.65; white-space:pre; tab-size:4; font-variant-ligatures:none;"><sc-for list="{{ codeTokens }}" as="tk" hint-placeholder-count="30"><span style="color:{{ tk.color }}; font-style:{{ tk.italic }};">{{ tk.text }}</span></sc-for></pre>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showScreenTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow:auto; background:#F0F0F1; padding:16px 18px 40px;">
+          <div style="background:#fff; border:1px solid #C3C4C7; border-radius:2px; padding:12px 14px; margin-bottom:14px;">
+            <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#787C82; margin-bottom:9px;">Sample cart</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(112px, 1fr)); gap:9px;">
+              <sc-for list="{{ sampleFields }}" as="sf" hint-placeholder-count="6">
+                <div>
+                  <label style="display:block; font-size:10.5px; color:#787C82; margin-bottom:3px;">{{ sf.label }}</label>
+                  <sc-if value="{{ sf.isSelect }}" hint-placeholder-val="{{ false }}">
+                    <select value="{{ sf.value }}" onChange="{{ sf.onChange }}" style="width:100%; font-size:12px; padding:4px 5px; border:1px solid #8C8F94; border-radius:3px; background:#fff;" style-focus="outline:2px solid #2271B1;">
+                      <sc-for list="{{ sf.options }}" as="sfo" hint-placeholder-count="3">
+                        <option value="{{ sfo.value }}">{{ sfo.label }}</option>
+                      </sc-for>
+                    </select>
+                  </sc-if>
+                  <sc-if value="{{ sf.isInput }}" hint-placeholder-val="{{ true }}">
+                    <input value="{{ sf.value }}" onChange="{{ sf.onChange }}" spellCheck="false" style="width:100%; font-size:12px; font-family:'JetBrains Mono',monospace; padding:4px 6px; border:1px solid #8C8F94; border-radius:3px; background:#fff;" style-focus="outline:2px solid #2271B1;" />
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ showCategoryToggle }}" hint-placeholder-val="{{ false }}">
+              <label style="display:inline-flex; align-items:center; gap:7px; font-size:12px; color:#2C3338; margin-top:10px;">
+                <input type="checkbox" checked="{{ sample.hasCategory }}" onChange="{{ onSampleCategoryChange }}" style="width:15px; height:15px; accent-color:#2271B1;" />
+                cart contains a product in the tested category
+              </label>
+            </sc-if>
+          </div>
+
+          <div style="background:#fff; border:1px solid #C3C4C7; border-radius:2px;">
+            <div style="padding:10px 14px; border-bottom:1px solid #F0F0F1; font-size:14px; font-weight:600; color:#1D2327;">Cart totals</div>
+            <div style="padding:4px 14px 12px;">
+              <sc-for list="{{ totalRows }}" as="tr" hint-placeholder-count="5">
+                <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0; border-bottom:1px solid #F0F0F1;">
+                  <div style="min-width:0;">
+                    <div style="font-size:13px; font-weight:{{ tr.weight }}; color:{{ tr.labelColor }};">{{ tr.label }}</div>
+                    <sc-if value="{{ tr.hasNote }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:11px; color:#787C82; margin-top:2px; line-height:1.45;">{{ tr.note }}</div>
+                    </sc-if>
+                  </div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:{{ tr.weight }}; color:{{ tr.valueColor }}; white-space:nowrap;">{{ tr.value }}</div>
+                </div>
+              </sc-for>
+              <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:11px 0 4px;">
+                <div style="font-size:15px; font-weight:700; color:#1D2327;">Total</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; color:#1D2327;">{{ totalValue }}</div>
+              </div>
+              <sc-if value="{{ clamped }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11.5px; color:#B91C1C; line-height:1.5; padding-top:4px;">{{ clampNote }}</div>
+              </sc-if>
+            </div>
+          </div>
+
+          <sc-if value="{{ hasSkipped }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px; background:#fff; border:1px solid #C3C4C7; border-radius:2px;">
+              <div style="padding:9px 14px; border-bottom:1px solid #F0F0F1; font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#787C82;">Not applied to this cart</div>
+              <div style="padding:6px 14px 11px;">
+                <sc-for list="{{ skippedRows }}" as="sr" hint-placeholder-count="2">
+                  <div style="padding:8px 0; border-bottom:1px solid #F6F7F7;">
+                    <div style="font-size:12.5px; font-weight:600; color:#1D2327;">{{ sr.label }}</div>
+                    <div style="font-size:11.5px; color:#787C82; line-height:1.5; margin-top:2px;">{{ sr.reason }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="margin-top:12px; font-size:11.5px; color:#787C82; line-height:1.6;">{{ previewNote }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRefTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#26221C; margin-bottom:4px; word-break:break-word;">woocommerce_cart_calculate_fees</div>
+          <div style="font-size:12px; color:#948C7E; margin-bottom:14px;">Fires inside WC_Cart::calculate_totals() on every recalculation</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; word-break:break-word; font-variant-ligatures:none; margin-bottom:18px;">{{ refSignature }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">What happens on every calculation</div>
+          <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+            <sc-for list="{{ refFlow }}" as="rf" hint-placeholder-count="4">
+              <div style="display:flex; gap:9px; align-items:flex-start;">
+                <span style="flex-shrink:0; width:19px; height:19px; border-radius:50%; background:#EEF1FE; color:#2A46C4; font-size:10.5px; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ rf.n }}</span>
+                <span style="flex:1; font-size:12.5px; line-height:1.55; color:#3B362D;">{{ rf.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Fee ids this file adds</div>
+          <div style="border:1px solid #E7E2D9; border-radius:7px; padding:12px 14px; background:#FBFAF7; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:#26221C; white-space:pre-wrap; font-variant-ligatures:none; margin-bottom:18px;">{{ refFees }}</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">The id comes from the name</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">WC_Cart_Fees::add_fee() runs the name through sanitize_title() to get the fee id. Two fees whose names sanitise to the same string are a collision: WooCommerce keeps the first, drops the second and logs a doing_it_wrong notice. Rename the fee, don't try to add it twice.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">A negative fee is not a coupon</div>
+          <div style="display:flex; flex-direction:column; gap:7px; margin-bottom:18px;">
+            <sc-for list="{{ refCouponPoints }}" as="rcp" hint-placeholder-count="4">
+              <div style="font-size:12.5px; color:#3B362D; line-height:1.6;">{{ rcp.text }}</div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Order of calculation</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65; margin-bottom:18px;">Item totals, then shipping, then fees, then taxes, then the order total. Shipping is already resolved when your callback runs, which is why a chosen-shipping-method condition works — but a fee can never change the shipping cost, and free-shipping thresholds are measured on the subtotal, never on the subtotal plus fees.</div>
+
+          <div style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#948C7E; margin-bottom:8px;">Where the shopper sees it</div>
+          <div style="font-size:12.5px; color:#3B362D; line-height:1.65;">Cart totals, the checkout review table, the thank-you page, both order emails, and the admin order screen as an editable fee line item. Once the order exists the fee is frozen on it — changing this file later does not rewrite past orders.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showValidationTab }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+          <div style="display:flex; gap:6px; padding:10px; border-bottom:1px solid #E7E2D9; flex-wrap:wrap;">
+            <sc-for list="{{ filterChips }}" as="fc" hint-placeholder-count="4">
+              <button onClick="{{ fc.onClick }}" style="font-size:11px; font-weight:600; border:1px solid {{ fc.borderColor }}; background:{{ fc.bg }}; color:{{ fc.color }}; border-radius:20px; padding:5px 10px; cursor:pointer;" style-focus="outline:2px solid #3858E9;">{{ fc.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex:1; overflow-y:auto; padding:10px;">
+            <sc-for list="{{ validationIssues }}" as="iss" hint-placeholder-count="3">
+              <div style="border:1px solid #E7E2D9; border-left:3px solid {{ iss.color }}; border-radius:6px; padding:10px; margin-bottom:8px;">
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                  <span style="display:flex; color:{{ iss.color }};">{{ iss.icon }}</span>
+                  <span style="flex:1; font-size:12.5px; line-height:1.5; color:#3B362D;">{{ iss.message }}</span>
+                </div>
+                <sc-if value="{{ iss.fixable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ iss.onFix }}" style="margin-top:6px; margin-left:22px; font-size:11px; border:1px solid #3858E9; background:none; color:#3858E9; border-radius:4px; padding:3px 8px; cursor:pointer;" style-hover="background:#EEF1FE;" style-focus="outline:2px solid #3858E9;">{{ iss.fixLabel }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noIssues }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center; padding:30px 10px; color:#948C7E; font-size:13px;">Nothing to flag here.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+
+  </div>
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startingTemplate&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;surcharge&quot;,&quot;options&quot;:[&quot;surcharge&quot;,&quot;discount&quot;,&quot;empty&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Starting point&quot;},&quot;defaultOutputMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;plugin&quot;,&quot;options&quot;:[&quot;snippet&quot;,&quot;functions&quot;,&quot;plugin&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Starting point&quot;},&quot;previewTaxRate&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:20,&quot;min&quot;:0,&quot;max&quot;:27,&quot;step&quot;:0.5,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Sample cart&quot;}}">
+const CALCS = [['fixed', 'Fixed amount'], ['percent', '% of cart'], ['per_item', 'Per item'], ['per_weight', 'Per weight unit']];
+const TAX_CLASSES = [['standard', 'Standard rate'], ['reduced-rate', 'Reduced rate'], ['zero-rate', 'Zero rate']];
+const CONDITIONS = [
+  { key: 'minSubtotal', label: 'Min subtotal', chip: 'Min subtotal', def: '50', num: true, width: '86px', ph: '50' },
+  { key: 'maxSubtotal', label: 'Max subtotal', chip: 'Max subtotal', def: '500', num: true, width: '86px', ph: '500' },
+  { key: 'minItems', label: 'Min items', chip: 'Min items', def: '3', num: true, width: '70px', ph: '3' },
+  { key: 'country', label: 'Country codes', chip: 'Country', def: 'GB, IE', width: '112px', ph: 'GB, IE' },
+  { key: 'shipping', label: 'Shipping method ids', chip: 'Shipping', def: 'local_pickup', width: '148px', ph: 'flat_rate' },
+  { key: 'payment', label: 'Gateway ids', chip: 'Payment', def: 'cod', width: '112px', ph: 'cod' },
+  { key: 'role', label: 'User roles', chip: 'Role', def: 'wholesale', width: '124px', ph: 'wholesale' },
+  { key: 'category', label: 'product_cat slugs', chip: 'Category', def: 'oversized', width: '136px', ph: 'oversized' }
+];
+const COND_MAP = {};
+CONDITIONS.forEach(function (c) { COND_MAP[c.key] = c; });
+
+const BASIS_EXPR = {
+  subtotal: '(float) $cart->get_subtotal()',
+  after_discount: '(float) $cart->get_cart_contents_total()',
+  subtotal_incl_tax: '(float) $cart->get_subtotal() + (float) $cart->get_subtotal_tax()'
+};
+const BASIS_LABEL = { subtotal: 'get_subtotal()', after_discount: 'get_cart_contents_total()', subtotal_incl_tax: 'get_subtotal() + get_subtotal_tax()' };
+
+function esc(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function fnSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, ''); }
+function slugify(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
+function indent(text, depth) { const p = new Array(depth + 1).join('\t'); return text.split('\n').map(function (l) { return l ? p + l : ''; }).join('\n'); }
+function padTo(s, w) { return s + new Array(Math.max(0, w - s.length) + 1).join(' '); }
+function num(v) { const n = parseFloat(String(v == null ? '' : v).replace(/[^0-9.\-]/g, '')); return isFinite(n) ? n : 0; }
+function money(n) { return (Math.round(n * 100) / 100).toFixed(2); }
+function trimNum(n) { return String(Math.round(n * 1000000) / 1000000); }
+function csv(v) { return String(v == null ? '' : v).split(',').map(function (p) { return p.trim(); }).filter(Boolean); }
+function phpList(arr) { return 'array( ' + arr.map(function (a) { return "'" + esc(a) + "'"; }).join(', ') + ' )'; }
+
+function derive(cf) {
+  const pre = fnSlug(cf.prefix) || 'acme';
+  const td = slugify(cf.textDomain) || pre.replace(/_/g, '-');
+  const rules = (cf.rules || []).map(function (r) {
+    const cond = r.cond || {};
+    const keys = CONDITIONS.map(function (c) { return c.key; }).filter(function (k) { return Object.prototype.hasOwnProperty.call(cond, k); });
+    return {
+      label: r.label, mode: r.mode, calc: r.calc, taxable: !!r.taxable, taxClass: r.taxClass || 'standard',
+      amount: r.amount, cap: r.cap, cond: cond, condKeys: keys,
+      amountNum: num(r.amount), capNum: num(r.cap), feeId: slugify(r.label)
+    };
+  });
+  const usedCond = {};
+  rules.forEach(function (r) { r.condKeys.forEach(function (k) { usedCond[k] = true; }); });
+  const calcs = {};
+  rules.forEach(function (r) { calcs[r.calc] = true; });
+  return {
+    pre: pre, td: td, rules: rules, usedCond: usedCond,
+    needSubtotal: !!(calcs.percent || usedCond.minSubtotal || usedCond.maxSubtotal),
+    needItems: !!(calcs.per_item || usedCond.minItems),
+    needWeight: !!calcs.per_weight,
+    needCountry: !!usedCond.country,
+    needPayment: !!usedCond.payment,
+    needDecimals: !!(calcs.percent || calcs.per_item || calcs.per_weight),
+    hasDiscount: rules.some(function (r) { return r.mode === 'discount'; })
+  };
+}
+
+function alignAssign(pairs) {
+  const w = pairs.reduce(function (m, p) { return Math.max(m, p[0].length); }, 0);
+  return pairs.map(function (p) { return padTo(p[0], w) + ' = ' + p[1] + ';'; }).join('\n');
+}
+
+function condExpr(key, value, cf, d) {
+  if (key === 'minSubtotal') return '$subtotal >= ' + money(num(value));
+  if (key === 'maxSubtotal') return '$subtotal <= ' + money(num(value));
+  if (key === 'minItems') return '$items >= ' + Math.max(0, Math.round(num(value)));
+  if (key === 'country') return 'in_array( $country, ' + phpList(csv(value).map(function (c) { return c.toUpperCase(); })) + ', true )';
+  if (key === 'payment') return 'in_array( $payment, ' + phpList(csv(value)) + ', true )';
+  if (key === 'shipping') return d.pre + '_shipping_method_matches( ' + phpList(csv(value)) + ' )';
+  if (key === 'role') return d.pre + '_user_has_role( ' + phpList(csv(value)) + ' )';
+  if (key === 'category') return d.pre + '_cart_has_category( $cart, ' + phpList(csv(value).map(slugify)) + ' )';
+  return '';
+}
+
+function describeCalc(r, cf) {
+  const a = r.amountNum;
+  if (r.calc === 'percent') return trimNum(a) + '% of ' + BASIS_LABEL[cf.basis];
+  if (r.calc === 'per_item') return money(a) + ' per item in the cart';
+  if (r.calc === 'per_weight') return money(a) + ' per unit of cart weight';
+  return 'a flat ' + money(a);
+}
+
+function ruleBlock(r, cf, d) {
+  const lines = ['// ' + (r.label || 'Unnamed') + ' \u2014 ' + describeCalc(r, cf) + (r.mode === 'discount' ? ', taken off the total' : '') + '.'];
+  if (r.calc === 'fixed') lines.push('$amount = ' + money(r.amountNum) + ';');
+  else if (r.calc === 'percent') lines.push('$amount = round( $subtotal * ( ' + trimNum(r.amountNum) + ' / 100 ), $decimals );');
+  else if (r.calc === 'per_item') lines.push('$amount = round( ' + money(r.amountNum) + ' * $items, $decimals );');
+  else lines.push('$amount = round( ' + money(r.amountNum) + ' * $weight, $decimals );');
+  if (r.capNum > 0) lines.push('$amount = min( $amount, ' + money(r.capNum) + ' );');
+
+  const conds = [];
+  if (cf.hideZero) conds.push('$amount > 0');
+  r.condKeys.forEach(function (k) { const e = condExpr(k, r.cond[k], cf, d); if (e) conds.push(e); });
+
+  const args = ["__( '" + esc(r.label || 'Fee') + "', '" + d.td + "' )", r.mode === 'discount' ? '-$amount' : '$amount'];
+  if (r.taxable) args.push('true', "'" + (r.taxClass === 'standard' ? '' : r.taxClass) + "'");
+  else args.push('false');
+  const call = '$cart->add_fee( ' + args.join(', ') + ' );';
+
+  if (!conds.length) { lines.push(call); return lines.join('\n'); }
+  const oneLine = 'if ( ' + conds.join(' && ') + ' ) {';
+  if (oneLine.length <= 80) lines.push('', oneLine + '\n' + indent(call, 1) + '\n}');
+  else lines.push('', 'if (\n' + indent(conds[0] + '\n' + conds.slice(1).map(function (c) { return '&& ' + c; }).join('\n'), 1) + '\n) {\n' + indent(call, 1) + '\n}');
+  return lines.join('\n');
+}
+
+function feeFunctionBody(cf, d) {
+  const L = [];
+  if (cf.guardAdmin) L.push("if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {\n\treturn;\n}", '');
+  L.push('if ( ! $cart instanceof WC_Cart || $cart->is_empty() ) {\n\treturn;\n}', '');
+  const decl = [];
+  if (d.needSubtotal) decl.push(['$subtotal', BASIS_EXPR[cf.basis]]);
+  if (d.needItems) decl.push(['$items', '$cart->get_cart_contents_count()']);
+  if (d.needWeight) decl.push(['$weight', '(float) $cart->get_cart_contents_weight()']);
+  if (d.needCountry) decl.push(['$country', 'WC()->customer->get_' + (cf.addressSource === 'billing' ? 'billing' : 'shipping') + '_country()']);
+  if (d.needPayment) decl.push(['$payment', "(string) WC()->session->get( 'chosen_payment_method' )"]);
+  if (d.needDecimals) decl.push(['$decimals', 'wc_get_price_decimals()']);
+  if (decl.length) L.push(alignAssign(decl), '');
+  if (!d.rules.length) L.push('// Nothing to add yet.');
+  d.rules.forEach(function (r) { L.push(ruleBlock(r, cf, d), ''); });
+  while (L.length && L[L.length - 1] === '') L.pop();
+  return L.join('\n');
+}
+
+function helperBlocks(cf, d) {
+  const out = [];
+  if (d.usedCond.shipping) out.push({
+    doc: '/**\n * Whether one of the chosen shipping methods matches.\n *\n * @param array $ids Method ids \u2014 "flat_rate" matches every instance, "flat_rate:3" only one.\n * @return bool\n */\n',
+    name: 'shipping_method_matches', params: '$ids',
+    body: "$chosen = (array) WC()->session->get( 'chosen_shipping_methods' );\n\nforeach ( $chosen as $method ) {\n\tif ( in_array( $method, $ids, true ) ) {\n\t\treturn true;\n\t}\n\n\tif ( in_array( current( explode( ':', $method ) ), $ids, true ) ) {\n\t\treturn true;\n\t}\n}\n\nreturn false;"
+  });
+  if (d.usedCond.role) out.push({
+    doc: '/**\n * Whether the current user holds one of the roles. "guest" matches a logged-out visitor.\n *\n * @param array $roles Role slugs.\n * @return bool\n */\n',
+    name: 'user_has_role', params: '$roles',
+    body: "$user = wp_get_current_user();\n\nif ( ! $user || ! $user->exists() ) {\n\treturn in_array( 'guest', $roles, true );\n}\n\nreturn (bool) array_intersect( (array) $user->roles, $roles );"
+  });
+  if (d.usedCond.category) out.push({
+    doc: '/**\n * Whether the cart holds a product in one of the categories.\n *\n * @param WC_Cart $cart  Cart object.\n * @param array   $slugs product_cat slugs.\n * @return bool\n */\n',
+    name: 'cart_has_category', params: '$cart, $slugs',
+    body: "foreach ( $cart->get_cart() as $item ) {\n\tif ( has_term( $slugs, 'product_cat', $item['product_id'] ) ) {\n\t\treturn true;\n\t}\n}\n\nreturn false;"
+  });
+  return out;
+}
+
+const CREDIT = '// Generated with Generator for WP \u2014 powered by GrowQuest (https://growquest.io).\n';
+function withCredit(out) { return out.indexOf('<?php\n') === 0 ? '<?php\n' + CREDIT + out.slice(6) : CREDIT + out; }
+
+function buildCode(cf, mode) {
+  const d = derive(cf);
+  const pre = d.pre;
+  let out = '';
+  if (mode === 'plugin') {
+    out += '<?php\n/**\n * Plugin Name:       Cart fees and discounts\n * Description:       Conditional fees and negative-fee discounts on the WooCommerce cart.\n * Version:           1.0.0\n * Requires PHP:      7.4\n * Requires Plugins:  woocommerce\n * Text Domain:       ' + d.td + "\n */\n\ndefined( 'ABSPATH' ) || exit;\n\n";
+  } else if (mode === 'functions') {
+    out += "<?php\n// Add to your theme's functions.php.\n\nif ( ! class_exists( 'WooCommerce' ) ) {\n\treturn;\n}\n\n";
+  } else {
+    out += "if ( ! class_exists( 'WooCommerce' ) ) {\n\treturn;\n}\n\n";
+  }
+
+  const blocks = [];
+  helperBlocks(cf, d).forEach(function (h) { blocks.push(h); });
+  blocks.push({
+    doc: '/**\n * Add the cart fees and discounts.\n *\n * @param WC_Cart $cart Cart object, passed by reference.\n */\n',
+    name: 'add_cart_fees', params: '$cart', body: feeFunctionBody(cf, d),
+    hook: 'woocommerce_cart_calculate_fees'
+  });
+
+  if (cf.paymentRefreshJs && d.usedCond.payment) blocks.push({
+    doc: '/**\n * Recalculate the checkout totals when the shopper switches payment method.\n */\n',
+    name: 'refresh_checkout_on_payment_change', params: '',
+    body: "if ( ! is_checkout() ) {\n\treturn;\n}\n\nwc_enqueue_js(\n\t\"jQuery( document.body ).on( 'change', 'input[name=payment_method]', function() {\n\t\tjQuery( document.body ).trigger( 'update_checkout' );\n\t} );\"\n);",
+    hook: 'wp_footer'
+  });
+
+  if (cf.feeHtmlFilter) blocks.push({
+    doc: '/**\n * Mark negative fees up as a discount line.\n *\n * @param string $html Fee amount HTML.\n * @param object $fee  Fee object.\n * @return string\n */\n',
+    name: 'cart_fee_html', params: '$html, $fee',
+    body: "if ( $fee->total < 0 ) {\n\treturn '<span class=\"" + pre.replace(/_/g, '-') + "-fee-discount\">' . $html . '</span>';\n}\n\nreturn $html;",
+    hook: 'woocommerce_cart_totals_fee_html', isFilter: true, args: 2
+  });
+
+  out += blocks.map(function (b) {
+    let s = b.doc + 'function ' + pre + '_' + b.name + '(' + (b.params ? ' ' + b.params + ' ' : '') + ') {\n' + indent(b.body, 1) + '\n}\n';
+    if (b.hook) s += (b.isFilter ? 'add_filter' : 'add_action') + "( '" + b.hook + "', '" + pre + '_' + b.name + "'" + (b.args ? ', 10, ' + b.args : '') + ' );\n';
+    return s;
+  }).join('\n');
+
+  if (cf.couponAlternative && d.hasDiscount) {
+    out += '\n/*\n * A negative fee is the blunt instrument. Anything the shopper should read as a\n * discount \u2014 reported, restricted, removable \u2014 belongs in a coupon:\n *\n * add_filter( \'woocommerce_get_shop_coupon_data\', function ( $data, $code ) {\n * \tif ( \'' + pre.replace(/_/g, '-') + '-auto\' !== $code ) {\n * \t\treturn $data;\n * \t}\n *\n * \treturn array(\n * \t\t\'id\'            => -1,\n * \t\t\'amount\'        => 10,\n * \t\t\'discount_type\' => \'percent\',\n * \t);\n * }, 10, 2 );\n *\n * Then apply it from woocommerce_before_calculate_totals when the cart qualifies:\n * $cart->apply_coupon( \'' + pre.replace(/_/g, '-') + '-auto\' );\n */\n';
+  }
+
+  return withCredit(out);
+}
+
+const TOKEN_RE = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|static|if|else|foreach|defined|exit|as|in_array|isset|instanceof|min|round|current|explode)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|(<\?php|\?>|::|=>|->|[{}()\[\];,]|=|\.)/g;
+function tokenizePHP(code) {
+  const C = { comment: '#9A9284', string: '#1F7A4C', variable: '#8A5B00', keyword: '#B3439A', number: '#B45309', fn: '#3858E9', punct: '#A79F91', plain: '#3B362D' };
+  const out = [];
+  let last = 0, m;
+  const push = function (text, color, italic) { if (text) out.push({ text: text, color: color, italic: italic || 'normal' }); };
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(code)) !== null) {
+    push(code.slice(last, m.index), C.plain);
+    if (m[1]) push(m[1], C.comment, 'italic');
+    else if (m[2]) push(m[2], C.string);
+    else if (m[3]) push(m[3], C.variable);
+    else if (m[4]) push(m[4], C.keyword);
+    else if (m[5]) push(m[5], C.number);
+    else if (m[6]) push(m[6], C.fn);
+    else push(m[7], C.punct);
+    last = m.index + m[0].length;
+  }
+  push(code.slice(last), C.plain);
+  return out;
+}
+
+function basisValue(sample, cf) {
+  const st = num(sample.subtotal);
+  if (cf.basis === 'subtotal_incl_tax') return st * (1 + num(sample.taxRate) / 100);
+  if (cf.basis === 'after_discount') return Math.max(0, st - num(sample.coupon));
+  return st;
+}
+
+function evaluateRules(cf, sample) {
+  const d = derive(cf);
+  const basis = basisValue(sample, cf);
+  const items = Math.max(0, Math.round(num(sample.items)));
+  const weight = num(sample.weight);
+  return d.rules.map(function (r) {
+    let amount = r.calc === 'fixed' ? r.amountNum
+      : r.calc === 'percent' ? basis * r.amountNum / 100
+        : r.calc === 'per_item' ? r.amountNum * items
+          : r.amountNum * weight;
+    amount = Math.round(amount * 100) / 100;
+    let capped = false;
+    if (r.capNum > 0 && amount > r.capNum) { amount = r.capNum; capped = true; }
+    let reason = '';
+    if (cf.hideZero && amount <= 0) reason = 'the amount computes to ' + money(amount) + ', and zero-amount fees are skipped';
+    r.condKeys.forEach(function (k) {
+      if (reason) return;
+      const v = r.cond[k];
+      if (k === 'minSubtotal' && basis < num(v)) reason = 'the ' + money(basis) + ' basis is under the ' + money(num(v)) + ' minimum';
+      if (k === 'maxSubtotal' && basis > num(v)) reason = 'the ' + money(basis) + ' basis is over the ' + money(num(v)) + ' maximum';
+      if (k === 'minItems' && items < num(v)) reason = items + ' items is under the ' + Math.round(num(v)) + ' item minimum';
+      if (k === 'country' && csv(v).map(function (c) { return c.toUpperCase(); }).indexOf(String(sample.country).toUpperCase()) < 0) reason = sample.country + ' is not in ' + csv(v).join(', ');
+      if (k === 'shipping' && csv(v).filter(function (id) { return id === sample.shipping || id === String(sample.shipping).split(':')[0]; }).length === 0) reason = 'the chosen shipping method is ' + (sample.shipping || 'none') + ', not ' + csv(v).join(' or ');
+      if (k === 'payment' && csv(v).indexOf(sample.payment) < 0) reason = 'the chosen gateway is ' + sample.payment + ', not ' + csv(v).join(' or ');
+      if (k === 'role' && csv(v).indexOf(sample.role) < 0) reason = 'the shopper is ' + sample.role + ', not ' + csv(v).join(' or ');
+      if (k === 'category' && !sample.hasCategory) reason = 'no cart item is in ' + csv(v).join(' or ');
+    });
+    return {
+      label: r.label || 'Unnamed fee', mode: r.mode, taxable: r.taxable, capped: capped,
+      signed: r.mode === 'discount' ? -amount : amount, matched: !reason, reason: reason,
+      calcNote: describeCalc(r, cf)
+    };
+  });
+}
+
+function validate(cf) {
+  const d = derive(cf);
+  const out = [];
+  const add = function (severity, message, fix, fixLabel) { out.push({ severity: severity, message: message, fix: fix, fixLabel: fixLabel }); };
+  const q = function (s) { return '\u201C' + s + '\u201D'; };
+
+  if (!d.rules.length) add('warning', 'No fees yet \u2014 the callback runs on every cart calculation and adds nothing.');
+  if (!cf.guardAdmin) add('warning', 'Without the is_admin() guard this callback also runs when an order is edited in wp-admin, where WC()->session and the customer object may be missing \u2014 conditions silently fall through and the fee can be added twice.', { kind: 'enableGuard' }, 'Add the guard');
+
+  const seen = {};
+  d.rules.forEach(function (r, i) {
+    const name = r.label || 'fee ' + (i + 1);
+    if (!String(r.label || '').trim()) { add('error', 'A fee with no name sanitises to an empty fee id, and WooCommerce drops it.', { kind: 'nameFee', i: i }, 'Name it'); }
+    else if (seen[r.feeId]) add('error', q(name) + ' sanitises to the same fee id as an earlier fee (' + r.feeId + '). WooCommerce keeps the first and logs a doing_it_wrong notice for this one.', { kind: 'renameFee', i: i }, 'Make it unique');
+    seen[r.feeId] = true;
+
+    if (r.amountNum <= 0) add('warning', q(name) + ' has an amount of ' + money(r.amountNum) + ', so it never adds anything. Discounts are set as a positive amount \u2014 the minus sign is added for you.');
+    if (r.calc === 'percent' && r.amountNum > 100) add('warning', q(name) + ' is ' + trimNum(r.amountNum) + '% of the cart \u2014 more than the cart itself.');
+    if (r.calc === 'percent' && !(r.capNum > 0)) add('recommendation', q(name) + ' is a percentage with no cap, so it scales without limit on a large order. A ceiling is cheap insurance.', { kind: 'addCap', i: i }, 'Cap it');
+    if (r.mode === 'discount' && r.taxable) add('recommendation', q(name) + ' is a taxable negative fee. The tax it removes is calculated at the fee\u2019s own tax class, not proportionally across the items being discounted \u2014 so the tax line will not match what a coupon would produce.');
+    if (r.mode === 'discount' && r.calc === 'fixed' && !Object.prototype.hasOwnProperty.call(r.cond, 'minSubtotal')) add('warning', 'Nothing stops ' + q(name) + ' from exceeding the cart subtotal. WooCommerce clamps the order total at zero, but the fee row still shows the full negative amount.', { kind: 'floorDiscount', i: i }, 'Require a minimum');
+    if (Object.prototype.hasOwnProperty.call(r.cond, 'minSubtotal') && Object.prototype.hasOwnProperty.call(r.cond, 'maxSubtotal') && num(r.cond.minSubtotal) > num(r.cond.maxSubtotal)) add('error', q(name) + ' asks for a subtotal above ' + money(num(r.cond.minSubtotal)) + ' and below ' + money(num(r.cond.maxSubtotal)) + ' \u2014 no cart can match.', { kind: 'swapMinMax', i: i }, 'Swap them');
+    if (r.taxable && r.taxClass !== 'standard') add('recommendation', q(name) + ' uses the ' + r.taxClass + ' tax class. Confirm that slug still exists under WooCommerce \u2192 Settings \u2192 Tax \u2014 a missing class falls back to no tax at all, silently.');
+    if (r.condKeys.indexOf('shipping') >= 0) add('recommendation', q(name) + ' matches on shipping method ids. An id like flat_rate:3 is instance-specific: the number changes per shipping zone, so prefer the bare flat_rate unless you really mean one zone.');
+  });
+
+  if (d.usedCond.payment && !cf.paymentRefreshJs) add('error', 'A fee depends on the chosen gateway, but nothing tells the checkout to recalculate when the shopper switches payment method \u2014 the fee will be one selection behind until something else refreshes the totals.', { kind: 'enablePaymentJs' }, 'Add the refresh');
+  if (d.usedCond.country && cf.addressSource === 'shipping') add('recommendation', 'Country conditions read the shipping country. On a cart with nothing shippable that field can be empty and WooCommerce falls back to the store base \u2014 switch to the billing country for digital-only carts.');
+  if (d.needWeight) add('recommendation', 'get_cart_contents_weight() returns the store\u2019s configured weight unit, not always kg. The per-weight rate has to be expressed in that same unit.');
+  if (cf.basis === 'subtotal') add('recommendation', 'Percentages are taken from get_subtotal(), which is the items total before coupons \u2014 a 20% off coupon will not shrink the fee.');
+  if (cf.basis === 'after_discount') add('recommendation', 'Percentages are taken from get_cart_contents_total(), so any coupon the shopper applies also shrinks this fee.');
+  if (cf.basis === 'subtotal_incl_tax' && d.rules.some(function (r) { return r.taxable; })) add('warning', 'A taxable fee calculated from a tax-inclusive basis taxes the tax. Either take the percentage from the ex-tax subtotal or mark the fee non-taxable.');
+  if (!cf.hideZero && d.rules.length) add('recommendation', 'Zero-amount fees are still added, and WooCommerce renders a row for them in the cart totals.', { kind: 'enableHideZero' }, 'Skip zero fees');
+  if (d.hasDiscount && !cf.feeHtmlFilter) add('recommendation', 'Negative fees render in the same row style as a surcharge. The woocommerce_cart_totals_fee_html filter lets you style the discount rows distinctly.', { kind: 'enableFeeHtml' }, 'Add the filter');
+  return out;
+}
+
+function freshProject(template) {
+  const base = { prefix: 'acme', textDomain: 'acme', basis: 'subtotal', addressSource: 'shipping', guardAdmin: true, hideZero: true, paymentRefreshJs: true, feeHtmlFilter: false, couponAlternative: true };
+  if (template === 'empty') return Object.assign(base, { rules: [] });
+  if (template === 'discount') return Object.assign(base, {
+    feeHtmlFilter: true,
+    rules: [
+      { label: 'Wholesale discount', mode: 'discount', calc: 'percent', amount: '10', taxable: false, taxClass: 'standard', cap: '250', cond: { role: 'wholesale' } },
+      { label: 'Bulk order discount', mode: 'discount', calc: 'fixed', amount: '15.00', taxable: false, taxClass: 'standard', cap: '', cond: { minSubtotal: '250' } }
+    ]
+  });
+  return Object.assign(base, {
+    rules: [
+      { label: 'Handling fee', mode: 'fee', calc: 'percent', amount: '3.5', taxable: true, taxClass: 'standard', cap: '12', cond: { minSubtotal: '25' } },
+      { label: 'Oversized item surcharge', mode: 'fee', calc: 'per_item', amount: '4.00', taxable: true, taxClass: 'standard', cap: '', cond: { category: 'oversized' } },
+      { label: 'Cash on delivery fee', mode: 'fee', calc: 'fixed', amount: '2.50', taxable: false, taxClass: 'standard', cap: '', cond: { payment: 'cod' } }
+    ]
+  });
+}
+
+const SHIPPING_SAMPLES = [['flat_rate', 'flat_rate'], ['free_shipping', 'free_shipping'], ['local_pickup', 'local_pickup'], ['', 'none chosen']];
+const SHIPPING_COST = { flat_rate: 4.99, free_shipping: 0, local_pickup: 0, '': null };
+const COUNTRY_SAMPLES = ['GB', 'IE', 'US', 'DE', 'FR', 'AU', 'CA'];
+const PAYMENT_SAMPLES = ['cod', 'bacs', 'cheque', 'stripe', 'ppcp-gateway'];
+const ROLE_SAMPLES = ['guest', 'customer', 'subscriber', 'wholesale'];
+const CURRENCIES = [['\u00A3', '\u00A3 GBP'], ['$', '$ USD'], ['\u20AC', '\u20AC EUR']];
+
+class Component extends DCLogic {
+  state = {
+    cf: freshProject('surcharge'), past: [], future: [],
+    rightTab: 'code', outputMode: 'plugin', validationFilter: 'all',
+    copiedFlash: false, ariaLiveMessage: '', saveStatus: 'Saved just now',
+    sample: { subtotal: '120.00', items: '4', weight: '8', coupon: '0', country: 'GB', shipping: 'flat_rate', payment: 'cod', role: 'customer', hasCategory: true, taxRate: '20', currency: '\u00A3' },
+    viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1280, mobilePane: 'editor',
+    rightPaneWidthPx: 560, resizingPane: false
+  };
+
+  constructor(props) { super(props); this._refs = {}; this._refCallbacks = {}; this._lastCommit = { field: null, at: 0 }; }
+
+  componentDidMount() {
+    let restored = false;
+    try {
+      const raw = localStorage.getItem('cart-fees-generator-v1');
+      if (raw) { const saved = JSON.parse(raw); if (saved && saved.rules) { this.setState({ cf: Object.assign(freshProject('surcharge'), saved) }); restored = true; } }
+    } catch (err) { /* ignore */ }
+    if (!restored && this.props.startingTemplate) this.setState({ cf: freshProject(this.props.startingTemplate) });
+    if (this.props.defaultOutputMode) this.setState({ outputMode: this.props.defaultOutputMode });
+    if (this.props.previewTaxRate != null) this.setState(function (s) { return { sample: Object.assign({}, s.sample, { taxRate: String(this.props.previewTaxRate) }) }; }.bind(this));
+    this._onResize = () => this.setState({ viewportWidth: window.innerWidth });
+    this._onKeyDown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) this.redo(); else this.undo(); } };
+    this._onPaneMouseMove = (e) => {
+      if (!this.state.resizingPane) return;
+      e.preventDefault();
+      const host = this._refs.workspace;
+      const rect = host ? host.getBoundingClientRect() : { right: window.innerWidth, width: window.innerWidth };
+      const maxW = Math.max(340, rect.width - 420);
+      this.setState({ rightPaneWidthPx: Math.round(Math.min(maxW, Math.max(340, rect.right - e.clientX - 3))) });
+    };
+    this._onPaneMouseUp = () => { if (this.state.resizingPane) this.setState({ resizingPane: false }); };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('mousemove', this._onPaneMouseMove);
+    window.addEventListener('mouseup', this._onPaneMouseUp);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onKeyDown);
+    window.removeEventListener('mousemove', this._onPaneMouseMove);
+    window.removeEventListener('mouseup', this._onPaneMouseUp);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+  persist(cf) { try { localStorage.setItem('cart-fees-generator-v1', JSON.stringify(cf)); } catch (err) { /* ignore */ } }
+
+  commit(mutate, coalesceField) {
+    this.setState(function (s) {
+      const next = JSON.parse(JSON.stringify(s.cf));
+      mutate(next);
+      const now = Date.now();
+      const coalesce = coalesceField && this._lastCommit.field === coalesceField && (now - this._lastCommit.at) < 900;
+      this._lastCommit = { field: coalesceField || null, at: now };
+      return { cf: next, past: coalesce ? s.past : s.past.concat([s.cf]).slice(-60), future: [], saveStatus: 'Saved just now' };
+    }.bind(this), () => this.persist(this.state.cf));
+  }
+  undo() { this.setState(function (s) { if (!s.past.length) return null; return { cf: s.past[s.past.length - 1], past: s.past.slice(0, -1), future: [s.cf].concat(s.future) }; }, () => this.persist(this.state.cf)); }
+  redo() { this.setState(function (s) { if (!s.future.length) return null; return { cf: s.future[0], past: s.past.concat([s.cf]), future: s.future.slice(1) }; }, () => this.persist(this.state.cf)); }
+  set(field, value, coalesce) { this.commit(function (p) { p[field] = value; }, coalesce ? 'f-' + field : null); }
+  setSample(key, value) { this.setState(function (s) { const n = Object.assign({}, s.sample); n[key] = value; return { sample: n }; }); }
+
+  applyFix(fix) {
+    const i = fix.i;
+    this.commit(function (p) {
+      const r = p.rules && p.rules[i];
+      if (fix.kind === 'enableGuard') p.guardAdmin = true;
+      if (fix.kind === 'enablePaymentJs') p.paymentRefreshJs = true;
+      if (fix.kind === 'enableHideZero') p.hideZero = true;
+      if (fix.kind === 'enableFeeHtml') p.feeHtmlFilter = true;
+      if (!r) return;
+      if (fix.kind === 'nameFee') r.label = r.mode === 'discount' ? 'Discount ' + (i + 1) : 'Fee ' + (i + 1);
+      if (fix.kind === 'renameFee') r.label = String(r.label || 'Fee') + ' ' + (i + 1);
+      if (fix.kind === 'addCap') r.cap = money(Math.max(10, num(r.amount) * 4));
+      if (fix.kind === 'floorDiscount') { r.cond = Object.assign({}, r.cond, { minSubtotal: money(Math.max(10, num(r.amount) * 3))
+      }); }
+      if (fix.kind === 'swapMinMax') { const lo = r.cond.minSubtotal, hi = r.cond.maxSubtotal; r.cond = Object.assign({}, r.cond, { minSubtotal: hi, maxSubtotal: lo }); }
+    });
+    this.setState({ ariaLiveMessage: 'Fix applied' });
+  }
+
+  copyCode() {
+    try { navigator.clipboard.writeText(buildCode(this.state.cf, this.state.outputMode)); } catch (err) { /* ignore */ }
+    this.setState({ copiedFlash: true, ariaLiveMessage: 'PHP copied to clipboard' });
+    setTimeout(() => this.setState({ copiedFlash: false }), 1600);
+  }
+  download() {
+    const mode = this.state.outputMode;
+    let code = buildCode(this.state.cf, mode);
+    if (mode === 'snippet') code = '<?php\n\n' + code;
+    const name = 'cart-fees.php';
+    try {
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) { /* ignore */ }
+    this.setState({ ariaLiveMessage: 'Downloaded ' + name });
+  }
+
+  renderVals() {
+    const s = this.state, cf = s.cf, sample = s.sample, self = this;
+    const d = derive(cf);
+    const ic = (g, size) => React.createElement('span', { 'aria-hidden': 'true', style: { fontFamily: 'lineicons', fontSize: (size || 16) + 'px', lineHeight: 1, display: 'block', flexShrink: 0, fontStyle: 'normal', fontWeight: 400 } }, g);
+    const ICON = { undo: ic('\uf5bc'), redo: ic('\uf158'), close: ic('\uf4ed', 13), error: ic('\ue934'), warning: ic('\ue937'), info: ic('\uec79') };
+    const sym = sample.currency || '\u00A3';
+    const fmt = function (n) { return (n < 0 ? '-' : '') + sym + money(Math.abs(n)); };
+
+    const issues = validate(cf);
+    const errorCount = issues.filter(function (i) { return i.severity === 'error'; }).length;
+    const warningCount = issues.filter(function (i) { return i.severity === 'warning'; }).length;
+    const recCount = issues.filter(function (i) { return i.severity === 'recommendation'; }).length;
+    const filtered = issues.filter(function (i) { return s.validationFilter === 'all' || i.severity === s.validationFilter; });
+    const severityColor = { error: '#B91C1C', warning: '#B45309', recommendation: '#3B6FB0' };
+    const severityIcon = { error: ICON.error, warning: ICON.warning, recommendation: ICON.info };
+
+    const evaluated = evaluateRules(cf, sample);
+    const applied = evaluated.filter(function (e) { return e.matched; });
+    const skipped = evaluated.filter(function (e) { return !e.matched; });
+    const basis = basisValue(sample, cf);
+    const feeTotal = applied.reduce(function (t, e) { return t + e.signed; }, 0);
+    const taxable = applied.filter(function (e) { return e.taxable; }).reduce(function (t, e) { return t + e.signed; }, 0);
+    const feeTax = Math.round(taxable * num(sample.taxRate)) / 100;
+    const ship = SHIPPING_COST[sample.shipping];
+    const rawTotal = num(sample.subtotal) - num(sample.coupon) + feeTotal + feeTax + (ship == null ? 0 : ship);
+
+    const rows = [{ label: 'Subtotal', value: fmt(num(sample.subtotal)), weight: 500, labelColor: '#1D2327', valueColor: '#1D2327', hasNote: false, note: '' }];
+    if (num(sample.coupon) > 0) rows.push({ label: 'Coupon discount', value: fmt(-num(sample.coupon)), weight: 500, labelColor: '#1D2327', valueColor: '#1F7A4C', hasNote: false, note: '' });
+    applied.forEach(function (e) {
+      rows.push({
+        label: e.label, value: fmt(e.signed), weight: 500,
+        labelColor: '#1D2327', valueColor: e.signed < 0 ? '#1F7A4C' : '#1D2327',
+        hasNote: true, note: e.calcNote + (e.capped ? ' \u2014 capped' : '') + (e.taxable ? ' \u2014 taxable' : '')
+      });
+    });
+    if (ship != null) rows.push({ label: 'Shipping', value: ship === 0 ? 'Free' : fmt(ship), weight: 500, labelColor: '#1D2327', valueColor: '#1D2327', hasNote: true, note: sample.shipping });
+    if (Math.abs(feeTax) > 0.004) rows.push({ label: 'Tax on fees', value: fmt(feeTax), weight: 500, labelColor: '#1D2327', valueColor: '#1D2327', hasNote: true, note: 'at ' + trimNum(num(sample.taxRate)) + '% \u2014 item tax not shown' });
+
+    const condChipFor = function (i, r) {
+      return CONDITIONS.map(function (c) {
+        const on = Object.prototype.hasOwnProperty.call(r.cond, c.key);
+        return {
+          label: c.chip, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B',
+          onToggle: function () {
+            self.commit(function (p) {
+              const rr = p.rules[i];
+              rr.cond = rr.cond || {};
+              if (Object.prototype.hasOwnProperty.call(rr.cond, c.key)) delete rr.cond[c.key];
+              else rr.cond[c.key] = c.def;
+            });
+          }
+        };
+      });
+    };
+
+    const summarise = function (r) {
+      if (!r.condKeys.length) return 'Added to every cart' + (cf.hideZero ? ' where the amount is above zero.' : ', even at zero.');
+      return 'Added when ' + r.condKeys.map(function (k) {
+        const v = r.cond[k];
+        if (k === 'minSubtotal') return 'the basis is at least ' + money(num(v));
+        if (k === 'maxSubtotal') return 'the basis is at most ' + money(num(v));
+        if (k === 'minItems') return 'the cart holds ' + Math.round(num(v)) + '+ items';
+        if (k === 'country') return 'shipping to ' + csv(v).join('/');
+        if (k === 'shipping') return csv(v).join('/') + ' is the chosen shipping method';
+        if (k === 'payment') return csv(v).join('/') + ' is the chosen gateway';
+        if (k === 'role') return 'the shopper is ' + csv(v).join('/');
+        if (k === 'category') return 'an item is in ' + csv(v).join('/');
+        return k;
+      }).join(', and ') + '.';
+    };
+
+    return {
+      toolCount: 41, trueVal: true, cf: cf, sample: sample,
+      refWorkspace: this.getRef('workspace'),
+      ariaLiveMessage: s.ariaLiveMessage, saveStatus: s.saveStatus, fileName: 'cart-fees.php',
+
+      onPrefixChange: function (ev) { self.set('prefix', ev.target.value, true); },
+      onTextDomainChange: function (ev) { self.set('textDomain', ev.target.value, true); },
+      onBasisChange: function (ev) { self.set('basis', ev.target.value); },
+      onAddressSourceChange: function (ev) { self.set('addressSource', ev.target.value); },
+      basisNote: 'Percentage fees read ' + BASIS_LABEL[cf.basis] + '. '
+        + (cf.basis === 'after_discount' ? 'Coupons shrink the fee with the cart.' : cf.basis === 'subtotal_incl_tax' ? 'Only use a tax-inclusive basis for non-taxable fees.' : 'Coupons do not affect it.')
+        + ' Fees never compound \u2014 they are not part of the subtotal, so a second percentage fee is taken from the same figure as the first.',
+
+      rulesNote: d.rules.length + (d.rules.length === 1 ? ' rule' : ' rules') + ' \u00b7 ' + d.rules.filter(function (r) { return r.mode === 'discount'; }).length + ' negative',
+      noRules: d.rules.length === 0,
+      calcOptions: CALCS.map(function (c) { return { value: c[0], label: c[1] }; }),
+      taxClassOptions: TAX_CLASSES.map(function (c) { return { value: c[0], label: c[1] }; }),
+      ruleRows: d.rules.map(function (r, i) {
+        const dupe = d.rules.filter(function (o) { return o.feeId === r.feeId; }).length > 1;
+        return {
+          label: r.label, calc: r.calc, amount: r.amount, cap: r.cap, taxable: r.taxable, taxClass: r.taxClass,
+          accent: r.mode === 'discount' ? '#1F7A4C' : '#3858E9',
+          labelBorder: (!String(r.label || '').trim() || dupe) ? '#B91C1C' : '#E7E2D9',
+          amountBorder: r.amountNum > 0 ? '#E7E2D9' : '#B45309',
+          amountUnit: r.calc === 'percent' ? '%' : r.calc === 'per_item' ? 'per item' : r.calc === 'per_weight' ? 'per unit' : sym,
+          feeIdLabel: r.feeId ? 'fee id: ' + r.feeId : 'fee id: (empty)',
+          showCap: r.calc !== 'fixed',
+          hasConditions: r.condKeys.length > 0,
+          iconRemove: ICON.close,
+          summary: summarise(r),
+          modeChips: [['fee', 'Fee'], ['discount', 'Discount']].map(function (m) {
+            const on = r.mode === m[0];
+            return { label: m[1], borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B', onClick: function () { self.commit(function (p) { p.rules[i].mode = m[0]; }); } };
+          }),
+          conditionChips: condChipFor(i, r),
+          conditionInputs: r.condKeys.map(function (k) {
+            const c = COND_MAP[k];
+            return {
+              label: c.label, value: r.cond[k], placeholder: c.ph, width: c.width,
+              border: String(r.cond[k] || '').trim() ? '#E7E2D9' : '#B91C1C',
+              onChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.rules[i].cond[k] = v; }, 'c-' + i + '-' + k); }
+            };
+          }),
+          onLabelChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.rules[i].label = v; }, 'r-' + i + '-l'); },
+          onCalcChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.rules[i].calc = v; if (v === 'percent' && num(p.rules[i].amount) > 100) p.rules[i].amount = '10'; }); },
+          onAmountChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.rules[i].amount = v; }, 'r-' + i + '-a'); },
+          onCapChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.rules[i].cap = v; }, 'r-' + i + '-c'); },
+          onTaxableChange: function () { self.commit(function (p) { p.rules[i].taxable = !p.rules[i].taxable; }); },
+          onTaxClassChange: function (ev) { const v = ev.target.value; self.commit(function (p) { p.rules[i].taxClass = v; }); },
+          onRemove: function () { self.commit(function (p) { p.rules.splice(i, 1); }); }
+        };
+      }),
+      onAddFee: function () { self.commit(function (p) { p.rules.push({ label: 'Fee ' + (p.rules.length + 1), mode: 'fee', calc: 'fixed', amount: '2.50', taxable: false, taxClass: 'standard', cap: '', cond: {} }); }); },
+      onAddDiscount: function () { self.commit(function (p) { p.rules.push({ label: 'Discount ' + (p.rules.length + 1), mode: 'discount', calc: 'percent', amount: '5', taxable: false, taxClass: 'standard', cap: '50', cond: { minSubtotal: '100' } }); }); },
+
+      outputToggles: [
+        { key: 'guardAdmin', label: 'Skip the admin', help: "is_admin() && ! DOING_AJAX \u2014 keeps the callback out of order-edit screens where there is no session." },
+        { key: 'hideZero', label: 'Only add fees above zero', help: 'Guards each add_fee() with $amount > 0 so an empty row never reaches the cart totals.' },
+        { key: 'paymentRefreshJs', label: 'Refresh checkout on gateway change', help: 'wc_enqueue_js() that triggers update_checkout \u2014 required for any payment-method condition.' },
+        { key: 'feeHtmlFilter', label: 'Style negative fee rows', help: 'A woocommerce_cart_totals_fee_html filter that wraps discount amounts in their own span.' },
+        { key: 'couponAlternative', label: 'Include the coupon alternative', help: 'Appends the commented programmatic-coupon approach when the file adds a discount.' }
+      ].map(function (t) {
+        const on = !!cf[t.key];
+        return { label: t.label, help: t.help, on: on, bg: on ? '#3858E9' : '#D9D4C8', knobLeft: on ? '19px' : '2px', onToggle: function () { self.commit(function (p) { p[t.key] = !p[t.key]; }); } };
+      }),
+
+      codeTokens: tokenizePHP(buildCode(cf, s.outputMode)),
+      outputModes: [['snippet', 'Snippet'], ['functions', 'functions.php'], ['plugin', 'Plugin file']].map(function (m) {
+        const on = s.outputMode === m[0];
+        return { label: m[1], onClick: function () { self.setState({ outputMode: m[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+      outputHint: { snippet: 'Guarded with a WooCommerce active-check \u2014 safe to drop in anywhere.', functions: "Add to your theme's functions.php \u2014 note that fees vanish the moment the theme changes.", plugin: 'A complete single-file plugin that declares WooCommerce as a dependency.' }[s.outputMode],
+      copyLabel: s.copiedFlash ? 'Copied' : 'Copy',
+      onCopy: function () { self.copyCode(); },
+      onDownload: function () { self.download(); },
+      onReset: function () { self.commit(function (p) { const f = freshProject(self.props.startingTemplate || 'surcharge'); Object.keys(p).forEach(function (k) { delete p[k]; }); Object.assign(p, f); }); self.setState({ ariaLiveMessage: 'Started a new fee set' }); },
+      onUndo: function () { self.undo(); }, onRedo: function () { self.redo(); },
+      undoDisabled: s.past.length === 0, redoDisabled: s.future.length === 0,
+      iconUndo: ICON.undo, iconRedo: ICON.redo,
+
+      sampleFields: [
+        { label: 'currency', isSelect: true, isInput: false, value: sample.currency, options: CURRENCIES.map(function (c) { return { value: c[0], label: c[1] }; }), onChange: function (ev) { self.setSample('currency', ev.target.value); } },
+        { label: 'subtotal', isInput: true, isSelect: false, value: sample.subtotal, options: [], onChange: function (ev) { self.setSample('subtotal', ev.target.value); } },
+        { label: 'coupon off', isInput: true, isSelect: false, value: sample.coupon, options: [], onChange: function (ev) { self.setSample('coupon', ev.target.value); } },
+        { label: 'items', isInput: true, isSelect: false, value: sample.items, options: [], onChange: function (ev) { self.setSample('items', ev.target.value); } },
+        { label: 'weight', isInput: true, isSelect: false, value: sample.weight, options: [], onChange: function (ev) { self.setSample('weight', ev.target.value); } },
+        { label: 'tax rate %', isInput: true, isSelect: false, value: sample.taxRate, options: [], onChange: function (ev) { self.setSample('taxRate', ev.target.value); } },
+        { label: 'ship to', isSelect: true, isInput: false, value: sample.country, options: COUNTRY_SAMPLES.map(function (c) { return { value: c, label: c }; }), onChange: function (ev) { self.setSample('country', ev.target.value); } },
+        { label: 'shipping', isSelect: true, isInput: false, value: sample.shipping, options: SHIPPING_SAMPLES.map(function (c) { return { value: c[0], label: c[1] }; }), onChange: function (ev) { self.setSample('shipping', ev.target.value); } },
+        { label: 'gateway', isSelect: true, isInput: false, value: sample.payment, options: PAYMENT_SAMPLES.map(function (c) { return { value: c, label: c }; }), onChange: function (ev) { self.setSample('payment', ev.target.value); } },
+        { label: 'shopper', isSelect: true, isInput: false, value: sample.role, options: ROLE_SAMPLES.map(function (c) { return { value: c, label: c }; }), onChange: function (ev) { self.setSample('role', ev.target.value); } }
+      ],
+      showCategoryToggle: !!d.usedCond.category,
+      onSampleCategoryChange: function () { self.setState(function (st) { return { sample: Object.assign({}, st.sample, { hasCategory: !st.sample.hasCategory }) }; }); },
+      totalRows: rows,
+      totalValue: fmt(Math.max(0, rawTotal)),
+      clamped: rawTotal < 0,
+      clampNote: 'The fees take this cart to ' + fmt(rawTotal) + '. WooCommerce clamps the order total at zero, but the negative fee row is still shown to the shopper at its full value.',
+      hasSkipped: skipped.length > 0,
+      skippedRows: skipped.map(function (e) { return { label: e.label, reason: 'Skipped \u2014 ' + e.reason + '.' }; }),
+      previewNote: 'Basis for percentages: ' + fmt(basis) + ' (' + BASIS_LABEL[cf.basis] + '). Tax is shown on fees only \u2014 item and shipping tax depend on your store\u2019s rates and the customer address.',
+
+      refSignature: "add_action( 'woocommerce_cart_calculate_fees', '" + d.pre + "_add_cart_fees' );\n\n// WC_Cart_Fees::add_fee( string $name, float $amount, bool $taxable = false, string $tax_class = '' )",
+      refFlow: [
+        'WC_Cart::calculate_totals() empties the fee list first, then fires this hook. Every fee has to be added again on every pass \u2014 never cache one in a transient or the session.',
+        'The hook runs on the cart page, the checkout, every AJAX totals refresh, and any programmatic calculate_totals() call. Expect it several times per page load.',
+        'Item totals and shipping are already calculated, so the subtotal and the chosen shipping method are readable. The payment method comes from the session, which is why gateway-based fees need a checkout refresh to keep up.',
+        'Taxes for taxable fees are worked out after your callback returns, from the tax class you passed \u2014 so pass the amount ex-tax and let WooCommerce add the tax.'
+      ].map(function (text, i) { return { n: String(i + 1), text: text }; }),
+      refFees: d.rules.length
+        ? d.rules.map(function (r) { return padTo(r.feeId || '(empty)', 28) + padTo(r.mode === 'discount' ? 'negative' : 'positive', 10) + padTo(r.calc, 11) + (r.taxable ? 'taxable / ' + r.taxClass : 'not taxable'); }).join('\n')
+        : 'No fees yet.',
+      refCouponPoints: [
+        'It shows in the fee row, not the discount row \u2014 shoppers read it as a charge that happens to be negative.',
+        'It is invisible to coupon reports, usage limits, per-product restrictions and the coupon endpoints in the REST API.',
+        'It is applied before tax at its own tax class, so the tax it removes will not match the tax on the items you meant to discount.',
+        'It can exceed the cart subtotal. The order total is clamped at zero, so the excess is silently swallowed rather than refunded.'
+      ].map(function (t) { return { text: t }; }),
+
+      issueCount: issues.length,
+      errorCountLabel: errorCount + (errorCount === 1 ? ' error' : ' errors'),
+      warningCountLabel: warningCount + (warningCount === 1 ? ' warning' : ' warnings'),
+      healthDot: errorCount ? '#B91C1C' : warningCount ? '#B45309' : '#1F7A4C',
+      validationIssues: filtered.map(function (i) {
+        return { message: i.message, color: severityColor[i.severity], icon: severityIcon[i.severity], fixable: !!i.fix, fixLabel: i.fixLabel || 'Fix', onFix: function () { self.applyFix(i.fix); } };
+      }),
+      noIssues: filtered.length === 0,
+      filterChips: [['all', 'All (' + issues.length + ')'], ['error', 'Errors (' + errorCount + ')'], ['warning', 'Warnings (' + warningCount + ')'], ['recommendation', 'Tips (' + recCount + ')']].map(function (f) {
+        const on = s.validationFilter === f[0];
+        return { label: f[1], onClick: function () { self.setState({ validationFilter: f[0] }); }, borderColor: on ? '#3858E9' : '#E7E2D9', bg: on ? '#EEF1FE' : '#fff', color: on ? '#2A46C4' : '#5C564B' };
+      }),
+
+      showCodeTab: s.rightTab === 'code', showScreenTab: s.rightTab === 'screen', showRefTab: s.rightTab === 'ref', showValidationTab: s.rightTab === 'validation',
+      onSetTabCode: function () { self.setState({ rightTab: 'code', mobilePane: 'output' }); },
+      onSetTabScreen: function () { self.setState({ rightTab: 'screen', mobilePane: 'output' }); },
+      onSetTabRef: function () { self.setState({ rightTab: 'ref', mobilePane: 'output' }); },
+      onSetTabValidation: function () { self.setState({ rightTab: 'validation', mobilePane: 'output' }); },
+      tabCodeColor: s.rightTab === 'code' ? '#3858E9' : '#948C7E', tabCodeBorder: s.rightTab === 'code' ? '#3858E9' : 'transparent',
+      tabScreenColor: s.rightTab === 'screen' ? '#3858E9' : '#948C7E', tabScreenBorder: s.rightTab === 'screen' ? '#3858E9' : 'transparent',
+      tabRefColor: s.rightTab === 'ref' ? '#3858E9' : '#948C7E', tabRefBorder: s.rightTab === 'ref' ? '#3858E9' : 'transparent',
+      tabValidationColor: s.rightTab === 'validation' ? '#3858E9' : '#948C7E', tabValidationBorder: s.rightTab === 'validation' ? '#3858E9' : 'transparent',
+
+      isNarrow: s.viewportWidth < 1024,
+      showCenter: s.viewportWidth >= 1024 || s.mobilePane === 'editor',
+      showRightPane: s.viewportWidth >= 1024 || s.mobilePane === 'output',
+      showPaneResizer: s.viewportWidth >= 1024,
+      rightPaneWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '100%',
+      rightPaneMinWidthStyle: s.viewportWidth >= 1024 ? s.rightPaneWidthPx + 'px' : '0',
+      onPaneResizeStart: function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.setState({ resizingPane: true }); },
+      resizingCursorStyle: s.resizingPane ? 'col-resize' : 'default',
+      resizingSelectStyle: s.resizingPane ? 'none' : 'auto',
+      mobileTabs: [['editor', 'Fees'], ['output', 'PHP & Cart']].map(function (tb) {
+        const on = s.mobilePane === tb[0];
+        return { label: tb[1], bg: on ? '#3858E9' : '#fff', color: on ? '#fff' : '#4A4438', onClick: function () { self.setState({ mobilePane: tb[0] }); } };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
