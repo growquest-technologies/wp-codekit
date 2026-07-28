@@ -36,7 +36,12 @@ export function Contact() {
     try {
       const res = await fetch(CONTACT_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        // text/plain (not application/json) keeps this a CORS "simple request" so the
+        // browser skips the preflight OPTIONS entirely — OttoKit's webhook endpoint answers
+        // the actual POST with correct CORS headers but the preflight response is missing
+        // Access-Control-Allow-Origin, so browsers refuse to even send the real request if
+        // one is triggered. The body is still valid JSON; OttoKit parses it by content.
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ name, email, topic, message, source: 'wpcodekit.com/contact' }),
       });
       if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
