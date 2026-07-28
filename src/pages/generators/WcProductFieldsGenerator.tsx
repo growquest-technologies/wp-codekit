@@ -52,7 +52,7 @@ const SAVE_METHOD_CHOICES: [SaveMethod, string][] = [
 ];
 
 export function WcProductFieldsGenerator() {
-  const { state: pf, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<ProductFields>('wc-product-fields-generator-v1', freshProject);
+  const { state: pf, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<ProductFields>('wc-product-fields-generator-v2', freshProject);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
 
   const d = useMemo(() => derive(pf), [pf]);
