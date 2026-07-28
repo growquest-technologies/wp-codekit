@@ -10,7 +10,7 @@ function renderInline(tokens: InlineToken[], keyPrefix: string): ReactNode {
     if (t.kind === 'italic') return <em key={key}>{t.value}</em>;
     if (t.kind === 'code') return <code key={key} style={{ background: '#F0F0F1', padding: '1px 4px', borderRadius: 3 }}>{t.value}</code>;
     if (t.kind === 'link') return (
-      <a key={key} href={t.href} title={t.title} target="_blank" rel="noreferrer" style={{ color: '#3858E9' }}>
+      <a key={key} href={t.href} title={t.title} target="_blank" rel="noopener noreferrer nofollow ugc" style={{ color: '#3858E9' }}>
         {t.value}
       </a>
     );
@@ -278,7 +278,7 @@ export function ListingPreview({ project }: ListingPreviewProps) {
               ))}
             </div>
             {project.meta.donateLink && (
-              <a href={project.meta.donateLink} target="_blank" rel="noreferrer" style={{ display: 'block', marginTop: 12, fontSize: 12.5, color: '#3858E9' }}>
+              <a href={project.meta.donateLink} target="_blank" rel="noopener noreferrer nofollow ugc" style={{ display: 'block', marginTop: 12, fontSize: 12.5, color: '#3858E9' }}>
                 Donate to this plugin »
               </a>
             )}

@@ -3,11 +3,41 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Icon, GLYPH } from '../components/ui/Icon';
 import { CATS, CAT_MAP, TOOLS, TOOL_ROUTES, fuzzyScore, type Tool } from '../data/tools';
 import { usePageMeta } from '../lib/usePageMeta';
+import { useJsonLd } from '../lib/useJsonLd';
+
+const BASE_URL = 'https://www.wpcodekit.com';
 
 type SortMode = 'relevance' | 'az';
 
 export function ToolsIndex() {
-  usePageMeta('All Generators', `Browse all ${TOOLS.length} WordPress code generators — post types, queries, hooks, admin screens and WooCommerce.`, '/tools');
+  usePageMeta(
+    `All ${TOOLS.length} WordPress Code Generators — Free, No Login | WP CodeKit`,
+    `Browse all ${TOOLS.length} WordPress code generators — post types, taxonomies, queries, hooks, admin screens, themes and WooCommerce. Free, no signup.`,
+    '/tools',
+    { rawTitle: true },
+  );
+
+  // The full catalogue as one ItemList. This is the page an answer engine reads
+  // when asked "what WordPress generators are there" — an explicit, ordered list
+  // of all of them is far more extractable than 49 anchor tags.
+  useJsonLd('ld-tools-list', {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `All ${TOOLS.length} WordPress code generators`,
+    url: `${BASE_URL}/tools`,
+    isPartOf: { '@id': `${BASE_URL}/#website` },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: TOOLS.length,
+      itemListElement: TOOLS.map((t, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: `${t.name} Generator`,
+        description: t.desc,
+        url: `${BASE_URL}/tools/${t.id}`,
+      })),
+    },
+  });
 
   const [params, setParams] = useSearchParams();
   const query = params.get('q') || '';

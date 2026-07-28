@@ -380,6 +380,271 @@
   </div>
   </div>
 
+  <section style="border-top:1px solid #E7E2D9; background:#FAF9F7;">
+    <div style="max-width:1200px; margin:0 auto; padding:clamp(40px,5vw,64px) 28px clamp(48px,6vw,72px); display:flex; flex-direction:column; gap:clamp(40px,4.5vw,60px);">
+
+      <div style="display:flex; flex-wrap:wrap; gap:clamp(24px,4vw,56px); align-items:flex-start;">
+        <div style="flex:1 1 520px; min-width:0;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#A79F91; margin-bottom:12px;">About this generator</div>
+          <h2 style="margin:0 0 18px; font-size:clamp(25px,2.7vw,33px); font-weight:700; letter-spacing:-0.028em; line-height:1.12; color:#1C1A15; text-wrap:pretty;">Cart Fees &amp; Discount Generator Online</h2>
+          <p style="margin:0 0 14px; font-size:clamp(15.5px,1.35vw,17px); line-height:1.68; color:#3B362D; max-width:66ch; text-wrap:pretty;">Build the WooCommerce cart fee you actually need — a cash-on-delivery surcharge, a weight-based handling charge, a wholesale-only discount — and copy it out as clean, commented PHP. Every rule becomes a real condition on <span style="font-family:'JetBrains Mono',monospace; font-size:0.88em;">woocommerce_cart_calculate_fees</span>, so the file you download is the file that runs.</p>
+          <p style="margin:0; font-size:15px; line-height:1.7; color:#5C564B; max-width:66ch; text-wrap:pretty;">The sample cart above recalculates as you type: change the subtotal, apply a coupon, switch the payment gateway, and watch the WooCommerce totals box respond exactly as it would at checkout. Free to use, no account, and nothing you enter leaves the browser.</p>
+        </div>
+        <div style="flex:0 1 300px; min-width:min(100%,260px); background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Hook</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#26221C; word-break:break-all;">woocommerce_cart_calculate_fees</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Outputs</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">A snippet, a <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">functions.php</span> block, or a standalone plugin file</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Requires</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">WooCommerce 3.2 or newer, PHP 7.4+</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Price</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">Free — no sign-up, no limits</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 16px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; max-width:34ch; text-wrap:pretty;">Why the Cart Fees Generator beats a generic fee snippet</h2>
+        <p style="margin:0 0 26px; font-size:15.5px; line-height:1.7; color:#4A4438; max-width:72ch; text-wrap:pretty;">Most “add a cart fee” snippets on the web are one hard-coded <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">add_fee()</span> call with a comment telling you to change the number. That holds up until the fee needs to apply only to cash on delivery, only above £100, only in the UK — or until a taxable negative fee quietly distorts your VAT reporting. This generator writes the conditions together with the fee, then audits the result against the mistakes that cost the most time to find in production.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,290px), 1fr)); gap:14px;">
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+              <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+              <div style="min-width:0;">
+                <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Conditions that actually compile</div>
+                <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Minimum and maximum subtotal, item count, cart weight, destination country, shipping method, payment gateway, user role and product category each emit a real guard clause — never a <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">// TODO</span> comment for you to finish.</p>
+              </div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+              <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+              <div style="min-width:0;">
+                <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Only the helpers you use</div>
+                <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;"><span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">shipping_method_matches()</span>, <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">user_has_role()</span> and <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">cart_has_category()</span> are written into the file only when one of your rules needs them, so there is no dead code to justify in review.</p>
+              </div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+              <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+              <div style="min-width:0;">
+                <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">A sample cart that does the arithmetic</div>
+                <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Set a subtotal, coupon, item count, weight, country and gateway, then see which rules fire, what each one computes to, and the reason every skipped rule was skipped.</p>
+              </div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+              <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+              <div style="min-width:0;">
+                <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Seven costly traps checked for you</div>
+                <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Duplicate fee ids from <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">sanitize_title()</span> collisions, gateway conditions with no checkout refresh, taxable negative fees, uncapped percentages, tax-inclusive basis on a taxable fee, a missing <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">is_admin()</span> guard and impossible min/max ranges. Most are one click to fix.</p>
+              </div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+              <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+              <div style="min-width:0;">
+                <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">A percentage basis you choose deliberately</div>
+                <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Take percentages from <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">get_subtotal()</span> before coupons, <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">get_cart_contents_total()</span> after coupons, or the subtotal including tax — the choice is named in the generated code so the next developer knows what you meant.</p>
+              </div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+              <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+              <div style="min-width:0;">
+                <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Honest advice about discounts</div>
+                <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Negative fees work, and the generator writes them — but it also tells you when a coupon is the better answer for a shopper-visible discount, and can append the programmatic coupon alternative alongside.</p>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 16px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; text-wrap:pretty;">How does the Cart Fees Generator work?</h2>
+        <p style="margin:0 0 26px; font-size:15.5px; line-height:1.7; color:#4A4438; max-width:72ch; text-wrap:pretty;">Four steps, no PHP required until you paste the result. Say what the fee is, say when it applies, prove it against a sample cart, then export.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,220px), 1fr)); gap:14px; margin-bottom:30px;">
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">01</div>
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Set the basics</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Pick a function prefix and text domain, then decide where percentages are measured from and whether country rules read the shipping or billing address.</p>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">02</div>
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Describe the fee</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Name it, then choose a flat amount, a percentage of the cart, an amount per item or per unit of weight. Cap it, make it taxable, or flip it to a discount.</p>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">03</div>
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Add the conditions</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Attach as many conditions as the rule needs. Each one is checked live against the sample cart, so you can see the rule turn on and off as you tune the numbers.</p>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">04</div>
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Review, then export</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Clear the flagged errors and warnings, then copy the snippet or download the <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">.php</span> file as a plugin, a <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">functions.php</span> block or a bare snippet.</p>
+            </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:clamp(20px,3vw,32px); align-items:flex-start;">
+          <div style="flex:1 1 480px; min-width:0;">
+            <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:4px;">Worked example — £4.90 cash-on-delivery fee, waived over £100</div>
+            <p style="margin:0 0 12px; font-size:13.5px; line-height:1.62; color:#5C564B; max-width:64ch; text-wrap:pretty;">One rule, two conditions: gateway is <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">cod</span> and subtotal is at most 100. This is the whole output, formatted exactly as it downloads.</p>
+            <pre style="margin:0; background:#1C1A15; border-radius:10px; padding:18px 20px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.75; color:#E4DFD6;">add_action( 'woocommerce_cart_calculate_fees', 'acme_cart_fees', 20 );
+
+function acme_cart_fees( $cart ) {
+	if ( is_admin() &amp;&amp; ! defined( 'DOING_AJAX' ) ) {
+		return;
+	}
+
+	if ( ! $cart instanceof WC_Cart || $cart-&gt;is_empty() ) {
+		return;
+	}
+
+	$subtotal = (float) $cart-&gt;get_subtotal();
+	$payment  = (string) WC()-&gt;session-&gt;get( 'chosen_payment_method' );
+
+	// Cash on delivery — a flat 4.90.
+	$amount = 4.90;
+
+	if ( $subtotal &lt;= 100.00 &amp;&amp; in_array( $payment, array( 'cod' ), true ) ) {
+		$cart-&gt;add_fee( __( 'Cash on delivery', 'acme' ), $amount, false );
+	}
+}</pre>
+            <p style="margin:12px 0 0; font-size:13.5px; line-height:1.65; color:#5C564B; max-width:68ch; text-wrap:pretty;">Because this fee depends on the chosen gateway, the generator also emits the one line of jQuery that fires <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">update_checkout</span> when the shopper switches payment method — without it WooCommerce shows a stale total until the page reloads.</p>
+          </div>
+          <div style="flex:0 1 300px; min-width:min(100%,260px); background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 20px 20px;">
+            <div style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#A79F91; margin-bottom:12px;">Reference documentation</div>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <a href="https://woocommerce.github.io/code-reference/hooks/hooks.html" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">WooCommerce hook reference</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Every action and filter in WooCommerce core, including the cart fee hooks.</span>
+                </span>
+              </a>
+              <a href="https://woocommerce.github.io/code-reference/classes/WC-Cart.html" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">WC_Cart::add_fee() in the code reference</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">The method signature this generator writes against — name, amount, taxable, tax class.</span>
+                </span>
+              </a>
+              <a href="https://developer.woocommerce.com/docs/" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">WooCommerce developer documentation</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Official guides for extending WooCommerce, including cart and checkout behaviour.</span>
+                </span>
+              </a>
+              <a href="https://developer.wordpress.org/reference/functions/add_action/" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">add_action() — WordPress developer reference</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">How the hook, callback, priority and argument count fit together.</span>
+                </span>
+              </a>
+              <a href="https://developer.wordpress.org/reference/functions/sanitize_title/" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">sanitize_title() — WordPress developer reference</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">How WooCommerce derives a fee id from your fee name, and why two names can collide.</span>
+                </span>
+              </a>
+              <a href="https://woocommerce.com/document/coupon-management/" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">Coupon management — WooCommerce docs</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">When a coupon is the right tool for a discount instead of a negative fee.</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 6px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; text-wrap:pretty;">Cart fees &amp; discounts — frequently asked questions</h2>
+        <p style="margin:0 0 24px; font-size:15px; line-height:1.7; color:#5C564B; max-width:70ch; text-wrap:pretty;">The questions that come up most often when adding conditional fees to a WooCommerce store.</p>
+        <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:6px clamp(18px,2.4vw,28px);">
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Can I charge a cart fee only for one payment method?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Yes — add a gateway condition to the rule and the generator reads <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">WC()->session->get( 'chosen_payment_method' )</span> for you. It also emits the small script that triggers <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">update_checkout</span> when the shopper switches method, which is the step most snippets leave out.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">How do I create a discount rather than a surcharge?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Switch the rule to a discount and the amount is passed to <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">add_fee()</span> as a negative number. It works, but a coupon is usually the better answer when the shopper should see a named saving — the generator says so, and can output the programmatic coupon alternative next to your code.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Are WooCommerce cart fees taxable?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Only if you say so. The third argument of <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">add_fee()</span> controls it and defaults to <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">false</span> in the generated code. Marking a negative fee as taxable is flagged as a warning, because a taxable discount distorts the tax lines on the order.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Where should I paste the generated PHP?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">A child theme’s <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">functions.php</span>, a code snippets plugin, or the standalone plugin file the generator can produce. Never the parent theme — an update will erase it. Pick the matching output mode before you copy.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Why doesn’t the fee update until the page reloads?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Checkout only recalculates when something asks it to. Fees that depend on the gateway, the shipping method or the address need a <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">update_checkout</span> trigger; without one WooCommerce keeps showing the total it last calculated.</p>
+          </div>
+          <div style="padding:22px 0;  display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Can I add several fees at once?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">As many as you need — each rule becomes its own <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">add_fee()</span> call with its own conditions. Give every fee a distinct name: WooCommerce derives the fee id from the name, so two similar names can collide and silently drop one of the fees. The generator checks for that.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:6px;">
+          <h2 style="margin:0; font-size:clamp(20px,2vw,25px); font-weight:700; letter-spacing:-0.024em; color:#1C1A15;">More WooCommerce generators</h2>
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="font-size:13.5px; font-weight:650; color:#3858E9; text-decoration:none;" style-hover="color:#213FD4;">Browse all generators →</a>
+        </div>
+        <p style="margin:0 0 18px; font-size:14.5px; line-height:1.65; color:#5C564B; max-width:70ch; text-wrap:pretty;">The other WooCommerce generator in the library, plus the WordPress core tools most often used alongside a cart fee.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,250px), 1fr)); gap:12px;">
+            <a href="./Product%20Fields%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+              <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">WooCommerce</span>
+              <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Product Fields Generator</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">woocommerce_process_product_meta</span>
+              <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Add custom fields to the Product Data box — an existing tab or a new one — and save their values.</span>
+            </a>
+            <a href="./Hooks%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+              <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#F3F1EC; color:#948C7E;">Core</span>
+              <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Hooks Generator</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">add_action() / add_filter()</span>
+              <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Correctly signed callbacks with the right priority and accepted argument count.</span>
+            </a>
+            <a href="./Enqueue%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+              <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#F3F1EC; color:#948C7E;">Core</span>
+              <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Scripts &amp; Styles Generator</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">wp_enqueue_script()</span>
+              <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Enqueue the checkout script that refreshes totals, with dependencies and versioning.</span>
+            </a>
+            <a href="./Settings%20Page%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+              <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#F3F1EC; color:#948C7E;">Admin</span>
+              <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Settings Page Generator</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">add_menu_page()</span>
+              <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Turn hard-coded fee amounts into options an admin can edit.</span>
+            </a>
+            <a href="./Role%20Capability%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+              <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#F3F1EC; color:#948C7E;">Admin</span>
+              <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Role &amp; Capability Generator</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">add_role()</span>
+              <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Create the wholesale or trade role your fee conditions check for.</span>
+            </a>
+            <a href="./Plugin%20Header%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+              <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#F3F1EC; color:#948C7E;">Core</span>
+              <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Plugin Header Generator</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">Plugin Name:</span>
+              <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Wrap the generated fee logic in a proper, updatable plugin file.</span>
+            </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
 
 </div>

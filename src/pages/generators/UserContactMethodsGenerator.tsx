@@ -68,7 +68,7 @@ export function UserContactMethodsGenerator() {
   const fieldsNote = `${d.fields.length} ${d.fields.length === 1 ? 'field' : 'fields'}`;
   const coreNote = d.removed.length ? `${d.removed.length} removed` : 'all kept';
 
-  const refSignature = `add_filter( 'user_contact_methods', 'callback', 10, 2 );\n\nfunction callback( $methods, $user ) {\n\t$methods['${d.pre}_mastodon'] = __( 'Mastodon', '${d.td}' );\n\n\treturn $methods;\n}`;
+  const refSignature = `add_filter( 'user_contactmethods', 'callback', 10, 2 );\n\nfunction callback( $methods, $user ) {\n\t$methods['${d.pre}_mastodon'] = __( 'Mastodon', '${d.td}' );\n\n\treturn $methods;\n}`;
   const refArgs = [
     { name: '$methods', type: 'array', description: 'Meta key => visible label. The key is the usermeta key, verbatim — no prefixing happens for you.' },
     { name: '$user', type: 'WP_User|null', description: 'The user being edited. Null on the users list screen, so always null-check before reading roles.' },

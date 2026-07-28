@@ -109,7 +109,7 @@ function buildMethodsBlock(ucm: UserContactMethods): string {
     '_user_contact_methods( $methods, $user ) {\n' +
     indent(body, 1) +
     '\n}\n' +
-    "add_filter( 'user_contact_methods', '" + d.pre + "_user_contact_methods', 10, 2 );\n"
+    "add_filter( 'user_contactmethods', '" + d.pre + "_user_contact_methods', 10, 2 );\n"
   );
 }
 
@@ -240,7 +240,7 @@ function buildClassBlock(ucm: UserContactMethods): string {
   if (pairs.length) body += '$methods = array_merge( $methods, self::fields() );\n\n';
   body += 'return $methods;';
 
-  let out = 'final class ' + cls + " {\n\n\t/**\n\t * Hook everything this class owns.\n\t */\n\tpublic static function init() {\n\t\tadd_filter( 'user_contact_methods', array( __CLASS__, 'methods' ), 10, 2 );\n";
+  let out = 'final class ' + cls + " {\n\n\t/**\n\t * Hook everything this class owns.\n\t */\n\tpublic static function init() {\n\t\tadd_filter( 'user_contactmethods', array( __CLASS__, 'methods' ), 10, 2 );\n";
   if (ucm.validate && d.validated.length) out += "\t\tadd_action( 'user_profile_update_errors', array( __CLASS__, 'validate' ), 10, 3 );\n";
   if (d.restFields.length) out += "\t\tadd_action( 'init', array( __CLASS__, 'register_rest_meta' ) );\n";
   out += '\t}\n';

@@ -1,4 +1,82 @@
+# WP CodeKit — https://www.wpcodekit.com
+# Everything here is free, public reference material. Search crawlers and AI
+# answer engines are both explicitly welcome: the per-agent groups below are a
+# deliberate GEO signal, and they also stop a future wildcard Disallow from
+# silently cutting off the answer engines.
+
 User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /*?q=
+
+# --- Search engines -------------------------------------------------------
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# --- AI answer engines / training crawlers --------------------------------
+# Being cited in an AI answer is worth more to us than this content is worth
+# withholding, so every one of these is allowed on purpose.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: YouBot
 Allow: /
 
 Sitemap: https://www.wpcodekit.com/sitemap.xml

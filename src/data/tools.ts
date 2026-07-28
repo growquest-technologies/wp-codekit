@@ -10,6 +10,33 @@ export interface Tool {
   keywords: string[];
 }
 
+/**
+ * Page-title override for tools whose on-page `<h1>` differs from `name`.
+ *
+ * `name` is the short label the catalogue grid needs; the H1 each generator
+ * renders is the fuller, higher-intent phrase people actually search ("Custom
+ * Post Type Generator", not "Post Type Generator"). Title and H1 disagreeing is
+ * a real SEO smell, so the title follows the H1 and the grid keeps the short
+ * name. Only list ids where the two genuinely differ.
+ */
+const SEO_TITLE_OVERRIDES: Record<string, string> = {
+  'post-type': 'Custom Post Type Generator',
+  taxonomy: 'Custom Taxonomy Generator',
+  'wp-query': 'WP_Query Builder',
+  'tax-query': 'Tax Query Builder',
+  'meta-query': 'Meta Query Builder',
+  'date-query': 'Date Query Builder',
+  'user-query': 'User Query Builder',
+  'term-query': 'Term Query Builder',
+  'comment-query': 'Comment Query Builder',
+  readme: 'Readme Studio',
+};
+
+/** The `<title>` for a tool page — matches the page's own H1. */
+export function toolPageTitle(tool: Tool): string {
+  return SEO_TITLE_OVERRIDES[tool.id] ?? `${tool.name} Generator`;
+}
+
 export interface Category {
   id: ToolCategory;
   label: string;
@@ -44,7 +71,7 @@ const RAW_TOOLS: [string, string, ToolCategory, string, string, boolean, string[
   ['toolbar', 'Toolbar Node', 'admin', 'WP_Admin_Bar::add_node()', 'Admin bar menus and nested nodes with capability gating.', true, ['admin bar', 'wp_admin_bar']],
   ['list-table', 'List Table', 'admin', 'WP_List_Table', 'Sortable, searchable admin tables with bulk actions.', true, ['table', 'columns', 'bulk action']],
   ['quicktags', 'Quicktags', 'admin', 'QTags.addButton()', 'Buttons for the classic editor text tab.', true, ['classic editor', 'text tab']],
-  ['user-contact', 'User Contact Methods', 'admin', 'user_contact_methods', 'Extra contact fields on the user profile screen.', true, ['profile', 'user meta']],
+  ['user-contact', 'User Contact Methods', 'admin', 'user_contactmethods', 'Extra contact fields on the user profile screen.', true, ['profile', 'user meta']],
   ['user-role', 'Role & Capability', 'admin', 'add_role()', 'Custom roles and capability maps, with a migration routine.', true, ['permissions', 'capabilities', 'editor role']],
   ['wp-query', 'WP_Query', 'query', 'new WP_Query()', 'Every argument the loop accepts, with the generated loop included.', true, ['loop', 'posts', 'pagination']],
   ['tax-query', 'WP_Tax_Query', 'query', 'tax_query', 'Nested taxonomy clauses with the right relation operators.', true, ['taxonomy', 'terms', 'relation']],
@@ -92,6 +119,9 @@ export const TOOLS: Tool[] = RAW_TOOLS.map(([id, name, cat, fn, desc, preview, k
 
 /** React Router path for each tool. Every id below has a page under src/pages/generators. */
 export const TOOL_ROUTES: Record<string, string> = Object.fromEntries(TOOLS.map((t) => [t.id, `/tools/${t.id}`]));
+
+/** Tool by id — used for related-tool lookups in the long-form content sections. */
+export const TOOL_MAP: Record<string, Tool> = Object.fromEntries(TOOLS.map((t) => [t.id, t]));
 
 export function editDistance(a: string, b: string): number {
   if (a === b) return 0;

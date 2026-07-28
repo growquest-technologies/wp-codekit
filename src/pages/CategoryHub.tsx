@@ -25,10 +25,35 @@ export function CategoryHub() {
   const tools = TOOLS.filter((t) => t.cat === cat);
 
   usePageMeta(
-    category ? `${category.label} Generators` : 'Category not found',
+    category ? `${tools.length} WordPress ${category.label} Generators — Free | WP CodeKit` : 'Category not found — WP CodeKit',
     category ? `${INTRO[cat]} ${tools.length} free generators, no signup.` : "That category doesn't exist.",
     `/category/${cat}`,
-    { noindex: !category },
+    { noindex: !category, rawTitle: true },
+  );
+
+  useJsonLd(
+    'ld-category-list',
+    category
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: `WordPress ${category.label} generators`,
+          description: INTRO[cat],
+          url: `${BASE_URL}/category/${cat}`,
+          isPartOf: { '@id': `${BASE_URL}/#website` },
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: tools.length,
+            itemListElement: tools.map((t, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: `${t.name} Generator`,
+              description: t.desc,
+              url: `${BASE_URL}/tools/${t.id}`,
+            })),
+          },
+        }
+      : null,
   );
 
   useJsonLd(

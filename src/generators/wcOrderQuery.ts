@@ -132,7 +132,7 @@ export function validate(oq: OrderQuery): ValidationIssue[] {
 
   if (!statuses.length) add('recommendation', 'No status filter — every non-trashed order status is included, drafts and failed orders too.');
   const limit = parseInt(oq.limit, 10);
-  if (isNaN(oq.limit ? limit : NaN) && oq.limit.trim() !== '-1') add('warning', 'No limit set. wc_get_orders() defaults to 20, but say so explicitly rather than relying on the default.', 'setTwenty', 'Limit to 20');
+  if (isNaN(oq.limit ? limit : NaN) && oq.limit.trim() !== '-1') add('warning', "No limit set. wc_get_orders() falls back to the site's posts_per_page option (10 by default), so the count depends on a setting you don't control — say it explicitly.", 'setTwenty', 'Limit to 20');
   else if (limit === -1) add('warning', 'limit -1 returns every matching order in one call. Fine for a handful, expensive for a busy store.', 'setTwenty', 'Limit to 20');
 
   if (String(oq.customer || '').trim() && !valueList(oq.customer).every((c) => /^\d+$/.test(c))) add('error', 'customer expects one or more numeric user ids, not names or emails.');
@@ -205,7 +205,7 @@ export interface RefArg {
 
 export const REF_ARGS: RefArg[] = [
   { name: 'status', type: 'string|array', description: "One or more order statuses, wc- prefixed (matches the raw column value in both the legacy posts table and the HPOS orders table). 'any' is also accepted." },
-  { name: 'customer', type: 'int|array', description: 'One or more customer user ids. Guest orders (no account) are not matched by this — filter by billing_email meta instead.' },
+  { name: 'customer', type: 'int|string|array', description: 'A customer user id or a billing email — WooCommerce accepts either, so guest orders are reachable by email. This generator takes numeric ids only; pass an email through the args array by hand if you need one.' },
   { name: 'date_created / date_modified / date_completed / date_paid', type: 'string', description: "A single date filters on or after it with '>', on or before with '<', or a range with 'start...end' — all yyyy-mm-dd." },
   { name: 'limit / paginate', type: 'int|bool', description: 'limit is the page size, -1 for unlimited. paginate => true swaps the return value for an object carrying total and max_num_pages.' },
   { name: 'orderby / order', type: 'string', description: "date (the default), ID, or a meta key when paired with meta_query. order is ASC or DESC." },
