@@ -47,9 +47,10 @@ export function Home() {
   const [heroQuery, setHeroQuery] = useState('');
 
   usePageMeta(
-    'WP CodeKit',
+    'WP CodeKit — WordPress code generators',
     "Fill in a form, get production-ready WordPress PHP. Post types, taxonomies, queries, hooks, readme.txt and more. Live previews, no signup.",
     '/',
+    { rawTitle: true },
   );
 
   useJsonLd('ld-faq', {

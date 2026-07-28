@@ -1,1 +1,1 @@
-{"root":["./vite.config.ts","./middleware.ts"],"version":"5.9.3"}
+{"root":["./vite.config.ts","./middleware.ts","./scripts/generate-sitemap.ts","./scripts/prerender.ts","./scripts/routes.ts"],"version":"5.9.3"}

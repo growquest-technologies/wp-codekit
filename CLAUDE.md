@@ -285,10 +285,68 @@ per-tool whether anything needs to sit behind `ProtectedRoute` (e.g. saved proje
 formats) — most generators likely stay fully free/anonymous by design (that's a stated selling
 point on the About page: "Accounts required: 0").
 
+## SEO: prerendering, sitemap, and structured data
+
+The app is a pure client-side SPA (`createRoot().render()`, not SSR/hydration — see Auth section
+below for why `useEditorState`/`AuthContext` reading `localStorage` during first render rules out
+a Node-based `renderToString` approach without touching every generator). Crawlability instead
+comes from a **post-build headless-browser crawl** (`scripts/prerender.ts`, using `playwright-core`
++ `vite preview`) that visits the app's own already-working client render for every public route
+and saves the resulting DOM as static HTML. This is real content-in-the-initial-response for
+crawlers/social scrapers, not a build-config toggle — Google's own guidance for JS sites explicitly
+endorses this "static rendering" pattern as an alternative to full SSR.
+
+- `scripts/routes.ts` — the single source of truth for every public route (home, tools index,
+  about, contact, login, pricing, all 6 category hubs, all 48+ tool pages), derived directly from
+  `src/data/tools.ts`. Add a tool there and it automatically appears in the sitemap and the
+  prerender crawl — nothing else to maintain by hand.
+- `npm run sitemap` — regenerates `public/sitemap.xml` from `routes.ts` (only routes marked
+  `sitemap: true`; `/login`/`/pricing` are prerendered for a correct static shell but intentionally
+  excluded from the sitemap since they're `noindex`).
+- `npm run prerender` — runs `vite build`, then crawls every route from `routes.ts` with a real
+  headless Chromium (bounded concurrency, waits for network-idle + the lazy-load fallback text to
+  be gone + the footer to exist before snapshotting), and writes the result into `prerendered/`
+  (a **committed, source-controlled** folder — not `dist/`, which is gitignored and rebuilt fresh
+  every deploy). `/account` is deliberately excluded — it's auth-gated and would just snapshot a
+  misleading redirect, so it stays a pure client-rendered route like any other private page.
+- **This must never run as part of Vercel's build** — a 300MB Chromium download plus a full crawl
+  on every single push would be wasted cost for content that usually hasn't changed. `playwright`
+  (the full package, which auto-downloads browsers via postinstall) is deliberately NOT a
+  dependency; `playwright-core` (no auto-download) is, so `npm install` on Vercel can never trigger
+  a browser download regardless of caching behavior. Run `npx playwright install chromium` once
+  locally before the first `npm run prerender`.
+- `scripts/copy-prerendered.mjs` — the *only* prerender-related step that runs during
+  `npm run build` (and therefore on Vercel). It's dependency-free text processing, not a crawl: it
+  overlays the committed `prerendered/` snapshots onto the `dist/` that `vite build` just produced,
+  and — critically — **rewrites every snapshot's `<script type="module">`/`<link rel="stylesheet">`
+  tags to match whatever `vite build` just actually emitted**, regardless of what hash the snapshot
+  itself was crawled against. This means forgetting to run `npm run prerender` before a push that
+  changes the JS bundle's content hash degrades gracefully to stale *content* on that page (still
+  showing the last-crawled copy) rather than a broken page (a missing/404 JS bundle reference that
+  would leave the SPA unable to boot) — verified by deliberately building against a stale
+  `prerendered/` snapshot and confirming the served `dist/index.html` still resolved to the
+  currently-existing asset file. Workflow: after any change that should be reflected in what
+  crawlers see, run `npm run refresh-seo` (sitemap + prerender) locally and commit `prerendered/`
+  and `public/sitemap.xml` alongside the code change, same push as always via GitHub Desktop —
+  Vercel's own build stays exactly as fast as it's always been.
+- Structured data (JSON-LD): `WebApplication`/`Organization` are static in `index.html` (present
+  before any JS runs). `BreadcrumbList` (tool pages, category hubs) and `FAQPage` (homepage) are
+  route-dependent, so they're injected via `src/lib/useJsonLd.ts` — same "find-by-id, update
+  in place" pattern as `usePageMeta`, so navigating client-side after the prerendered page loads
+  doesn't duplicate tags.
+- Real HTTP 404s for bad `/tools/:id` and `/category/:cat` paths come from `middleware.ts` (Vercel
+  Edge Middleware, checked against the same `src/data/tools.ts` id lists) — the static rewrite in
+  `vercel.json` alone would return 200 for anything, the classic SPA soft-404. Unlike the prerender
+  crawl, this **does** run on every request in production (it's tiny, no browser involved) but
+  never during the build.
+
 ## Commands
 
 ```
-npm run dev       # vite dev server
-npm run build     # tsc -b && vite build
-npm run lint      # eslint
+npm run dev          # vite dev server
+npm run build        # tsc -b && vite build && overlay prerendered/ onto dist/ — what Vercel runs
+npm run lint          # eslint
+npm run sitemap       # regenerate public/sitemap.xml from scripts/routes.ts
+npm run prerender      # vite build + crawl every route with Playwright into prerendered/ — LOCAL ONLY, never run on Vercel
+npm run refresh-seo   # sitemap + prerender together — run this locally before pushing a change that should show up to crawlers
 ```

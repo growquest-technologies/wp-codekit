@@ -9,9 +9,9 @@ function setMeta(selector: string, content: string) {
 }
 
 /** Sets document title, meta description, canonical URL and the matching OG/Twitter tags for the current route. */
-export function usePageMeta(title: string, description: string, path: string, options?: { noindex?: boolean }) {
+export function usePageMeta(title: string, description: string, path: string, options?: { noindex?: boolean; rawTitle?: boolean }) {
   useEffect(() => {
-    const fullTitle = title === SITE_NAME ? title : `${title} — ${SITE_NAME}`;
+    const fullTitle = options?.rawTitle || title === SITE_NAME ? title : `${title} — ${SITE_NAME}`;
     const url = BASE_URL + path;
 
     document.title = fullTitle;
@@ -41,5 +41,5 @@ export function usePageMeta(title: string, description: string, path: string, op
     } else if (robots) {
       robots.remove();
     }
-  }, [title, description, path, options?.noindex]);
+  }, [title, description, path, options?.noindex, options?.rawTitle]);
 }
