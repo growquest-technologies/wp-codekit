@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   BLOCKS_LOCATIONS,
   CLASSIC_LOCATIONS,
@@ -33,6 +36,8 @@ const TYPES: [FieldType, string][] = [
 
 export function WcCheckoutFieldsGenerator() {
   const { state: cf, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<CheckoutFields>('wc-checkout-fields-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const fields = useListOps<CheckoutFields>(commit)((p) => p.fields);
   const [outputMode, setOutputMode] = useState<OutputMode>('classic');
 
   const d = useMemo(() => derive(cf), [cf]);
@@ -59,9 +64,6 @@ export function WcCheckoutFieldsGenerator() {
   function addField() {
     commit((p) => p.fields.push({ key: 'field_' + (p.fields.length + 1), label: 'Field ' + (p.fields.length + 1), type: 'text', location: locations[0][0], required: false, placeholder: '', choices: '' }));
   }
-  function removeField(i: number) {
-    commit((p) => p.fields.splice(i, 1));
-  }
 
   return (
     <GeneratorShell
@@ -86,7 +88,17 @@ export function WcCheckoutFieldsGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {cf.fields.map((f, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={cf.fields.length}
+                  title={f.label || 'Untitled field'}
+                  subtitle={f.key.trim() || 'field'}
+                  drag={drag.bind('checkout-fields', i, fields.reorder)}
+                  onMoveUp={() => fields.moveUp(i)}
+                  onMoveDown={() => fields.moveDown(i)}
+                  onRemove={() => fields.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input className="input" style={{ flex: 1.4, minWidth: 120 }} placeholder="VAT number" value={f.label} onChange={(e) => commit((p) => (p.fields[i].label = e.target.value), `label-${i}`)} />
                     <input className="input gfw-mono" style={{ width: 100 }} placeholder="vat_id" value={f.key} onChange={(e) => commit((p) => (p.fields[i].key = e.target.value), `key-${i}`)} />
@@ -109,22 +121,19 @@ export function WcCheckoutFieldsGenerator() {
                         <option key={v} value={v}>{l}</option>
                       ))}
                     </select>
-                    <button type="button" aria-label="Remove field" title="Remove field" onClick={() => removeField(i)} className="btn btn-ghost btn-sm">✕</button>
                   </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 7 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input className="input" style={{ flex: 1, minWidth: 150 }} placeholder="Placeholder text" value={f.placeholder} onChange={(e) => commit((p) => (p.fields[i].placeholder = e.target.value), `placeholder-${i}`)} disabled={f.type !== 'text'} />
                     <ToggleRow label="Required" checked={f.required} onChange={(v) => commit((p) => (p.fields[i].required = v))} />
                   </div>
                   {f.type === 'select' && (
-                    <div style={{ marginTop: 7 }}>
-                      <input className="input gfw-mono" placeholder="first:First, second:Second" value={f.choices} onChange={(e) => commit((p) => (p.fields[i].choices = e.target.value), `choices-${i}`)} />
-                    </div>
+                    <input className="input gfw-mono" placeholder="first:First, second:Second" value={f.choices} onChange={(e) => commit((p) => (p.fields[i].choices = e.target.value), `choices-${i}`)} />
                   )}
-                </div>
+                </RepeatableCard>
               ))}
               {cf.fields.length === 0 && <div className="field-hint">No fields yet.</div>}
             </div>
-            <button type="button" onClick={addField} className="btn btn-ghost btn-sm" style={{ marginTop: 11, borderStyle: 'dashed' }}>Add field</button>
+            <button type="button" onClick={addField} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add field</button>
           </div>
 
           <div className="field-card">

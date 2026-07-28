@@ -1,8 +1,11 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { CopyableCodePreview } from '../../components/generator/CopyableCodePreview';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   START_PRESETS,
   applyFix,
@@ -38,6 +41,8 @@ const REF_ARGS = [
 
 export function NavMenuGenerator() {
   const { state: nm, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<NavMenu>('nav-menu-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const locations = useListOps<NavMenu>(commit)((p) => p.locations);
   const [outputMode, setOutputMode] = useState<OutputMode>('snippet');
   const [activeLocation, setActiveLocation] = useState('');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -61,16 +66,6 @@ export function NavMenuGenerator() {
   }
   function fix(kind: string) {
     commit((draft) => Object.assign(draft, applyFix(draft, kind)));
-  }
-
-  function moveLocation(i: number, dir: -1 | 1) {
-    commit((p) => {
-      const j = i + dir;
-      if (j < 0 || j >= p.locations.length) return;
-      const t = p.locations[j];
-      p.locations[j] = p.locations[i];
-      p.locations[i] = t;
-    });
   }
 
   return (
@@ -136,39 +131,46 @@ export function NavMenuGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {nm.locations.map((l, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <input
-                    className="input"
-                    style={{ flex: '1.2 1 120px' }}
-                    placeholder="Primary Menu"
-                    value={l.name}
-                    onChange={(e) => commit((p) => (p.locations[i].name = e.target.value), `loc-name-${i}`)}
-                  />
-                  <input
-                    className="input gfw-mono"
-                    style={{ width: 130 }}
-                    spellCheck={false}
-                    placeholder="primary"
-                    value={l.slug}
-                    onChange={(e) => commit((p) => (p.locations[i].slug = e.target.value), `loc-slug-${i}`)}
-                  />
-                  <input
-                    className="input gfw-mono"
-                    style={{ width: 130 }}
-                    placeholder="header.php"
-                    value={l.where}
-                    onChange={(e) => commit((p) => (p.locations[i].where = e.target.value), `loc-where-${i}`)}
-                  />
-                  <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-                    <button type="button" aria-label="Move up" title="Move up" onClick={() => moveLocation(i, -1)} className="btn btn-ghost btn-sm">↑</button>
-                    <button type="button" aria-label="Move down" title="Move down" onClick={() => moveLocation(i, 1)} className="btn btn-ghost btn-sm">↓</button>
-                    <button type="button" aria-label="Remove location" title="Remove location" onClick={() => commit((p) => p.locations.splice(i, 1))} className="btn btn-ghost btn-sm">×</button>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={nm.locations.length}
+                  title={l.name || `Location ${i + 1}`}
+                  subtitle={l.slug}
+                  drag={drag.bind('locations', i, locations.reorder)}
+                  onMoveUp={() => locations.moveUp(i)}
+                  onMoveDown={() => locations.moveDown(i)}
+                  onRemove={() => locations.remove(i)}
+                >
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <input
+                      className="input"
+                      style={{ flex: '1.2 1 120px' }}
+                      placeholder="Primary Menu"
+                      value={l.name}
+                      onChange={(e) => commit((p) => (p.locations[i].name = e.target.value), `loc-name-${i}`)}
+                    />
+                    <input
+                      className="input gfw-mono"
+                      style={{ width: 130 }}
+                      spellCheck={false}
+                      placeholder="primary"
+                      value={l.slug}
+                      onChange={(e) => commit((p) => (p.locations[i].slug = e.target.value), `loc-slug-${i}`)}
+                    />
+                    <input
+                      className="input gfw-mono"
+                      style={{ width: 130 }}
+                      placeholder="header.php"
+                      value={l.where}
+                      onChange={(e) => commit((p) => (p.locations[i].where = e.target.value), `loc-where-${i}`)}
+                    />
                   </div>
-                </div>
+                </RepeatableCard>
               ))}
               {!nm.locations.length && <div className="field-hint">No locations — Appearance → Menus will have nowhere to assign a menu.</div>}
             </div>
-            <button type="button" onClick={() => commit((p) => p.locations.push({ slug: 'menu-' + (p.locations.length + 1), name: 'Menu ' + (p.locations.length + 1), where: 'header.php' }))} className="btn btn-ghost btn-sm" style={{ marginTop: 11 }}>
+            <button type="button" onClick={() => commit((p) => p.locations.push({ slug: 'menu-' + (p.locations.length + 1), name: 'Menu ' + (p.locations.length + 1), where: 'header.php' }))} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>
               Add location
             </button>
           </div>

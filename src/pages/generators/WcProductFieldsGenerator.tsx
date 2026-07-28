@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { CheckboxChip } from '../../components/ui/CheckboxChip';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   BASE_TABS,
   FIELD_TYPES,
@@ -53,6 +56,8 @@ const SAVE_METHOD_CHOICES: [SaveMethod, string][] = [
 
 export function WcProductFieldsGenerator() {
   const { state: pf, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<ProductFields>('wc-product-fields-generator-v2', freshProject);
+  const drag = useDragReorder();
+  const fields = useListOps<ProductFields>(commit)((p) => p.fields);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
 
   const d = useMemo(() => derive(pf), [pf]);
@@ -67,25 +72,6 @@ export function WcProductFieldsGenerator() {
     commit((p) => {
       const n = p.fields.length + 1;
       p.fields.push({ id: 'field_' + n, label: 'Field ' + n, type: 'text', description: '', tooltip: false, choices: '' });
-    });
-  }
-  function removeField(i: number) {
-    commit((p) => p.fields.splice(i, 1));
-  }
-  function moveFieldUp(i: number) {
-    if (i === 0) return;
-    commit((p) => {
-      const t = p.fields[i - 1];
-      p.fields[i - 1] = p.fields[i];
-      p.fields[i] = t;
-    });
-  }
-  function moveFieldDown(i: number) {
-    if (i >= pf.fields.length - 1) return;
-    commit((p) => {
-      const t = p.fields[i + 1];
-      p.fields[i + 1] = p.fields[i];
-      p.fields[i] = t;
     });
   }
   function toggleProductType(t: ProductType) {
@@ -132,7 +118,7 @@ export function WcProductFieldsGenerator() {
       onOutputModeChange={(id) => setOutputMode(id as OutputMode)}
       outputHint={OUTPUT_HINT[outputMode]}
       secondaryTab={{
-        label: 'Product data',
+        label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px', minWidth: 420 }}>
             <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>
@@ -290,7 +276,17 @@ export function WcProductFieldsGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {pf.fields.map((f, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={pf.fields.length}
+                  title={f.label || 'Untitled field'}
+                  subtitle={d.metaPrefix + (f.id.trim() || 'field')}
+                  drag={drag.bind('fields', i, fields.reorder)}
+                  onMoveUp={() => fields.moveUp(i)}
+                  onMoveDown={() => fields.moveDown(i)}
+                  onRemove={() => fields.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input className="input" style={{ flex: 1.5, minWidth: 130 }} placeholder="Warranty length" value={f.label} onChange={(e) => commit((p) => (p.fields[i].label = e.target.value), `label-${i}`)} />
                     <input className="input gfw-mono" style={{ width: 140 }} placeholder="warranty_length" value={f.id} onChange={(e) => commit((p) => (p.fields[i].id = e.target.value), `id-${i}`)} spellCheck={false} />
@@ -309,26 +305,16 @@ export function WcProductFieldsGenerator() {
                       ))}
                     </select>
                     <CheckboxChip active={f.tooltip} onClick={() => commit((p) => (p.fields[i].tooltip = !p.fields[i].tooltip))}>tooltip</CheckboxChip>
-                    <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-                      <button type="button" aria-label="Move field up" title="Move field up" onClick={() => moveFieldUp(i)} className="btn btn-ghost btn-sm">↑</button>
-                      <button type="button" aria-label="Move field down" title="Move field down" onClick={() => moveFieldDown(i)} className="btn btn-ghost btn-sm">↓</button>
-                      <button type="button" aria-label="Remove field" title="Remove field" onClick={() => removeField(i)} className="btn btn-ghost btn-sm">✕</button>
-                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 7 }}>
-                    <span className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-faint)', whiteSpace: 'nowrap' }}>{d.metaPrefix + (f.id.trim() || 'field')}</span>
-                    <input className="input" style={{ flex: 1, minWidth: 150 }} placeholder="Shown as a tooltip or helper text." value={f.description} onChange={(e) => commit((p) => (p.fields[i].description = e.target.value), `description-${i}`)} />
-                  </div>
+                  <input className="input" placeholder="Shown as a tooltip or helper text." value={f.description} onChange={(e) => commit((p) => (p.fields[i].description = e.target.value), `description-${i}`)} />
                   {f.type === 'select' && (
-                    <div style={{ marginTop: 7 }}>
-                      <input className="input gfw-mono" placeholder="easy:Easy, moderate:Moderate, advanced:Advanced" value={f.choices} onChange={(e) => commit((p) => (p.fields[i].choices = e.target.value), `choices-${i}`)} spellCheck={false} />
-                    </div>
+                    <input className="input gfw-mono" placeholder="easy:Easy, moderate:Moderate, advanced:Advanced" value={f.choices} onChange={(e) => commit((p) => (p.fields[i].choices = e.target.value), `choices-${i}`)} spellCheck={false} />
                   )}
-                </div>
+                </RepeatableCard>
               ))}
               {pf.fields.length === 0 && <div className="field-hint">No fields — the tab will render an empty panel.</div>}
             </div>
-            <button type="button" onClick={addField} className="btn btn-ghost btn-sm" style={{ marginTop: 11, borderStyle: 'dashed' }}>Add field</button>
+            <button type="button" onClick={addField} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add field</button>
           </div>
 
           <div className="field-card">

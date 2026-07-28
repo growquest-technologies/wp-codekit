@@ -1,7 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { Toggle } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   CORE_METHODS,
   PRESETS,
@@ -25,6 +28,8 @@ const OUTPUT_MODES: { id: OutputMode; label: string }[] = [
 
 export function UserContactMethodsGenerator() {
   const { state: ucm, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<UserContactMethods>('user-contact-methods-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const fields = useListOps<UserContactMethods>(commit)((p) => p.fields);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -87,7 +92,17 @@ export function UserContactMethodsGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {ucm.fields.map((f, i) => (
-                <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={ucm.fields.length}
+                  title={f.label || `Field ${i + 1}`}
+                  subtitle={f.key}
+                  drag={drag.bind('fields', i, fields.reorder)}
+                  onMoveUp={() => fields.moveUp(i)}
+                  onMoveDown={() => fields.moveDown(i)}
+                  onRemove={() => fields.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                     <input className="input" style={{ flex: 1, minWidth: 120 }} placeholder="Mastodon" value={f.label} onChange={(e) => commit((p) => (p.fields[i].label = e.target.value))} />
                     <input className="input gfw-mono" style={{ width: 130 }} placeholder="mastodon" value={f.key} onChange={(e) => commit((p) => (p.fields[i].key = e.target.value))} />
@@ -104,14 +119,13 @@ export function UserContactMethodsGenerator() {
                       <Toggle checked={f.rest} onChange={(v) => commit((p) => (p.fields[i].rest = v))} ariaLabel="In REST" />
                       <span style={{ fontSize: 13.5, fontWeight: 650, color: 'var(--gfw-text-strong)' }}>In REST</span>
                     </div>
-                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => commit((p) => p.fields.splice(i, 1))}>Remove</button>
                   </div>
-                </div>
+                </RepeatableCard>
               ))}
               {ucm.fields.length === 0 && <div className="field-hint">No fields yet.</div>}
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={addField}>Add field</button>
+              <button type="button" className="btn btn-ghost btn-sm repeatable-add" onClick={addField}>Add field</button>
               {PRESETS.map((p, i) => (
                 <button key={p.label} type="button" className="btn btn-ghost btn-sm" onClick={() => addPreset(i)}>+ {p.label}</button>
               ))}

@@ -1,7 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   applyFix,
   buildCode,
@@ -53,6 +56,8 @@ const TOGGLES: { key: 'flexWidth' | 'flexHeight' | 'headerText' | 'uploads' | 'v
 
 export function DefaultThemeHeadersGenerator() {
   const { state: dh, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<DefaultThemeHeaders>('default-theme-headers-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const headers = useListOps<DefaultThemeHeaders>(commit)((p) => p.headers);
   const [outputMode, setOutputMode] = useState<OutputMode>('functions');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -67,16 +72,6 @@ export function DefaultThemeHeadersGenerator() {
   }
   function fix(kind: string) {
     commit((draft) => Object.assign(draft, applyFix(draft, kind)));
-  }
-
-  function moveHeader(i: number, dir: -1 | 1) {
-    commit((p) => {
-      const j = i + dir;
-      if (j < 0 || j >= p.headers.length) return;
-      const t = p.headers[j];
-      p.headers[j] = p.headers[i];
-      p.headers[i] = t;
-    });
   }
 
   return (
@@ -139,7 +134,17 @@ export function DefaultThemeHeadersGenerator() {
             <div className="field-card-title">Bundled headers</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {dh.headers.map((h, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={dh.headers.length}
+                  title={h.description || 'Untitled header'}
+                  subtitle={h.key.trim() || 'header'}
+                  drag={drag.bind('headers', i, headers.reorder)}
+                  onMoveUp={() => headers.moveUp(i)}
+                  onMoveDown={() => headers.moveDown(i)}
+                  onRemove={() => headers.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input className="input gfw-mono" style={{ width: 110 }} spellCheck={false} placeholder="key" value={h.key} onChange={(e) => commit((p) => (p.headers[i].key = e.target.value), `header-key-${i}`)} />
                     <input className="input" style={{ flex: '1.2 1 130px' }} placeholder="Description" value={h.description} onChange={(e) => commit((p) => (p.headers[i].description = e.target.value), `header-desc-${i}`)} />
@@ -150,13 +155,8 @@ export function DefaultThemeHeadersGenerator() {
                     >
                       {dh.defaultKey && h.key && dh.defaultKey === h.key ? 'Default' : 'Set default'}
                     </button>
-                    <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-                      <button type="button" aria-label="Move up" title="Move up" onClick={() => moveHeader(i, -1)} className="btn btn-ghost btn-sm">↑</button>
-                      <button type="button" aria-label="Move down" title="Move down" onClick={() => moveHeader(i, 1)} className="btn btn-ghost btn-sm">↓</button>
-                      <button type="button" aria-label="Remove header" title="Remove header" onClick={() => commit((p) => p.headers.splice(i, 1))} className="btn btn-ghost btn-sm">×</button>
-                    </div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8, marginTop: 9, paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8, paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
                     <div>
                       <label className="field-label gfw-mono" style={{ fontSize: 10.5 }}>file</label>
                       <input className="input gfw-mono" style={{ fontSize: 11.5 }} spellCheck={false} placeholder="header.jpg" value={h.file} onChange={(e) => commit((p) => (p.headers[i].file = e.target.value), `header-file-${i}`)} />
@@ -174,13 +174,13 @@ export function DefaultThemeHeadersGenerator() {
                       <input className="input gfw-mono" style={{ fontSize: 11.5 }} value={h.height} onChange={(e) => commit((p) => (p.headers[i].height = e.target.value), `header-height-${i}`)} />
                     </div>
                   </div>
-                </div>
+                </RepeatableCard>
               ))}
               {!dh.headers.length && <div className="field-hint">No headers registered — the Customiser shows an empty Suggested list.</div>}
             </div>
             <button
               type="button"
-              className="btn btn-ghost btn-sm"
+              className="btn btn-ghost btn-sm repeatable-add"
               style={{ marginTop: 11 }}
               onClick={() => commit((p) => {
                 const n = p.headers.length + 1;

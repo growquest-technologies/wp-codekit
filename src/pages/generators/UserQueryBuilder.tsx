@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   COMPARES,
   OUTPUT_HINTS,
@@ -28,6 +31,8 @@ const OUTPUT_MODES: { id: OutputMode; label: string }[] = [
 
 export function UserQueryBuilder() {
   const { state: uq, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<UserQuery>('user-query-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const metaOps = useListOps<UserQuery>(commit)((p) => p.meta);
   const [outputMode, setOutputMode] = useState<OutputMode>('query');
 
   function toggleRole(r: string) {
@@ -44,10 +49,6 @@ export function UserQueryBuilder() {
 
   function updateMeta(i: number, patch: Partial<UserMetaClause>, coalesceKey?: string) {
     commit((p) => Object.assign(p.meta[i], patch), coalesceKey);
-  }
-
-  function removeMeta(i: number) {
-    commit((p) => p.meta.splice(i, 1));
   }
 
   const code = useMemo(() => buildCode(uq, outputMode), [uq, outputMode]);
@@ -164,25 +165,36 @@ export function UserQueryBuilder() {
               <div className="field-card-title">Meta clauses</div>
               <div className="field-card-desc">{metaNote}</div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {uq.meta.map((m, i) => {
                 const needsValue = m.compare !== 'EXISTS' && m.compare !== 'NOT EXISTS';
                 return (
-                  <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <input className="input gfw-mono" style={{ flex: 1, minWidth: 130 }} placeholder="subscription_tier" value={m.key} onChange={(e) => updateMeta(i, { key: e.target.value }, `key-${i}`)} />
-                    <select className="select" style={{ width: 120 }} value={m.compare} onChange={(e) => updateMeta(i, { compare: e.target.value })}>
-                      {COMPARES.map(([v, l]) => (
-                        <option key={v} value={v}>{l}</option>
-                      ))}
-                    </select>
-                    <input className="input gfw-mono" style={{ flex: 1, minWidth: 110 }} placeholder="pro" value={m.value} disabled={!needsValue} onChange={(e) => updateMeta(i, { value: e.target.value }, `value-${i}`)} />
-                    <button type="button" aria-label="Remove clause" onClick={() => removeMeta(i)} className="btn btn-ghost btn-sm" style={{ color: '#B91C1C' }}>Remove</button>
-                  </div>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={uq.meta.length}
+                    title={m.key || `Clause ${i + 1}`}
+                    subtitle={m.compare}
+                    drag={drag.bind('meta', i, metaOps.reorder)}
+                    onMoveUp={() => metaOps.moveUp(i)}
+                    onMoveDown={() => metaOps.moveDown(i)}
+                    onRemove={() => metaOps.remove(i)}
+                  >
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input className="input gfw-mono" style={{ flex: 1, minWidth: 130 }} placeholder="subscription_tier" value={m.key} onChange={(e) => updateMeta(i, { key: e.target.value }, `key-${i}`)} />
+                      <select className="select" style={{ width: 120 }} value={m.compare} onChange={(e) => updateMeta(i, { compare: e.target.value })}>
+                        {COMPARES.map(([v, l]) => (
+                          <option key={v} value={v}>{l}</option>
+                        ))}
+                      </select>
+                      <input className="input gfw-mono" style={{ flex: 1, minWidth: 110 }} placeholder="pro" value={m.value} disabled={!needsValue} onChange={(e) => updateMeta(i, { value: e.target.value }, `value-${i}`)} />
+                    </div>
+                  </RepeatableCard>
                 );
               })}
               {uq.meta.length === 0 && <div className="field-hint">No meta clauses. User meta lives in one big table — filtering on it is a JOIN per clause, same as posts.</div>}
             </div>
-            <button type="button" onClick={addMeta} className="btn btn-ghost btn-sm" style={{ marginTop: 11 }}>Add meta clause</button>
+            <button type="button" onClick={addMeta} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add meta clause</button>
           </div>
 
           <div className="field-card">

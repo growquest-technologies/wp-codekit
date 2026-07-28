@@ -1,7 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   TYPE_INFO,
   applyFix,
@@ -40,6 +43,8 @@ function pipelineFor(a: { type: AttrType }): string {
 
 export function ShortcodeGenerator() {
   const { state: sc, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<Shortcode>('shortcode-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const attrs = useListOps<Shortcode>(commit)((p) => p.attrs);
   const [outputMode, setOutputMode] = useState<OutputMode>('snippet');
   const markupRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -69,14 +74,6 @@ export function ShortcodeGenerator() {
 
   function addAttr() {
     commit((p) => p.attrs.push({ name: '', type: 'text', def: '', choices: '', description: '' }));
-  }
-
-  function moveAttrUp(i: number) {
-    commit((p) => { if (i > 0) { const t = p.attrs[i - 1]; p.attrs[i - 1] = p.attrs[i]; p.attrs[i] = t; } });
-  }
-
-  function removeAttr(i: number) {
-    commit((p) => p.attrs.splice(i, 1));
   }
 
   return (
@@ -169,7 +166,17 @@ export function ShortcodeGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {sc.attrs.map((a, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={sc.attrs.length}
+                  title={slugify(a.name) || 'Untitled attribute'}
+                  subtitle={a.type}
+                  drag={drag.bind('attrs', i, attrs.reorder)}
+                  onMoveUp={() => attrs.moveUp(i)}
+                  onMoveDown={() => attrs.moveDown(i)}
+                  onRemove={() => attrs.remove(i)}
+                >
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 9 }}>
                     <div>
                       <label className="field-label" style={{ fontSize: 10.5 }}>name</label>
@@ -216,24 +223,20 @@ export function ShortcodeGenerator() {
                         />
                       </div>
                     )}
-                    <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 9, alignItems: 'flex-end' }}>
-                      <div style={{ flex: 1 }}>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>description — used in the docblock</label>
-                        <input
-                          className="input"
-                          value={a.description}
-                          placeholder="Heading shown above the grid."
-                          onChange={(ev) => commit((p) => (p.attrs[i].description = ev.target.value), 'attr-description-' + i)}
-                        />
-                      </div>
-                      <button type="button" aria-label="Move up" title="Move up" onClick={() => moveAttrUp(i)} className="btn btn-ghost btn-sm">↑</button>
-                      <button type="button" aria-label="Remove attribute" title="Remove attribute" onClick={() => removeAttr(i)} className="btn btn-ghost btn-sm" style={{ color: '#B91C1C' }}>✕</button>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label className="field-label" style={{ fontSize: 10.5 }}>description — used in the docblock</label>
+                      <input
+                        className="input"
+                        value={a.description}
+                        placeholder="Heading shown above the grid."
+                        onChange={(ev) => commit((p) => (p.attrs[i].description = ev.target.value), 'attr-description-' + i)}
+                      />
                     </div>
                   </div>
-                  <div className="gfw-mono" style={{ marginTop: 8, fontSize: 11, color: 'var(--gfw-text-muted)' }}>{pipelineFor(a)}</div>
-                </div>
+                  <div className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-muted)' }}>{pipelineFor(a)}</div>
+                </RepeatableCard>
               ))}
-              <button type="button" onClick={addAttr} className="btn btn-ghost btn-sm" style={{ alignSelf: 'flex-start', borderStyle: 'dashed' }}>+ Attribute</button>
+              <button type="button" onClick={addAttr} className="btn btn-ghost btn-sm repeatable-add" style={{ alignSelf: 'flex-start' }}>+ Attribute</button>
             </div>
           </div>
 

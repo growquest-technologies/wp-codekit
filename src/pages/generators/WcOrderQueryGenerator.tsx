@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { CheckboxChip } from '../../components/ui/CheckboxChip';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   COMPARES,
   OUTPUT_HINTS,
@@ -26,6 +29,8 @@ const OUTPUT_MODES: { id: OutputMode; label: string }[] = [
 
 export function WcOrderQueryGenerator() {
   const { state: oq, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<OrderQuery>('wc-order-query-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const metaOps = useListOps<OrderQuery>(commit)((p) => p.meta);
   const [outputMode, setOutputMode] = useState<OutputMode>('query');
 
   function toggleStatus(s: string) {
@@ -41,9 +46,6 @@ export function WcOrderQueryGenerator() {
   }
   function updateMeta(i: number, patch: Partial<OrderMetaClause>, coalesceKey?: string) {
     commit((p) => Object.assign(p.meta[i], patch), coalesceKey);
-  }
-  function removeMeta(i: number) {
-    commit((p) => p.meta.splice(i, 1));
   }
 
   const code = useMemo(() => buildCode(oq, outputMode), [oq, outputMode]);
@@ -152,25 +154,36 @@ export function WcOrderQueryGenerator() {
               <div className="field-card-title">Meta clauses</div>
               <div className="field-card-desc">{metaNote}</div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {oq.meta.map((m, i) => {
                 const needsValue = m.compare !== 'EXISTS' && m.compare !== 'NOT EXISTS';
                 return (
-                  <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <input className="input gfw-mono" style={{ flex: 1, minWidth: 130 }} placeholder="_billing_vat_id" value={m.key} onChange={(e) => updateMeta(i, { key: e.target.value }, `key-${i}`)} />
-                    <select className="select" style={{ width: 120 }} value={m.compare} onChange={(e) => updateMeta(i, { compare: e.target.value })}>
-                      {COMPARES.map(([v, l]) => (
-                        <option key={v} value={v}>{l}</option>
-                      ))}
-                    </select>
-                    <input className="input gfw-mono" style={{ flex: 1, minWidth: 110 }} placeholder="EU123456" value={m.value} disabled={!needsValue} onChange={(e) => updateMeta(i, { value: e.target.value }, `value-${i}`)} />
-                    <button type="button" aria-label="Remove clause" onClick={() => removeMeta(i)} className="btn btn-ghost btn-sm" style={{ color: '#B91C1C' }}>Remove</button>
-                  </div>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={oq.meta.length}
+                    title={m.key || `Clause ${i + 1}`}
+                    subtitle={m.compare}
+                    drag={drag.bind('meta', i, metaOps.reorder)}
+                    onMoveUp={() => metaOps.moveUp(i)}
+                    onMoveDown={() => metaOps.moveDown(i)}
+                    onRemove={() => metaOps.remove(i)}
+                  >
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input className="input gfw-mono" style={{ flex: 1, minWidth: 130 }} placeholder="_billing_vat_id" value={m.key} onChange={(e) => updateMeta(i, { key: e.target.value }, `key-${i}`)} />
+                      <select className="select" style={{ width: 120 }} value={m.compare} onChange={(e) => updateMeta(i, { compare: e.target.value })}>
+                        {COMPARES.map(([v, l]) => (
+                          <option key={v} value={v}>{l}</option>
+                        ))}
+                      </select>
+                      <input className="input gfw-mono" style={{ flex: 1, minWidth: 110 }} placeholder="EU123456" value={m.value} disabled={!needsValue} onChange={(e) => updateMeta(i, { value: e.target.value }, `value-${i}`)} />
+                    </div>
+                  </RepeatableCard>
                 );
               })}
               {oq.meta.length === 0 && <div className="field-hint">No meta clauses.</div>}
             </div>
-            <button type="button" onClick={addMeta} className="btn btn-ghost btn-sm" style={{ marginTop: 11 }}>Add meta clause</button>
+            <button type="button" onClick={addMeta} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add meta clause</button>
           </div>
 
           <div className="field-card">

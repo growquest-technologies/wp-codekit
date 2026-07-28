@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { CheckboxChip } from '../../components/ui/CheckboxChip';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   BASIS_LABEL,
   CALCS,
@@ -69,6 +72,8 @@ const OUTPUT_TOGGLES: { key: keyof CartFee; label: string; help: string }[] = [
 
 export function WcCartFeeGenerator() {
   const { state: cf, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<CartFee>('wc-cart-fee-generator-v2', freshProject);
+  const drag = useDragReorder();
+  const rules = useListOps<CartFee>(commit)((p) => p.rules);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
   const [sample, setSample] = useState<SampleCart>(freshSample);
 
@@ -162,7 +167,7 @@ export function WcCartFeeGenerator() {
       onOutputModeChange={(id) => setOutputMode(id as OutputMode)}
       outputHint={OUTPUT_HINT[outputMode]}
       secondaryTab={{
-        label: 'Sample cart',
+        label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px', minWidth: 380 }}>
             <div style={{ background: '#fff', border: '1px solid #C3C4C7', borderRadius: 2, padding: '12px 14px', marginBottom: 14 }}>
@@ -341,7 +346,18 @@ export function WcCartFeeGenerator() {
                 const labelBad = !String(r.label || '').trim() || dupe;
                 const amountUnit = r.calc === 'percent' ? '%' : r.calc === 'per_item' ? 'per item' : r.calc === 'per_weight' ? 'per unit' : sym;
                 return (
-                  <div key={i} className="card" style={{ padding: 11, borderLeft: `3px solid ${r.mode === 'discount' ? 'var(--gfw-success)' : 'var(--gfw-accent)'}` }}>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={d.rules.length}
+                    title={r.label || `Rule ${i + 1}`}
+                    subtitle={`fee id: ${r.feeId || '(empty)'}`}
+                    accent={r.mode === 'discount' ? 'var(--gfw-success)' : 'var(--gfw-accent)'}
+                    drag={drag.bind('rules', i, rules.reorder)}
+                    onMoveUp={() => rules.moveUp(i)}
+                    onMoveDown={() => rules.moveDown(i)}
+                    onRemove={() => rules.remove(i)}
+                  >
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <input
                         className="input"
@@ -380,11 +396,9 @@ export function WcCartFeeGenerator() {
                         />
                         <span style={{ fontSize: 11, color: 'var(--gfw-text-mutest)', whiteSpace: 'nowrap' }}>{amountUnit}</span>
                       </div>
-                      <button type="button" aria-label="Remove rule" title="Remove rule" onClick={() => commit((p) => { p.rules.splice(i, 1); })} className="btn btn-ghost btn-sm">✕</button>
                     </div>
 
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginTop: 8 }}>
-                      <span className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-faint)', whiteSpace: 'nowrap' }}>fee id: {r.feeId || '(empty)'}</span>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                       <CheckboxChip active={r.taxable} onClick={() => commit((p) => (p.rules[i].taxable = !p.rules[i].taxable))}>taxable</CheckboxChip>
                       {r.taxable && (
                         <select className="select" style={{ width: 132, fontSize: 11.5 }} value={r.taxClass} onChange={(e) => commit((p) => (p.rules[i].taxClass = e.target.value as TaxClass))}>
@@ -406,7 +420,7 @@ export function WcCartFeeGenerator() {
                       )}
                     </div>
 
-                    <div style={{ marginTop: 9, paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
+                    <div style={{ paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
                       <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--gfw-text-faint)', marginBottom: 6 }}>Apply only when</div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                         {CONDITIONS.map((c) => (
@@ -443,14 +457,14 @@ export function WcCartFeeGenerator() {
                       )}
                       <div style={{ marginTop: 8, fontSize: 11.5, color: 'var(--gfw-text-mutest)', lineHeight: 1.5 }}>{summariseRule(r, cf)}</div>
                     </div>
-                  </div>
+                  </RepeatableCard>
                 );
               })}
               {d.rules.length === 0 && <div className="field-hint">No fees yet — the callback will run on every cart calculation and do nothing.</div>}
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 11, flexWrap: 'wrap' }}>
-              <button type="button" onClick={addFee} className="btn btn-ghost btn-sm" style={{ borderStyle: 'dashed' }}>Add fee</button>
-              <button type="button" onClick={addDiscount} className="btn btn-ghost btn-sm" style={{ borderStyle: 'dashed' }}>Add discount</button>
+              <button type="button" onClick={addFee} className="btn btn-ghost btn-sm repeatable-add" style={{ borderStyle: 'dashed' }}>Add fee</button>
+              <button type="button" onClick={addDiscount} className="btn btn-ghost btn-sm repeatable-add" style={{ borderStyle: 'dashed' }}>Add discount</button>
             </div>
           </div>
 

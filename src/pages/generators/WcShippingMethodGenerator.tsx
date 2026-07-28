@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   REF_ARGS,
   applyFix,
@@ -29,6 +32,8 @@ const TYPES: [FieldType, string][] = [
 
 export function WcShippingMethodGenerator() {
   const { state: sm, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<ShippingMethod>('wc-shipping-method-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const extraFields = useListOps<ShippingMethod>(commit)((p) => p.extraFields);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
 
   const d = useMemo(() => derive(sm), [sm]);
@@ -41,9 +46,6 @@ export function WcShippingMethodGenerator() {
   }
   function addField() {
     commit((p) => p.extraFields.push({ key: 'field_' + (p.extraFields.length + 1), label: 'Field ' + (p.extraFields.length + 1), type: 'text', def: '', description: '', choices: '' }));
-  }
-  function removeField(i: number) {
-    commit((p) => p.extraFields.splice(i, 1));
   }
 
   return (
@@ -132,7 +134,17 @@ export function WcShippingMethodGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {sm.extraFields.map((f, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={sm.extraFields.length}
+                  title={f.label || 'Untitled field'}
+                  subtitle={f.key.trim() || 'field'}
+                  drag={drag.bind('extraFields', i, extraFields.reorder)}
+                  onMoveUp={() => extraFields.moveUp(i)}
+                  onMoveDown={() => extraFields.moveDown(i)}
+                  onRemove={() => extraFields.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input className="input" style={{ flex: 1.4, minWidth: 120 }} placeholder="Free shipping threshold" value={f.label} onChange={(e) => commit((p) => (p.extraFields[i].label = e.target.value), `label-${i}`)} />
                     <input className="input gfw-mono" style={{ width: 110 }} placeholder="free_threshold" value={f.key} onChange={(e) => commit((p) => (p.extraFields[i].key = e.target.value), `key-${i}`)} />
@@ -150,22 +162,19 @@ export function WcShippingMethodGenerator() {
                         <option key={v} value={v}>{l}</option>
                       ))}
                     </select>
-                    <button type="button" aria-label="Remove field" title="Remove field" onClick={() => removeField(i)} className="btn btn-ghost btn-sm">✕</button>
                   </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 7 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input className="input gfw-mono" style={{ width: 110 }} placeholder={f.type === 'checkbox' ? '1 or 0' : 'default'} value={f.def} onChange={(e) => commit((p) => (p.extraFields[i].def = e.target.value), `def-${i}`)} />
                     <input className="input" style={{ flex: 1, minWidth: 150 }} placeholder="desc_tip text." value={f.description} onChange={(e) => commit((p) => (p.extraFields[i].description = e.target.value), `description-${i}`)} />
                   </div>
                   {f.type === 'select' && (
-                    <div style={{ marginTop: 7 }}>
-                      <input className="input gfw-mono" placeholder="first:First, second:Second" value={f.choices} onChange={(e) => commit((p) => (p.extraFields[i].choices = e.target.value), `choices-${i}`)} />
-                    </div>
+                    <input className="input gfw-mono" placeholder="first:First, second:Second" value={f.choices} onChange={(e) => commit((p) => (p.extraFields[i].choices = e.target.value), `choices-${i}`)} />
                   )}
-                </div>
+                </RepeatableCard>
               ))}
               {sm.extraFields.length === 0 && <div className="field-hint">No extra fields — just title and cost.</div>}
             </div>
-            <button type="button" onClick={addField} className="btn btn-ghost btn-sm" style={{ marginTop: 11, borderStyle: 'dashed' }}>Add field</button>
+            <button type="button" onClick={addField} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add field</button>
           </div>
         </div>
       }

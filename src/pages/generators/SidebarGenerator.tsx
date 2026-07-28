@@ -1,8 +1,11 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { CopyableCodePreview } from '../../components/generator/CopyableCodePreview';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { Toggle, ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   MARKUP_KEYS,
   PRESETS,
@@ -47,6 +50,8 @@ const REF_ARGS = [
 
 export function SidebarGenerator() {
   const { state: sb, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<Sidebar>('sidebar-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const areas = useListOps<Sidebar>(commit)((p) => p.areas);
   const [outputMode, setOutputMode] = useState<OutputMode>('snippet');
   const [templateArea, setTemplateArea] = useState('');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -76,16 +81,6 @@ export function SidebarGenerator() {
       commit((p) => { p.areas = preset[1].map((a) => ({ id: a.id, name: a.name, description: a.description })); });
       return;
     }
-  }
-
-  function moveArea(i: number, dir: -1 | 1) {
-    commit((p) => {
-      const j = i + dir;
-      if (j < 0 || j >= p.areas.length) return;
-      const t = p.areas[j];
-      p.areas[j] = p.areas[i];
-      p.areas[i] = t;
-    });
   }
 
   function setAreaMarkup(i: number, key: keyof MarkupSet, value: string) {
@@ -173,7 +168,17 @@ export function SidebarGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
               {sb.areas.map((a, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={sb.areas.length}
+                  title={a.name || 'Untitled area'}
+                  subtitle={a.id.trim() || 'widget-area'}
+                  drag={drag.bind('areas', i, areas.reorder)}
+                  onMoveUp={() => areas.moveUp(i)}
+                  onMoveDown={() => areas.moveDown(i)}
+                  onRemove={() => areas.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input
                       className="input"
@@ -197,14 +202,9 @@ export function SidebarGenerator() {
                       value={a.description}
                       onChange={(e) => commit((p) => (p.areas[i].description = e.target.value), `area-desc-${i}`)}
                     />
-                    <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-                      <button type="button" aria-label="Move up" title="Move up" onClick={() => moveArea(i, -1)} className="btn btn-ghost btn-sm">↑</button>
-                      <button type="button" aria-label="Move down" title="Move down" onClick={() => moveArea(i, 1)} className="btn btn-ghost btn-sm">↓</button>
-                      <button type="button" aria-label="Remove widget area" title="Remove widget area" onClick={() => commit((p) => p.areas.splice(i, 1))} className="btn btn-ghost btn-sm">×</button>
-                    </div>
                   </div>
                   {!sb.sharedMarkup && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8, marginTop: 9, paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8, paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
                       {MARKUP_KEYS.map(([key, label]) => (
                         <div key={key}>
                           <label className="field-label gfw-mono" style={{ fontSize: 10.5 }}>{label}</label>
@@ -219,11 +219,11 @@ export function SidebarGenerator() {
                       ))}
                     </div>
                   )}
-                </div>
+                </RepeatableCard>
               ))}
               {!sb.areas.length && <div className="field-hint">No widget areas — the Widgets screen will show nothing to drop into.</div>}
             </div>
-            <button type="button" onClick={() => commit((p) => p.areas.push({ id: 'widget-area-' + (p.areas.length + 1), name: 'Widget Area ' + (p.areas.length + 1), description: '' }))} className="btn btn-ghost btn-sm" style={{ marginTop: 11 }}>
+            <button type="button" onClick={() => commit((p) => p.areas.push({ id: 'widget-area-' + (p.areas.length + 1), name: 'Widget Area ' + (p.areas.length + 1), description: '' }))} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>
               Add widget area
             </button>
           </div>

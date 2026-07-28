@@ -1,8 +1,11 @@
 import { useMemo, useRef } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { CopyableCodePreview } from '../../components/generator/CopyableCodePreview';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   CONTROLS,
   applyFix,
@@ -16,6 +19,8 @@ import {
 
 export function ThemeJsonGenerator() {
   const { state: tj, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<ThemeJson>('theme-json-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const colors = useListOps<ThemeJson>(commit)((p) => p.colors);
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const json = useMemo(() => buildJSON(tj), [tj]);
@@ -116,16 +121,27 @@ export function ThemeJsonGenerator() {
             <div className="field-card-title">Colour palette</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {tj.colors.map((c, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span style={{ width: 30, height: 30, borderRadius: 5, border: '1px solid var(--gfw-border)', background: /^#|rgb|hsl|oklch/.test(c.color || '') ? c.color : '#fff', flexShrink: 0 }} />
-                  <input className="input" style={{ flex: '1 1 110px' }} placeholder="Primary" value={c.name} onChange={(e) => commit((p) => (p.colors[i].name = e.target.value), `color-name-${i}`)} />
-                  <input className="input gfw-mono" style={{ width: 110 }} spellCheck={false} placeholder="primary" value={c.slug} onChange={(e) => commit((p) => (p.colors[i].slug = e.target.value), `color-slug-${i}`)} />
-                  <input className="input gfw-mono" style={{ width: 110 }} spellCheck={false} placeholder="#3858E9" value={c.color} onChange={(e) => commit((p) => (p.colors[i].color = e.target.value), `color-color-${i}`)} />
-                  <button type="button" aria-label="Remove colour" title="Remove colour" className="btn btn-ghost btn-sm" onClick={() => commit((p) => p.colors.splice(i, 1))}>×</button>
-                </div>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={tj.colors.length}
+                  title={c.name || `Colour ${i + 1}`}
+                  subtitle={c.slug}
+                  drag={drag.bind('colors', i, colors.reorder)}
+                  onMoveUp={() => colors.moveUp(i)}
+                  onMoveDown={() => colors.moveDown(i)}
+                  onRemove={() => colors.remove(i)}
+                >
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span style={{ width: 30, height: 30, borderRadius: 5, border: '1px solid var(--gfw-border)', background: /^#|rgb|hsl|oklch/.test(c.color || '') ? c.color : '#fff', flexShrink: 0 }} />
+                    <input className="input" style={{ flex: '1 1 110px' }} placeholder="Primary" value={c.name} onChange={(e) => commit((p) => (p.colors[i].name = e.target.value), `color-name-${i}`)} />
+                    <input className="input gfw-mono" style={{ width: 110 }} spellCheck={false} placeholder="primary" value={c.slug} onChange={(e) => commit((p) => (p.colors[i].slug = e.target.value), `color-slug-${i}`)} />
+                    <input className="input gfw-mono" style={{ width: 110 }} spellCheck={false} placeholder="#3858E9" value={c.color} onChange={(e) => commit((p) => (p.colors[i].color = e.target.value), `color-color-${i}`)} />
+                  </div>
+                </RepeatableCard>
               ))}
             </div>
-            <button type="button" className="btn btn-ghost btn-sm" style={{ marginTop: 11 }} onClick={() => commit((p) => p.colors.push({ slug: 'colour-' + (p.colors.length + 1), name: 'Colour ' + (p.colors.length + 1), color: '#000000' }))}>
+            <button type="button" className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }} onClick={() => commit((p) => p.colors.push({ slug: 'colour-' + (p.colors.length + 1), name: 'Colour ' + (p.colors.length + 1), color: '#000000' }))}>
               Add colour
             </button>
           </div>

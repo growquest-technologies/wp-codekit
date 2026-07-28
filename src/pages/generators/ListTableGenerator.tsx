@@ -1,8 +1,11 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { Collapsible } from '../../components/ui/Collapsible';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { Toggle, ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   TYPES,
   applyFix,
@@ -40,6 +43,8 @@ const REF_ARGS = [
 
 export function ListTableGenerator() {
   const { state: lt, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<ListTable>('list-table-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const columns = useListOps<ListTable>(commit)((p) => p.columns);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -140,28 +145,39 @@ export function ListTableGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {lt.columns.map((c, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <input className="input" style={{ flex: 1, minWidth: 110 }} placeholder="Title" value={c.label} onChange={(e) => commit((p) => (p.columns[i].label = e.target.value))} />
-                  <input className="input gfw-mono" style={{ width: 100 }} placeholder="title" value={c.key} onChange={(e) => commit((p) => (p.columns[i].key = e.target.value))} />
-                  <select className="select" style={{ width: 130 }} value={c.type} onChange={(e) => commit((p) => (p.columns[i].type = e.target.value as ColumnType))}>
-                    {TYPES.map(([v, l]) => (
-                      <option key={v} value={v}>{l}</option>
-                    ))}
-                  </select>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                    <Toggle checked={c.sortable} onChange={(v) => commit((p) => (p.columns[i].sortable = v))} ariaLabel="Sortable" />
-                    <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--gfw-text-strong)' }}>Sortable</span>
-                  </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                    <Toggle checked={c.primary} onChange={() => commit((p) => { const next = !p.columns[i].primary; p.columns.forEach((o) => (o.primary = false)); p.columns[i].primary = next; })} ariaLabel="Primary" />
-                    <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--gfw-text-strong)' }}>Primary</span>
-                  </span>
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => commit((p) => p.columns.splice(i, 1))}>Remove</button>
-                </div>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={lt.columns.length}
+                  title={c.label || `Column ${i + 1}`}
+                  subtitle={c.key}
+                  drag={drag.bind('columns', i, columns.reorder)}
+                  onMoveUp={() => columns.moveUp(i)}
+                  onMoveDown={() => columns.moveDown(i)}
+                  onRemove={() => columns.remove(i)}
+                >
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <input className="input" style={{ flex: 1, minWidth: 110 }} placeholder="Title" value={c.label} onChange={(e) => commit((p) => (p.columns[i].label = e.target.value))} />
+                    <input className="input gfw-mono" style={{ width: 100 }} placeholder="title" value={c.key} onChange={(e) => commit((p) => (p.columns[i].key = e.target.value))} />
+                    <select className="select" style={{ width: 130 }} value={c.type} onChange={(e) => commit((p) => (p.columns[i].type = e.target.value as ColumnType))}>
+                      {TYPES.map(([v, l]) => (
+                        <option key={v} value={v}>{l}</option>
+                      ))}
+                    </select>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                      <Toggle checked={c.sortable} onChange={(v) => commit((p) => (p.columns[i].sortable = v))} ariaLabel="Sortable" />
+                      <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--gfw-text-strong)' }}>Sortable</span>
+                    </span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                      <Toggle checked={c.primary} onChange={() => commit((p) => { const next = !p.columns[i].primary; p.columns.forEach((o) => (o.primary = false)); p.columns[i].primary = next; })} ariaLabel="Primary" />
+                      <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--gfw-text-strong)' }}>Primary</span>
+                    </span>
+                  </div>
+                </RepeatableCard>
               ))}
               {lt.columns.length === 0 && <div className="field-hint">No columns yet.</div>}
             </div>
-            <button type="button" className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addColumn}>Add column</button>
+            <button type="button" className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 10 }} onClick={addColumn}>Add column</button>
           </div>
 
           <div className="field-card">
@@ -214,7 +230,7 @@ export function ListTableGenerator() {
       activeOutputMode={outputMode}
       onOutputModeChange={(id) => setOutputMode(id as OutputMode)}
       secondaryTab={{
-        label: 'Screen',
+        label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px' }}>
             <h1 style={{ margin: '0 0 12px', fontSize: 23, fontWeight: 400, color: '#1D2327' }}>{pageTitle}</h1>

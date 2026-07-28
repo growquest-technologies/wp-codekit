@@ -1,7 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { Toggle } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   CAPS,
   CORE_NODES,
@@ -44,6 +47,8 @@ const REF_CORE_IDS =
 
 export function ToolbarNodeGenerator() {
   const { state: tb, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<ToolbarNode>('toolbar-node-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const children = useListOps<ToolbarNode>(commit)((p) => p.children);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -165,11 +170,20 @@ export function ToolbarNodeGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {tb.children.map((c, i) => (
-                <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={tb.children.length}
+                  title={c.title || `Item ${i + 1}`}
+                  subtitle={c.id}
+                  drag={drag.bind('children', i, children.reorder)}
+                  onMoveUp={() => children.moveUp(i)}
+                  onMoveDown={() => children.moveDown(i)}
+                  onRemove={() => children.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <input className="input" style={{ flex: 1, minWidth: 130 }} placeholder="Settings" value={c.title} onChange={(e) => commit((p) => (p.children[i].title = e.target.value))} />
                     <input className="input gfw-mono" style={{ width: 150 }} placeholder="acme-settings" value={c.id} onChange={(e) => commit((p) => (p.children[i].id = e.target.value))} />
-                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => commit((p) => p.children.splice(i, 1))}>Remove</button>
                   </div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                     <input
@@ -190,11 +204,11 @@ export function ToolbarNodeGenerator() {
                       <span style={{ fontSize: 13.5, fontWeight: 650, color: 'var(--gfw-text-strong)' }}>Nonce</span>
                     </div>
                   </div>
-                </div>
+                </RepeatableCard>
               ))}
               {tb.children.length === 0 && <div className="field-hint">No children yet — this is a single link node.</div>}
             </div>
-            <button type="button" className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addChild}>Add child</button>
+            <button type="button" className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 10 }} onClick={addChild}>Add child</button>
           </div>
 
           <div className="field-card" ref={(el) => (fieldRefs.current.removals = el as unknown as HTMLElement)}>

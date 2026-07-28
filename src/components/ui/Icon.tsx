@@ -10,6 +10,8 @@ import {
   XCircleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
   PlusIcon,
   TrashIcon,
   EllipsisVerticalIcon,
@@ -41,6 +43,8 @@ export type IconName =
   | 'clear'
   | 'chevronDown'
   | 'chevronUp'
+  | 'arrowUp'
+  | 'arrowDown'
   | 'plus'
   | 'trash'
   | 'dragHandle'
@@ -84,6 +88,8 @@ const ICONS: Record<IconName, HeroIcon> = {
   clear: XCircleIcon,
   chevronDown: ChevronDownIcon,
   chevronUp: ChevronUpIcon,
+  arrowUp: ArrowUpIcon,
+  arrowDown: ArrowDownIcon,
   plus: PlusIcon,
   trash: TrashIcon,
   dragHandle: EllipsisVerticalIcon,

@@ -4,10 +4,6 @@ import { Icon } from '../ui/Icon';
  * chrome needs repeatedly. Kept in one place so every block/faq/screenshot/version
  * row stays visually consistent. */
 
-export function DragHandleIcon({ size = 15 }: { size?: number }) {
-  return <Icon name="dragHandle" size={size} />;
-}
-
 export function ChevronUpIcon({ size = 16 }: { size?: number }) {
   return <Icon name="chevronUp" size={size} />;
 }

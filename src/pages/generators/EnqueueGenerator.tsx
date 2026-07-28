@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { ToggleRow } from '../../components/ui/Toggle';
 import { CheckboxChip } from '../../components/ui/CheckboxChip';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   CONDITIONALS,
   CONTEXTS,
@@ -40,6 +43,9 @@ function freshAsset(kind: AssetKind): Asset {
 
 export function EnqueueGenerator() {
   const { state: en, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<Enqueue>('enqueue-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const listOf = useListOps<Enqueue>(commit);
+  const assets = listOf((p) => p.assets);
   const [outputMode, setOutputMode] = useState<OutputMode>('snippet');
 
   const code = useMemo(() => buildCode(en, outputMode), [en, outputMode]);
@@ -137,8 +143,21 @@ export function EnqueueGenerator() {
               <div className="field-card-desc">Handles are prefixed automatically.</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {en.assets.map((a, i) => (
-                <div key={i} style={{ border: '1px solid var(--gfw-border)', borderLeft: `3px solid ${a.kind === 'script' ? '#8A5B00' : '#3B6FB0'}`, borderRadius: 7, padding: 11, background: 'var(--gfw-surface-muted)' }}>
+              {en.assets.map((a, i) => {
+                const localizeRows = listOf((p) => p.assets[i].localizeRows);
+                return (
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={en.assets.length}
+                  title={a.handle || `Asset ${i + 1}`}
+                  subtitle={`${fullHandle(en, a)} → ${relPath(en, a) || '—'}`}
+                  accent={a.kind === 'script' ? '#8A5B00' : '#3B6FB0'}
+                  drag={drag.bind('assets', i, assets.reorder)}
+                  onMoveUp={() => assets.moveUp(i)}
+                  onMoveDown={() => assets.moveDown(i)}
+                  onRemove={() => assets.remove(i)}
+                >
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 9 }}>
                     <div>
                       <label className="field-label" style={{ fontSize: 10.5 }}>kind</label>
@@ -189,10 +208,7 @@ export function EnqueueGenerator() {
                       </div>
                     )}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginTop: 9, flexWrap: 'wrap' }}>
-                    <span className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-soft)', flex: 1, minWidth: 180, wordBreak: 'break-all' }}>
-                      {fullHandle(en, a)} → {relPath(en, a) || '—'}
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap' }}>
                     {a.kind === 'script' && (
                       <CheckboxChip
                         active={a.localize}
@@ -205,45 +221,56 @@ export function EnqueueGenerator() {
                         localize
                       </CheckboxChip>
                     )}
-                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => commit((p) => { p.assets.splice(i, 1); })}>Remove</button>
                   </div>
                   {a.localize && (
-                    <div style={{ marginTop: 10, borderTop: '1px dashed var(--gfw-border)', paddingTop: 10 }}>
+                    <div style={{ borderTop: '1px dashed var(--gfw-border)', paddingTop: 10 }}>
                       <div style={{ marginBottom: 8 }}>
                         <label className="field-label" style={{ fontSize: 10.5 }}>JS object name</label>
                         <input className="input gfw-mono" value={a.localizeName} onChange={(e) => commit((p) => (p.assets[i].localizeName = e.target.value), 'asset-localizeName-' + i)} placeholder="mythemeData" spellCheck={false} />
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                         {a.localizeRows.map((r, j) => (
-                          <div key={j} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                            <input className="input gfw-mono" style={{ width: '34%' }} value={r.key} onChange={(e) => commit((p) => (p.assets[i].localizeRows[j].key = e.target.value), 'asset-localizeKey-' + i + '-' + j)} placeholder="ajaxUrl" spellCheck={false} />
-                            <select className="select" style={{ width: '26%' }} value={r.kind} onChange={(e) => commit((p) => (p.assets[i].localizeRows[j].kind = e.target.value as LocalizeKind))}>
-                              <option value="ajax">admin_url</option>
-                              <option value="nonce">nonce</option>
-                              <option value="rest">rest_url</option>
-                              <option value="text">text</option>
-                              <option value="raw">raw PHP</option>
-                            </select>
-                            <input
-                              className="input gfw-mono"
-                              style={{ flex: 1, minWidth: 0 }}
-                              value={r.value}
-                              onChange={(e) => commit((p) => (p.assets[i].localizeRows[j].value = e.target.value), 'asset-localizeValue-' + i + '-' + j)}
-                              placeholder={r.kind === 'ajax' ? 'admin-ajax.php (automatic)' : r.kind === 'nonce' ? 'nonce action' : r.kind === 'rest' ? 'wp/v2/posts' : r.kind === 'raw' ? 'get_the_ID()' : 'Loading…'}
-                              spellCheck={false}
-                            />
-                            <button type="button" aria-label="Remove data entry" title="Remove data entry" className="btn btn-ghost btn-sm" onClick={() => commit((p) => { p.assets[i].localizeRows.splice(j, 1); })}>×</button>
-                          </div>
+                          <RepeatableCard
+                            key={j}
+                            index={j}
+                            count={a.localizeRows.length}
+                            title={r.key || `Data entry ${j + 1}`}
+                            subtitle={r.kind}
+                            drag={drag.bind('localize-' + i, j, localizeRows.reorder)}
+                            onMoveUp={() => localizeRows.moveUp(j)}
+                            onMoveDown={() => localizeRows.moveDown(j)}
+                            onRemove={() => localizeRows.remove(j)}
+                          >
+                            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                              <input className="input gfw-mono" style={{ width: '34%' }} value={r.key} onChange={(e) => commit((p) => (p.assets[i].localizeRows[j].key = e.target.value), 'asset-localizeKey-' + i + '-' + j)} placeholder="ajaxUrl" spellCheck={false} />
+                              <select className="select" style={{ width: '26%' }} value={r.kind} onChange={(e) => commit((p) => (p.assets[i].localizeRows[j].kind = e.target.value as LocalizeKind))}>
+                                <option value="ajax">admin_url</option>
+                                <option value="nonce">nonce</option>
+                                <option value="rest">rest_url</option>
+                                <option value="text">text</option>
+                                <option value="raw">raw PHP</option>
+                              </select>
+                              <input
+                                className="input gfw-mono"
+                                style={{ flex: 1, minWidth: 0 }}
+                                value={r.value}
+                                onChange={(e) => commit((p) => (p.assets[i].localizeRows[j].value = e.target.value), 'asset-localizeValue-' + i + '-' + j)}
+                                placeholder={r.kind === 'ajax' ? 'admin-ajax.php (automatic)' : r.kind === 'nonce' ? 'nonce action' : r.kind === 'rest' ? 'wp/v2/posts' : r.kind === 'raw' ? 'get_the_ID()' : 'Loading…'}
+                                spellCheck={false}
+                              />
+                            </div>
+                          </RepeatableCard>
                         ))}
-                        <button type="button" className="btn btn-ghost btn-sm" style={{ alignSelf: 'flex-start' }} onClick={() => commit((p) => { p.assets[i].localizeRows.push({ key: '', kind: 'text', value: '' }); })}>+ Data entry</button>
+                        <button type="button" className="btn btn-ghost btn-sm repeatable-add" style={{ alignSelf: 'flex-start' }} onClick={() => commit((p) => { p.assets[i].localizeRows.push({ key: '', kind: 'text', value: '' }); })}>+ Data entry</button>
                       </div>
                     </div>
                   )}
-                </div>
-              ))}
+                </RepeatableCard>
+                );
+              })}
               <div style={{ display: 'flex', gap: 8 }}>
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => commit((p) => { p.assets.push(freshAsset('script')); })}>+ Script</button>
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => commit((p) => { p.assets.push(freshAsset('style')); })}>+ Stylesheet</button>
+                <button type="button" className="btn btn-ghost btn-sm repeatable-add" onClick={() => commit((p) => { p.assets.push(freshAsset('script')); })}>+ Script</button>
+                <button type="button" className="btn btn-ghost btn-sm repeatable-add" onClick={() => commit((p) => { p.assets.push(freshAsset('style')); })}>+ Stylesheet</button>
               </div>
             </div>
           </div>

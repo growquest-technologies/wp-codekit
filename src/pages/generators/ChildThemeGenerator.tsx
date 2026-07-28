@@ -257,7 +257,7 @@ export function ChildThemeGenerator() {
         </div>
       }
       secondaryTab={{
-        label: 'Themes',
+        label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px' }}>
             <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>Appearance › Themes, after the .zip is uploaded and activated</div>

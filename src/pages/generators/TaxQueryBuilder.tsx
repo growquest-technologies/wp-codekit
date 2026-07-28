@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { Toggle, ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   FIELDS,
   OPERATORS,
@@ -28,6 +31,8 @@ const OUTPUT_MODES: { id: OutputMode; label: string }[] = [
 
 export function TaxQueryBuilder() {
   const { state: tq, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<TaxQuery>('tax-query-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const clauses = useListOps<TaxQuery>(commit)((p) => p.clauses);
   const [outputMode, setOutputMode] = useState<OutputMode>('query');
 
   function updateClause(i: number, patch: Partial<TaxClause>, coalesceKey?: string) {
@@ -36,10 +41,6 @@ export function TaxQueryBuilder() {
 
   function addClause() {
     commit((p) => p.clauses.push({ taxonomy: 'category', field: 'slug', operator: 'IN', terms: '', includeChildren: true }));
-  }
-
-  function removeClause(i: number) {
-    commit((p) => p.clauses.splice(i, 1));
   }
 
   const code = useMemo(() => buildCode(tq, outputMode), [tq, outputMode]);
@@ -127,7 +128,17 @@ export function TaxQueryBuilder() {
                 const showTerms = needsTerms(c.operator);
                 const numericField = c.field === 'term_id' || c.field === 'term_taxonomy_id';
                 return (
-                  <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11, background: '#fff' }}>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={tq.clauses.length}
+                    title={c.taxonomy || `Clause ${i + 1}`}
+                    subtitle={c.operator}
+                    drag={drag.bind('clauses', i, clauses.reorder)}
+                    onMoveUp={() => clauses.moveUp(i)}
+                    onMoveDown={() => clauses.moveDown(i)}
+                    onRemove={() => clauses.remove(i)}
+                  >
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <input className="input gfw-mono" style={{ flex: 1, minWidth: 120 }} placeholder="category" value={c.taxonomy} onChange={(e) => updateClause(i, { taxonomy: e.target.value }, `taxonomy-${i}`)} />
                       <select className="select" style={{ width: 160 }} value={c.field} onChange={(e) => updateClause(i, { field: e.target.value as TaxClause['field'] })}>
@@ -140,14 +151,11 @@ export function TaxQueryBuilder() {
                           <option key={v} value={v}>{l}</option>
                         ))}
                       </select>
-                      <button type="button" aria-label="Remove clause" onClick={() => removeClause(i)} className="btn btn-ghost btn-sm" style={{ color: '#B91C1C' }}>Remove</button>
                     </div>
                     {showTerms && (
-                      <div style={{ marginTop: 7 }}>
-                        <input className="input gfw-mono" placeholder={numericField ? '12, 34' : 'guides, tutorials'} value={c.terms} onChange={(e) => updateClause(i, { terms: e.target.value }, `terms-${i}`)} />
-                      </div>
+                      <input className="input gfw-mono" placeholder={numericField ? '12, 34' : 'guides, tutorials'} value={c.terms} onChange={(e) => updateClause(i, { terms: e.target.value }, `terms-${i}`)} />
                     )}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Toggle
                           checked={c.includeChildren}
@@ -160,12 +168,12 @@ export function TaxQueryBuilder() {
                         {(needsTerms(c.operator) && c.terms.split(',').map((t) => t.trim()).filter(Boolean).length) ? c.operator + ' ' + c.terms.split(',').map((t) => t.trim()).filter(Boolean).length + ' × ' + c.field : c.operator}
                       </span>
                     </div>
-                  </div>
+                  </RepeatableCard>
                 );
               })}
               {tq.clauses.length === 0 && <div className="field-hint">No clauses — the query will return everything.</div>}
             </div>
-            <button type="button" onClick={addClause} className="btn btn-ghost btn-sm" style={{ marginTop: 11 }}>Add clause</button>
+            <button type="button" onClick={addClause} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add clause</button>
           </div>
 
           <div className="field-card">

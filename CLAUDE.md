@@ -121,6 +121,43 @@ toggles in a `.toggle-card` (bordered card + `.toggle-card-title`); a single tog
 conditionally-shown field below it stays bare (`<Toggle>` + a label span, no card) — see
 `PostTypeGenerator.tsx`'s "Behaviour" card vs. its "Rewrite permalinks" toggle for both cases.
 
+### Repeatable rows: `RepeatableCard` (every add/remove list, no exceptions)
+
+Every repeatable item — anything the user can add more than one of (fields, args, clauses,
+columns, rules, assets, headers, blocks…) — renders through
+`src/components/ui/RepeatableCard.tsx`. It owns the whole row chrome: a header bar with drag
+handle, title, mono subtitle, move up, move down, trash and collapse, over a muted-beige
+(`--gfw-surface-muted`) body that is already a gapped flex column. Pages supply only the row's
+own fields as `children`.
+
+**This overrides the design handoff.** Most `.dc.html` sources render a repeatable row as a plain
+bordered div with a single ✕; before this was unified the 32 tools with lists had ~5 different
+row treatments (`.card`, hand-rolled bordered divs with three different backgrounds, bare flex
+rows, chips) and inconsistent controls (some had ↑↓, some ✕ only, Shortcode had ↑ but no ↓, most
+had no reordering at all). Keep a source's fields and logic; render them through this card.
+
+Move/remove/reorder handlers come from `useListOps(commit)((p) => p.someArray)`
+(`src/lib/useListOps.ts`) so ordering semantics and undo entries are identical everywhere — never
+hand-roll them per tool. Drag binding comes from `useDragReorder()` (`src/lib/dragReorder.ts`,
+promoted out of `components/readme/` when this went app-wide). The dashed "Add X" button that
+follows a list gets `className="btn btn-ghost btn-sm repeatable-add"`.
+
+Two deliberate non-conversions: **tag-style chip lists** (Post Type / Taxonomy / WP_Query custom
+post-type and taxonomy inputs) stay compact `.chip` pills — a header bar per tag would be a
+downgrade — and **HooksGenerator's `params`**, whose length is driven by a count `<select>`, not
+by add/remove.
+
+### Tab naming
+
+A tab that renders an interactive/live mockup is labelled **`Preview`**, never a tool-specific
+name. The objective test is whether it paints WP-admin chrome (`#F0F0F1` / `#C3C4C7`); that is
+what turned Screen / Editor / Dashboard / Form / Themes / Sample cart / Product data / Listing
+Preview into one shared `Preview` label. Read-only reference panels stay `Reference`. Tabs that
+are neither — a computed table, a file tree, URL examples, or a genuine second generated file
+(`Matrix`, `Structure`, `Permalinks`, `Load map`, `Calling it`, `Usage`, `Summary`, `Template`,
+`CSS vars`, `Raw readme.txt`) — keep their own names, because calling them "Preview" would
+misdescribe them.
+
 ### Section wrapping: `.field-card` / `.field-subcard`
 
 Every logical form section is wrapped in a bordered card, matching the source's exact grouping —

@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { Toggle, ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   TYPES,
   applyFix,
@@ -34,6 +37,8 @@ const REF_ARGS: { name: string; type: string; description: string }[] = [
 
 export function PostMetaGenerator() {
   const { state: pm, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<PostMeta>('post-meta-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const keys = useListOps<PostMeta>(commit)((p) => p.keys);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
 
   const d = useMemo(() => derive(pm), [pm]);
@@ -61,10 +66,6 @@ export function PostMetaGenerator() {
       p.keys = p.keys || [];
       p.keys.push({ key: 'field_' + (p.keys.length + 1), type: 'string', single: true, inRest: true, def: '', description: '' });
     });
-  }
-
-  function removeKey(i: number) {
-    commit((p) => p.keys.splice(i, 1));
   }
 
   return (
@@ -150,7 +151,17 @@ export function PostMetaGenerator() {
                 const full = d.metaPrefix + (k.key.trim() || 'field');
                 const isProtected = full.charAt(0) === '_';
                 return (
-                  <div key={i} className="card" style={{ padding: 11 }}>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={pm.keys.length}
+                    title={k.key.trim() || 'Untitled key'}
+                    subtitle={full}
+                    drag={drag.bind('keys', i, keys.reorder)}
+                    onMoveUp={() => keys.moveUp(i)}
+                    onMoveDown={() => keys.moveDown(i)}
+                    onRemove={() => keys.remove(i)}
+                  >
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <input
                         className="input gfw-mono"
@@ -177,9 +188,8 @@ export function PostMetaGenerator() {
                         <Toggle checked={k.inRest} onChange={(v) => commit((p) => (p.keys[i].inRest = v))} ariaLabel="REST" />
                         REST
                       </span>
-                      <button type="button" aria-label="Remove key" title="Remove key" onClick={() => removeKey(i)} className="btn btn-ghost btn-sm">✕</button>
                     </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 7 }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <input
                         className="input gfw-mono"
                         style={{ width: 120 }}
@@ -194,19 +204,18 @@ export function PostMetaGenerator() {
                         placeholder="What it holds — shown in the API schema."
                         onChange={(ev) => commit((p) => (p.keys[i].description = ev.target.value), 'description-' + i)}
                       />
-                      <span className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-faint)', whiteSpace: 'nowrap' }}>{full}</span>
                     </div>
                     {isProtected && (
-                      <div style={{ marginTop: 7, fontSize: 11.5, color: 'var(--gfw-accent-strong)', lineHeight: 1.45 }}>
+                      <div style={{ fontSize: 11.5, color: 'var(--gfw-accent-strong)', lineHeight: 1.45 }}>
                         Leading underscore: protected from the Custom Fields panel — and invisible to REST unless you register it, which is exactly what this does.
                       </div>
                     )}
-                  </div>
+                  </RepeatableCard>
                 );
               })}
               {pm.keys.length === 0 && <div style={{ fontSize: 12.5, color: 'var(--gfw-text-muted)' }}>No keys yet.</div>}
             </div>
-            <button type="button" onClick={addKey} className="btn btn-ghost btn-sm" style={{ marginTop: 11, borderStyle: 'dashed' }}>Add meta key</button>
+            <button type="button" onClick={addKey} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add meta key</button>
           </div>
 
           <div className="toggle-card">

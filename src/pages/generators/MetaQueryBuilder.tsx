@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   COMPARES,
   LIST_COMPARES,
@@ -29,6 +32,8 @@ const OUTPUT_MODES: { id: OutputMode; label: string }[] = [
 
 export function MetaQueryBuilder() {
   const { state: mq, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<MetaQuery>('meta-query-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const clauses = useListOps<MetaQuery>(commit)((p) => p.clauses);
   const [outputMode, setOutputMode] = useState<OutputMode>('query');
 
   function updateClause(i: number, patch: Partial<MetaClause>, coalesceKey?: string) {
@@ -37,10 +42,6 @@ export function MetaQueryBuilder() {
 
   function addClause() {
     commit((p) => p.clauses.push({ key: '', compare: '=', value: '', type: 'CHAR' }));
-  }
-
-  function removeClause(i: number) {
-    commit((p) => p.clauses.splice(i, 1));
   }
 
   const code = useMemo(() => buildCode(mq, outputMode), [mq, outputMode]);
@@ -132,7 +133,17 @@ export function MetaQueryBuilder() {
                 const numericType = c.type === 'NUMERIC' || c.type.indexOf('DECIMAL') === 0;
                 const vals = c.value.split(',').map((v) => v.trim()).filter((v) => v !== '');
                 return (
-                  <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11, background: '#fff' }}>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={mq.clauses.length}
+                    title={c.key || `Clause ${i + 1}`}
+                    subtitle={c.compare}
+                    drag={drag.bind('clauses', i, clauses.reorder)}
+                    onMoveUp={() => clauses.moveUp(i)}
+                    onMoveDown={() => clauses.moveDown(i)}
+                    onRemove={() => clauses.remove(i)}
+                  >
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <input className="input gfw-mono" style={{ flex: 1, minWidth: 120 }} placeholder="price" value={c.key} onChange={(e) => updateClause(i, { key: e.target.value }, `key-${i}`)} />
                       <select className="select" style={{ width: 160 }} value={c.compare} onChange={(e) => updateClause(i, { compare: e.target.value })}>
@@ -145,22 +156,19 @@ export function MetaQueryBuilder() {
                           <option key={v} value={v}>{l}</option>
                         ))}
                       </select>
-                      <button type="button" aria-label="Remove clause" onClick={() => removeClause(i)} className="btn btn-ghost btn-sm" style={{ color: '#B91C1C' }}>Remove</button>
                     </div>
                     {needsValue && (
-                      <div style={{ marginTop: 7 }}>
-                        <input className="input gfw-mono" placeholder={LIST_COMPARES.indexOf(c.compare) >= 0 ? '1000, 5000' : numericType ? '5000' : 'value'} value={c.value} onChange={(e) => updateClause(i, { value: e.target.value }, `value-${i}`)} />
-                      </div>
+                      <input className="input gfw-mono" placeholder={LIST_COMPARES.indexOf(c.compare) >= 0 ? '1000, 5000' : numericType ? '5000' : 'value'} value={c.value} onChange={(e) => updateClause(i, { value: e.target.value }, `value-${i}`)} />
                     )}
-                    <div className="gfw-mono" style={{ marginTop: 8, fontSize: 11, color: 'var(--gfw-text-faint)' }}>
+                    <div className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-faint)' }}>
                       meta_value{numericType ? ' cast to ' + c.type : ''} {c.compare} {vals.length ? vals.join(', ') : '—'}
                     </div>
-                  </div>
+                  </RepeatableCard>
                 );
               })}
               {mq.clauses.length === 0 && <div className="field-hint">No clauses — nothing is filtered by meta.</div>}
             </div>
-            <button type="button" onClick={addClause} className="btn btn-ghost btn-sm" style={{ marginTop: 11 }}>Add clause</button>
+            <button type="button" onClick={addClause} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add clause</button>
           </div>
 
           <div className="field-card">

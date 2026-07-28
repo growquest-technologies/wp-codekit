@@ -9,7 +9,7 @@ import { FaqEditor } from '../../components/readme/FaqEditor';
 import { ScreenshotRow } from '../../components/readme/ScreenshotsEditor';
 import { VersionedEntryRow } from '../../components/readme/ChangelogEditor';
 import { ChevronDownIcon, CloseIcon } from '../../components/readme/icons';
-import { useDragReorder, reorderArray } from '../../components/readme/dragReorder';
+import { useDragReorder, reorderArray } from '../../lib/dragReorder';
 import {
   BLOCK_TYPES,
   SECTION_TITLES,
@@ -482,7 +482,7 @@ export function ReadmeStudio() {
       issues={issues.map((i) => ({ severity: i.severity, message: i.message, targetId: i.targetId, fix: i.fixKey, fixLabel: i.fixKey ? 'Fix automatically' : undefined }))}
       onFix={handleFix}
       onFocusField={focusField}
-      primaryTabLabel="Listing Preview"
+      primaryTabLabel="Preview"
       primaryTabContent={
         <div style={{ background: '#F0F0F1' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', background: '#FFF6E5', color: '#8A5B00', fontSize: 10.5 }}>
@@ -665,6 +665,8 @@ export function ReadmeStudio() {
                             <BlockEditor
                               key={block.id}
                               block={block}
+                              index={bi}
+                              count={section.blocks.length}
                               dragBind={bind(`block:${section.id}`, bi, (from, to) => reorderBlock(section.id, from, to))}
                               onMoveUp={() => moveBlock(section.id, block.id, -1)}
                               onMoveDown={() => moveBlock(section.id, block.id, 1)}
@@ -691,6 +693,8 @@ export function ReadmeStudio() {
                             <FaqEditor
                               key={faq.id}
                               faq={faq}
+                              index={fi}
+                              count={section.faqs.length}
                               dragBind={bind(`faq:${section.id}`, fi, (from, to) => reorderFAQ(section.id, from, to))}
                               onChangeQuestion={(v) => updateFAQField(section.id, faq.id, 'question', v)}
                               onChangeAnswer={(v) => updateFAQField(section.id, faq.id, 'answer', v)}
@@ -714,6 +718,8 @@ export function ReadmeStudio() {
                               key={shot.id}
                               screenshot={shot}
                               number={si + 1}
+                              index={si}
+                              count={section.screenshots.length}
                               dragBind={bind(`screenshot:${section.id}`, si, (from, to) => reorderScreenshot(section.id, from, to))}
                               onChangeDescription={(v) => updateScreenshot(section.id, shot.id, v)}
                               onMoveUp={() => moveScreenshot(section.id, shot.id, -1)}
@@ -734,6 +740,8 @@ export function ReadmeStudio() {
                             <VersionedEntryRow
                               key={v.id}
                               entry={v}
+                              index={vi}
+                              count={section.versions.length}
                               dragBind={bind(`version:${section.id}`, vi, (from, to) => reorderVersion(section.id, from, to))}
                               onChangeVersion={(val) => updateVersionField(section.id, v.id, 'version', val)}
                               onChangeDescription={(val) => updateVersionField(section.id, v.id, 'description', val)}
@@ -762,6 +770,8 @@ export function ReadmeStudio() {
                             <VersionedEntryRow
                               key={n.id}
                               entry={n}
+                              index={ni}
+                              count={section.notices.length}
                               dragBind={bind(`notice:${section.id}`, ni, (from, to) => reorderNotice(section.id, from, to))}
                               onChangeVersion={(val) => updateNoticeField(section.id, n.id, 'version', val)}
                               onChangeDescription={(val) => updateNoticeField(section.id, n.id, 'description', val)}

@@ -89,6 +89,7 @@ export function BlockPatternGenerator() {
       description="Build the pattern from real block markup, then take it either way: a PHP registration call, or the file with the header comment a block theme reads from /patterns."
       code={code}
       filename={fileName}
+      primaryTabLabel="Output"
       editor={{ canUndo, canRedo, onUndo: undo, onRedo: redo, onNew: reset, savedLabel }}
       issues={issues}
       onFix={fix}

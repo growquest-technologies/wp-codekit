@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { ToggleRow } from '../../components/ui/Toggle';
 import { CheckboxChip } from '../../components/ui/CheckboxChip';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   METHODS,
   PERMISSIONS,
@@ -38,6 +41,8 @@ function routeFnPart(r: string): string {
 
 export function RestRouteGenerator() {
   const { state: rt, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<RestRoute>('rest-route-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const args = useListOps<RestRoute>(commit)((p) => p.args);
   const [outputMode, setOutputMode] = useState<OutputMode>('snippet');
 
   const ns = String(rt.namespace || 'myplugin/v1').trim();
@@ -157,12 +162,22 @@ export function RestRouteGenerator() {
               <div className="field-card-title">Arguments</div>
               <div className="field-card-desc">Becomes the args schema — WordPress validates before your callback runs.</div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {rt.args.map((a, i) => {
                 const showExtra = a.format === 'enum' || a.format === 'range';
                 const san = sanitizeFor(a);
                 return (
-                  <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11, background: 'var(--gfw-surface-muted)' }}>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={rt.args.length}
+                    title={a.name || `Argument ${i + 1}`}
+                    subtitle={a.type}
+                    drag={drag.bind('args', i, args.reorder)}
+                    onMoveUp={() => args.moveUp(i)}
+                    onMoveDown={() => args.moveDown(i)}
+                    onRemove={() => args.remove(i)}
+                  >
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 9 }}>
                       <div>
                         <label className="field-label" style={{ fontSize: 10.5 }}>name</label>
@@ -207,18 +222,17 @@ export function RestRouteGenerator() {
                           <input className="input" value={a.description} onChange={(e) => commit((p) => (p.args[i].description = e.target.value), 'arg-desc-' + i)} placeholder="How many items to return." />
                         </div>
                         <CheckboxChip active={a.required} onClick={() => commit((p) => (p.args[i].required = !p.args[i].required))}>required</CheckboxChip>
-                        <button type="button" aria-label="Remove argument" title="Remove argument" className="btn btn-ghost btn-sm" onClick={() => commit((p) => { p.args.splice(i, 1); })}>×</button>
                       </div>
                     </div>
-                    <div className="gfw-mono" style={{ marginTop: 8, fontSize: 11, color: 'var(--gfw-text-soft)' }}>
+                    <div className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-soft)' }}>
                       {(san ? san + '() → ' : '') + 'rest_validate_request_arg()' + (a.required ? ' · required' : '') + (a.format === 'enum' ? ' · enum' : a.format === 'range' ? ' · min/max' : a.format ? ' · format ' + a.format : '')}
                     </div>
-                  </div>
+                  </RepeatableCard>
                 );
               })}
               <button
                 type="button"
-                className="btn btn-ghost btn-sm"
+                className="btn btn-ghost btn-sm repeatable-add"
                 style={{ alignSelf: 'flex-start' }}
                 onClick={() => commit((p) => { p.args.push({ name: '', type: 'string', format: '', extra: '', def: '', required: false, description: '' }); })}
               >

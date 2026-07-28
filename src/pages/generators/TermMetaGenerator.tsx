@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { Toggle, ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   TYPES,
   applyFix,
@@ -29,6 +32,8 @@ const SAMPLE: Record<TermFieldType, string> = { color: '#3858E9', text: 'Everyth
 
 export function TermMetaGenerator() {
   const { state: tm, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<TermMeta>('term-meta-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const fields = useListOps<TermMeta>(commit)((p) => p.fields);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
 
   const d = useMemo(() => derive(tm), [tm]);
@@ -57,10 +62,6 @@ export function TermMetaGenerator() {
     });
   }
 
-  function removeField(i: number) {
-    commit((p) => p.fields.splice(i, 1));
-  }
-
   type ToggleKey = 'addForm' | 'editForm' | 'column';
   const extraToggles: { key: ToggleKey; label: string; help: string; on: boolean }[] = [
     { key: 'addForm', label: 'Add-term form', help: 'The div-based markup the new-term screen expects.', on: tm.addForm },
@@ -85,7 +86,7 @@ export function TermMetaGenerator() {
       activeOutputMode={outputMode}
       onOutputModeChange={(id) => setOutputMode(id as OutputMode)}
       secondaryTab={{
-        label: 'Screen',
+        label: 'Preview',
         content: (
           <div>
             <div className="field-hint" style={{ marginBottom: 10 }}>Edit term screen · {d.tax}</div>
@@ -189,7 +190,17 @@ export function TermMetaGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {tm.fields.map((f, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={tm.fields.length}
+                  title={f.label || 'Untitled field'}
+                  subtitle={d.metaPrefix + (f.key.trim() || 'field')}
+                  drag={drag.bind('fields', i, fields.reorder)}
+                  onMoveUp={() => fields.moveUp(i)}
+                  onMoveDown={() => fields.moveDown(i)}
+                  onRemove={() => fields.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input
                       className="input"
@@ -227,33 +238,26 @@ export function TermMetaGenerator() {
                       />
                       <span style={{ fontSize: 12, color: 'var(--gfw-text-body)' }}>REST</span>
                     </div>
-                    <button type="button" aria-label="Remove field" title="Remove field" onClick={() => removeField(i)} className="btn btn-ghost btn-sm">✕</button>
                   </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 7 }}>
-                    <span className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-faint)', whiteSpace: 'nowrap' }}>{d.metaPrefix + (f.key.trim() || 'field')}</span>
-                    <input
-                      className="input"
-                      style={{ flex: 1, minWidth: 150 }}
-                      value={f.description}
-                      placeholder="Help text under the field."
-                      onChange={(ev) => commit((p) => (p.fields[i].description = ev.target.value), 'field-description-' + i)}
-                    />
-                  </div>
+                  <input
+                    className="input"
+                    value={f.description}
+                    placeholder="Help text under the field."
+                    onChange={(ev) => commit((p) => (p.fields[i].description = ev.target.value), 'field-description-' + i)}
+                  />
                   {f.type === 'select' && (
-                    <div style={{ marginTop: 7 }}>
-                      <input
-                        className="input gfw-mono"
-                        value={f.choices}
-                        placeholder="left:Left, right:Right"
-                        onChange={(ev) => commit((p) => (p.fields[i].choices = ev.target.value), 'field-choices-' + i)}
-                      />
-                    </div>
+                    <input
+                      className="input gfw-mono"
+                      value={f.choices}
+                      placeholder="left:Left, right:Right"
+                      onChange={(ev) => commit((p) => (p.fields[i].choices = ev.target.value), 'field-choices-' + i)}
+                    />
                   )}
-                </div>
+                </RepeatableCard>
               ))}
               {tm.fields.length === 0 && <div style={{ fontSize: 12.5, color: 'var(--gfw-text-muted)' }}>No fields yet.</div>}
             </div>
-            <button type="button" onClick={addField} className="btn btn-ghost btn-sm" style={{ marginTop: 11, borderStyle: 'dashed' }}>Add field</button>
+            <button type="button" onClick={addField} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add field</button>
           </div>
 
           <div className="toggle-card">

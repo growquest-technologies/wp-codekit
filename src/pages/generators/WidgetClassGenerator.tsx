@@ -1,7 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   BODIES,
   TYPES,
@@ -37,6 +40,8 @@ const BODY_NOTE: Record<WidgetClass['body'], string> = {
 
 export function WidgetClassGenerator() {
   const { state: wg, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<WidgetClass>('widget-class-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const fields = useListOps<WidgetClass>(commit)((p) => p.fields);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -64,16 +69,6 @@ export function WidgetClassGenerator() {
     commit((draft) => Object.assign(draft, applyFix(draft, kind)));
   }
 
-  function moveField(i: number, dir: -1 | 1) {
-    commit((p) => {
-      const j = i + dir;
-      if (j < 0 || j >= p.fields.length) return;
-      const t = p.fields[j];
-      p.fields[j] = p.fields[i];
-      p.fields[i] = t;
-    });
-  }
-
   return (
     <GeneratorShell
       category="design"
@@ -89,7 +84,7 @@ export function WidgetClassGenerator() {
       activeOutputMode={outputMode}
       onOutputModeChange={(id) => setOutputMode(id as OutputMode)}
       secondaryTab={{
-        label: 'Form',
+        label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px' }}>
             <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>Appearance → Widgets, expanded</div>
@@ -205,7 +200,17 @@ export function WidgetClassGenerator() {
             <div className="field-card-title">Settings fields</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {wg.fields.map((f, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={wg.fields.length}
+                  title={f.label || 'Untitled field'}
+                  subtitle={f.id.trim() || 'field'}
+                  drag={drag.bind('fields', i, fields.reorder)}
+                  onMoveUp={() => fields.moveUp(i)}
+                  onMoveDown={() => fields.moveDown(i)}
+                  onRemove={() => fields.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input className="input" style={{ flex: '1.4 1 120px' }} placeholder="Title" value={f.label} onChange={(e) => commit((p) => (p.fields[i].label = e.target.value), `field-label-${i}`)} />
                     <input className="input gfw-mono" style={{ width: 110 }} spellCheck={false} placeholder="title" value={f.id} onChange={(e) => commit((p) => (p.fields[i].id = e.target.value), `field-id-${i}`)} />
@@ -224,29 +229,23 @@ export function WidgetClassGenerator() {
                       ))}
                     </select>
                     <input className="input gfw-mono" style={{ width: 110 }} spellCheck={false} placeholder="default" value={f.def} onChange={(e) => commit((p) => (p.fields[i].def = e.target.value), `field-def-${i}`)} />
-                    <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-                      <button type="button" aria-label="Move up" title="Move up" onClick={() => moveField(i, -1)} className="btn btn-ghost btn-sm">↑</button>
-                      <button type="button" aria-label="Move down" title="Move down" onClick={() => moveField(i, 1)} className="btn btn-ghost btn-sm">↓</button>
-                      <button type="button" aria-label="Remove field" title="Remove field" onClick={() => commit((p) => p.fields.splice(i, 1))} className="btn btn-ghost btn-sm">×</button>
-                    </div>
                   </div>
                   {f.type === 'select' && (
                     <input
                       className="input gfw-mono"
-                      style={{ marginTop: 7 }}
                       spellCheck={false}
                       placeholder="date:Newest, title:A to Z"
                       value={f.choices}
                       onChange={(e) => commit((p) => (p.fields[i].choices = e.target.value), `field-choices-${i}`)}
                     />
                   )}
-                </div>
+                </RepeatableCard>
               ))}
               {!wg.fields.length && <div className="field-hint">No fields — the widget renders the same thing everywhere it is placed.</div>}
             </div>
             <button
               type="button"
-              className="btn btn-ghost btn-sm"
+              className="btn btn-ghost btn-sm repeatable-add"
               style={{ marginTop: 11 }}
               onClick={() => commit((p) => p.fields.push({ id: 'field_' + (p.fields.length + 1), label: 'Field ' + (p.fields.length + 1), type: 'text', def: '', choices: '' }))}
             >

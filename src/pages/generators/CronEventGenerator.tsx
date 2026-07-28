@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   JOBS,
   JOB_BODY,
@@ -36,6 +39,8 @@ const JOB_NOTES: Record<Job, string> = {
 
 export function CronEventGenerator() {
   const { state: cr, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<CronEvent>('cron-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const args = useListOps<CronEvent>(commit)((p) => p.args);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
 
   const isCustomInterval = cr.recurrence === 'custom';
@@ -153,16 +158,27 @@ export function CronEventGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               {cr.args.map((a, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input className="input gfw-mono" style={{ width: 130 }} value={a.name} onChange={(e) => commit((p) => (p.args[i].name = e.target.value), 'arg-name-' + i)} placeholder="$batch" spellCheck={false} />
-                  <input className="input gfw-mono" style={{ width: 110 }} value={a.value} onChange={(e) => commit((p) => (p.args[i].value = e.target.value), 'arg-value-' + i)} placeholder="50" spellCheck={false} />
-                  <input className="input" style={{ flex: 1 }} value={a.description} onChange={(e) => commit((p) => (p.args[i].description = e.target.value), 'arg-desc-' + i)} placeholder="What it controls." />
-                  <button type="button" aria-label="Remove argument" title="Remove argument" className="btn btn-ghost btn-sm" onClick={() => commit((p) => { p.args.splice(i, 1); })}>×</button>
-                </div>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={cr.args.length}
+                  title={a.name || `Argument ${i + 1}`}
+                  subtitle={a.value}
+                  drag={drag.bind('args', i, args.reorder)}
+                  onMoveUp={() => args.moveUp(i)}
+                  onMoveDown={() => args.moveDown(i)}
+                  onRemove={() => args.remove(i)}
+                >
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <input className="input gfw-mono" style={{ width: 130 }} value={a.name} onChange={(e) => commit((p) => (p.args[i].name = e.target.value), 'arg-name-' + i)} placeholder="$batch" spellCheck={false} />
+                    <input className="input gfw-mono" style={{ width: 110 }} value={a.value} onChange={(e) => commit((p) => (p.args[i].value = e.target.value), 'arg-value-' + i)} placeholder="50" spellCheck={false} />
+                    <input className="input" style={{ flex: 1 }} value={a.description} onChange={(e) => commit((p) => (p.args[i].description = e.target.value), 'arg-desc-' + i)} placeholder="What it controls." />
+                  </div>
+                </RepeatableCard>
               ))}
               {!cr.args.length && <div style={{ fontSize: 12.5, color: 'var(--gfw-text-mutest)' }}>No arguments — simpler to unschedule, since wp_next_scheduled() has to be called with the exact same args to find the event.</div>}
             </div>
-            <button type="button" className="btn btn-ghost btn-sm" style={{ marginTop: 11 }} onClick={() => commit((p) => { p.args.push({ name: '$batch', value: '50', description: '' }); })}>Add argument</button>
+            <button type="button" className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }} onClick={() => commit((p) => { p.args.push({ name: '$batch', value: '50', description: '' }); })}>Add argument</button>
           </div>
 
           <div className="toggle-card">

@@ -294,6 +294,106 @@
   line-height: 1.45;
 }
 
+/* Repeatable add/remove row — the one card every generator's list items render
+   through (see RepeatableCard.tsx). Header carries drag/title/move/remove/collapse;
+   the muted-beige body is what makes each item read as its own object. */
+.repeatable-card {
+  border: 1px solid var(--gfw-border-muted);
+  border-radius: 8px;
+  background: var(--gfw-surface-muted);
+  overflow: hidden;
+}
+.repeatable-card.is-drag-over {
+  border-color: var(--gfw-accent);
+  box-shadow: 0 0 0 2px var(--gfw-accent-tint);
+}
+.repeatable-card-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 8px 7px 10px;
+  background: var(--gfw-surface-sunken);
+  border-bottom: 1px solid var(--gfw-border-muted);
+}
+.repeatable-card-grip {
+  display: flex;
+  align-items: center;
+  color: var(--gfw-text-faint);
+  cursor: grab;
+  margin-left: -3px;
+}
+.repeatable-card-grip:active {
+  cursor: grabbing;
+}
+.repeatable-card-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--gfw-text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.repeatable-card-subtitle {
+  font-family: var(--gfw-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gfw-text-mutest);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.repeatable-card-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.repeatable-card-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background: none;
+  border-radius: 5px;
+  color: var(--gfw-text-mutest);
+  cursor: pointer;
+}
+.repeatable-card-btn:hover:not(:disabled) {
+  background: #fff;
+  border-color: var(--gfw-border);
+  color: var(--gfw-text-strong);
+}
+.repeatable-card-btn.is-danger:hover:not(:disabled) {
+  border-color: var(--gfw-danger);
+  color: var(--gfw-danger);
+}
+.repeatable-card-btn:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+.repeatable-card-btn:focus-visible {
+  outline: 2px solid var(--gfw-accent);
+  outline-offset: 1px;
+}
+.repeatable-card-body {
+  padding: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The dashed "Add X" button that follows every repeatable list. */
+.repeatable-add {
+  align-self: flex-start;
+  border-style: dashed;
+}
+
 .checkbox-row {
   display: flex;
   align-items: center;

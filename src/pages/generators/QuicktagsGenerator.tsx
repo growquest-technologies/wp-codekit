@@ -1,6 +1,9 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   CORE_BUTTONS,
   POST_TYPES,
@@ -42,6 +45,8 @@ const refCoreButtons = CORE_BUTTONS.map((b) => padTo(b[0], 10) + padTo(b[1] ? `a
 
 export function QuicktagsGenerator() {
   const { state: qt, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<Quicktags>('quicktags-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const buttons = useListOps<Quicktags>(commit)((p) => p.buttons);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -151,7 +156,17 @@ export function QuicktagsGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {qt.buttons.map((b, i) => (
-                <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={qt.buttons.length}
+                  title={b.label || `Button ${i + 1}`}
+                  subtitle={b.id}
+                  drag={drag.bind('buttons', i, buttons.reorder)}
+                  onMoveUp={() => buttons.moveUp(i)}
+                  onMoveDown={() => buttons.moveDown(i)}
+                  onRemove={() => buttons.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <input className="input" style={{ flex: 1, minWidth: 100 }} placeholder="lead" value={b.label} onChange={(e) => commit((p) => (p.buttons[i].label = e.target.value))} />
                     <input className="input gfw-mono" style={{ width: 110 }} placeholder="lead" value={b.id} onChange={(e) => commit((p) => (p.buttons[i].id = e.target.value))} />
@@ -160,7 +175,6 @@ export function QuicktagsGenerator() {
                       <option value="insert">Insert</option>
                       <option value="prompt">Prompt</option>
                     </select>
-                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => commit((p) => p.buttons.splice(i, 1))}>Remove</button>
                   </div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <input
@@ -182,12 +196,12 @@ export function QuicktagsGenerator() {
                     <input className="input gfw-mono" style={{ width: 90 }} placeholder="priority" value={b.priority} onChange={(e) => commit((p) => (p.buttons[i].priority = e.target.value))} />
                     <input className="input" style={{ flex: 1, minWidth: 140 }} placeholder="tooltip title" value={b.title} onChange={(e) => commit((p) => (p.buttons[i].title = e.target.value))} />
                   </div>
-                </div>
+                </RepeatableCard>
               ))}
               {qt.buttons.length === 0 && <div className="field-hint">No custom buttons yet.</div>}
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={addButton}>Add button</button>
+              <button type="button" className="btn btn-ghost btn-sm repeatable-add" onClick={addButton}>Add button</button>
               {PRESETS.map((p, i) => (
                 <button key={p.label} type="button" className="btn btn-ghost btn-sm" onClick={() => addPreset(i)}>+ {p.label}</button>
               ))}

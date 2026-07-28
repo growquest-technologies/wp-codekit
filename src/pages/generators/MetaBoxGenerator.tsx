@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   FIELD_TYPES,
   POST_TYPES,
@@ -29,6 +32,8 @@ function padTo(s: string, w: number): string {
 
 export function MetaBoxGenerator() {
   const { state: mb, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<MetaBox>('meta-box-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const fields = useListOps<MetaBox>(commit)((p) => p.fields);
   const [outputMode, setOutputMode] = useState<OutputMode>('snippet');
 
   const d = useMemo(() => derive(mb), [mb]);
@@ -56,15 +61,6 @@ export function MetaBoxGenerator() {
     });
   }
 
-  function moveFieldUp(i: number) {
-    commit((p) => { if (i > 0) { const t = p.fields[i - 1]; p.fields[i - 1] = p.fields[i]; p.fields[i] = t; } });
-  }
-  function moveFieldDown(i: number) {
-    commit((p) => { if (i < p.fields.length - 1) { const t = p.fields[i + 1]; p.fields[i + 1] = p.fields[i]; p.fields[i] = t; } });
-  }
-  function removeField(i: number) {
-    commit((p) => p.fields.splice(i, 1));
-  }
 
   const refSignature = "add_meta_box(\n\t'" + d.id + "',\n\t__( '" + mb.title.replace(/'/g, "\\'") + "', '" + d.td + "' ),\n\t$callback,\n\tarray( " + (d.types.map((x) => "'" + x + "'").join(', ') || "'post'") + " ),\n\t'" + mb.context + "',\n\t'" + mb.priority + "'\n);";
   const refFlow = [
@@ -107,7 +103,7 @@ export function MetaBoxGenerator() {
       activeOutputMode={outputMode}
       onOutputModeChange={(id) => setOutputMode(id as OutputMode)}
       secondaryTab={{
-        label: 'Editor',
+        label: 'Preview',
         content: (
           <div>
             <div className="field-hint" style={{ marginBottom: 10 }}>
@@ -248,7 +244,17 @@ export function MetaBoxGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {mb.fields.map((f, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={mb.fields.length}
+                  title={f.label || 'Untitled field'}
+                  subtitle={d.metaPrefix + (f.id || 'field')}
+                  drag={drag.bind('fields', i, fields.reorder)}
+                  onMoveUp={() => fields.moveUp(i)}
+                  onMoveDown={() => fields.moveDown(i)}
+                  onRemove={() => fields.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input
                       className="input"
@@ -278,37 +284,26 @@ export function MetaBoxGenerator() {
                         <option key={value} value={value}>{label}</option>
                       ))}
                     </select>
-                    <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
-                      <button type="button" aria-label="Move field up" title="Move field up" onClick={() => moveFieldUp(i)} className="btn btn-ghost btn-sm">↑</button>
-                      <button type="button" aria-label="Move field down" title="Move field down" onClick={() => moveFieldDown(i)} className="btn btn-ghost btn-sm">↓</button>
-                      <button type="button" aria-label="Remove field" title="Remove field" onClick={() => removeField(i)} className="btn btn-ghost btn-sm" style={{ color: '#B91C1C' }}>✕</button>
-                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 7 }}>
-                    <span className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-faint)', whiteSpace: 'nowrap' }}>{d.metaPrefix + (f.id || 'field')}</span>
-                    <input
-                      className="input"
-                      style={{ flex: 1, minWidth: 150 }}
-                      value={f.description}
-                      placeholder="Help text under the field."
-                      onChange={(ev) => commit((p) => (p.fields[i].description = ev.target.value), 'field-description-' + i)}
-                    />
-                  </div>
+                  <input
+                    className="input"
+                    value={f.description}
+                    placeholder="Help text under the field."
+                    onChange={(ev) => commit((p) => (p.fields[i].description = ev.target.value), 'field-description-' + i)}
+                  />
                   {f.type === 'select' && (
-                    <div style={{ marginTop: 7 }}>
-                      <input
-                        className="input gfw-mono"
-                        value={f.choices}
-                        placeholder="online:Online, venue:In person"
-                        onChange={(ev) => commit((p) => (p.fields[i].choices = ev.target.value), 'field-choices-' + i)}
-                      />
-                    </div>
+                    <input
+                      className="input gfw-mono"
+                      value={f.choices}
+                      placeholder="online:Online, venue:In person"
+                      onChange={(ev) => commit((p) => (p.fields[i].choices = ev.target.value), 'field-choices-' + i)}
+                    />
                   )}
-                </div>
+                </RepeatableCard>
               ))}
               {mb.fields.length === 0 && <div style={{ fontSize: 12.5, color: 'var(--gfw-text-muted)' }}>No fields — the box will render an empty panel.</div>}
             </div>
-            <button type="button" onClick={addField} className="btn btn-ghost btn-sm" style={{ marginTop: 11, borderStyle: 'dashed' }}>Add field</button>
+            <button type="button" onClick={addField} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add field</button>
           </div>
 
           <div className="toggle-card">

@@ -1,8 +1,11 @@
 import { useMemo, useRef, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { Collapsible } from '../../components/ui/Collapsible';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
 import { ToggleRow } from '../../components/ui/Toggle';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   CAPS,
   FIELD_TYPES,
@@ -44,6 +47,10 @@ const HOOK_BASE: Record<string, string> = { 'options-general.php': 'settings', '
 
 export function SettingsPageGenerator() {
   const { state: sp, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<SettingsPage>('settings-page-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const listOf = useListOps<SettingsPage>(commit);
+  const sections = listOf((p) => p.sections);
+  const fields = listOf((p) => p.fields);
   const [outputMode, setOutputMode] = useState<OutputMode>('snippet');
   const [screenTab, setScreenTab] = useState('');
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -253,32 +260,42 @@ export function SettingsPageGenerator() {
               <div className="field-card-title">Sections</div>
               <div className="field-card-desc">{sectionsNote}</div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {sp.sections.map((sec, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <input className="input" style={{ flex: 1, minWidth: 110 }} placeholder="General" value={sec.title} onChange={(e) => commit((p) => (p.sections[i].title = e.target.value))} />
-                  <input
-                    className="input gfw-mono"
-                    style={{ width: 120 }}
-                    placeholder="general"
-                    value={sec.id}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      commit((p) => {
-                        const old = p.sections[i].id;
-                        p.sections[i].id = v;
-                        p.fields.forEach((f) => {
-                          if (f.section === old) f.section = slugify(v);
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={sp.sections.length}
+                  title={sec.title || `Section ${i + 1}`}
+                  drag={drag.bind('sections', i, sections.reorder)}
+                  onMoveUp={() => sections.moveUp(i)}
+                  onMoveDown={() => sections.moveDown(i)}
+                  onRemove={() => removeSection(i)}
+                >
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <input className="input" style={{ flex: 1, minWidth: 110 }} placeholder="General" value={sec.title} onChange={(e) => commit((p) => (p.sections[i].title = e.target.value))} />
+                    <input
+                      className="input gfw-mono"
+                      style={{ width: 120 }}
+                      placeholder="general"
+                      value={sec.id}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        commit((p) => {
+                          const old = p.sections[i].id;
+                          p.sections[i].id = v;
+                          p.fields.forEach((f) => {
+                            if (f.section === old) f.section = slugify(v);
+                          });
                         });
-                      });
-                    }}
-                  />
-                  <input className="input" style={{ flex: 1.6, minWidth: 150 }} placeholder="What this group covers." value={sec.description} onChange={(e) => commit((p) => (p.sections[i].description = e.target.value))} />
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => removeSection(i)}>Remove</button>
-                </div>
+                      }}
+                    />
+                    <input className="input" style={{ flex: 1.6, minWidth: 150 }} placeholder="What this group covers." value={sec.description} onChange={(e) => commit((p) => (p.sections[i].description = e.target.value))} />
+                  </div>
+                </RepeatableCard>
               ))}
             </div>
-            <button type="button" className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addSection}>Add section</button>
+            <button type="button" className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 10 }} onClick={addSection}>Add section</button>
           </div>
 
           <div className="field-card" ref={(el) => (fieldRefs.current.fields = el as unknown as HTMLElement)}>
@@ -290,7 +307,17 @@ export function SettingsPageGenerator() {
               {sp.fields.map((f, i) => {
                 const needsChoices = f.type === 'select' || f.type === 'radio';
                 return (
-                  <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11 }}>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={sp.fields.length}
+                    title={f.label || `Field ${i + 1}`}
+                    subtitle={f.id}
+                    drag={drag.bind('fields', i, fields.reorder)}
+                    onMoveUp={() => fields.moveUp(i)}
+                    onMoveDown={() => fields.moveDown(i)}
+                    onRemove={() => fields.remove(i)}
+                  >
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                       <input className="input" style={{ flex: 1.5, minWidth: 130 }} placeholder="API key" value={f.label} onChange={(e) => commit((p) => (p.fields[i].label = e.target.value))} />
                       <input className="input gfw-mono" style={{ width: 120 }} placeholder="api_key" value={f.id} onChange={(e) => commit((p) => (p.fields[i].id = e.target.value))} />
@@ -308,25 +335,24 @@ export function SettingsPageGenerator() {
                           <option key={sec.id} value={sec.id}>{sec.title}</option>
                         ))}
                       </select>
-                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => commit((p) => p.fields.splice(i, 1))}>Remove</button>
                     </div>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 7 }}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <input className="input gfw-mono" style={{ width: 120 }} placeholder={f.type === 'checkbox' ? '1 or 0' : f.type === 'number' ? '0' : 'default'} value={f.def} onChange={(e) => commit((p) => (p.fields[i].def = e.target.value))} />
                       <input className="input" style={{ width: 150 }} placeholder="placeholder text" value={f.placeholder} onChange={(e) => commit((p) => (p.fields[i].placeholder = e.target.value))} />
                       <input className="input" style={{ flex: 1, minWidth: 160 }} placeholder="Help text under the field." value={f.description} onChange={(e) => commit((p) => (p.fields[i].description = e.target.value))} />
                     </div>
                     {needsChoices && (
-                      <div style={{ marginTop: 7 }}>
+                      <div>
                         <input className="input gfw-mono" placeholder="fast:Fast, safe:Safe" value={f.choices} onChange={(e) => commit((p) => (p.fields[i].choices = e.target.value))} />
                         <div className="field-hint">value:Label pairs, comma separated. Values are whitelisted in the sanitiser.</div>
                       </div>
                     )}
-                  </div>
+                  </RepeatableCard>
                 );
               })}
               {sp.fields.length === 0 && <div className="field-hint">No fields yet — an empty settings page is just a heading.</div>}
             </div>
-            <button type="button" className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addField}>Add field</button>
+            <button type="button" className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 10 }} onClick={addField}>Add field</button>
           </div>
 
           <Collapsible title="Extras">
@@ -362,7 +388,7 @@ export function SettingsPageGenerator() {
       activeOutputMode={outputMode}
       onOutputModeChange={(id) => setOutputMode(id as OutputMode)}
       secondaryTab={{
-        label: 'Screen',
+        label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px', minWidth: 420 }}>
             <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>How the screen renders — {placementLabel}</div>

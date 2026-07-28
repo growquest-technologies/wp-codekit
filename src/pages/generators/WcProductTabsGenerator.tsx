@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { CheckboxChip } from '../../components/ui/CheckboxChip';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   CORE_TABS,
   applyFix,
@@ -27,6 +30,8 @@ const KEEP_KEY: Record<string, keyof ProductTabs> = {
 
 export function WcProductTabsGenerator() {
   const { state: pt, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<ProductTabs>('wc-product-tabs-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const tabs = useListOps<ProductTabs>(commit)((p) => p.tabs);
   const [outputMode, setOutputMode] = useState<OutputMode>('plugin');
 
   const d = useMemo(() => derive(pt), [pt]);
@@ -39,9 +44,6 @@ export function WcProductTabsGenerator() {
   }
   function addTab() {
     commit((p) => p.tabs.push({ key: 'tab_' + (p.tabs.length + 1), title: 'Tab ' + (p.tabs.length + 1), priority: '50', content: '' }));
-  }
-  function removeTab(i: number) {
-    commit((p) => p.tabs.splice(i, 1));
   }
 
   const keptCount = [pt.keepDescription, pt.keepAdditionalInfo, pt.keepReviews].filter(Boolean).length;
@@ -118,27 +120,34 @@ export function WcProductTabsGenerator() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {pt.tabs.map((t, i) => (
-                <div key={i} className="card" style={{ padding: 11 }}>
+                <RepeatableCard
+                  key={i}
+                  index={i}
+                  count={pt.tabs.length}
+                  title={t.title || 'Untitled tab'}
+                  subtitle={t.key.trim() || 'tab'}
+                  drag={drag.bind('tabs', i, tabs.reorder)}
+                  onMoveUp={() => tabs.moveUp(i)}
+                  onMoveDown={() => tabs.moveDown(i)}
+                  onRemove={() => tabs.remove(i)}
+                >
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input className="input" style={{ flex: 1.4, minWidth: 120 }} placeholder="Sizing" value={t.title} onChange={(e) => commit((p) => (p.tabs[i].title = e.target.value), `title-${i}`)} />
                     <input className="input gfw-mono" style={{ width: 110 }} placeholder="sizing" value={t.key} onChange={(e) => commit((p) => (p.tabs[i].key = e.target.value), `key-${i}`)} />
                     <input className="input gfw-mono" style={{ width: 80 }} placeholder="15" value={t.priority} onChange={(e) => commit((p) => (p.tabs[i].priority = e.target.value), `priority-${i}`)} />
-                    <button type="button" aria-label="Remove tab" title="Remove tab" onClick={() => removeTab(i)} className="btn btn-ghost btn-sm">✕</button>
                   </div>
-                  <div style={{ marginTop: 7 }}>
-                    <textarea
-                      className="input"
-                      style={{ width: '100%', minHeight: 56, resize: 'vertical', fontFamily: 'inherit' }}
-                      placeholder="What this tab prints — plain text, wrapped in paragraphs."
-                      value={t.content}
-                      onChange={(e) => commit((p) => (p.tabs[i].content = e.target.value), `content-${i}`)}
-                    />
-                  </div>
-                </div>
+                  <textarea
+                    className="input"
+                    style={{ width: '100%', minHeight: 56, resize: 'vertical', fontFamily: 'inherit' }}
+                    placeholder="What this tab prints — plain text, wrapped in paragraphs."
+                    value={t.content}
+                    onChange={(e) => commit((p) => (p.tabs[i].content = e.target.value), `content-${i}`)}
+                  />
+                </RepeatableCard>
               ))}
               {pt.tabs.length === 0 && <div className="field-hint">No new tabs yet.</div>}
             </div>
-            <button type="button" onClick={addTab} className="btn btn-ghost btn-sm" style={{ marginTop: 11, borderStyle: 'dashed' }}>Add tab</button>
+            <button type="button" onClick={addTab} className="btn btn-ghost btn-sm repeatable-add" style={{ marginTop: 11 }}>Add tab</button>
           </div>
         </div>
       }

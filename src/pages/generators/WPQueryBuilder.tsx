@@ -3,7 +3,10 @@ import { GeneratorShell } from '../../components/generator/GeneratorShell';
 import { Collapsible } from '../../components/ui/Collapsible';
 import { ToggleRow } from '../../components/ui/Toggle';
 import { CheckboxChip } from '../../components/ui/CheckboxChip';
+import { RepeatableCard } from '../../components/ui/RepeatableCard';
+import { useDragReorder } from '../../lib/dragReorder';
 import { useEditorState } from '../../lib/useEditorState';
+import { useListOps } from '../../lib/useListOps';
 import {
   BUILTIN_TYPES,
   COMPARES,
@@ -34,6 +37,10 @@ const OUTPUT_MODES: { id: OutputMode; label: string }[] = [
 
 export function WPQueryBuilder() {
   const { state: q, commit, undo, redo, reset, canUndo, canRedo, savedLabel } = useEditorState<WPQuery>('wp-query-generator-v1', freshProject);
+  const drag = useDragReorder();
+  const listOf = useListOps<WPQuery>(commit);
+  const taxOps = listOf((p) => p.taxClauses);
+  const metaOps = listOf((p) => p.metaClauses);
   const [outputMode, setOutputMode] = useState<OutputMode>('loop');
   const [typeDraft, setTypeDraft] = useState('');
 
@@ -83,20 +90,12 @@ export function WPQueryBuilder() {
     commit((p) => Object.assign(p.taxClauses[i], patch), coalesceKey);
   }
 
-  function removeTaxClause(i: number) {
-    commit((p) => p.taxClauses.splice(i, 1));
-  }
-
   function addMetaClause() {
     commit((p) => p.metaClauses.push({ key: '', compare: '=', type: 'CHAR', value: '' }));
   }
 
   function updateMetaClause(i: number, patch: Partial<MetaClause>, coalesceKey?: string) {
     commit((p) => Object.assign(p.metaClauses[i], patch), coalesceKey);
-  }
-
-  function removeMetaClause(i: number) {
-    commit((p) => p.metaClauses.splice(i, 1));
   }
 
   return (
@@ -245,12 +244,22 @@ export function WPQueryBuilder() {
                 </div>
               )}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {q.taxClauses.map((c, i) => {
                 const noTerms = NO_VALUE_COMPARES.indexOf(c.operator) !== -1;
                 const childVisible = c.field === 'slug' || c.field === 'term_id';
                 return (
-                  <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11, background: 'var(--gfw-surface-sunken)' }}>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={q.taxClauses.length}
+                    title={c.taxonomy || `Clause ${i + 1}`}
+                    subtitle={c.operator}
+                    drag={drag.bind('taxClauses', i, taxOps.reorder)}
+                    onMoveUp={() => taxOps.moveUp(i)}
+                    onMoveDown={() => taxOps.moveDown(i)}
+                    onRemove={() => taxOps.remove(i)}
+                  >
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 9 }}>
                       <div>
                         <label className="field-label">taxonomy</label>
@@ -275,25 +284,22 @@ export function WPQueryBuilder() {
                           <option value="NOT EXISTS">NOT EXISTS</option>
                         </select>
                       </div>
-                      <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 9, alignItems: 'flex-end' }}>
-                        <div style={{ flex: 1 }}>
-                          <label className="field-label">terms — comma separated</label>
-                          <input className="input gfw-mono" placeholder="news, updates" disabled={noTerms} value={c.terms} onChange={(e) => updateTaxClause(i, { terms: e.target.value }, `tax-terms-${i}`)} />
-                        </div>
-                        <button type="button" aria-label="Remove clause" onClick={() => removeTaxClause(i)} className="btn btn-ghost btn-sm" style={{ color: '#B91C1C' }}>Remove</button>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label className="field-label">terms — comma separated</label>
+                        <input className="input gfw-mono" placeholder="news, updates" disabled={noTerms} value={c.terms} onChange={(e) => updateTaxClause(i, { terms: e.target.value }, `tax-terms-${i}`)} />
                       </div>
                     </div>
                     {childVisible && (
-                      <div style={{ marginTop: 9 }}>
+                      <div>
                         <CheckboxChip active={c.includeChildren !== false} onClick={() => updateTaxClause(i, { includeChildren: c.includeChildren === false })}>
                           include_children
                         </CheckboxChip>
                       </div>
                     )}
-                  </div>
+                  </RepeatableCard>
                 );
               })}
-              <button type="button" onClick={addTaxClause} className="btn btn-ghost btn-sm" style={{ alignSelf: 'flex-start' }}>+ Taxonomy clause</button>
+              <button type="button" onClick={addTaxClause} className="btn btn-ghost btn-sm repeatable-add" style={{ alignSelf: 'flex-start' }}>+ Taxonomy clause</button>
             </div>
           </div>
 
@@ -310,12 +316,22 @@ export function WPQueryBuilder() {
                 </div>
               )}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {q.metaClauses.map((c, i) => {
                 const noValue = NO_VALUE_COMPARES.indexOf(c.compare) !== -1;
                 const multi = ['IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN'].indexOf(c.compare) !== -1;
                 return (
-                  <div key={i} style={{ border: '1px solid var(--gfw-border)', borderRadius: 7, padding: 11, background: 'var(--gfw-surface-sunken)' }}>
+                  <RepeatableCard
+                    key={i}
+                    index={i}
+                    count={q.metaClauses.length}
+                    title={c.key || `Clause ${i + 1}`}
+                    subtitle={c.compare}
+                    drag={drag.bind('metaClauses', i, metaOps.reorder)}
+                    onMoveUp={() => metaOps.moveUp(i)}
+                    onMoveDown={() => metaOps.moveDown(i)}
+                    onRemove={() => metaOps.remove(i)}
+                  >
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 9 }}>
                       <div>
                         <label className="field-label">key</label>
@@ -340,18 +356,15 @@ export function WPQueryBuilder() {
                           <option value="BINARY">BINARY</option>
                         </select>
                       </div>
-                      <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 9, alignItems: 'flex-end' }}>
-                        <div style={{ flex: 1 }}>
-                          <label className="field-label">{multi ? 'value — comma separated' : 'value'}</label>
-                          <input className="input gfw-mono" placeholder={noValue ? `not used with ${c.compare}` : multi ? '10, 20' : '10'} disabled={noValue} value={c.value} onChange={(e) => updateMetaClause(i, { value: e.target.value }, `meta-value-${i}`)} />
-                        </div>
-                        <button type="button" aria-label="Remove clause" onClick={() => removeMetaClause(i)} className="btn btn-ghost btn-sm" style={{ color: '#B91C1C' }}>Remove</button>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label className="field-label">{multi ? 'value — comma separated' : 'value'}</label>
+                        <input className="input gfw-mono" placeholder={noValue ? `not used with ${c.compare}` : multi ? '10, 20' : '10'} disabled={noValue} value={c.value} onChange={(e) => updateMetaClause(i, { value: e.target.value }, `meta-value-${i}`)} />
                       </div>
                     </div>
-                  </div>
+                  </RepeatableCard>
                 );
               })}
-              <button type="button" onClick={addMetaClause} className="btn btn-ghost btn-sm" style={{ alignSelf: 'flex-start' }}>+ Meta clause</button>
+              <button type="button" onClick={addMetaClause} className="btn btn-ghost btn-sm repeatable-add" style={{ alignSelf: 'flex-start' }}>+ Meta clause</button>
             </div>
           </div>
 
