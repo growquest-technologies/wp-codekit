@@ -49,7 +49,39 @@
         "logo": "https://www.wpcodekit.com/og-image.png"
       }
     </script>
-    <script type="module" crossorigin="" src="/assets/index-CX8lCBji.js"></script>
+
+    <!-- GA4_BOOTSTRAP_START -->
+    <script>
+      // GA4, loaded conditionally: skipped entirely when VITE_GA_MEASUREMENT_ID isn't set
+      // (e.g. local dev without a .env), and skipped during the local prerender crawl
+      // (scripts/prerender.ts appends ?_prerender=1) so refreshing static snapshots never
+      // sends real pageviews for bot/crawl traffic. send_page_view is off because this is a
+      // client-routed SPA — src/lib/usePageMeta.ts fires page_view manually on every route
+      // change instead, since GA4's own history-based auto-tracking can't guarantee the
+      // page title is already updated by the time it fires.
+      (function () {
+        var measurementId = 'G-QEM7233L6V';
+        // Vite leaves the literal %VAR_NAME% placeholder in place (doesn't blank it out)
+        // when the env var isn't set — e.g. no .env.local yet, or not configured on Vercel.
+        var isConfigured = measurementId && measurementId.charAt(0) !== '%';
+        var isPrerenderCrawl = new URLSearchParams(location.search).has('_prerender');
+        if (!isConfigured || isPrerenderCrawl) return;
+
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+        document.head.appendChild(s);
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+        gtag('js', new Date());
+        gtag('config', measurementId, { send_page_view: false });
+      })();
+    </script>
+    <!-- GA4_BOOTSTRAP_END -->
+    <script type="module" crossorigin="" src="/assets/index-B_BFjQRB.js"></script>
     <link rel="stylesheet" crossorigin="" href="/assets/index-BZspIu3J.css">
   <script id="ld-faq" type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is WP CodeKit really free?","acceptedAnswer":{"@type":"Answer","text":"Yes — every generator is free and anonymous. There's no account, no plan and no paywall on the copy or download step."}},{"@type":"Question","name":"Is the generated code production-ready?","acceptedAnswer":{"@type":"Answer","text":"Nonces and sanitisation are added wherever WordPress expects them, and defaults match WordPress core's own choices instead of our opinions. As with any generated code, review it before shipping."}},{"@type":"Question","name":"Do I need to install a plugin to use it?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs in your browser — paste the generated PHP straight into your own plugin or theme."}},{"@type":"Question","name":"Does WP CodeKit store or upload my code?","acceptedAnswer":{"@type":"Answer","text":"No. Nothing you type is sent anywhere — every generator runs entirely client-side, in your browser."}},{"@type":"Question","name":"Which WordPress version does the generated code target?","acceptedAnswer":{"@type":"Answer","text":"Current WordPress core APIs. Where a function needs a specific minimum version — WooCommerce's Blocks Checkout API, for instance — the generator notes it."}},{"@type":"Question","name":"Can I request a generator that doesn't exist yet?","acceptedAnswer":{"@type":"Answer","text":"Yes — use the contact form and tell us which function or workflow you keep writing by hand."}}]}</script></head>
   <body>

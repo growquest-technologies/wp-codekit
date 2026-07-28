@@ -35,7 +35,11 @@ function outputPathFor(routePath: string): string {
 async function crawlRoute(browser: Browser, baseUrl: string, route: RouteEntry) {
   const page = await browser.newPage();
   try {
-    await page.goto(`${baseUrl}${route.path}`, { waitUntil: 'domcontentloaded', timeout: NAV_TIMEOUT });
+    // ?_prerender=1 tells index.html's GA4 bootstrap to skip loading entirely — this crawl
+    // must never send real pageviews for bot/crawl traffic. Never ends up in the saved
+    // snapshot: usePageMeta builds canonical/OG URLs from the route's own path, not
+    // window.location, so the query string doesn't leak into anything we capture.
+    await page.goto(`${baseUrl}${route.path}?_prerender=1`, { waitUntil: 'domcontentloaded', timeout: NAV_TIMEOUT });
     await waitForRouteReady(page);
     const html = await page.evaluate(() => '<!doctype html>\n' + document.documentElement.outerHTML);
     const outPath = outputPathFor(route.path);

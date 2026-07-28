@@ -340,6 +340,40 @@ endorses this "static rendering" pattern as an alternative to full SSR.
   crawl, this **does** run on every request in production (it's tiny, no browser involved) but
   never during the build.
 
+## Analytics (GA4)
+
+Manual tracking, not GA4's own history-based auto-tracking — this is a client-routed SPA, and
+auto-tracking can't guarantee `document.title` is already updated by the time it fires (it also
+would have double-fired against the manual tracking below if both were left on).
+
+- `index.html`'s `GA4_BOOTSTRAP_START`/`_END` block loads `gtag.js` with `send_page_view: false`,
+  reading the measurement ID from `VITE_GA_MEASUREMENT_ID` (`%VITE_...%` Vite HTML env
+  substitution — set it in `.env.local` for local dev, and separately in Vercel's project env vars
+  for production; see `.env.example`). If unset, Vite leaves the literal `%VITE_...%` placeholder
+  in place rather than blanking it — the bootstrap script checks for that and no-ops, so a missing
+  env var degrades to "analytics off," never a crash.
+- `src/lib/usePageMeta.ts` fires the actual `page_view` (via `src/lib/analytics.ts`'s
+  `trackPageView`) at the end of its effect, using the exact title/path it just set — every page
+  already calls this hook, so there's no separate route-listener component to keep in sync.
+- `src/lib/analytics.ts`'s `trackEvent()` is wired into `GeneratorShell`'s copy/download buttons
+  (`code_copied`/`code_downloaded`) — since all 48+ tools share that one component, this covers
+  every generator from a single call site. Add further events here the same way; `window.gtag?.()`
+  optionally-chains, so calls are always safe even when analytics is off or blocked.
+- The bootstrap script also no-ops whenever `?_prerender=1` is present in the URL — the prerender
+  crawl (`scripts/prerender.ts`) appends this to every route it visits so refreshing static
+  snapshots locally can never send real pageviews for bot/crawl traffic. Verified: with the param,
+  `window.dataLayer`/`window.gtag` stay `undefined` through the whole crawl.
+- **The GA4 bootstrap block is baked into the crawled snapshot at whatever build time the last
+  local `npm run prerender` ran** — same class of problem as the JS/CSS asset-hash drift `Build
+  time per deployment` section above solves for, and solved the same way:
+  `scripts/copy-prerendered.mjs` resyncs the entire `GA4_BOOTSTRAP_START`/`_END` block (not just
+  the script/link tags) from the fresh `dist/index.html` into every snapshot on every
+  `npm run build`. Without this, a live deploy would permanently ship whatever measurement ID (or
+  lack of one) happened to be set on the developer's machine during their last local crawl,
+  completely disconnected from Vercel's actual configured env var — verified by prerendering with
+  one fake ID, then building with a different one, and confirming the deployed output used the
+  build's ID, not the stale crawled one.
+
 ## Commands
 
 ```

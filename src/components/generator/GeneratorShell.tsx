@@ -6,6 +6,7 @@ import { CodePreview } from './CodePreview';
 import { ValidationList } from './ValidationList';
 import type { ValidationIssue } from '../../lib/codegen';
 import { useCopyFlash } from '../../lib/useCopyFlash';
+import { trackEvent } from '../../lib/analytics';
 
 interface EditorControls {
   canUndo: boolean;
@@ -152,6 +153,7 @@ export function GeneratorShell({
 
   function copy() {
     copyFlash.copy(code);
+    trackEvent('code_copied', { generator: title, category });
   }
 
   function download() {
@@ -164,6 +166,7 @@ export function GeneratorShell({
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+    trackEvent('code_downloaded', { generator: title, category, filename });
   }
 
   return (

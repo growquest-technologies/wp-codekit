@@ -16,6 +16,12 @@ import { join, dirname, relative } from 'node:path';
 // built, regardless of how stale the snapshot's own copy is. Only the tag values are
 // synced; the snapshot's rendered content (title, body, JSON-LD) stays whatever it was
 // at prerender time — a forgotten crawl means slightly stale *content*, never a broken page.
+//
+// Same problem, same fix, for the GA4_BOOTSTRAP block: it's baked from
+// VITE_GA_MEASUREMENT_ID at whatever build time the crawl last ran locally, which is
+// disconnected from Vercel's own env var config. Without resyncing it too, a live deploy
+// would silently ship the developer's local (or missing) measurement ID forever, no matter
+// what's actually configured on Vercel.
 const root = fileURLToPath(new URL('..', import.meta.url));
 const src = `${root}prerendered`;
 const dest = `${root}dist`;
@@ -28,9 +34,10 @@ if (!existsSync(src)) {
 const freshIndexHtml = readFileSync(`${dest}/index.html`, 'utf8');
 const scriptTag = freshIndexHtml.match(/<script type="module"[^>]*><\/script>/)?.[0];
 const styleTag = freshIndexHtml.match(/<link rel="stylesheet"[^>]*>/)?.[0];
+const gaBlock = freshIndexHtml.match(/<!-- GA4_BOOTSTRAP_START -->[\s\S]*?<!-- GA4_BOOTSTRAP_END -->/)?.[0];
 
-if (!scriptTag || !styleTag) {
-  console.error('Could not find the built <script>/<link> tags in dist/index.html — aborting prerender overlay.');
+if (!scriptTag || !styleTag || !gaBlock) {
+  console.error('Could not find the built <script>/<link>/GA4_BOOTSTRAP tags in dist/index.html — aborting prerender overlay.');
   process.exit(1);
 }
 
@@ -49,6 +56,7 @@ for (const file of walk(src)) {
   let html = readFileSync(file, 'utf8');
   html = html.replace(/<script type="module"[^>]*><\/script>/, scriptTag);
   html = html.replace(/<link rel="stylesheet"[^>]*>/, styleTag);
+  html = html.replace(/<!-- GA4_BOOTSTRAP_START -->[\s\S]*?<!-- GA4_BOOTSTRAP_END -->/, gaBlock);
 
   const outPath = join(dest, relative(src, file));
   mkdirSync(dirname(outPath), { recursive: true });

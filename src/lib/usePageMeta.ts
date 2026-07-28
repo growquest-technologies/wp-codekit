@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { trackPageView } from './analytics';
 
 const SITE_NAME = 'WP CodeKit';
 const BASE_URL = 'https://www.wpcodekit.com';
@@ -41,5 +42,7 @@ export function usePageMeta(title: string, description: string, path: string, op
     } else if (robots) {
       robots.remove();
     }
+
+    trackPageView(fullTitle, path);
   }, [title, description, path, options?.noindex, options?.rawTitle]);
 }
