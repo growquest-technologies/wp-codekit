@@ -907,6 +907,9 @@ export function GradientTool() {
                           <span aria-hidden="true" className="gfw-mono gt-unit">#</span>
                           <input
                             value={st.hex.slice(1).toUpperCase()}
+                            // Focusing a row's field selects that stop, so the picker
+                            // above always edits the row you are actually typing in.
+                            onFocus={() => { setSelected(st.id); setHexDraft(null); }}
                             onChange={(e) => { const p = parseCssColor(e.target.value); if (p) patchStop(st.id, { hex: p }); }}
                             spellCheck={false}
                             aria-label={`Hex for stop at ${fmt(st.pos, 1)} percent`}
@@ -916,6 +919,7 @@ export function GradientTool() {
                         <div className="gt-text-field" style={{ flexShrink: 0, width: 58 }}>
                           <input
                             value={fmt(st.pos, 1)}
+                            onFocus={() => { setSelected(st.id); setHexDraft(null); }}
                             onChange={(e) => patchStop(st.id, { pos: clamp(parseFloat(e.target.value) || 0, 0, 100) })}
                             aria-label={`Position of stop ${st.hex.toUpperCase()}`}
                             className="gfw-mono"

@@ -6,14 +6,6 @@ const CONTACT_TOPICS = ['Generator request', 'Bug report', 'Wrong output', 'Word
 
 const CONTACT_CHANNELS = [
   { label: 'Email', value: 'hello@wpcodekit.com', note: 'Best for anything with a code sample attached.' },
-  { label: 'Bug tracker', value: 'github.com/wpcodekit', note: 'Wrong output, malformed PHP, escaping mistakes.' },
-  { label: 'Changelog', value: '/changelog', note: 'What shipped, weekly.' },
-];
-
-const CONTACT_FAQ = [
-  { q: 'Is there an API?', a: 'Not yet. It is on the list once the generator set is complete.' },
-  { q: 'Can I self-host this?', a: 'The generators are client-side, so yes — ask and we will send the build.' },
-  { q: 'Do you store my plugin details?', a: 'No. Everything stays in your browser.' },
 ];
 
 const CONTACT_WEBHOOK_URL = 'https://webhook.ottokit.com/ottokit/eeb0c52b-03c3-411e-abe0-80460d1c819c';
@@ -157,16 +149,6 @@ export function Contact() {
             growquest.io
             <Icon name={GLYPH.arrowRight} size={13} />
           </a>
-        </div>
-        <div style={{ background: 'var(--gfw-surface-sunken)', border: '1px solid var(--gfw-border)', borderRadius: 12, padding: '20px 22px' }}>
-          <div className="gfw-eyebrow" style={{ marginBottom: 12 }}>Before you write in</div>
-          <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {CONTACT_FAQ.map((cf) => (
-              <li key={cf.q} style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--gfw-text-body)' }}>
-                <span style={{ fontWeight: 700, color: 'var(--gfw-text-strong)' }}>{cf.q}</span> {cf.a}
-              </li>
-            ))}
-          </ul>
         </div>
       </aside>
     </div>

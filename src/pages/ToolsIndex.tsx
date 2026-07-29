@@ -171,12 +171,6 @@ function ToolCard({ tool }: { tool: Tool }) {
       <div style={{ fontSize: 16.5, fontWeight: 700, color: 'var(--gfw-text-strong)', letterSpacing: '-0.014em', lineHeight: 1.2 }}>{tool.name}</div>
       <div style={{ fontFamily: 'var(--gfw-font-mono)', fontSize: 11.5, color: 'var(--gfw-accent)', wordBreak: 'break-all', lineHeight: 1.4 }}>{tool.fn}</div>
       <div style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--gfw-text-muted)' }}>{tool.desc}</div>
-      {tool.preview && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, fontWeight: 600, color: 'var(--gfw-text-mutest)', marginTop: 2 }}>
-          <Icon name={GLYPH.preview} size={13} />
-          Preview panel
-        </div>
-      )}
     </Link>
   );
 }
