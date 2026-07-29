@@ -21,6 +21,12 @@ export interface SpecCard {
   outputs: RichText;
   /** Minimum WordPress / PHP / plugin versions. */
   requires: string;
+  /**
+   * What the output is verified against, for the visible freshness line.
+   * Defaults to the WordPress/PHP stack in contentMeta; tools that don't emit
+   * WordPress code (the Color Tool) override it with something meaningful.
+   */
+  testedOn?: string;
 }
 
 export interface FeatureCard {

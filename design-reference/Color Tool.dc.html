@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Color Tool — conversions, variations, harmonies, contrast &amp; accessible palettes</title>
+  <meta name="description" content="Paste a HEX code and get every conversion, shade and tint ramp, color harmony, WCAG and APCA contrast check, color-blindness simulation and a contrast-corrected UI palette. All calculated in OKLCH." />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C;">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div onClick="{{ onSwatchClick }}" onMouseOver="{{ onSwatchOver }}" onMouseLeave="{{ onSwatchOut }}" onKeyDown="{{ onSwatchKey }}">
+
+  <div style="background:{{ baseHex }}; transition:background 120ms linear;">
+    <div style="max-width:1200px; margin:0 auto; padding:clamp(30px,4vw,50px) 28px clamp(34px,4.5vw,56px); display:flex; flex-wrap:wrap; gap:clamp(24px,4vw,52px); align-items:flex-start;">
+      <div style="flex:1 1 400px; min-width:0;">
+        <div style="font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; opacity:0.72; color:{{ stageFg }}; margin-bottom:14px;">Color tool</div>
+        <h1 style="margin:0 0 12px; font-size:clamp(38px,5.4vw,66px); font-weight:700; letter-spacing:-0.035em; line-height:1.0; color:{{ stageFg }}; text-wrap:pretty;">{{ colorName }}</h1>
+        <div aria-hidden="true" style="font-family:'JetBrains Mono',monospace; font-size:clamp(15px,1.6vw,19px); font-weight:500; letter-spacing:0.02em; opacity:0.78; color:{{ stageFg }}; margin-bottom:8px;">{{ baseHexUpper }} · {{ oklchShort }}</div>
+        <sc-if value="{{ hasNameNote }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:12.5px; font-weight:600; letter-spacing:0.01em; opacity:0.64; color:{{ stageFg }}; margin-bottom:16px;">{{ nameNote }}</div>
+        </sc-if>
+        <div style="height:8px;"></div>
+        <p style="margin:0; max-width:52ch; font-size:clamp(15px,1.4vw,17px); line-height:1.6; opacity:0.9; color:{{ stageFg }}; text-wrap:pretty;">{{ description }}</p>
+      </div>
+
+      <div style="flex:0 1 320px; min-width:min(100%,280px); background:#FFFFFF; border-radius:14px; padding:16px; box-shadow:0 10px 34px rgba(24,20,14,0.18);">
+        <div ref="{{ refSquare }}" onPointerDown="{{ onSquareDown }}" style="position:relative; height:172px; border-radius:9px; cursor:crosshair; touch-action:none; background:linear-gradient(to top, #000, rgba(0,0,0,0)), linear-gradient(to right, #fff, rgba(255,255,255,0)), {{ hueCss }};">
+          <div aria-hidden="true" style="position:absolute; left:{{ satDotLeft }}; top:{{ satDotTop }}; width:18px; height:18px; margin:-9px 0 0 -9px; border-radius:50%; border:2.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(0,0,0,0.2); background:{{ baseHex }};"></div>
+        </div>
+        <div ref="{{ refHue }}" onPointerDown="{{ onHueDown }}" style="position:relative; height:16px; margin-top:14px; border-radius:8px; cursor:pointer; touch-action:none; background:linear-gradient(to right,#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000);">
+          <div aria-hidden="true" style="position:absolute; left:{{ hueDotLeft }}; top:8px; width:16px; height:16px; margin:-8px 0 0 -8px; border-radius:50%; border:2.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,0.35); background:{{ hueCss }};"></div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:14px; align-items:stretch;">
+          <div style="flex:1; min-width:0; display:flex; align-items:center; gap:7px; border:1px solid #E7E2D9; border-radius:8px; padding:0 10px; background:#FCFBF9;">
+            <span aria-hidden="true" style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#A79F91;">#</span>
+            <input value="{{ hexField }}" onChange="{{ onHexChange }}" onBlur="{{ onHexBlur }}" onKeyDown="{{ onHexKey }}" spellCheck="false" aria-label="Hex color code" style="flex:1; min-width:0; border:none; outline:none; background:none; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500; letter-spacing:0.04em; color:#26221C; padding:9px 0;" />
+          </div>
+          <button onClick="{{ onRandom }}" aria-label="Random color" style="flex-shrink:0; width:40px; border:1px solid #E7E2D9; border-radius:8px; background:#fff; cursor:pointer; color:#4A4438; display:flex; align-items:center; justify-content:center; font-family:lineicons; font-size:15px;" style-hover="background:#F3F1EC;" style-focus="outline:2px solid #3858E9;">&#xf1c1;</button>
+        </div>
+        <div style="margin-top:11px; font-size:11.5px; line-height:1.5; color:#948C7E;">Click any color on this page to copy it.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:sticky; top:0; z-index:30; background:rgba(255,255,255,0.94); backdrop-filter:blur(10px); border-bottom:1px solid #E7E2D9;">
+    <div style="max-width:1200px; margin:0 auto; padding:9px 28px; display:flex; align-items:center; gap:14px;">
+      <div style="display:flex; align-items:center; gap:9px; flex-shrink:0;">
+        <span data-hex="{{ baseHex }}" data-key="sticky" role="button" tabIndex="0" aria-label="Copy {{ baseHexUpper }}" style="width:22px; height:22px; border-radius:6px; background:{{ baseHex }}; border:1px solid rgba(28,26,21,0.14); cursor:pointer; display:block;"></span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:500; color:#26221C; white-space:nowrap;">{{ readoutHex }}</span>
+      </div>
+      <div style="width:1px; height:20px; background:#E7E2D9; flex-shrink:0;"></div>
+      <nav style="display:flex; gap:3px; overflow-x:auto; min-width:0;">
+        <a href="#conversion" style="font-size:12.5px; font-weight:600; color:#5C564B; text-decoration:none; padding:5px 9px; border-radius:6px; white-space:nowrap;" style-hover="background:#F3F1EC; color:#26221C;">Conversion</a>
+        <a href="#variations" style="font-size:12.5px; font-weight:600; color:#5C564B; text-decoration:none; padding:5px 9px; border-radius:6px; white-space:nowrap;" style-hover="background:#F3F1EC; color:#26221C;">Variations</a>
+        <a href="#harmonies" style="font-size:12.5px; font-weight:600; color:#5C564B; text-decoration:none; padding:5px 9px; border-radius:6px; white-space:nowrap;" style-hover="background:#F3F1EC; color:#26221C;">Harmonies</a>
+        <a href="#contrast" style="font-size:12.5px; font-weight:600; color:#5C564B; text-decoration:none; padding:5px 9px; border-radius:6px; white-space:nowrap;" style-hover="background:#F3F1EC; color:#26221C;">Contrast</a>
+        <a href="#vision" style="font-size:12.5px; font-weight:600; color:#5C564B; text-decoration:none; padding:5px 9px; border-radius:6px; white-space:nowrap;" style-hover="background:#F3F1EC; color:#26221C;">Color vision</a>
+        <a href="#similar" style="font-size:12.5px; font-weight:600; color:#5C564B; text-decoration:none; padding:5px 9px; border-radius:6px; white-space:nowrap;" style-hover="background:#F3F1EC; color:#26221C;">Similar</a>
+        <a href="#palette" style="font-size:12.5px; font-weight:600; color:#5C564B; text-decoration:none; padding:5px 9px; border-radius:6px; white-space:nowrap;" style-hover="background:#F3F1EC; color:#26221C;">UI palette</a>
+      </nav>
+      <div style="flex:1; min-width:6px;"></div>
+      <span style="font-size:11.5px; font-weight:600; color:{{ readoutNoteColor }}; white-space:nowrap; flex-shrink:0;">{{ readoutNote }}</span>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:clamp(34px,4.5vw,58px) 28px 0; display:flex; flex-direction:column; gap:clamp(38px,5vw,64px);">
+
+    <section id="conversion">
+      <h2 style="margin:0 0 6px; font-size:clamp(22px,2.4vw,30px); font-weight:700; letter-spacing:-0.026em; color:#1C1A15;">Conversion</h2>
+      <p style="margin:0 0 20px; font-size:15px; line-height:1.65; color:#5C564B; max-width:70ch; text-wrap:pretty;">The same color in every model a designer or developer is likely to need. Click a row to copy the value.</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,320px), 1fr)); gap:12px;">
+        <sc-for list="{{ conversionCols }}" as="col" hint-placeholder-count="2">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; overflow:hidden;">
+            <sc-for list="{{ col.rows }}" as="row" hint-placeholder-count="5">
+              <button onClick="{{ row.onCopy }}" style="width:100%; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 15px; border:none; border-top:{{ row.borderTop }}; background:{{ row.bg }}; cursor:pointer; text-align:left;" style-hover="background:#F7F5F0;" style-focus="outline:2px solid #3858E9; outline-offset:-2px;">
+                <span style="font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#948C7E; flex-shrink:0;">{{ row.label }}</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#26221C; text-align:right; word-break:break-word;">{{ row.display }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="variations">
+      <h2 style="margin:0 0 6px; font-size:clamp(22px,2.4vw,30px); font-weight:700; letter-spacing:-0.026em; color:#1C1A15;">Variations</h2>
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.65; color:#5C564B; max-width:70ch; text-wrap:pretty;">Shades, tints, tones, hues and temperature — every ramp mixed in OKLab and gamut-mapped back to sRGB, so the steps look evenly spaced rather than merely being evenly numbered. The ring marks your color.</p>
+      <div style="display:flex; flex-direction:column; gap:22px;">
+        <sc-for list="{{ ramps }}" as="ramp" hint-placeholder-count="5">
+          <div>
+            <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+              <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">{{ ramp.name }}</span>
+              <span style="font-size:13px; line-height:1.5; color:#948C7E; text-wrap:pretty;">{{ ramp.blurb }}</span>
+            </div>
+            <div style="display:flex; gap:3px;">
+              <sc-for list="{{ ramp.cells }}" as="c" hint-placeholder-count="12">
+                <div data-hex="{{ c.hex }}" data-key="{{ c.key }}" role="button" tabIndex="0" aria-label="{{ c.aria }}" title="{{ c.hexUpper }}" style="flex:1; min-width:0; height:74px; border-radius:7px; background:{{ c.hex }}; cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:0.02em; color:{{ c.fg }}; opacity:{{ c.labelOpacity }}; pointer-events:none; white-space:nowrap;">{{ c.labelText }}</span>
+                  <sc-if value="{{ c.isBase }}" hint-placeholder-val="{{ false }}">
+                    <span aria-hidden="true" style="position:absolute; top:8px; left:50%; margin-left:-4px; width:8px; height:8px; border-radius:50%; border:2px solid {{ c.fg }}; opacity:0.85;"></span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="harmonies">
+      <h2 style="margin:0 0 6px; font-size:clamp(22px,2.4vw,30px); font-weight:700; letter-spacing:-0.026em; color:#1C1A15;">Color harmonies</h2>
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.65; color:#5C564B; max-width:70ch; text-wrap:pretty;">Harmonies are hue rotations around the color wheel. Lightness and chroma are held steady, then chroma is reduced only where a rotation lands outside sRGB — which is why some sets look calmer than others.</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,330px), 1fr)); gap:16px;">
+        <sc-for list="{{ harmonies }}" as="h" hint-placeholder-count="6">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px;">
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:4px;">{{ h.name }}</div>
+            <p style="margin:0 0 12px; font-size:12.5px; line-height:1.55; color:#948C7E; text-wrap:pretty;">{{ h.blurb }}</p>
+            <div style="display:flex; gap:3px;">
+              <sc-for list="{{ h.cells }}" as="c" hint-placeholder-count="3">
+                <div data-hex="{{ c.hex }}" data-key="{{ c.key }}" role="button" tabIndex="0" aria-label="{{ c.aria }}" title="{{ c.hexUpper }}" style="flex:1; min-width:0; height:68px; border-radius:7px; background:{{ c.hex }}; cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:600; color:{{ c.fg }}; opacity:{{ c.labelOpacity }}; pointer-events:none; white-space:nowrap;">{{ c.labelText }}</span>
+                  <sc-if value="{{ c.isBase }}" hint-placeholder-val="{{ false }}">
+                    <span aria-hidden="true" style="position:absolute; top:8px; left:50%; margin-left:-4px; width:8px; height:8px; border-radius:50%; border:2px solid {{ c.fg }}; opacity:0.85;"></span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="contrast">
+      <h2 style="margin:0 0 6px; font-size:clamp(22px,2.4vw,30px); font-weight:700; letter-spacing:-0.026em; color:#1C1A15;">Contrast checker</h2>
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.65; color:#5C564B; max-width:74ch; text-wrap:pretty;">WCAG 2.1 ratios come from relative luminance. APCA is the perceptual method drafted for WCAG 3 — it reports a lightness contrast value (Lc) rather than a ratio, and judges light-on-dark differently from dark-on-light. Both are shown because they disagree, and that disagreement is useful.</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,320px), 1fr)); gap:16px;">
+        <sc-for list="{{ contrastCards }}" as="cc" hint-placeholder-count="2">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="padding:14px 16px; display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+              <span style="font-size:13.5px; font-weight:700; color:#1C1A15;">{{ cc.title }}</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#948C7E;">{{ cc.pairLabel }}</span>
+            </div>
+            <div style="background:{{ cc.bg }}; padding:26px 22px; border-top:1px solid #EFEBE3; border-bottom:1px solid #EFEBE3;">
+              <div style="font-size:26px; font-weight:700; letter-spacing:-0.02em; line-height:1.2; color:{{ cc.fg }}; margin-bottom:8px;">Large heading text</div>
+              <p style="margin:0; font-size:14.5px; line-height:1.6; color:{{ cc.fg }}; max-width:44ch;">Body copy at 14.5px. If this looks strained, the numbers below will already have told you — trust them over your monitor.</p>
+            </div>
+            <div style="padding:14px 16px; display:flex; flex-direction:column; gap:12px;">
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:19px; font-weight:700; color:#1C1A15;">{{ cc.ratio }}</span>
+                <span style="font-size:11.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#948C7E;">WCAG 2.1</span>
+                <div style="flex:1; min-width:4px;"></div>
+                <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                  <sc-for list="{{ cc.badges }}" as="b" hint-placeholder-count="4">
+                    <span style="font-size:11px; font-weight:700; padding:3px 7px; border-radius:5px; background:{{ b.bg }}; color:{{ b.color }};">{{ b.label }}</span>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; border-top:1px solid #F2EEE7; padding-top:12px;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:19px; font-weight:700; color:#1C1A15;">{{ cc.apca }}</span>
+                <span style="font-size:11.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#948C7E;">APCA Lc</span>
+                <div style="flex:1; min-width:4px;"></div>
+                <span style="font-size:12px; line-height:1.45; color:#5C564B; text-align:right; max-width:24ch; text-wrap:pretty;">{{ cc.apcaVerdict }}</span>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="margin-top:16px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px;">
+        <div style="font-size:13.5px; font-weight:700; color:#1C1A15; margin-bottom:4px;">Accessible variants of this color</div>
+        <p style="margin:0 0 14px; font-size:12.5px; line-height:1.55; color:#948C7E; max-width:76ch; text-wrap:pretty;">Same hue and chroma, lightness walked until the pair clears 4.5:1 — the smallest change that makes your color usable as text.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,240px), 1fr)); gap:12px;">
+          <sc-for list="{{ accessibleVariants }}" as="av" hint-placeholder-count="2">
+            <div data-hex="{{ av.hex }}" data-key="{{ av.key }}" role="button" tabIndex="0" aria-label="{{ av.aria }}" style="cursor:pointer; border:1px solid #E7E2D9; border-radius:9px; overflow:hidden;">
+              <div style="background:{{ av.bg }}; padding:16px; display:flex; align-items:baseline; justify-content:space-between; gap:10px;">
+                <span style="font-size:17px; font-weight:700; color:{{ av.hex }};">{{ av.sample }}</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:600; color:{{ av.hex }};">{{ av.hexUpper }}</span>
+              </div>
+              <div style="padding:9px 13px; display:flex; align-items:center; justify-content:space-between; gap:10px; background:#FCFBF9;">
+                <span style="font-size:12px; color:#5C564B;">{{ av.note }}</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:#1C1A15;">{{ av.ratio }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section id="vision">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:6px;">
+        <h2 style="margin:0; font-size:clamp(22px,2.4vw,30px); font-weight:700; letter-spacing:-0.026em; color:#1C1A15;">Color vision simulation</h2>
+        <div style="display:flex; align-items:center; gap:11px; flex-shrink:0;">
+          <span style="font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#948C7E;">Severity</span>
+          <input type="range" min="0" max="100" step="5" value="{{ severity }}" onChange="{{ onSeverityChange }}" aria-label="Simulation severity" style="width:150px; accent-color:#3858E9;" />
+          <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:600; color:#26221C; width:38px;">{{ severityLabel }}</span>
+        </div>
+      </div>
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.65; color:#5C564B; max-width:74ch; text-wrap:pretty;">Simulated with the Machado, Oliveira and Fernandes model, which uses severity-dependent matrices in linear RGB rather than crudely stripping a channel. Prevalence figures are population statistics, not something derived from your color.</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,300px), 1fr)); gap:14px;">
+        <sc-for list="{{ visionCards }}" as="v" hint-placeholder-count="4">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:15px;">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:2px;">
+              <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">{{ v.name }}</span>
+              <span style="font-size:11px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:{{ v.bandColor }};">{{ v.band }}</span>
+            </div>
+            <div style="font-size:12px; line-height:1.5; color:#948C7E; margin-bottom:11px;">{{ v.prevalence }}</div>
+            <div style="display:flex; gap:3px;">
+              <div data-hex="{{ v.hex }}" data-key="{{ v.keyA }}" role="button" tabIndex="0" aria-label="{{ v.ariaA }}" title="{{ v.hexUpper }}" style="flex:1; min-width:0; height:72px; border-radius:7px 3px 3px 7px; background:{{ v.hex }}; cursor:pointer; display:flex; align-items:flex-end; padding:8px; overflow:hidden;">
+                <span style="font-size:10.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:{{ v.fg }}; opacity:0.75; pointer-events:none;">Actual</span>
+              </div>
+              <div data-hex="{{ v.simHex }}" data-key="{{ v.keyB }}" role="button" tabIndex="0" aria-label="{{ v.ariaB }}" title="{{ v.simHexUpper }}" style="flex:1; min-width:0; height:72px; border-radius:3px 7px 7px 3px; background:{{ v.simHex }}; cursor:pointer; display:flex; align-items:flex-end; justify-content:space-between; gap:6px; padding:8px; overflow:hidden;">
+                <span style="font-size:10.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:{{ v.simFg }}; opacity:0.75; pointer-events:none;">Simulated</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:600; color:{{ v.simFg }}; opacity:{{ v.simLabelOpacity }}; pointer-events:none; white-space:nowrap;">{{ v.simLabelText }}</span>
+              </div>
+            </div>
+            <div style="margin-top:9px; font-size:12px; color:#5C564B;">{{ v.deltaNote }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="similar">
+      <h2 style="margin:0 0 6px; font-size:clamp(22px,2.4vw,30px); font-weight:700; letter-spacing:-0.026em; color:#1C1A15;">Similar named colors</h2>
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.65; color:#5C564B; max-width:74ch; text-wrap:pretty;">Nearest matches by ΔE OK — straight-line distance in OKLab, the closest thing to “how different do these look”. Distance is shown as a raw number with a plain-language band, because a “95% similar” score isn’t a real unit.</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,210px), 1fr)); gap:12px;">
+        <sc-for list="{{ similarColors }}" as="s" hint-placeholder-count="8">
+          <div data-hex="{{ s.hex }}" data-key="{{ s.key }}" role="button" tabIndex="0" aria-label="{{ s.aria }}" style="cursor:pointer; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; overflow:hidden;" style-hover="border-color:#3858E9;">
+            <div style="height:96px; background:{{ s.hex }}; display:flex; align-items:center; justify-content:center;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:600; color:{{ s.fg }}; opacity:{{ s.labelOpacity }}; pointer-events:none;">{{ s.labelText }}</span>
+            </div>
+            <div style="padding:11px 13px 12px;">
+              <div style="font-size:13.5px; font-weight:700; color:#1C1A15; margin-bottom:3px; text-wrap:pretty;">{{ s.name }}</div>
+              <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#948C7E;">{{ s.hexUpper }}</span>
+                <span style="font-size:11px; font-weight:700; color:{{ s.bandColor }};">{{ s.band }}</span>
+              </div>
+              <div style="margin-top:5px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#B3ACA0;">ΔE OK {{ s.delta }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section id="palette">
+      <h2 style="margin:0 0 6px; font-size:clamp(22px,2.4vw,30px); font-weight:700; letter-spacing:-0.026em; color:#1C1A15;">Semantic UI palette</h2>
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.65; color:#5C564B; max-width:74ch; text-wrap:pretty;">A harmony gives you related hues; an interface needs named roles that pass contrast. Each color below is generated in OKLCH from your hue, then its lightness is walked until it clears its target ratio against the surface it sits on — so the palette is usable, not just pretty.</p>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <sc-for list="{{ uiPalettes }}" as="p" hint-placeholder-count="2">
+          <div style="background:{{ p.shellBg }}; border:1px solid {{ p.shellBorder }}; border-radius:12px; padding:18px;">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+              <span style="font-size:14.5px; font-weight:700; color:{{ p.shellText }};">{{ p.title }}</span>
+              <span style="font-size:12px; color:{{ p.shellMuted }};">{{ p.note }}</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,158px), 1fr)); gap:9px;">
+              <sc-for list="{{ p.roles }}" as="r" hint-placeholder-count="12">
+                <div data-hex="{{ r.hex }}" data-key="{{ r.key }}" role="button" tabIndex="0" aria-label="{{ r.aria }}" style="cursor:pointer; border:1px solid {{ p.shellBorder }}; border-radius:9px; overflow:hidden; background:{{ p.chipBg }};">
+                  <div style="height:52px; background:{{ r.hex }}; display:flex; align-items:center; justify-content:center;">
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:600; color:{{ r.fg }}; opacity:{{ r.labelOpacity }}; pointer-events:none;">{{ r.labelText }}</span>
+                  </div>
+                  <div style="padding:8px 10px 9px;">
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:{{ p.shellText }}; word-break:break-all;">{{ r.token }}</div>
+                    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:6px; margin-top:3px;">
+                      <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:{{ p.shellMuted }};">{{ r.hexUpper }}</span>
+                      <span style="font-size:10.5px; font-weight:700; color:{{ r.checkColor }};">{{ r.check }}</span>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+  </div>
+
+  <section style="border-top:1px solid #E7E2D9; background:#FAF9F7; margin-top:clamp(44px,5vw,68px);">
+    <div style="max-width:1200px; margin:0 auto; padding:clamp(40px,5vw,64px) 28px clamp(48px,6vw,72px); display:flex; flex-direction:column; gap:clamp(40px,4.5vw,60px);">
+
+      <div style="display:flex; flex-wrap:wrap; gap:clamp(24px,4vw,56px); align-items:flex-start;">
+        <div style="flex:1 1 520px; min-width:0;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#A79F91; margin-bottom:12px;">About this tool</div>
+          <h2 style="margin:0 0 18px; font-size:clamp(25px,2.7vw,33px); font-weight:700; letter-spacing:-0.028em; line-height:1.12; color:#1C1A15; text-wrap:pretty;">Color Palette Generator Online</h2>
+          <p style="margin:0 0 14px; font-size:clamp(15.5px,1.35vw,17px); line-height:1.68; color:#3B362D; max-width:66ch; text-wrap:pretty;">Paste a hex code, drag the picker, or hit random, and this tool breaks one color down into everything you need to use it: exact conversions across nine color models, five variation ramps, six harmonies, WCAG and APCA contrast, color-blindness simulation, the closest named colors, and a full light and dark interface palette.</p>
+          <p style="margin:0; font-size:15px; line-height:1.7; color:#5C564B; max-width:66ch; text-wrap:pretty;">Every calculation happens in OKLCH and OKLab — the perceptual space standardised in CSS Color 4 — then gets gamut-mapped back to sRGB by reducing chroma while lightness and hue hold. That is why the ramps here step evenly to the eye instead of collapsing into mud at the dark end. Free, no account, and nothing leaves your browser.</p>
+        </div>
+        <div style="flex:0 1 300px; min-width:min(100%,260px); background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Working space</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#26221C;">OKLCH / OKLab</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Models covered</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">HEX, RGB, HSL, HSB, HWB, CMYK, OKLCH, LAB, LCH, XYZ</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Accessibility</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">WCAG 2.1 ratios, APCA Lc, Machado vision model</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Price</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">Free — no sign-up, no limits</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 16px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; max-width:38ch; text-wrap:pretty;">Why this color tool is more useful than a generic palette generator</h2>
+        <p style="margin:0 0 26px; font-size:15.5px; line-height:1.7; color:#4A4438; max-width:72ch; text-wrap:pretty;">Most color sites rotate a hue in HSL, print six swatches and call it a palette. HSL is a geometric trick on RGB, not a model of vision: its lightness value says a saturated yellow and a saturated blue are equally bright, which no human eye agrees with. Working in OKLCH fixes that, and it changes every ramp, harmony and generated theme on this page.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,290px), 1fr)); gap:14px;">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Perceptual maths, not HSL shortcuts</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Mixing happens in OKLab and rotation in OKLCH, so a ten-step ramp actually reads as ten even steps and a triadic set keeps all three colors at the same visual weight.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Honest gamut mapping</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Out-of-gamut results lose chroma gradually while hue and lightness are preserved, instead of being clipped per channel — the clipping that turns bright rotations into muddy near-duplicates elsewhere.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Two contrast standards side by side</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">WCAG 2.1 ratios for the audit you have to pass, and APCA Lc for what actually looks legible. Where they disagree you can see it, rather than trusting one number blindly.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">A palette with roles, not just hues</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Background, surface, border, text, muted text, primary, hover, secondary, accent, success, warning and danger — generated for light and dark, each one contrast-corrected against the surface it sits on.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">A real vision model</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Protanopia, deuteranopia, tritanopia and achromatopsia simulated with severity-dependent matrices in linear RGB, with a severity slider — not a red channel deleted in sRGB.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Numbers that don’t pretend</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Similarity is reported as ΔE OK distance with a plain-language band. Temperature is labelled a perceptual heuristic, not Kelvin. CMYK is marked as an approximation without an ICC profile, because it is one.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 16px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; text-wrap:pretty;">How does the color tool work?</h2>
+        <p style="margin:0 0 26px; font-size:15.5px; line-height:1.7; color:#4A4438; max-width:72ch; text-wrap:pretty;">One pipeline drives every section on the page: your sRGB input is linearised, converted into a perceptual space, transformed there, then mapped back into sRGB for display.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,220px), 1fr)); gap:14px; margin-bottom:30px;">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">01</div>
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Give it a color</div>
+            <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Type or paste a hex code, drag inside the saturation square, or move the hue slider. Three and six digit hex both parse.</p>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">02</div>
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">It converts to OKLCH</div>
+            <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">sRGB is linearised, taken to XYZ and OKLab, then expressed as lightness, chroma and hue — the form every transformation here needs.</p>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">03</div>
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Transform, then map back</div>
+            <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Ramps mix toward black, white or grey; harmonies rotate hue; theme roles walk lightness. Anything outside sRGB loses chroma until it fits.</p>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">04</div>
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Check and copy</div>
+            <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Contrast is measured on the results, not assumed. Hover any swatch for its hex, click to copy it to your clipboard.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:clamp(20px,3vw,32px); align-items:flex-start;">
+          <div style="flex:1 1 480px; min-width:0;">
+            <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:4px;">Worked example — the conversion pipeline</div>
+            <p style="margin:0 0 12px; font-size:13.5px; line-height:1.62; color:#5C564B; max-width:64ch; text-wrap:pretty;">Every value on this page comes out of these four steps. Gamma is removed first, because averaging gamma-encoded numbers is what makes naive blends look dirty.</p>
+            <pre style="margin:0; background:#1C1A15; border-radius:10px; padding:18px 20px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.75; color:#E4DFD6;">HEX  #E1706D
+ ↓   parse to sRGB 0–1
+sRGB 0.882, 0.439, 0.427
+ ↓   remove gamma (piecewise, per sRGB spec)
+LIN  0.753, 0.163, 0.153
+ ↓   matrix to XYZ, then to OKLab
+OKL  L 0.665  a 0.128  b 0.049
+ ↓   polar form
+LCH  oklch(66.5% 0.137 21)
+ ↓   transform, then reduce chroma if outside sRGB
+OUT  a hex you can paste anywhere</pre>
+            <p style="margin:12px 0 0; font-size:13.5px; line-height:1.65; color:#5C564B; max-width:68ch; text-wrap:pretty;">The W3C publishes reference code for all of these conversions, gamut mapping and color difference formulas, which is what the maths here follows.</p>
+          </div>
+          <div style="flex:0 1 300px; min-width:min(100%,260px); background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 20px 20px;">
+            <div style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#A79F91; margin-bottom:12px;">Reference documentation</div>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <a href="https://www.w3.org/TR/css-color-4/" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">CSS Color Module Level 4</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">The specification that standardises OKLCH, LAB, LCH and gamut mapping, with reference code.</span>
+                </span>
+              </a>
+              <a href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">WCAG 2.1 — Contrast (Minimum)</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Where the 4.5:1, 3:1 and 7:1 thresholds come from, and what counts as large text.</span>
+                </span>
+              </a>
+              <a href="https://git.apcacontrast.com/documentation/APCAeasyIntro" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">APCA — an introduction
+</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">The perceptual contrast method drafted for WCAG 3, and how to read an Lc value.</span>
+                </span>
+              </a>
+              <a href="https://bottosson.github.io/posts/oklab/" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">A perceptual color space for image processing</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Björn Ottosson’s original write-up of OKLab, including the transformation matrices.</span>
+                </span>
+              </a>
+              <a href="https://pubmed.ncbi.nlm.nih.gov/19834201/" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">Machado, Oliveira &amp; Fernandes (2009)</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">The physiologically based model behind the color-vision simulation on this page.</span>
+                </span>
+              </a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">oklch() on MDN</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Browser support and syntax for using these values directly in CSS.</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 6px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; text-wrap:pretty;">Color science — frequently asked questions</h2>
+        <p style="margin:0 0 24px; font-size:15px; line-height:1.7; color:#5C564B; max-width:70ch; text-wrap:pretty;">Why this tool disagrees with the color picker in your design app, and what the numbers actually mean.</p>
+        <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:6px clamp(18px,2.4vw,28px);">
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">What is OKLCH, and why use it instead of HSL?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">OKLCH describes a color as perceptual lightness, chroma and hue. HSL describes the same color as a geometric position inside the RGB cube, which is why HSL calls a saturated yellow and a saturated blue equally light when your eye sees a huge difference. Because OKLCH lightness matches perception, a ramp built by stepping lightness looks evenly spaced — and that is the difference you can see in the Variations section above.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Why do the harmony colors here differ from other color sites?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Two reasons. The rotation happens on the OKLCH hue circle rather than the HSL one, so equal angles are equal perceptual steps. And when a rotation lands outside what sRGB can display, chroma is reduced gradually instead of each channel being clipped. Clipping is what produces those slightly muddy, oddly matched sets you see elsewhere.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">WCAG says my color fails but APCA says it is fine. Which do I follow?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">If you have a legal or contractual obligation, follow WCAG 2.1 — it is the standard being audited today. APCA is the draft method for WCAG 3 and models legibility more accurately, especially for light text on dark backgrounds, where WCAG 2.1 is known to be over-generous. Use APCA to make the better design decision and WCAG to pass the audit.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Why is the CMYK value marked as an approximation?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">A screen color has no single correct CMYK equivalent. The real conversion depends on the press, the ink, the paper and an ICC profile for that combination. The figures here use the standard naive formula, which is fine for a rough idea and wrong for a print run — get the separation from your printer.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">What does ΔE OK actually measure?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">It is the straight-line distance between two colors in OKLab — the closest simple number to “how different do these look”. Roughly: under 0.02 is effectively the same color, under 0.05 is a difference you would only notice side by side, and past 0.2 they read as separate colors. It is deliberately shown as a raw distance rather than a percentage, because a “95% similar” score is a marketing number, not a unit.</p>
+          </div>
+          <div style="padding:22px 0; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Is color temperature here the same as Kelvin?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">No, and it is labelled as a heuristic for that reason. Kelvin color temperature describes light sources and white points, not arbitrary surface colors. The temperature ramp above pulls the hue toward a warm target near 55° or a cool target near 250°, which is what designers usually mean by warming or cooling a color.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:6px;">
+          <h2 style="margin:0; font-size:clamp(20px,2vw,25px); font-weight:700; letter-spacing:-0.024em; color:#1C1A15;">Related design generators</h2>
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="font-size:13.5px; font-weight:650; color:#3858E9; text-decoration:none;" style-hover="color:#213FD4;">Browse all generators →</a>
+        </div>
+        <p style="margin:0 0 18px; font-size:14.5px; line-height:1.65; color:#5C564B; max-width:70ch; text-wrap:pretty;">Once you have a palette, these turn it into theme and template code.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,250px), 1fr)); gap:12px;">
+          <a href="./Theme%20JSON%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">theme.json Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">theme.json</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Drop your palette into a block theme’s settings as valid JSON.</span>
+          </a>
+          <a href="./Theme%20Support%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Theme Support Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">add_theme_support()</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Register editor color palettes, editor styles and other feature flags.</span>
+          </a>
+          <a href="./Child%20Theme%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Child Theme Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">style.css Template:</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">A ready-to-upload child theme to hold your new color overrides.</span>
+          </a>
+          <a href="./Sidebar%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Sidebar Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">register_sidebar()</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Widget areas with the before/after markup your styles hook into.</span>
+          </a>
+          <a href="./Widget%20Class%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Widget Class Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">WP_Widget</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">A full widget class, including a color field in the form method.</span>
+          </a>
+          <a href="./Default%20Theme%20Headers%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Default Theme Headers</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">register_default_headers()</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Header images with the text color that reads over them.</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startingColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#E1706D&quot;,&quot;options&quot;:[&quot;#E1706D&quot;,&quot;#3858E9&quot;,&quot;#0B7A75&quot;,&quot;#B4451F&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Starting point&quot;},&quot;rampSteps&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:12,&quot;min&quot;:5,&quot;max&quot;:24,&quot;step&quot;:1,&quot;unit&quot;:&quot; steps&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Variations&quot;},&quot;defaultSeverity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:100,&quot;min&quot;:0,&quot;max&quot;:100,&quot;step&quot;:5,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Color vision&quot;}}">
+const CSS_NAMES = 'Alice Blue f0f8ff|Antique White faebd7|Aqua 00ffff|Aquamarine 7fffd4|Azure f0ffff|Beige f5f5dc|Bisque ffe4c4|Black 000000|Blanched Almond ffebcd|Blue 0000ff|Blue Violet 8a2be2|Brown a52a2a|Burlywood deb887|Cadet Blue 5f9ea0|Chartreuse 7fff00|Chocolate d2691e|Coral ff7f50|Cornflower Blue 6495ed|Cornsilk fff8dc|Crimson dc143c|Dark Blue 00008b|Dark Cyan 008b8b|Dark Goldenrod b8860b|Dark Gray a9a9a9|Dark Green 006400|Dark Khaki bdb76b|Dark Magenta 8b008b|Dark Olive Green 556b2f|Dark Orange ff8c00|Dark Orchid 9932cc|Dark Red 8b0000|Dark Salmon e9967a|Dark Sea Green 8fbc8f|Dark Slate Blue 483d8b|Dark Slate Gray 2f4f4f|Dark Turquoise 00ced1|Dark Violet 9400d3|Deep Pink ff1493|Deep Sky Blue 00bfff|Dim Gray 696969|Dodger Blue 1e90ff|Firebrick b22222|Floral White fffaf0|Forest Green 228b22|Fuchsia ff00ff|Gainsboro dcdcdc|Ghost White f8f8ff|Gold ffd700|Goldenrod daa520|Gray 808080|Green 008000|Green Yellow adff2f|Honeydew f0fff0|Hot Pink ff69b4|Indian Red cd5c5c|Indigo 4b0082|Ivory fffff0|Khaki f0e68c|Lavender e6e6fa|Lavender Blush fff0f5|Lawn Green 7cfc00|Lemon Chiffon fffacd|Light Blue add8e6|Light Coral f08080|Light Cyan e0ffff|Light Goldenrod Yellow fafad2|Light Gray d3d3d3|Light Green 90ee90|Light Pink ffb6c1|Light Salmon ffa07a|Light Sea Green 20b2aa|Light Sky Blue 87cefa|Light Slate Gray 778899|Light Steel Blue b0c4de|Light Yellow ffffe0|Lime 00ff00|Lime Green 32cd32|Linen faf0e6|Maroon 800000|Medium Aquamarine 66cdaa|Medium Blue 0000cd|Medium Orchid ba55d3|Medium Purple 9370db|Medium Sea Green 3cb371|Medium Slate Blue 7b68ee|Medium Spring Green 00fa9a|Medium Turquoise 48d1cc|Medium Violet Red c71585|Midnight Blue 191970|Mint Cream f5fffa|Misty Rose ffe4e1|Moccasin ffe4b5|Navajo White ffdead|Navy 000080|Old Lace fdf5e6|Olive 808000|Olive Drab 6b8e23|Orange ffa500|Orange Red ff4500|Orchid da70d6|Pale Goldenrod eee8aa|Pale Green 98fb98|Pale Turquoise afeeee|Pale Violet Red db7093|Papaya Whip ffefd5|Peach Puff ffdab9|Peru cd853f|Pink ffc0cb|Plum dda0dd|Powder Blue b0e0e6|Purple 800080|Rebecca Purple 663399|Red ff0000|Rosy Brown bc8f8f|Royal Blue 4169e1|Saddle Brown 8b4513|Salmon fa8072|Sandy Brown f4a460|Sea Green 2e8b57|Seashell fff5ee|Sienna a0522d|Silver c0c0c0|Sky Blue 87ceeb|Slate Blue 6a5acd|Slate Gray 708090|Snow fffafa|Spring Green 00ff7f|Steel Blue 4682b4|Tan d2b48c|Teal 008080|Thistle d8bfd8|Tomato ff6347|Turquoise 40e0d0|Violet ee82ee|Wheat f5deb3|White ffffff|White Smoke f5f5f5|Yellow ffff00|Yellow Green 9acd32';
+const EXTRA_NAMES = 'Charcoal 36454f|Slate 4a5568|Graphite 3b3b3b|Ink 1c1c28|Midnight 101820|Espresso 3b2f2f|Cocoa 6f4e37|Bone e3ddd1|Sand d9c6a5|Taupe 483c32|Clay b06a4b|Terracotta c96f4a|Rust b7410e|Brick 8f3b2b|Copper b87333|Bronze cd7f32|Amber ffbf00|Marigold f4a300|Honey f0b323|Caramel c68e17|Butter f7e08c|Lemon Zest fff44f|Sage a3b18a|Moss 6b7f4b|Fern 4f7942|Pine 1f4d36|Jade 00a86b|Seafoam 9fe2bf|Mint 98ff98|Cerulean 007ba7|Cobalt 0047ab|Sapphire 0f52ba|Denim 3b5b92|Periwinkle ccccff|Lilac c8a2c8|Mauve e0b0ff|Grape 6f2da8|Wine 722f37|Berry 8e3a59|Raspberry e30b5d|Watermelon fc6c85|Coral Blush f88379|Peach ffcba4|Apricot fbceb1|Cream fffdd0|Champagne f7e7ce|Pearl f0ead6|Fog d5d8dc|Mist e8ecef';
+
+const M_LIN_XYZ = [[0.4124564, 0.3575761, 0.1804375], [0.2126729, 0.7151522, 0.0721750], [0.0193339, 0.1191920, 0.9503041]];
+const M_D65_D50 = [[1.0478112, 0.0228866, -0.0501270], [0.0295424, 0.9904844, -0.0170491], [-0.0092345, 0.0150436, 0.7521316]];
+const D50 = [0.96422, 1, 0.82521];
+
+const CVD = {
+  protan: [[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]],
+  deutan: [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047413], [-0.011820, 0.042940, 0.968881]],
+  tritan: [[1.255528, -0.076749, -0.178779], [-0.078411, 0.930809, 0.147602], [0.004733, 0.691367, 0.303900]]
+};
+
+const HUE_BANDS = [[16, 'red'], [40, 'coral red'], [62, 'orange'], [86, 'amber'], [104, 'yellow'], [128, 'chartreuse'], [152, 'green'], [176, 'emerald'], [198, 'teal'], [224, 'cyan'], [252, 'azure'], [276, 'blue'], [300, 'indigo'], [322, 'violet'], [344, 'magenta'], [361, 'rose']];
+
+function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function mul(m, v) { return [m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2], m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2], m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2]]; }
+function lin(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+function delin(c) { return c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055; }
+function cbrt(x) { return x < 0 ? -Math.pow(-x, 1 / 3) : Math.pow(x, 1 / 3); }
+
+function parseHex(input) {
+  let h = String(input || '').trim().replace(/^#/, '');
+  if (/^[0-9a-f]{3}$/i.test(h)) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  if (!/^[0-9a-f]{6}$/i.test(h)) return null;
+  return [parseInt(h.slice(0, 2), 16) / 255, parseInt(h.slice(2, 4), 16) / 255, parseInt(h.slice(4, 6), 16) / 255];
+}
+function toHex(rgb) {
+  return '#' + rgb.map(function (c) { const v = Math.round(clamp(c, 0, 1) * 255).toString(16); return v.length < 2 ? '0' + v : v; }).join('');
+}
+
+function rgbToOklab(rgb) {
+  const r = lin(rgb[0]), g = lin(rgb[1]), b = lin(rgb[2]);
+  const l = cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s, 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s];
+}
+function oklabToLinear(lab) {
+  const l_ = lab[0] + 0.3963377774 * lab[1] + 0.2158037573 * lab[2];
+  const m_ = lab[0] - 0.1055613458 * lab[1] - 0.0638541728 * lab[2];
+  const s_ = lab[0] - 0.0894841775 * lab[1] - 1.2914855480 * lab[2];
+  const l = l_ * l_ * l_, m = m_ * m_ * m_, s = s_ * s_ * s_;
+  return [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s];
+}
+function oklabToRgb(lab) { return oklabToLinear(lab).map(delin); }
+function labToLch(lab) {
+  const c = Math.sqrt(lab[1] * lab[1] + lab[2] * lab[2]);
+  let h = Math.atan2(lab[2], lab[1]) * 180 / Math.PI;
+  if (h < 0) h += 360;
+  return [lab[0], c, c < 0.0002 ? 0 : h];
+}
+function lchToLab(lch) { const r = lch[2] * Math.PI / 180; return [lch[0], lch[1] * Math.cos(r), lch[1] * Math.sin(r)]; }
+function inGamut(rgb) { return rgb.every(function (c) { return c >= -0.0005 && c <= 1.0005; }); }
+
+function oklchToHex(lch) {
+  const l = clamp(lch[0], 0, 1);
+  let hi = Math.max(0, lch[1]);
+  if (inGamut(oklabToRgb(lchToLab([l, hi, lch[2]])))) return toHex(oklabToRgb(lchToLab([l, hi, lch[2]])));
+  let lo = 0;
+  for (let i = 0; i < 22; i++) {
+    const mid = (lo + hi) / 2;
+    if (inGamut(oklabToRgb(lchToLab([l, mid, lch[2]])))) lo = mid; else hi = mid;
+  }
+  return toHex(oklabToRgb(lchToLab([l, lo, lch[2]])));
+}
+
+function rgbToHsl(rgb) {
+  const max = Math.max.apply(null, rgb), min = Math.min.apply(null, rgb), d = max - min;
+  let h = 0;
+  if (d) {
+    if (max === rgb[0]) h = ((rgb[1] - rgb[2]) / d) % 6;
+    else if (max === rgb[1]) h = (rgb[2] - rgb[0]) / d + 2;
+    else h = (rgb[0] - rgb[1]) / d + 4;
+    h *= 60; if (h < 0) h += 360;
+  }
+  const l = (max + min) / 2;
+  return [h, d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1)), l];
+}
+function rgbToHsv(rgb) {
+  const max = Math.max.apply(null, rgb), min = Math.min.apply(null, rgb), d = max - min;
+  const hsl = rgbToHsl(rgb);
+  return [hsl[0], max === 0 ? 0 : d / max, max];
+}
+function hsvToRgb(h, s, v) {
+  h = ((h % 360) + 360) % 360;
+  const c = v * s, x = c * (1 - Math.abs(((h / 60) % 2) - 1)), m = v - c;
+  const t = [[c, x, 0], [x, c, 0], [0, c, x], [0, x, c], [x, 0, c], [c, 0, x]][Math.floor(h / 60) % 6];
+  return [t[0] + m, t[1] + m, t[2] + m];
+}
+function rgbToXyzD65(rgb) { return mul(M_LIN_XYZ, rgb.map(lin)); }
+function rgbToLabD50(rgb) {
+  const xyz = mul(M_D65_D50, rgbToXyzD65(rgb));
+  const f = xyz.map(function (v, i) { const t = v / D50[i]; return t > 0.008856451679 ? cbrt(t) : (7.787037037 * t + 16 / 116); });
+  return [116 * f[1] - 16, 500 * (f[0] - f[1]), 200 * (f[1] - f[2])];
+}
+function cmyk(rgb) {
+  const k = 1 - Math.max.apply(null, rgb);
+  if (k >= 0.9999) return [0, 0, 0, 100];
+  return [(1 - rgb[0] - k) / (1 - k) * 100, (1 - rgb[1] - k) / (1 - k) * 100, (1 - rgb[2] - k) / (1 - k) * 100, k * 100];
+}
+function luminance(rgb) { const l = rgb.map(lin); return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2]; }
+function wcag(a, b) {
+  const l1 = luminance(a), l2 = luminance(b);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+function apcaY(rgb) {
+  let y = 0.2126729 * Math.pow(rgb[0], 2.4) + 0.7151522 * Math.pow(rgb[1], 2.4) + 0.0721750 * Math.pow(rgb[2], 2.4);
+  return y < 0.022 ? y + Math.pow(0.022 - y, 1.414) : y;
+}
+function apca(textRgb, bgRgb) {
+  const yt = apcaY(textRgb), yb = apcaY(bgRgb);
+  if (Math.abs(yb - yt) < 0.0005) return 0;
+  if (yb > yt) {
+    const s = (Math.pow(yb, 0.56) - Math.pow(yt, 0.57)) * 1.14;
+    return s < 0.1 ? 0 : (s - 0.027) * 100;
+  }
+  const s = (Math.pow(yb, 0.65) - Math.pow(yt, 0.62)) * 1.14;
+  return s > -0.1 ? 0 : (s + 0.027) * 100;
+}
+function deltaEOK(a, b) { return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2) + Math.pow(a[2] - b[2], 2)); }
+function simulateCVD(rgb, kind, severity) {
+  if (kind === 'achroma') {
+    const y = luminance(rgb), g = delin(y);
+    const mix = severity;
+    return [rgb[0] + (g - rgb[0]) * mix, rgb[1] + (g - rgb[1]) * mix, rgb[2] + (g - rgb[2]) * mix];
+  }
+  const full = CVD[kind];
+  const m = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) m[i][j] = (i === j ? 1 : 0) * (1 - severity) + full[i][j] * severity;
+  return mul(m, rgb.map(lin)).map(function (c) { return delin(clamp(c, 0, 1)); });
+}
+function parseNames(str) {
+  return str.split('|').map(function (e) {
+    const i = e.lastIndexOf(' ');
+    const hex = '#' + e.slice(i + 1);
+    return { name: e.slice(0, i), hex: hex, lab: rgbToOklab(parseHex(hex)) };
+  });
+}
+const NAMED = parseNames(CSS_NAMES).concat(parseNames(EXTRA_NAMES));
+
+function hueName(h) {
+  for (let i = 0; i < HUE_BANDS.length; i++) if (h < HUE_BANDS[i][0]) return HUE_BANDS[i][1];
+  return 'red';
+}
+function titleCase(s) { return s.replace(/\b[a-z]/g, function (m) { return m.toUpperCase(); }); }
+function descriptiveName(L, C, H) {
+  if (C < 0.02) {
+    if (L > 0.985) return 'White';
+    if (L < 0.03) return 'Black';
+    return L < 0.25 ? 'Near Black' : L < 0.45 ? 'Dark Gray' : L < 0.68 ? 'Gray' : L < 0.88 ? 'Light Gray' : 'Off White';
+  }
+  const tone = L < 0.2 ? 'deep ' : L < 0.42 ? 'dark ' : L < 0.64 ? '' : L < 0.84 ? 'light ' : 'pale ';
+  return titleCase(tone + (C < 0.055 ? 'muted ' : '') + hueName(H));
+}
+function chromaWord(c) { return c < 0.02 ? 'near-neutral' : c < 0.055 ? 'desaturated' : c < 0.1 ? 'muted' : c < 0.16 ? 'moderately saturated' : c < 0.24 ? 'saturated' : 'vivid'; }
+function lightWord(l) { return l < 0.2 ? 'very dark' : l < 0.4 ? 'dark' : l < 0.62 ? 'mid-toned' : l < 0.82 ? 'light' : 'very light'; }
+function band(d) {
+  if (d < 0.02) return ['Near-identical', '#0B7A75'];
+  if (d < 0.05) return ['Very close', '#0B7A75'];
+  if (d < 0.1) return ['Close', '#3858E9'];
+  if (d < 0.2) return ['Related', '#8A6A1F'];
+  return ['Distinct', '#948C7E'];
+}
+function fmt(n, d) { const p = Math.pow(10, d == null ? 0 : d); return String(Math.round(n * p) / p); }
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const start = parseHex(props && props.startingColor) ? String(props.startingColor).trim().replace(/^#/, '').toLowerCase() : 'e1706d';
+    let saved = null;
+    try { saved = localStorage.getItem('color-tool-v1'); } catch (err) { saved = null; }
+    const initial = parseHex(saved) ? saved.replace(/^#/, '').toLowerCase() : start;
+    this.state = {
+      hex: '#' + initial,
+      hexField: initial,
+      hue: rgbToHsv(parseHex(initial))[0],
+      severity: props && props.defaultSeverity != null ? props.defaultSeverity : 100,
+      hover: null, hoverHex: null, copied: null, copiedHex: null
+    };
+    this._refs = {};
+    this._refCallbacks = {};
+    this._drag = null;
+    this._copyTimer = null;
+  }
+
+  componentDidMount() {
+    this._move = (e) => {
+      if (!this._drag) return;
+      e.preventDefault();
+      this.applyDrag(e);
+    };
+    this._up = () => { this._drag = null; };
+    window.addEventListener('pointermove', this._move, { passive: false });
+    window.addEventListener('pointerup', this._up);
+    window.addEventListener('pointercancel', this._up);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('pointermove', this._move);
+    window.removeEventListener('pointerup', this._up);
+    window.removeEventListener('pointercancel', this._up);
+    if (this._copyTimer) clearTimeout(this._copyTimer);
+  }
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+
+  setHex(hex, keepHue) {
+    const rgb = parseHex(hex);
+    if (!rgb) return;
+    const clean = toHex(rgb);
+    try { localStorage.setItem('color-tool-v1', clean); } catch (err) { /* ignore */ }
+    const next = { hex: clean, hexField: clean.slice(1) };
+    if (!keepHue) next.hue = rgbToHsv(rgb)[0];
+    this.setState(next);
+  }
+
+  applyDrag(e) {
+    const el = this._refs[this._drag === 'sq' ? 'square' : 'hue'];
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (this._drag === 'sq') {
+      const s = clamp((e.clientX - r.left) / r.width, 0, 1);
+      const v = 1 - clamp((e.clientY - r.top) / r.height, 0, 1);
+      this.setHex(toHex(hsvToRgb(this.state.hue, s, v)), true);
+    } else {
+      const h = clamp((e.clientX - r.left) / r.width, 0, 1) * 360;
+      const hsv = rgbToHsv(parseHex(this.state.hex));
+      this.setState({ hue: h });
+      this.setHex(toHex(hsvToRgb(h, hsv[1] || 1, hsv[2] || 1)), true);
+    }
+  }
+
+  copy(hex, key) {
+    const text = String(hex || '').toUpperCase();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text);
+      else {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      }
+    } catch (err) { /* ignore */ }
+    if (this._copyTimer) clearTimeout(this._copyTimer);
+    this.setState({ copied: key, copiedHex: text });
+    this._copyTimer = setTimeout(() => this.setState({ copied: null, copiedHex: null }), 1400);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const steps = clamp(Math.round(this.props.rampSteps != null ? this.props.rampSteps : 12), 5, 24);
+    const rgb = parseHex(s.hex) || [0.88, 0.44, 0.43];
+    const lab = rgbToOklab(rgb);
+    const lch = labToLch(lab);
+    const L = lch[0], C = lch[1], H = lch[2];
+    const hsl = rgbToHsl(rgb), hsv = rgbToHsv(rgb), xyz = rgbToXyzD65(rgb), labD50 = rgbToLabD50(rgb), cm = cmyk(rgb);
+    const white = [1, 1, 1], black = [0, 0, 0];
+    const onWhite = wcag(rgb, white), onBlack = wcag(rgb, black);
+    const bestFg = wcag(rgb, white) >= wcag(rgb, black) ? '#FFFFFF' : '#14100C';
+    const fgFor = (hex) => { const r = parseHex(hex) || black; return wcag(r, white) >= wcag(r, black) ? '#FFFFFF' : '#14100C'; };
+
+    const cell = (key, hex, isBase) => {
+      const active = s.copied === key || s.hover === key;
+      return {
+        key: key, hex: hex, hexUpper: hex.toUpperCase(), isBase: !!isBase, fg: fgFor(hex),
+        aria: 'Copy ' + hex.toUpperCase(), labelOpacity: active ? 1 : 0,
+        labelText: s.copied === key ? 'Copied' : hex.slice(1).toUpperCase()
+      };
+    };
+
+    const mixTo = (target, amount) => oklchToHex(labToLch([lab[0] + (target[0] - lab[0]) * amount, lab[1] + (target[1] - lab[1]) * amount, lab[2] + (target[2] - lab[2]) * amount]));
+    const half = Math.floor(steps / 2);
+    const ramp = (prefix, fn) => {
+      const cells = [];
+      for (let i = 0; i < steps; i++) cells.push(fn(i));
+      return cells.map(function (c, i) { return cell(prefix + i, c.hex, c.base); });
+    };
+
+    const ramps = [
+      { name: 'Shades', blurb: 'Mixed toward black in OKLab — darker and heavier, hue held steady.', cells: ramp('sh', (i) => ({ hex: i === 0 ? s.hex : mixTo([0, 0, 0], i / (steps - 1) * 0.94), base: i === 0 })) },
+      { name: 'Tints', blurb: 'Mixed toward white — lighter and softer, the pastel direction.', cells: ramp('ti', (i) => ({ hex: i === 0 ? s.hex : mixTo([1, 0, 0], i / (steps - 1) * 0.94), base: i === 0 })) },
+      { name: 'Tones', blurb: 'Mixed toward a gray of the same lightness — chroma falls, character stays.', cells: ramp('to', (i) => ({ hex: i === 0 ? s.hex : oklchToHex([L, C * (1 - i / (steps - 1) * 0.97), H]), base: i === 0 })) },
+      { name: 'Hues', blurb: 'Hue rotated a full turn at fixed lightness and chroma — your color sits in the middle.', cells: ramp('hu', (i) => ({ hex: i === half ? s.hex : oklchToHex([L, C, (H + (i - half) * (360 / steps) + 360) % 360]), base: i === half })) },
+      { name: 'Temperature', blurb: 'Hue pulled toward warm (≈55°) and cool (≈250°). A perceptual heuristic — not Kelvin color temperature.', cells: ramp('te', (i) => { const t = (i - half) / half; const target = t < 0 ? 250 : 55; const amt = Math.abs(t) * 0.55; let dh = ((target - H + 540) % 360) - 180; return { hex: i === half ? s.hex : oklchToHex([L, C, (H + dh * amt + 360) % 360]), base: i === half }; }) }
+    ];
+
+    const harmonyDefs = [
+      ['Analogous', 'Three neighbours 30° apart — calm, low tension, easy to build a page from.', [-30, 0, 30], 1],
+      ['Complementary', 'Two colors opposite each other — maximum separation, strong for calls to action.', [0, 180], 0],
+      ['Split complementary', 'The complement replaced by its two neighbours — the contrast without the clash.', [0, 150, 210], 0],
+      ['Triadic', 'Three colors evenly spaced — balanced and lively, but needs one clear lead.', [0, 120, 240], 0],
+      ['Tetradic', 'Two complementary pairs — versatile, and best with a single dominant color.', [0, 60, 180, 240], 0],
+      ['Square', 'Four colors 90° apart — an even rectangle on the wheel, more contrast than tetradic.', [0, 90, 180, 270], 0]
+    ];
+    const harmonies = harmonyDefs.map(function (d, hi) {
+      return {
+        name: d[0], blurb: d[1],
+        cells: d[2].map(function (off, i) {
+          const hex = off === 0 ? s.hex : oklchToHex([L, C, (H + off + 360) % 360]);
+          return cell('hm' + hi + '-' + i, hex, i === d[3]);
+        })
+      };
+    });
+
+    const badge = (label, pass) => ({ label: label + (pass ? ' ✓' : ' ✗'), bg: pass ? '#E8F4EC' : '#FBEDEA', color: pass ? '#1F6B45' : '#9B3218' });
+    const apcaVerdict = (lc) => {
+      const a = Math.abs(lc);
+      if (a >= 75) return 'Fine for body text at any weight';
+      if (a >= 60) return 'Body text down to about 14px';
+      if (a >= 45) return 'Headlines and larger text only';
+      if (a >= 30) return 'Large or non-essential text';
+      return 'Not for text — decorative use only';
+    };
+    const contrastCards = [
+      { title: 'On white', pairLabel: s.hex.toUpperCase() + ' on #FFFFFF', bg: '#FFFFFF', fg: s.hex, ratio: fmt(onWhite, 2) + ':1', apca: fmt(apca(rgb, white), 1), apcaVerdict: apcaVerdict(apca(rgb, white)), badges: [badge('AA', onWhite >= 4.5), badge('AAA', onWhite >= 7), badge('AA large', onWhite >= 3), badge('UI', onWhite >= 3)] },
+      { title: 'On black', pairLabel: s.hex.toUpperCase() + ' on #000000', bg: '#000000', fg: s.hex, ratio: fmt(onBlack, 2) + ':1', apca: fmt(apca(rgb, black), 1), apcaVerdict: apcaVerdict(apca(rgb, black)), badges: [badge('AA', onBlack >= 4.5), badge('AAA', onBlack >= 7), badge('AA large', onBlack >= 3), badge('UI', onBlack >= 3)] }
+    ];
+
+    const walk = (bgRgb, dir) => {
+      let best = s.hex, bestRatio = wcag(rgb, bgRgb);
+      for (let i = 0; i <= 100; i++) {
+        const l = clamp(L + dir * i * 0.01, 0, 1);
+        const hex = oklchToHex([l, C, H]);
+        const r = wcag(parseHex(hex), bgRgb);
+        best = hex; bestRatio = r;
+        if (r >= 4.5) break;
+      }
+      return { hex: best, ratio: bestRatio };
+    };
+    const varWhite = onWhite >= 4.5 ? { hex: s.hex, ratio: onWhite } : walk(white, -1);
+    const varBlack = onBlack >= 4.5 ? { hex: s.hex, ratio: onBlack } : walk(black, 1);
+    const accessibleVariants = [
+      { key: 'avw', hex: varWhite.hex, hexUpper: varWhite.hex.toUpperCase(), bg: '#FFFFFF', sample: 'Aa on white', ratio: fmt(varWhite.ratio, 2) + ':1', note: varWhite.hex === s.hex ? 'Your color already passes' : 'Darkened until it passes', aria: 'Copy ' + varWhite.hex.toUpperCase() },
+      { key: 'avb', hex: varBlack.hex, hexUpper: varBlack.hex.toUpperCase(), bg: '#000000', sample: 'Aa on black', ratio: fmt(varBlack.ratio, 2) + ':1', note: varBlack.hex === s.hex ? 'Your color already passes' : 'Lightened until it passes', aria: 'Copy ' + varBlack.hex.toUpperCase() }
+    ];
+
+    const sev = s.severity / 100;
+    const visionDefs = [
+      ['protan', 'Protanopia', 'Red-sensitive cones absent — about 1.3% of men'],
+      ['deutan', 'Deuteranopia', 'Green-sensitive cones absent — about 1.2% of men'],
+      ['tritan', 'Tritanopia', 'Blue-sensitive cones absent — around 0.001% of people'],
+      ['achroma', 'Achromatopsia', 'No color discrimination — around 0.003% of people']
+    ];
+    const visionCards = visionDefs.map((d) => {
+      const sim = toHex(simulateCVD(rgb, d[0], sev));
+      const dE = deltaEOK(lab, rgbToOklab(parseHex(sim)));
+      const b = band(dE);
+      return {
+        name: d[1], prevalence: d[2], hex: s.hex, hexUpper: s.hex.toUpperCase(), simHex: sim, simHexUpper: sim.toUpperCase(),
+        fg: bestFg, simFg: fgFor(sim), keyA: 'cv' + d[0] + 'a', keyB: 'cv' + d[0] + 'b',
+        ariaA: 'Copy ' + s.hex.toUpperCase(), ariaB: 'Copy ' + sim.toUpperCase(),
+        band: b[0] === 'Near-identical' ? 'No shift' : b[0], bandColor: b[1],
+        simLabelOpacity: (s.hover === 'cv' + d[0] + 'b' || s.copied === 'cv' + d[0] + 'b') ? 1 : 0,
+        simLabelText: s.copied === 'cv' + d[0] + 'b' ? 'Copied' : sim.slice(1).toUpperCase(),
+        deltaNote: 'ΔE OK ' + fmt(dE, 3) + ' from the original'
+      };
+    });
+
+    const similarColors = NAMED.map(function (n) { return { n: n, d: deltaEOK(lab, n.lab) }; })
+      .sort(function (a, b) { return a.d - b.d; }).slice(0, 8)
+      .map(function (e, i) {
+        const b = band(e.d);
+        const key = 'sim' + i;
+        return {
+          key: key, name: e.n.name, hex: e.n.hex, hexUpper: e.n.hex.toUpperCase(), fg: fgFor(e.n.hex),
+          delta: fmt(e.d, 3), band: b[0], bandColor: b[1], aria: 'Copy ' + e.n.hex.toUpperCase(),
+          labelOpacity: (s.hover === key || s.copied === key) ? 1 : 0,
+          labelText: s.copied === key ? 'Copied' : e.n.hex.slice(1).toUpperCase()
+        };
+      });
+
+    const fitFor = (bgHex, lch0, target, dir) => {
+      const bg = parseHex(bgHex);
+      for (let i = 0; i <= 100; i++) {
+        const hex = oklchToHex([clamp(lch0[0] + dir * i * 0.01, 0, 1), lch0[1], lch0[2]]);
+        if (wcag(parseHex(hex), bg) >= target) return hex;
+      }
+      return oklchToHex(lch0);
+    };
+    const roleDefs = (mode) => {
+      const dark = mode === 'dark';
+      const bg = oklchToHex(dark ? [0.17, Math.min(C, 0.014), H] : [0.985, Math.min(C, 0.01), H]);
+      const surface = oklchToHex(dark ? [0.225, Math.min(C, 0.018), H] : [0.965, Math.min(C, 0.014), H]);
+      const dir = dark ? 1 : -1;
+      const mk = (token, hex, target) => ({ token: token, hex: hex, target: target });
+      return {
+        bg: bg,
+        roles: [
+          mk('background', bg, 0), mk('surface', surface, 0),
+          mk('border', oklchToHex(dark ? [0.32, Math.min(C, 0.02), H] : [0.9, Math.min(C, 0.022), H]), 0),
+          mk('text', fitFor(bg, dark ? [0.96, Math.min(C, 0.02), H] : [0.24, Math.min(C, 0.03), H], 7, dir), 7),
+          mk('text-muted', fitFor(bg, dark ? [0.72, Math.min(C, 0.03), H] : [0.53, Math.min(C, 0.03), H], 4.5, dir), 4.5),
+          mk('primary', fitFor(bg, [dark ? Math.max(L, 0.62) : Math.min(L, 0.62), Math.max(C, 0.09), H], 4.5, dir), 4.5),
+          mk('primary-hover', fitFor(bg, [dark ? Math.max(L, 0.62) + 0.06 : Math.min(L, 0.62) - 0.06, Math.max(C, 0.09), H], 4.5, dir), 4.5),
+          mk('secondary', fitFor(bg, [dark ? 0.68 : 0.55, Math.max(C, 0.08) * 0.85, (H + 180) % 360], 4.5, dir), 4.5),
+          mk('accent', fitFor(bg, [dark ? 0.7 : 0.56, Math.max(C, 0.1), (H + 60) % 360], 4.5, dir), 4.5),
+          mk('success', fitFor(bg, [dark ? 0.72 : 0.52, 0.13, 150], 4.5, dir), 4.5),
+          mk('warning', fitFor(bg, [dark ? 0.8 : 0.62, 0.14, 85], 4.5, dir), 4.5),
+          mk('danger', fitFor(bg, [dark ? 0.68 : 0.52, 0.16, 25], 4.5, dir), 4.5)
+        ]
+      };
+    };
+    const uiPalettes = [['light', 'Light theme', '#FFFFFF', '#E7E2D9', '#1C1A15', '#948C7E', '#FCFBF9'], ['dark', 'Dark theme', '#1C1A15', '#332F27', '#F0EDE6', '#A79F91', '#221F19']].map(function (m) {
+      const built = roleDefs(m[0]);
+      const bgRgb = parseHex(built.bg);
+      return {
+        title: m[1], note: m[0] === 'light' ? 'Text roles target 7:1, everything else 4.5:1' : 'Same targets, lightness walked upward instead',
+        shellBg: m[2], shellBorder: m[3], shellText: m[4], shellMuted: m[5], chipBg: m[6],
+        roles: built.roles.map(function (r, i) {
+          const key = 'ui' + m[0] + i;
+          const ratio = wcag(parseHex(r.hex), bgRgb);
+          const pass = r.target === 0 ? null : ratio >= r.target;
+          return {
+            key: key, token: '--' + r.token, hex: r.hex, hexUpper: r.hex.toUpperCase(), fg: fgFor(r.hex),
+            aria: 'Copy ' + r.hex.toUpperCase(),
+            labelOpacity: (s.hover === key || s.copied === key) ? 1 : 0,
+            labelText: s.copied === key ? 'Copied' : r.hex.slice(1).toUpperCase(),
+            check: pass === null ? 'surface' : fmt(ratio, 1) + ':1',
+            checkColor: pass === null ? m[5] : (pass ? '#1F8A5F' : '#C4593A')
+          };
+        })
+      };
+    });
+
+    const conv = [
+      ['HEX', s.hex.toUpperCase(), s.hex.toUpperCase()],
+      ['RGB', Math.round(rgb[0] * 255) + ', ' + Math.round(rgb[1] * 255) + ', ' + Math.round(rgb[2] * 255), 'rgb(' + Math.round(rgb[0] * 255) + ' ' + Math.round(rgb[1] * 255) + ' ' + Math.round(rgb[2] * 255) + ')'],
+      ['HSL', fmt(hsl[0]) + '°, ' + fmt(hsl[1] * 100) + '%, ' + fmt(hsl[2] * 100) + '%', 'hsl(' + fmt(hsl[0]) + ' ' + fmt(hsl[1] * 100) + '% ' + fmt(hsl[2] * 100) + '%)'],
+      ['HSB', fmt(hsv[0]) + '°, ' + fmt(hsv[1] * 100) + '%, ' + fmt(hsv[2] * 100) + '%', fmt(hsv[0]) + ', ' + fmt(hsv[1] * 100) + ', ' + fmt(hsv[2] * 100)],
+      ['HWB', fmt(hsl[0]) + '°, ' + fmt(Math.min.apply(null, rgb) * 100) + '%, ' + fmt((1 - Math.max.apply(null, rgb)) * 100) + '%', 'hwb(' + fmt(hsl[0]) + ' ' + fmt(Math.min.apply(null, rgb) * 100) + '% ' + fmt((1 - Math.max.apply(null, rgb)) * 100) + '%)'],
+      ['OKLCH', fmt(L * 100, 1) + '%, ' + fmt(C, 3) + ', ' + fmt(H, 1) + '°', 'oklch(' + fmt(L * 100, 1) + '% ' + fmt(C, 3) + ' ' + fmt(H, 1) + ')'],
+      ['OKLAB', fmt(L, 3) + ', ' + fmt(lab[1], 3) + ', ' + fmt(lab[2], 3), 'oklab(' + fmt(L * 100, 1) + '% ' + fmt(lab[1], 3) + ' ' + fmt(lab[2], 3) + ')'],
+      ['LAB', fmt(labD50[0], 1) + ', ' + fmt(labD50[1], 1) + ', ' + fmt(labD50[2], 1), 'lab(' + fmt(labD50[0], 1) + '% ' + fmt(labD50[1], 1) + ' ' + fmt(labD50[2], 1) + ')'],
+      ['LCH', fmt(labD50[0], 1) + ', ' + fmt(Math.sqrt(labD50[1] * labD50[1] + labD50[2] * labD50[2]), 1) + ', ' + fmt(((Math.atan2(labD50[2], labD50[1]) * 180 / Math.PI) + 360) % 360, 1) + '°', 'lch(' + fmt(labD50[0], 1) + '% ' + fmt(Math.sqrt(labD50[1] * labD50[1] + labD50[2] * labD50[2]), 1) + ' ' + fmt(((Math.atan2(labD50[2], labD50[1]) * 180 / Math.PI) + 360) % 360, 1) + ')'],
+      ['XYZ', fmt(xyz[0] * 100, 2) + ', ' + fmt(xyz[1] * 100, 2) + ', ' + fmt(xyz[2] * 100, 2), fmt(xyz[0], 4) + ' ' + fmt(xyz[1], 4) + ' ' + fmt(xyz[2], 4)],
+      ['CMYK', fmt(cm[0]) + ', ' + fmt(cm[1]) + ', ' + fmt(cm[2]) + ', ' + fmt(cm[3]) + ' (approx.)', fmt(cm[0]) + ', ' + fmt(cm[1]) + ', ' + fmt(cm[2]) + ', ' + fmt(cm[3])]
+    ].map((r, i) => ({
+      label: r[0], display: s.copied === 'cv' + i ? 'Copied' : r[1], value: r[2], key: 'cv' + i,
+      bg: s.copied === 'cv' + i ? '#EEF1FE' : '#FFFFFF', borderTop: i === 0 || i === 6 ? 'none' : '1px solid #F2EEE7',
+      onCopy: () => this.copy(r[2], 'cv' + i)
+    }));
+
+    const neutral = C < 0.02;
+    const nearest = NAMED.slice().sort(function (a, b) { return deltaEOK(lab, a.lab) - deltaEOK(lab, b.lab); })[0] || { name: 'Unnamed', hex: s.hex, lab: lab };
+    const nearestD = deltaEOK(lab, nearest.lab);
+    // 0.05 is where this page's own band() stops calling two colors "very close".
+    const namedExactly = nearestD < 0.05;
+
+    const desc = (neutral
+      ? (s.hex === '#ffffff' ? 'Pure white — no chroma at all, so there is no hue to describe. '
+        : s.hex === '#000000' ? 'Pure black — no chroma, no hue, and the reference point every contrast ratio on this page is measured against. '
+          : 'A neutral ' + (L > 0.94 ? 'off-white' : L < 0.08 ? 'near-black' : 'gray') + ', ' + lightWord(L) + ' at ' + fmt(L * 100) + '% perceptual lightness with effectively no chroma. ')
+      : 'A ' + chromaWord(C) + ' ' + hueName(H) + ', ' + lightWord(L) + ' at ' + fmt(L * 100) + '% perceptual lightness with chroma ' + fmt(C, 3) + '. ') +
+      (onWhite >= 4.5 ? 'It clears 4.5:1 on white, so it works as body text as well as a fill.'
+        : onBlack >= 4.5 ? 'It clears 4.5:1 on black but not on white — treat it as a fill, or use it as text on dark surfaces.'
+          : 'It fails 4.5:1 on both white and black, so keep it for fills and borders rather than text.');
+
+    return {
+      toolCount: 42, trueVal: true, baseHex: s.hex, baseHexUpper: s.hex.toUpperCase(), stageFg: bestFg,
+      colorName: namedExactly ? nearest.name : descriptiveName(L, C, H),
+      hasNameNote: !namedExactly,
+      nameNote: 'Closest named color: ' + nearest.name + ' · ΔE OK ' + fmt(nearestD, 3),
+      oklchShort: 'oklch(' + fmt(L * 100, 1) + '% ' + fmt(C, 3) + ' ' + fmt(H, 1) + ')',
+      description: desc,
+      hexField: s.hexField,
+      hueCss: 'hsl(' + fmt(s.hue, 1) + ' 100% 50%)',
+      satDotLeft: fmt(hsv[1] * 100, 2) + '%', satDotTop: fmt((1 - hsv[2]) * 100, 2) + '%', hueDotLeft: fmt(s.hue / 360 * 100, 2) + '%',
+      refSquare: this.getRef('square'), refHue: this.getRef('hue'),
+      readoutHex: s.copiedHex || (s.hoverHex ? s.hoverHex.toUpperCase() : s.hex.toUpperCase()),
+      readoutNote: s.copiedHex ? 'Copied to clipboard' : 'Click any color to copy',
+      readoutNoteColor: s.copiedHex ? '#1F8A5F' : '#948C7E',
+      severity: s.severity, severityLabel: s.severity + '%',
+      conversionCols: [{ rows: conv.slice(0, 6) }, { rows: conv.slice(6) }],
+      ramps: ramps, harmonies: harmonies, contrastCards: contrastCards, accessibleVariants: accessibleVariants,
+      visionCards: visionCards, similarColors: similarColors, uiPalettes: uiPalettes,
+      onHexChange: (e) => {
+        const v = e.target.value.replace(/[^0-9a-fA-F#]/g, '');
+        this.setState({ hexField: v.replace(/^#/, '') });
+        if (parseHex(v)) this.setHex(v);
+      },
+      onHexBlur: () => { if (!parseHex(s.hexField)) this.setState({ hexField: s.hex.slice(1) }); },
+      onHexKey: (e) => { if (e.key === 'Enter') { if (parseHex(s.hexField)) this.setHex(s.hexField); else this.setState({ hexField: s.hex.slice(1) }); } },
+      onRandom: () => this.setHex(oklchToHex([0.25 + Math.random() * 0.55, 0.06 + Math.random() * 0.2, Math.random() * 360])),
+      onSeverityChange: (e) => this.setState({ severity: parseInt(e.target.value, 10) }),
+      onSquareDown: (e) => { this._drag = 'sq'; this.applyDrag(e); },
+      onHueDown: (e) => { this._drag = 'hue'; this.applyDrag(e); },
+      onSwatchClick: (e) => {
+        const t = e.target && e.target.closest ? e.target.closest('[data-hex]') : null;
+        if (!t) return;
+        this.copy(t.getAttribute('data-hex'), t.getAttribute('data-key'));
+      },
+      onSwatchOver: (e) => {
+        const t = e.target && e.target.closest ? e.target.closest('[data-hex]') : null;
+        const key = t ? t.getAttribute('data-key') : null;
+        if (key !== s.hover) this.setState({ hover: key, hoverHex: t ? t.getAttribute('data-hex') : null });
+      },
+      onSwatchOut: () => { if (s.hover) this.setState({ hover: null, hoverHex: null }); },
+      onSwatchKey: (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const t = e.target && e.target.closest ? e.target.closest('[data-hex]') : null;
+        if (!t) return;
+        e.preventDefault();
+        this.copy(t.getAttribute('data-hex'), t.getAttribute('data-key'));
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -29,7 +29,30 @@ const NON_SNIPPET: Record<string, string> = {
   'wp-config': 'These are constants for `wp-config.php`, and they must sit **above** the line that reads `/* That\'s all, stop editing! */` — anything after it is ignored. Never paste them into `functions.php`.',
 };
 
+/**
+ * Tools that don't emit WordPress code at all, so the standard "where do I
+ * paste this / can I ship it to a client" pair doesn't apply. They get their own
+ * closing questions instead of a nonsensical one about functions.php.
+ */
+const NON_CODE_TOOLS: Record<string, FaqItem[]> = {
+  color: [
+    {
+      question: 'How do I use these colors in a real project?',
+      answer:
+        'Click any swatch to copy its hex, then paste it wherever you keep colour tokens — CSS custom properties, a `theme.json` palette, a Tailwind config, or a design-tool style. The Semantic UI palette section is the one to start from for an interface, because those values are already contrast-checked against the surface they sit on; the harmonies are a starting point for a brand palette rather than a finished UI.',
+    },
+    {
+      question: 'Are the colors I enter stored or sent anywhere?',
+      answer:
+        'No. Every conversion, ramp and contrast check runs in your browser — there is no server call at any point. The only thing kept is your most recent colour, saved in this browser so the page reopens where you left it. Clearing site data removes it.',
+    },
+  ],
+};
+
 export function afterYouCopyFaqs(tool: Tool): FaqItem[] {
+  const override = NON_CODE_TOOLS[tool.id];
+  if (override) return override;
+
   const items: FaqItem[] = [];
 
   items.push({

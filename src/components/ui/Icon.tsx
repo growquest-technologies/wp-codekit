@@ -12,6 +12,7 @@ import {
   ChevronUpIcon,
   ArrowUpIcon,
   ArrowDownIcon,
+  ArrowPathIcon,
   PlusIcon,
   TrashIcon,
   EllipsisVerticalIcon,
@@ -45,6 +46,7 @@ export type IconName =
   | 'chevronUp'
   | 'arrowUp'
   | 'arrowDown'
+  | 'shuffle'
   | 'plus'
   | 'trash'
   | 'dragHandle'
@@ -90,6 +92,7 @@ const ICONS: Record<IconName, HeroIcon> = {
   chevronUp: ChevronUpIcon,
   arrowUp: ArrowUpIcon,
   arrowDown: ArrowDownIcon,
+  shuffle: ArrowPathIcon,
   plus: PlusIcon,
   trash: TrashIcon,
   dragHandle: EllipsisVerticalIcon,

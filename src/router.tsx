@@ -6,6 +6,7 @@ import { About } from './pages/About';
 import { Contact } from './pages/Contact';
 import { GeneratorRoute } from './pages/generators/GeneratorRoute';
 import { CategoryHub } from './pages/CategoryHub';
+import { ColorTool } from './pages/ColorTool';
 import { Login } from './pages/auth/Login';
 import { Account } from './pages/auth/Account';
 import { Pricing } from './pages/auth/Pricing';
@@ -19,6 +20,9 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'tools', element: <ToolsIndex /> },
+      // Static before dynamic: the Color Tool has its own shell rather than a
+      // GeneratorShell workspace, so it never goes through GeneratorRoute.
+      { path: 'tools/color', element: <ColorTool /> },
       { path: 'tools/:toolId', element: <GeneratorRoute /> },
       { path: 'category/:cat', element: <CategoryHub /> },
       { path: 'about', element: <About /> },

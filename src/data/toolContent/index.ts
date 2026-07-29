@@ -3,6 +3,7 @@ import { activationContent } from './activation';
 import { adminNoticeContent } from './admin-notice';
 import { blockPatternContent } from './block-pattern';
 import { childThemeContent } from './child-theme';
+import { colorContent } from './color';
 import { commentQueryContent } from './comment-query';
 import { cronContent } from './cron';
 import { dashboardWidgetContent } from './dashboard-widget';
@@ -62,6 +63,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
   'admin-notice': adminNoticeContent,
   'block-pattern': blockPatternContent,
   'child-theme': childThemeContent,
+  'color': colorContent,
   'comment-query': commentQueryContent,
   'cron': cronContent,
   'dashboard-widget': dashboardWidgetContent,

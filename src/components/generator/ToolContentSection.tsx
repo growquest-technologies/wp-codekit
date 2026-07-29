@@ -58,7 +58,7 @@ export function ToolContentSection({ tool, content }: ToolContentSectionProps) {
             <p className="tc-freshness">
               Reviewed <time dateTime={CONTENT_REVIEWED}>{CONTENT_REVIEWED_LABEL}</time>
               <span aria-hidden="true"> · </span>
-              Output tested on {TESTED_ON}
+              Output tested on {content.spec.testedOn ?? TESTED_ON}
             </p>
           </div>
           <aside className="tc-spec" aria-label="Generator specifications">
