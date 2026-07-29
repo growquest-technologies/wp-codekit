@@ -10,6 +10,7 @@ import { dashboardWidgetContent } from './dashboard-widget';
 import { dateQueryContent } from './date-query';
 import { defaultHeadersContent } from './default-headers';
 import { enqueueContent } from './enqueue';
+import { gradientContent } from './gradient';
 import { hooksContent } from './hooks';
 import { listTableContent } from './list-table';
 import { metaBoxContent } from './meta-box';
@@ -70,6 +71,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
   'date-query': dateQueryContent,
   'default-headers': defaultHeadersContent,
   'enqueue': enqueueContent,
+  'gradient': gradientContent,
   'hooks': hooksContent,
   'list-table': listTableContent,
   'meta-box': metaBoxContent,

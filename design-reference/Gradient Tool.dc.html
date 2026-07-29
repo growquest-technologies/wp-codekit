@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Gradient Generator — CSS, PNG and SVG gradients with alpha and OKLab interpolation</title>
+  <meta name="description" content="Build linear, radial and conic CSS gradients by dragging stops directly on the canvas. Full alpha support, OKLab interpolation, midpoint easing, banding-safe grain, and PNG or SVG export at any size." />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    @font-face { font-family: 'lineicons'; src: url('./uploads/regular-font/lineicons.woff2') format('woff2'), url('./uploads/regular-font/lineicons.woff') format('woff'); font-weight: normal; font-style: normal; font-display: block; }
+    body { margin: 0; background: #FAF9F7; font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; }
+    ::selection { background: #DCE3FE; }
+    a { color: #3858E9; }
+    a:hover { color: #213FD4; }
+    button, select, textarea, input { font-family: inherit; }
+    input[type=range] { accent-color: #3858E9; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #DCD7CE; border-radius: 6px; }
+  </style>
+</helmet>
+<div style="min-height:100vh; display:flex; flex-direction:column; background:#FAF9F7; color:#26221C;">
+
+  <dc-import name="SiteHeader" base="./Generator%20for%20WP.dc.html" active="tools" cta="browse" tool-count="{{ toolCount }}" hint-size="100%,64px"></dc-import>
+
+  <div tabIndex="-1" onKeyDown="{{ onKeyDown }}" style="outline:none;">
+
+  <div style="position:relative; background:#FAF9F7;">
+    <div ref="{{ refStage }}" onPointerDown="{{ onStageDown }}" style="position:relative; height:clamp(300px,42vw,460px); background-color:#FFFFFF; background-image:{{ checkerImage }}; background-size:18px 18px; background-position:0 0, 0 9px, 9px -9px, -9px 0px; overflow:hidden; touch-action:none; cursor:{{ stageCursor }};">
+      <div style="position:absolute; inset:0; background:{{ stageGradient }};"></div>
+      <div aria-hidden="true" style="position:absolute; inset:0; opacity:{{ grainOpacity }}; mix-blend-mode:overlay; background-image:{{ grainImage }};"></div>
+
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:{{ axisOpacity }};">
+        <line x1="{{ axis.x1 }}" y1="{{ axis.y1 }}" x2="{{ axis.x2 }}" y2="{{ axis.y2 }}" stroke="rgba(0,0,0,0.4)" stroke-width="3" vector-effect="non-scaling-stroke"></line>
+        <line x1="{{ axis.x1 }}" y1="{{ axis.y1 }}" x2="{{ axis.x2 }}" y2="{{ axis.y2 }}" stroke="rgba(255,255,255,0.95)" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"></line>
+      </svg>
+
+      <sc-for list="{{ stageHandles }}" as="h" hint-placeholder-count="3">
+        <div data-handle="{{ h.kind }}" data-id="{{ h.id }}" role="button" tabIndex="0" aria-label="{{ h.aria }}" title="{{ h.title }}" style="position:absolute; left:{{ h.left }}; top:{{ h.top }}; width:{{ h.size }}; height:{{ h.size }}; margin-left:{{ h.offset }}; margin-top:{{ h.offset }}; border-radius:50%; background:{{ h.fill }}; border:{{ h.border }}; box-shadow:{{ h.shadow }}; cursor:{{ h.cursor }}; z-index:{{ h.z }}; display:flex; align-items:center; justify-content:center;">
+          <span aria-hidden="true" style="width:{{ h.dotSize }}; height:{{ h.dotSize }}; border-radius:50%; background:{{ h.dotFill }};"></span>
+        </div>
+      </sc-for>
+
+    </div>
+
+    <div style="max-width:1200px; margin:0 auto; padding:0 28px; position:relative; z-index:5;">
+      <div style="margin-top:-26px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:12px; box-shadow:0 14px 40px rgba(24,20,14,0.13); padding:16px clamp(14px,2vw,20px);">
+
+        <div ref="{{ refRail }}" onPointerDown="{{ onRailDown }}" style="position:relative; height:34px; border-radius:8px; margin-bottom:26px; background-color:#FFFFFF; background-image:{{ checkerImage }}; background-size:12px 12px; background-position:0 0, 0 6px, 6px -6px, -6px 0px; cursor:copy; touch-action:none;">
+          <div style="position:absolute; inset:0; border-radius:8px; background:{{ railGradient }}; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.12);"></div>
+          <sc-for list="{{ railStops }}" as="r" hint-placeholder-count="3">
+            <div data-rail="{{ r.id }}" role="button" tabIndex="0" aria-label="{{ r.aria }}" style="position:absolute; left:{{ r.left }}; top:-4px; width:16px; height:42px; margin-left:-8px; border-radius:5px; background:{{ r.solid }}; border:{{ r.border }}; box-shadow:0 1px 4px rgba(24,20,14,0.3); cursor:grab; z-index:{{ r.z }};"></div>
+          </sc-for>
+          <sc-for list="{{ railMids }}" as="m" hint-placeholder-count="2">
+            <div data-mid="{{ m.id }}" role="button" tabIndex="0" aria-label="{{ m.aria }}" title="{{ m.title }}" style="position:absolute; left:{{ m.left }}; top:11px; width:12px; height:12px; margin-left:-6px; border-radius:3px; transform:rotate(45deg); background:rgba(255,255,255,0.92); border:1.5px solid rgba(28,26,21,0.45); cursor:ew-resize; z-index:4;"></div>
+          </sc-for>
+        </div>
+
+        <div style="margin:-18px 0 16px; font-size:12px; line-height:1.5; color:#948C7E;">{{ stageHint }}</div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:14px 18px; align-items:center;">
+          <div style="display:flex; gap:2px; padding:3px; background:#F3F1EC; border-radius:9px;">
+            <sc-for list="{{ typeTabs }}" as="t" hint-placeholder-count="3">
+              <button onClick="{{ t.onSelect }}" style="border:none; cursor:pointer; padding:7px 13px; border-radius:7px; font-size:13px; font-weight:650; background:{{ t.bg }}; color:{{ t.color }}; box-shadow:{{ t.shadow }};">{{ t.label }}</button>
+            </sc-for>
+          </div>
+          <label title="Tile the ramp end to end instead of stopping at the last color" style="display:flex; align-items:center; gap:7px; cursor:pointer; padding:7px 11px; border:1px solid {{ repeatBorder }}; border-radius:8px; background:{{ repeatBg }}; font-size:12.5px; font-weight:650; color:{{ repeatColor }};">
+            <input type="checkbox" checked="{{ repeating }}" onChange="{{ onRepeatToggle }}" style="accent-color:#3858E9; cursor:pointer; margin:0;" />
+            Repeating
+          </label>
+
+          <sc-if value="{{ showAngle }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div ref="{{ refDial }}" onPointerDown="{{ onDialDown }}" role="button" tabIndex="0" aria-label="Gradient angle dial" style="position:relative; width:38px; height:38px; border-radius:50%; background:#F3F1EC; border:1px solid #E7E2D9; cursor:grab; touch-action:none; flex-shrink:0;">
+                <span aria-hidden="true" style="position:absolute; left:{{ dialDot.left }}; top:{{ dialDot.top }}; width:8px; height:8px; margin:-4px 0 0 -4px; border-radius:50%; background:#3858E9;"></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:5px; border:1px solid #E7E2D9; border-radius:8px; padding:0 9px; background:#FCFBF9;">
+                <input value="{{ angleField }}" onChange="{{ onAngleInput }}" aria-label="Angle in degrees" style="width:42px; border:none; outline:none; background:none; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:#26221C; padding:8px 0;" />
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#A79F91;">deg</span>
+              </div>
+              <sc-for list="{{ anglePresets }}" as="ap" hint-placeholder-count="4">
+                <button onClick="{{ ap.onSelect }}" title="{{ ap.title }}" aria-label="{{ ap.title }}" style="width:28px; height:28px; border:1px solid {{ ap.border }}; border-radius:7px; background:#FFFFFF; cursor:pointer; color:{{ ap.color }}; font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center;" style-hover="background:#F3F1EC;">{{ ap.glyph }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <div style="flex:1; min-width:8px;"></div>
+
+          <div style="display:flex; gap:7px; align-items:center; flex-wrap:wrap;">
+            <button onClick="{{ onReverse }}" style="display:flex; align-items:center; gap:6px; border:1px solid #E7E2D9; border-radius:8px; background:#FFFFFF; cursor:pointer; padding:7px 11px; font-size:12.5px; font-weight:650; color:#4A4438;" style-hover="background:#F3F1EC;">Reverse</button>
+            <button onClick="{{ onDistribute }}" style="display:flex; align-items:center; gap:6px; border:1px solid #E7E2D9; border-radius:8px; background:#FFFFFF; cursor:pointer; padding:7px 11px; font-size:12.5px; font-weight:650; color:#4A4438;" style-hover="background:#F3F1EC;">Distribute</button>
+            <button onClick="{{ onRandomize }}" style="display:flex; align-items:center; gap:6px; border:1px solid #E7E2D9; border-radius:8px; background:#FFFFFF; cursor:pointer; padding:7px 11px; font-size:12.5px; font-weight:650; color:#4A4438;" style-hover="background:#F3F1EC;">Surprise me</button>
+          </div>
+        </div>
+
+        <sc-if value="{{ showRadialControls }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-wrap:wrap; gap:12px 18px; align-items:center; margin-top:14px; padding-top:14px; border-top:1px solid #F2EEE7;">
+            <div style="display:flex; gap:2px; padding:3px; background:#F3F1EC; border-radius:9px;">
+              <sc-for list="{{ shapeTabs }}" as="sh" hint-placeholder-count="2">
+                <button onClick="{{ sh.onSelect }}" style="border:none; cursor:pointer; padding:6px 12px; border-radius:7px; font-size:12.5px; font-weight:650; background:{{ sh.bg }}; color:{{ sh.color }}; box-shadow:{{ sh.shadow }};">{{ sh.label }}</button>
+              </sc-for>
+            </div>
+            <span style="font-size:12.5px; color:#948C7E;">{{ radialNote }}</span>
+          </div>
+        </sc-if>
+
+        <div style="border-top:1px solid #EFEBE3; margin:16px 0 0; padding-top:15px;">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:9px;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Load a gradient</span>
+          <span style="font-size:12px; color:#948C7E;">Paste CSS from anywhere and edit it here</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <input value="{{ pasteText }}" onChange="{{ onPasteChange }}" onKeyDown="{{ onPasteKey }}" placeholder="linear-gradient(90deg, #2A7B9B 0%, rgb(87 199 133 / 0.5) 50%, #EDDD53 100%)" spellCheck="false" aria-label="Paste a CSS gradient to load it into the editor" style="flex:1 1 320px; min-width:0; border:1px solid {{ pasteBorder }}; border-radius:8px; background:#FCFBF9; outline:none; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#26221C; padding:10px 12px;" />
+          <button onClick="{{ onPasteApply }}" style="flex-shrink:0; border:none; border-radius:8px; background:#3858E9; color:#FFFFFF; cursor:pointer; padding:10px 18px; font-size:12.5px; font-weight:700;" style-hover="background:#213FD4;">Load</button>
+        </div>
+        <sc-if value="{{ pasteMsg }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:8px; font-size:12px; line-height:1.5; color:{{ pasteMsgColor }}; text-wrap:pretty;">{{ pasteMsg }}</div>
+        </div>
+
+        <div ref="{{ refGrid }}" style="border-top:1px solid #EFEBE3; margin-top:15px; display:grid; grid-template-columns:repeat(auto-fit, minmax(262px, 1fr)); align-items:stretch;">
+
+      <div style="padding-top:{{ c1PadTop }}; padding-right:{{ c1PadRight }}; padding-bottom:4px; padding-left:{{ c1PadLeft }}; border-left:{{ c1Left }}; border-top:{{ c1Top }};">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:12px;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Selected stop</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#948C7E;">{{ selectedLabel }}</span>
+        </div>
+
+        <div ref="{{ refSquare }}" onPointerDown="{{ onSquareDown }}" style="position:relative; height:150px; border-radius:9px; cursor:crosshair; touch-action:none; background:linear-gradient(to top, #000, rgba(0,0,0,0)), linear-gradient(to right, #fff, rgba(255,255,255,0)), {{ pickerHueCss }};">
+          <div aria-hidden="true" style="position:absolute; left:{{ svDot.left }}; top:{{ svDot.top }}; width:18px; height:18px; margin:-9px 0 0 -9px; border-radius:50%; border:2.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,0.35); background:{{ selectedSolid }};"></div>
+        </div>
+
+        <div style="display:flex; gap:9px; align-items:center; margin-top:13px;">
+          <sc-if value="{{ hasEyedropper }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onEyedropper }}" aria-label="Pick a color from the screen" title="Pick a color from the screen" style="flex-shrink:0; width:34px; height:34px; border:1px solid #E7E2D9; border-radius:8px; background:#FCFBF9; cursor:pointer; color:#4A4438; font-family:lineicons; font-size:15px; display:flex; align-items:center; justify-content:center;" style-hover="background:#F3F1EC;">&#xe87b;</button>
+          </sc-if>
+          <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:9px;">
+            <div ref="{{ refHue }}" onPointerDown="{{ onHueDown }}" role="button" tabIndex="0" aria-label="Hue" style="position:relative; height:14px; border-radius:7px; cursor:pointer; touch-action:none; background:linear-gradient(to right,#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000);">
+              <div aria-hidden="true" style="position:absolute; left:{{ hueDotLeft }}; top:7px; width:15px; height:15px; margin:-7.5px 0 0 -7.5px; border-radius:50%; border:2.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,0.35); background:{{ pickerHueCss }};"></div>
+            </div>
+            <div ref="{{ refAlpha }}" onPointerDown="{{ onAlphaDown }}" role="button" tabIndex="0" aria-label="Alpha" style="position:relative; height:14px; border-radius:7px; cursor:pointer; touch-action:none; background-color:#FFFFFF; background-image:{{ checkerImage }}; background-size:10px 10px; background-position:0 0, 0 5px, 5px -5px, -5px 0px;">
+              <div style="position:absolute; inset:0; border-radius:7px; background:{{ alphaTrack }}; box-shadow:inset 0 0 0 1px rgba(28,26,21,0.1);"></div>
+              <div aria-hidden="true" style="position:absolute; left:{{ alphaDotLeft }}; top:7px; width:15px; height:15px; margin:-7.5px 0 0 -7.5px; border-radius:50%; border:2.5px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,0.35); background:{{ selectedSolid }};"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:13px;">
+          <div style="flex:1; min-width:0; display:flex; align-items:center; gap:6px; border:1px solid #E7E2D9; border-radius:8px; padding:0 9px; background:#FCFBF9;">
+            <span aria-hidden="true" style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#A79F91;">#</span>
+            <input value="{{ hexField }}" onChange="{{ onHexInput }}" onBlur="{{ onHexBlur }}" spellCheck="false" aria-label="Hex code for the selected stop" style="flex:1; min-width:0; border:none; outline:none; background:none; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; letter-spacing:0.03em; color:#26221C; padding:8px 0;" />
+          </div>
+          <div style="flex-shrink:0; width:74px; display:flex; align-items:center; gap:3px; border:1px solid #E7E2D9; border-radius:8px; padding:0 9px; background:#FCFBF9;">
+            <input value="{{ alphaField }}" onChange="{{ onAlphaInput }}" aria-label="Alpha percentage" style="width:100%; min-width:0; border:none; outline:none; background:none; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:#26221C; padding:8px 0;" />
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#A79F91;">%</span>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:7px; margin-top:9px;">
+          <sc-for list="{{ rgbFields }}" as="rf" hint-placeholder-count="4">
+            <div>
+              <div style="font-size:10px; font-weight:700; letter-spacing:0.06em; color:#B3ACA0; margin-bottom:3px;">{{ rf.label }}</div>
+              <input value="{{ rf.value }}" onChange="{{ rf.onChange }}" aria-label="{{ rf.aria }}" size="3" style="width:100%; min-width:0; border:1px solid #E7E2D9; border-radius:7px; background:#FCFBF9; outline:none; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#26221C; padding:7px 8px;" />
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:14px; padding-top:13px; border-top:1px solid #F2EEE7;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91; margin-bottom:9px;">Presets</div>
+          <div style="display:flex; flex-wrap:nowrap; gap:5px;">
+            <sc-for list="{{ presets }}" as="p" hint-placeholder-count="10">
+              <button onClick="{{ p.onApply }}" aria-label="{{ p.aria }}" title="{{ p.name }}" style="flex:1 1 0; min-width:0; max-width:30px; aspect-ratio:1; border-radius:50%; border:1px solid rgba(28,26,21,0.16); cursor:pointer; padding:0; background-color:#FFFFFF; background-image:{{ p.swatch }}; background-size:auto, 8px 8px, 8px 8px, 8px 8px, 8px 8px; background-position:0 0, 0 0, 0 4px, 4px -4px, -4px 0px;" style-hover="border-color:#3858E9;"></button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding-top:{{ c2PadTop }}; padding-right:{{ c2PadRight }}; padding-bottom:4px; padding-left:{{ c2PadLeft }}; border-left:{{ c2Left }}; border-top:{{ c2Top }}; display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Stops</span>
+          <button onClick="{{ onAddStop }}" style="display:flex; align-items:center; gap:5px; border:1px solid #E7E2D9; border-radius:7px; background:#FCFBF9; cursor:pointer; padding:5px 9px; font-size:12px; font-weight:650; color:#4A4438;" style-hover="background:#F3F1EC;">Add</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:7px;">
+          <sc-for list="{{ stopRows }}" as="s" hint-placeholder-count="3">
+            <div style="display:flex; align-items:center; gap:7px; padding:6px; border-radius:9px; background:{{ s.rowBg }}; border:1px solid {{ s.rowBorder }};">
+              <button onClick="{{ s.onSelect }}" aria-label="{{ s.selectAria }}" style="flex-shrink:0; width:30px; height:30px; border-radius:7px; border:1px solid rgba(28,26,21,0.16); cursor:pointer; padding:0; background-color:#FFF; background-image:{{ s.swatchImage }}; background-size:8px 8px, 8px 8px, 8px 8px, 8px 8px, auto; background-position:0 0, 0 4px, 4px -4px, -4px 0px, 0 0;"></button>
+              <div style="flex:1; min-width:0; display:flex; align-items:center; gap:5px; border:1px solid #E7E2D9; border-radius:7px; padding:0 8px; background:#FFFFFF;">
+                <span aria-hidden="true" style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#B3ACA0;">#</span>
+                <input value="{{ s.hexValue }}" onChange="{{ s.onHex }}" spellCheck="false" aria-label="{{ s.hexAria }}" style="flex:1; min-width:0; border:none; outline:none; background:none; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500; letter-spacing:0.02em; color:#26221C; padding:7px 0;" />
+              </div>
+              <div style="flex-shrink:0; width:58px; display:flex; align-items:center; gap:2px; border:1px solid #E7E2D9; border-radius:7px; padding:0 7px; background:#FFFFFF;">
+                <input value="{{ s.posValue }}" onChange="{{ s.onPos }}" aria-label="{{ s.posAria }}" style="width:100%; min-width:0; border:none; outline:none; background:none; font-family:'JetBrains Mono',monospace; font-size:12px; color:#26221C; padding:7px 0;" />
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#B3ACA0;">%</span>
+              </div>
+              <button onClick="{{ s.onDelete }}" disabled="{{ s.deleteDisabled }}" aria-label="{{ s.deleteAria }}" style="flex-shrink:0; width:26px; height:26px; border:none; border-radius:6px; background:none; cursor:{{ s.deleteCursor }}; color:{{ s.deleteColor }}; font-size:17px; line-height:1; display:flex; align-items:center; justify-content:center;" style-hover="background:#F3F1EC;">×</button>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:14px; padding-top:13px; border-top:1px solid #F2EEE7;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91; margin-bottom:9px;">Interpolation</div>
+          <div style="display:flex; gap:2px; padding:3px; background:#F3F1EC; border-radius:9px; margin-bottom:10px;">
+            <sc-for list="{{ interpTabs }}" as="it" hint-placeholder-count="2">
+              <button onClick="{{ it.onSelect }}" title="{{ it.title }}" style="flex:1; border:none; cursor:pointer; padding:6px 8px; border-radius:7px; font-size:12px; font-weight:650; background:{{ it.bg }}; color:{{ it.color }}; box-shadow:{{ it.shadow }};">{{ it.label }}</button>
+            </sc-for>
+          </div>
+          <p style="margin:0 0 12px; font-size:12px; line-height:1.55; color:#948C7E; text-wrap:pretty;">{{ interpNote }}</p>
+
+          <sc-if value="{{ hasMidControl }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:5px;">
+                <span style="font-size:12px; font-weight:650; color:#4A4438;">Midpoint {{ midLabel }}</span>
+                <button onClick="{{ onResetMid }}" style="border:none; background:none; cursor:pointer; padding:0; font-size:11.5px; font-weight:650; color:#3858E9;">Reset</button>
+              </div>
+              <input type="range" min="5" max="95" step="1" value="{{ midValue }}" onChange="{{ onMidChange }}" aria-label="Midpoint between this stop and the next" style="width:100%;" />
+              <p style="margin:5px 0 0; font-size:11.5px; line-height:1.5; color:#B3ACA0; text-wrap:pretty;">Where the halfway color lands between this stop and the next. Also draggable as the diamond on the rail.</p>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="padding-top:{{ c3PadTop }}; padding-right:{{ c3PadRight }}; padding-bottom:4px; padding-left:{{ c3PadLeft }}; border-left:{{ c3Left }}; border-top:{{ c3Top }}; display:flex; flex-direction:column; gap:15px;">
+        <div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Export image</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#B3ACA0;">{{ exportPixels }}</span>
+          </div>
+          <select value="{{ sizeKey }}" onChange="{{ onSizeChange }}" aria-label="Export size preset" style="width:100%; border:1px solid #E7E2D9; border-radius:8px; background:#FCFBF9; padding:9px 10px; font-size:13px; color:#26221C; cursor:pointer; outline:none;">
+            <sc-for list="{{ sizeOptions }}" as="so" hint-placeholder-count="8">
+              <option value="{{ so.key }}">{{ so.label }}</option>
+            </sc-for>
+          </select>
+          <sc-if value="{{ isCustomSize }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; gap:8px; margin-top:9px;">
+              <div style="flex:1; min-width:0; display:flex; align-items:center; gap:5px; border:1px solid #E7E2D9; border-radius:8px; padding:0 9px; background:#FCFBF9;">
+                <span style="font-size:11px; font-weight:700; color:#B3ACA0;">W</span>
+                <input value="{{ customW }}" onChange="{{ onCustomW }}" aria-label="Custom width in pixels" style="flex:1; min-width:0; border:none; outline:none; background:none; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#26221C; padding:8px 0;" />
+              </div>
+              <div style="flex:1; min-width:0; display:flex; align-items:center; gap:5px; border:1px solid #E7E2D9; border-radius:8px; padding:0 9px; background:#FCFBF9;">
+                <span style="font-size:11px; font-weight:700; color:#B3ACA0;">H</span>
+                <input value="{{ customH }}" onChange="{{ onCustomH }}" aria-label="Custom height in pixels" style="flex:1; min-width:0; border:none; outline:none; background:none; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#26221C; padding:8px 0;" />
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="display:flex; align-items:center; gap:9px; margin-top:11px;">
+            <span style="font-size:12px; font-weight:650; color:#4A4438; flex-shrink:0;">Scale</span>
+            <div style="display:flex; gap:2px; padding:3px; background:#F3F1EC; border-radius:8px;">
+              <sc-for list="{{ scaleTabs }}" as="st" hint-placeholder-count="3">
+                <button onClick="{{ st.onSelect }}" style="border:none; cursor:pointer; padding:5px 10px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; background:{{ st.bg }}; color:{{ st.color }}; box-shadow:{{ st.shadow }};">{{ st.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <label style="display:flex; align-items:flex-start; gap:8px; margin-top:12px; cursor:pointer;">
+            <input type="checkbox" checked="{{ grainOn }}" onChange="{{ onGrainToggle }}" style="margin-top:2px; accent-color:#3858E9; cursor:pointer;" />
+            <span style="min-width:0;">
+              <span style="display:block; font-size:12.5px; font-weight:650; color:#26221C;">Add grain ({{ grainLabel }})</span>
+              <span style="display:block; font-size:11.5px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Dithers the ramp so wide, low-contrast gradients don't show banding on 8-bit screens.</span>
+            </span>
+          </label>
+          <sc-if value="{{ grainOn }}" hint-placeholder-val="{{ false }}">
+            <input type="range" min="2" max="14" step="1" value="{{ grainAmount }}" onChange="{{ onGrainAmount }}" aria-label="Grain strength" style="width:100%; margin-top:8px;" />
+          </sc-if>
+
+          <div style="display:flex; gap:8px; margin-top:14px;">
+            <button onClick="{{ onDownloadPng }}" disabled="{{ pngBusy }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:7px; border:none; border-radius:8px; background:{{ pngBg }}; color:#FFFFFF; cursor:{{ pngCursor }}; padding:11px 12px; font-size:13px; font-weight:700;" style-hover="background:#213FD4;" aria-label="Download PNG">{{ pngLabel }}</button>
+            <button onClick="{{ onDownloadSvg }}" disabled="{{ svgDisabled }}" title="{{ svgTitle }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:7px; border:1px solid #E7E2D9; border-radius:8px; background:{{ svgBg }}; color:{{ svgColor }}; cursor:{{ svgCursor }}; padding:11px 12px; font-size:13px; font-weight:700;" style-hover="background:#F3F1EC;" aria-label="Download SVG">SVG</button>
+          </div>
+          <sc-if value="{{ svgDisabled }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:8px 0 0; font-size:11.5px; line-height:1.5; color:#948C7E; text-wrap:pretty;">SVG has no conic gradient primitive, so a conic gradient can only be exported as PNG or used as CSS.</p>
+          </sc-if>
+        </div>
+
+        <div style="border-top:1px solid #EFEBE3; padding-top:14px;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91; margin-bottom:11px;">Legibility over this gradient</div>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <sc-for list="{{ legibility }}" as="lg" hint-placeholder-count="2">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="flex-shrink:0; width:52px; height:30px; border-radius:7px; background:{{ lg.chipBg }}; border:1px solid rgba(28,26,21,0.12); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:{{ lg.textColor }};">Aa</span>
+                <span style="flex:1; min-width:0; font-size:12.5px; line-height:1.45; color:#4A4438;">{{ lg.label }}</span>
+                <span style="flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:{{ lg.ratioColor }};">{{ lg.ratio }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <p style="margin:11px 0 0; font-size:11.5px; line-height:1.55; color:#948C7E; text-wrap:pretty;">{{ legibilityNote }}</p>
+        </div>
+      </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1200px; width:100%; margin:0 auto; padding:clamp(26px,3.5vw,40px) 28px 0; display:flex; flex-direction:column; gap:clamp(30px,4vw,48px);">
+
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:12px;">
+        <div style="display:flex; gap:2px; padding:3px; background:#F3F1EC; border-radius:9px;">
+          <sc-for list="{{ codeTabs }}" as="ct" hint-placeholder-count="4">
+            <button onClick="{{ ct.onSelect }}" style="border:none; cursor:pointer; padding:7px 13px; border-radius:7px; font-size:12.5px; font-weight:650; background:{{ ct.bg }}; color:{{ ct.color }}; box-shadow:{{ ct.shadow }};">{{ ct.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <sc-if value="{{ showNativeToggle }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onNativeToggle }}" role="switch" aria-checked="{{ nativeOklab }}" title="Emit the modern one-line in oklab syntax instead of sampled stops" style="display:flex; align-items:center; gap:9px; cursor:pointer; border:1px solid {{ nativeBorder }}; border-radius:8px; background:{{ nativeBg }}; padding:7px 11px 7px 9px; font-size:12.5px; font-weight:650; color:{{ nativeColor }};">
+              <span aria-hidden="true" style="width:30px; height:17px; flex-shrink:0; border-radius:9px; background:{{ nativeTrack }}; display:flex; align-items:center; justify-content:{{ nativeKnobSide }}; padding:2px;">
+                <span style="width:13px; height:13px; border-radius:50%; background:#FFFFFF; box-shadow:0 1px 2px rgba(24,20,14,0.35);"></span>
+              </span>
+              Native <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">in oklab</span>
+            </button>
+          </sc-if>
+          <button onClick="{{ onCopyCode }}" style="display:flex; align-items:center; gap:7px; border:none; border-radius:8px; background:{{ copyBg }}; color:#FFFFFF; cursor:pointer; padding:9px 14px; font-size:12.5px; font-weight:700;" style-hover="background:#3D372E;">{{ copyLabel }}</button>
+        </div>
+      </div>
+      <pre ref="{{ refCode }}" style="margin:0; background:#1C1A15; border-radius:11px; padding:18px 20px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.75; color:#E4DFD6; white-space:pre-wrap; word-break:break-word;">{{ codeText }}</pre>
+      <p style="margin:9px 0 0; font-size:12px; line-height:1.55; color:#948C7E; max-width:80ch; text-wrap:pretty;">{{ codeNote }}</p>
+    </div>
+
+    <div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91; margin-bottom:12px;">Try it on</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,270px), 1fr)); gap:14px;">
+        <div style="border:1px solid #E7E2D9; border-radius:11px; overflow:hidden; background:#FFFFFF;">
+          <div style="height:132px; background:{{ stageGradient }}; display:flex; align-items:flex-end; padding:16px;">
+            <span style="font-size:19px; font-weight:700; letter-spacing:-0.02em; color:{{ heroTextColor }};">Card header</span>
+          </div>
+          <div style="padding:13px 15px 15px;">
+            <p style="margin:0; font-size:13px; line-height:1.6; color:#5C564B;">As a header fill behind text — the label uses whichever of black or white holds up best across the whole ramp.</p>
+          </div>
+        </div>
+        <div style="border:1px solid #E7E2D9; border-radius:11px; background:#FFFFFF; padding:18px; display:flex; flex-direction:column; gap:13px; align-items:flex-start; justify-content:center;">
+          <button style="border:none; border-radius:9px; cursor:pointer; padding:13px 22px; font-size:14px; font-weight:700; color:{{ heroTextColor }}; background:{{ stageGradient }};">Primary action</button>
+          <button style="border:1.5px solid transparent; border-radius:9px; cursor:pointer; padding:11px 20px; font-size:14px; font-weight:700; color:#26221C; background-color:#FFFFFF; background-image:{{ borderGradient }}; background-origin:border-box; background-clip:padding-box, border-box;">Gradient border</button>
+          <span style="font-size:12px; color:#948C7E;">Buttons and outlines.</span>
+        </div>
+        <div style="border:1px solid #E7E2D9; border-radius:11px; background:#FFFFFF; padding:18px; display:flex; flex-direction:column; justify-content:center; gap:10px;">
+          <span ref="{{ refTextClip }}" style="font-size:clamp(26px,3vw,36px); font-weight:700; letter-spacing:-0.03em; line-height:1.08; background-image:{{ textClipGradient }}; background-clip:text; color:transparent; text-wrap:pretty;">Clipped to text</span>
+          <span style="font-size:12px; color:#948C7E;">Type fills need more contrast than a block — thin strokes lose the light end first.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <section style="border-top:1px solid #E7E2D9; background:#FAF9F7; margin-top:clamp(44px,5vw,68px);">
+    <div style="max-width:1200px; margin:0 auto; padding:clamp(40px,5vw,64px) 28px clamp(48px,6vw,72px); display:flex; flex-direction:column; gap:clamp(40px,4.5vw,60px);">
+
+      <div style="display:flex; flex-wrap:wrap; gap:clamp(24px,4vw,56px); align-items:flex-start;">
+        <div style="flex:1 1 520px; min-width:0;">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#A79F91; margin-bottom:12px;">About this tool</div>
+          <h2 style="margin:0 0 18px; font-size:clamp(25px,2.7vw,33px); font-weight:700; letter-spacing:-0.028em; line-height:1.12; color:#1C1A15; text-wrap:pretty;">CSS Gradient Generator Online</h2>
+          <p style="margin:0 0 14px; font-size:clamp(15.5px,1.35vw,17px); line-height:1.68; color:#3B362D; max-width:66ch; text-wrap:pretty;">Build linear, radial and conic gradients by dragging the stops directly on the artwork instead of guessing at numbers in a form. Every stop carries its own alpha, the midpoint between any two stops is adjustable, and the result comes out as CSS, SVG, a Tailwind value or JSON — or downloads as a PNG or SVG at any size you need.</p>
+          <p style="margin:0; font-size:15px; line-height:1.7; color:#5C564B; max-width:66ch; text-wrap:pretty;">What you see on the canvas is the CSS being generated, not an approximation of it — the preview, the exported image and the copied code all come from the same stop list. Free, no account, and nothing leaves your browser.</p>
+        </div>
+        <div style="flex:0 1 300px; min-width:min(100%,260px); background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Gradient types</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#26221C;">linear · radial · conic (+ repeating)</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Exports</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">CSS, SVG, Tailwind, JSON, PNG and SVG files</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Color handling</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">Per-stop alpha, sRGB or OKLab interpolation</span>
+          </div>
+          <div style="height:1px; background:#EFEBE3;"></div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A79F91;">Price</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#3B362D;">Free — no sign-up, no limits</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 16px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; max-width:38ch; text-wrap:pretty;">Why this gradient generator is different</h2>
+        <p style="margin:0 0 26px; font-size:15.5px; line-height:1.7; color:#4A4438; max-width:72ch; text-wrap:pretty;">Most gradient sites give you two color inputs, an angle slider and a copy button. That is fine until you need a third stop in a specific place, a transparent end for an image overlay, or a ramp that doesn't go gray in the middle. Those are the ordinary cases this tool is built around.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,290px), 1fr)); gap:14px;">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Editing happens on the artwork</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Stops are handles on the gradient axis itself. Drag the axis end to rotate, drag a stop to move it, drag the center or radius of a radial. The numbers follow your hand rather than the other way round.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Alpha is a first-class value</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Every stop has its own opacity, shown against a checkerboard so you can see it, and preserved through the CSS, SVG and PNG exports. Fade-to-transparent image overlays take about four seconds.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">OKLab interpolation, with a fallback</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Blend in sRGB like every other tool, or in OKLab so complementary colors stop turning muddy halfway. Output the modern one-line syntax, or a sampled version that works in browsers that don't support it yet.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Midpoint control per pair</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Push the halfway color toward either end and the tool writes it as a CSS color interpolation hint — a real part of the spec that almost no generator exposes, and the cleanest way to bias a two-stop ramp.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">Banding taken seriously</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Wide, low-contrast ramps band visibly on 8-bit displays. The grain option dithers the gradient — in the preview, in the PNG, and as a CSS snippet you can keep — which is the standard fix and rarely offered.</p>
+            </div>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 18px 19px; display:flex; gap:12px; align-items:flex-start;">
+            <span aria-hidden="true" style="font-family:lineicons; font-size:13px; line-height:1; color:#3858E9; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#EEF1FE; display:flex; align-items:center; justify-content:center; margin-top:1px;">&#xe539;</span>
+            <div style="min-width:0;">
+              <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:5px; text-wrap:pretty;">It checks the text on top</div>
+              <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">A gradient is usually a background. This one samples along the ramp and reports the worst-case contrast for black and for white text, so a headline doesn't disappear at one end of the artwork.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 16px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; text-wrap:pretty;">How does the gradient generator work?</h2>
+        <p style="margin:0 0 26px; font-size:15.5px; line-height:1.7; color:#4A4438; max-width:72ch; text-wrap:pretty;">A CSS gradient is a list of colors with positions along a line. Everything else — angle, shape, repetition — is how that line is laid over the box.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,220px), 1fr)); gap:14px; margin-bottom:30px;">
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">01</div>
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Pick a type</div>
+            <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Linear runs along a straight line, radial spreads from a point, conic sweeps around one. Repeating tiles the whole ramp end to end.</p>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">02</div>
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Place the stops</div>
+            <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Drag them on the canvas or the rail, click the rail to add one, and set each color's hex and alpha in the picker.</p>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">03</div>
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Shape the blend</div>
+            <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Choose sRGB or OKLab interpolation, nudge the midpoint between any pair, and add grain if the ramp is wide enough to band.</p>
+          </div>
+          <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:700; color:#3858E9; margin-bottom:9px;">04</div>
+            <div style="font-size:14.5px; font-weight:700; color:#1C1A15; margin-bottom:6px;">Copy or download</div>
+            <p style="margin:0; font-size:13.5px; line-height:1.62; color:#5C564B; text-wrap:pretty;">Take the CSS, SVG, Tailwind value or JSON, or export a PNG or SVG at a preset or custom size.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:clamp(20px,3vw,32px); align-items:flex-start;">
+          <div style="flex:1 1 480px; min-width:0;">
+            <div style="font-size:13px; font-weight:700; color:#26221C; margin-bottom:4px;">Worked example — a three-stop linear gradient with a transparent end</div>
+            <p style="margin:0 0 12px; font-size:13.5px; line-height:1.62; color:#5C564B; max-width:64ch; text-wrap:pretty;">The overlay pattern used on almost every hero image: solid at the bottom, gone by the middle. Note the third value in each color — that is the alpha.</p>
+            <pre style="margin:0; background:#1C1A15; border-radius:10px; padding:18px 20px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.75; color:#E4DFD6;">.hero__scrim {
+	background-image: linear-gradient(
+		to top,
+		rgb(18 16 12 / 0.85) 0%,
+		38%,
+		rgb(18 16 12 / 0.35) 55%,
+		rgb(18 16 12 / 0) 100%
+	);
+}</pre>
+            <p style="margin:12px 0 0; font-size:13.5px; line-height:1.65; color:#5C564B; max-width:68ch; text-wrap:pretty;">The bare <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">38%</span> on its own line is a color interpolation hint: it moves the halfway point of the first blend without adding a stop. That is the midpoint control in this tool, written the way the spec intends.</p>
+          </div>
+          <div style="flex:0 1 300px; min-width:min(100%,260px); background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:18px 20px 20px;">
+            <div style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#A79F91; margin-bottom:12px;">Reference documentation</div>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">linear-gradient() on MDN</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Angle keywords, stop syntax, and how the gradient line is sized against the box.</span>
+                </span>
+              </a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">radial-gradient() on MDN</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Circle versus ellipse, explicit radii, and the closest-side and farthest-corner keywords.</span>
+                </span>
+              </a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">conic-gradient() on MDN</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">Sweeping gradients, the from angle, and the pie-chart and color-wheel patterns.</span>
+                </span>
+              </a>
+              <a href="https://www.w3.org/TR/css-images-3/#color-transition-hint" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">Color transition hints — CSS Images 3</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">The specification for the midpoint syntax, including how the interpolation curve is derived.</span>
+                </span>
+              </a>
+              <a href="https://www.w3.org/TR/css-color-4/#interpolation-space" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit; border-bottom:1px solid #F2EEE7;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">Interpolation color spaces — CSS Color 4</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">What <span style="font-family:'JetBrains Mono',monospace;">in oklab</span> changes, and the rules for interpolating alpha.</span>
+                </span>
+              </a>
+              <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element/linearGradient" target="_blank" rel="noopener nofollow" style="display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-radius:6px; text-decoration:none; color:inherit;" style-hover="color:#3858E9;">
+                <span aria-hidden="true" style="font-family:lineicons; font-size:11px; line-height:1.5; color:#948C7E; flex-shrink:0;">&#xe0b3;</span>
+                <span style="min-width:0;">
+                  <span style="display:block; font-size:13.5px; font-weight:650; line-height:1.45; color:inherit; text-wrap:pretty;">&lt;linearGradient&gt; on MDN</span>
+                  <span style="display:block; font-size:12px; line-height:1.5; color:#948C7E; margin-top:2px; text-wrap:pretty;">The SVG equivalent, including stop-opacity and gradient units — what the SVG export writes.</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin:0 0 6px; font-size:clamp(22px,2.3vw,29px); font-weight:700; letter-spacing:-0.026em; line-height:1.16; color:#1C1A15; text-wrap:pretty;">Gradients — frequently asked questions</h2>
+        <p style="margin:0 0 24px; font-size:15px; line-height:1.7; color:#5C564B; max-width:70ch; text-wrap:pretty;">The problems that come up once a gradient leaves the design file.</p>
+        <div style="background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:6px clamp(18px,2.4vw,28px);">
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Why does my gradient turn gray in the middle?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Because it is being blended in sRGB. Halfway between two roughly opposite hues, the channel averages cancel out and you get a desaturated middle. Switch interpolation to OKLab and the blend keeps its chroma, taking a path around the hue circle instead of straight through the middle of it.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Why does fading to transparent go through gray?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Because <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">transparent</span> is shorthand for transparent black, so the color is travelling toward black as it fades. Fade to the same color at zero alpha instead — this tool always writes the full color with an alpha of 0, which is why its fades stay clean.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">What causes those visible stripes across a large gradient?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Banding. An 8-bit channel has 256 steps, and a wide, low-contrast ramp may need more distinct values than the distance provides, so it quantises into bands. The fixes are more contrast, a shorter ramp, or dithering — which is what the grain option does, both in the CSS and in the exported PNG.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Should I use a CSS gradient or an exported image?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">CSS whenever you can — it costs no bytes, scales to any size and stays sharp on any display. Export an image when the gradient has to live somewhere CSS cannot reach: an email background, an OG or social card, a slide deck, or a favicon.</p>
+          </div>
+          <div style="padding:22px 0; border-bottom:1px solid #F2EEE7; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">How do angles work in CSS gradients?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Zero degrees points to the top and the angle increases clockwise, so 90deg goes to the right and 180deg to the bottom. This trips people up because many other graphics systems measure from the right and go anticlockwise. The gradient line is also sized so the box corners land exactly on 0% and 100%.</p>
+          </div>
+          <div style="padding:22px 0; display:flex; flex-wrap:wrap; gap:8px clamp(20px,3vw,40px); align-items:flex-start;">
+            <h3 style="margin:0; flex:1 1 260px; min-width:0; font-size:16px; font-weight:700; line-height:1.4; letter-spacing:-0.012em; color:#1C1A15; text-wrap:pretty;">Can I put a gradient on text or a border?</h3>
+            <p style="margin:0; flex:1 1 380px; min-width:0; font-size:14.5px; line-height:1.68; color:#4A4438; text-wrap:pretty;">Yes to both, and the “Try it on” panel above shows each. Text needs <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">background-clip: text</span> with a transparent color; borders need two backgrounds with different <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">background-clip</span> values, since <span style="font-family:'JetBrains Mono',monospace; font-size:0.9em;">border-color</span> cannot take a gradient. Keep an eye on contrast for text — thin strokes lose the light end of a ramp first.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:6px;">
+          <h2 style="margin:0; font-size:clamp(20px,2vw,25px); font-weight:700; letter-spacing:-0.024em; color:#1C1A15;">Related design generators</h2>
+          <a href="./Generator%20for%20WP.dc.html#/tools" style="font-size:13.5px; font-weight:650; color:#3858E9; text-decoration:none;" style-hover="color:#213FD4;">Browse all generators →</a>
+        </div>
+        <p style="margin:0 0 18px; font-size:14.5px; line-height:1.65; color:#5C564B; max-width:70ch; text-wrap:pretty;">The other color and theme tools in the library.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,250px), 1fr)); gap:12px;">
+          <a href="./Color%20Tool.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Color Tool</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">oklch()</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Conversions, ramps, harmonies, contrast and a UI palette from one hex code.</span>
+          </a>
+          <a href="./Theme%20JSON%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">theme.json Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">theme.json</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Register this gradient as a block theme preset, alongside your palette.</span>
+          </a>
+          <a href="./Theme%20Support%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Theme Support Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">add_theme_support()</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Add editor gradient presets so authors can pick this from the block editor.</span>
+          </a>
+          <a href="./Child%20Theme%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Child Theme Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">style.css Template:</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Somewhere safe to keep the CSS you just copied.</span>
+          </a>
+          <a href="./Sidebar%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#EEF1FE; color:#3858E9;">Design</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Sidebar Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">register_sidebar()</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Widget areas with the wrapper markup your gradient styles hook onto.</span>
+          </a>
+          <a href="./Block%20Pattern%20Generator.dc.html" style="display:flex; flex-direction:column; gap:7px; background:#FFFFFF; border:1px solid #E7E2D9; border-radius:10px; padding:16px 17px 17px; text-decoration:none; color:inherit;" style-hover="border-color:#3858E9; color:inherit;">
+            <span style="align-self:flex-start; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 7px; border-radius:4px; background:#F3F1EC; color:#948C7E;">Content</span>
+            <span style="font-size:14.5px; font-weight:700; color:#1C1A15;">Block Pattern Generator</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#948C7E; word-break:break-all;">register_block_pattern()</span>
+            <span style="font-size:13px; line-height:1.6; color:#5C564B; text-wrap:pretty;">Ship a hero pattern with the gradient already applied.</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  </div>
+
+  <dc-import name="SiteFooter" base="./Generator%20for%20WP.dc.html" show-browse-row="{{ trueVal }}" hint-size="100%,180px"></dc-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;interpolation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;srgb&quot;,&quot;oklab&quot;],&quot;default&quot;:&quot;srgb&quot;,&quot;tsType&quot;:&quot;'srgb' | 'oklab'&quot;,&quot;section&quot;:&quot;Defaults&quot;}}">
+const CARD_OVERLAP = 26;
+const CHECKER = 'linear-gradient(45deg, #E7E2D9 25%, transparent 25%), linear-gradient(-45deg, #E7E2D9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #E7E2D9 75%), linear-gradient(-45deg, transparent 75%, #E7E2D9 75%)';
+const GRAIN_URI = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+const SIZES = [
+  ['1920x1080', 'Desktop hero — 1920 × 1080', 1920, 1080],
+  ['1440x900', 'Laptop — 1440 × 900', 1440, 900],
+  ['1200x630', 'Open Graph card — 1200 × 630', 1200, 630],
+  ['1080x1080', 'Square post — 1080 × 1080', 1080, 1080],
+  ['1080x1920', 'Story — 1080 × 1920', 1080, 1920],
+  ['2560x1440', 'Retina hero — 2560 × 1440', 2560, 1440],
+  ['800x400', 'Banner — 800 × 400', 800, 400],
+  ['512x512', 'Icon — 512 × 512', 512, 512],
+  ['custom', 'Custom size…', 0, 0]
+];
+
+const PRESETS = [
+  ['Ember', 'linear', 140, [['#F5C14B', 1, 0], ['#E4633C', 1, 52], ['#8E2C52', 1, 100]]],
+  ['Deep sea', 'linear', 200, [['#0B3B5C', 1, 0], ['#1E7A8C', 1, 55], ['#7FD1C1', 1, 100]]],
+  ['Violet dusk', 'linear', 115, [['#3B1E6B', 1, 0], ['#7F56D9', 1, 48], ['#E6A9C8', 1, 100]]],
+  ['Moss', 'linear', 165, [['#1F3D26', 1, 0], ['#4F7942', 1, 58], ['#C7D49B', 1, 100]]],
+  ['Scrim', 'linear', 0, [['#12100C', 0.88, 0], ['#12100C', 0.3, 55], ['#12100C', 0, 100]]],
+  ['Clay', 'linear', 130, [['#F3E4D3', 1, 0], ['#C96F4A', 1, 62], ['#7A3B2E', 1, 100]]],
+  ['Spotlight', 'radial', 90, [['#FFF6DE', 1, 0], ['#F0A83C', 1, 46], ['#5B2E12', 1, 100]]],
+  ['Halo', 'radial', 90, [['#FFFFFF', 0.9, 0], ['#3858E9', 0.45, 58], ['#3858E9', 0, 100]]],
+  ['Wheel', 'conic', 0, [['#E14A4A', 1, 0], ['#E8C33E', 1, 20], ['#4FA86A', 1, 40], ['#3878C8', 1, 60], ['#8A4FC8', 1, 80], ['#E14A4A', 1, 100]]],
+  ['Slate fade', 'linear', 180, [['#FAF9F7', 1, 0], ['#D9D3C8', 1, 100]]]
+];
+
+function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function lin(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+function delin(c) { return c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055; }
+function cbrt(x) { return x < 0 ? -Math.pow(-x, 1 / 3) : Math.pow(x, 1 / 3); }
+function parseHex(input) {
+  let h = String(input == null ? '' : input).trim().replace(/^#/, '');
+  if (/^[0-9a-f]{3}$/i.test(h)) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  if (!/^[0-9a-f]{6}$/i.test(h)) return null;
+  return [parseInt(h.slice(0, 2), 16) / 255, parseInt(h.slice(2, 4), 16) / 255, parseInt(h.slice(4, 6), 16) / 255];
+}
+function toHex(rgb) { return '#' + rgb.map(function (c) { const v = Math.round(clamp(c, 0, 1) * 255).toString(16); return v.length < 2 ? '0' + v : v; }).join(''); }
+function rgbToOklab(rgb) {
+  const r = lin(rgb[0]), g = lin(rgb[1]), b = lin(rgb[2]);
+  const l = cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s, 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s];
+}
+function oklabToRgb(lab) {
+  const l_ = lab[0] + 0.3963377774 * lab[1] + 0.2158037573 * lab[2];
+  const m_ = lab[0] - 0.1055613458 * lab[1] - 0.0638541728 * lab[2];
+  const s_ = lab[0] - 0.0894841775 * lab[1] - 1.2914855480 * lab[2];
+  const l = l_ * l_ * l_, m = m_ * m_ * m_, s = s_ * s_ * s_;
+  return [delin(clamp(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, 0, 1)), delin(clamp(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, 0, 1)), delin(clamp(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s, 0, 1))];
+}
+function luminance(rgb) { const l = rgb.map(lin); return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2]; }
+function contrast(a, b) { const l1 = luminance(a), l2 = luminance(b); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); }
+function rgbToHsv(rgb) {
+  const max = Math.max.apply(null, rgb), min = Math.min.apply(null, rgb), d = max - min;
+  let h = 0;
+  if (d) {
+    if (max === rgb[0]) h = ((rgb[1] - rgb[2]) / d + 6) % 6;
+    else if (max === rgb[1]) h = (rgb[2] - rgb[0]) / d + 2;
+    else h = (rgb[0] - rgb[1]) / d + 4;
+    h *= 60;
+  }
+  return [h, max === 0 ? 0 : d / max, max];
+}
+function hsvToRgb(h, sat, v) {
+  h = ((h % 360) + 360) % 360;
+  const c = v * sat, x = c * (1 - Math.abs(((h / 60) % 2) - 1)), m = v - c;
+  const t = [[c, x, 0], [x, c, 0], [0, c, x], [0, x, c], [x, 0, c], [c, 0, x]][Math.floor(h / 60) % 6];
+  return [t[0] + m, t[1] + m, t[2] + m];
+}
+function fmt(n, d) { const p = Math.pow(10, d == null ? 0 : d); return String(Math.round(n * p) / p); }
+function rgbaCss(hex, a) {
+  const c = parseHex(hex) || [0, 0, 0];
+  const r = Math.round(c[0] * 255), g = Math.round(c[1] * 255), b = Math.round(c[2] * 255);
+  return a >= 0.999 ? 'rgb(' + r + ' ' + g + ' ' + b + ')' : 'rgb(' + r + ' ' + g + ' ' + b + ' / ' + fmt(a, 3) + ')';
+}
+function biasT(t, mid) { const m = clamp(mid, 0.05, 0.95); return Math.pow(t, Math.log(0.5) / Math.log(m)); }
+let UID = 0;
+function uid() { UID += 1; return 's' + UID; }
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem('gradient-tool-v1') || 'null'); } catch (err) { saved = null; }
+    // Every key in here is persisted (see persist()), so adding a field to the
+    // gradient cannot be forgotten in a separate save whitelist.
+    const def = {
+      type: 'linear', angle: 135, repeating: false, shape: 'ellipse',
+      cx: 50, cy: 50, rx: 46, ry: 46, rPx: 170, from: 0,
+      interp: props && props.interpolation === 'oklab' ? 'oklab' : 'srgb', nativeOklab: false,
+      grainOn: false, grain: 6,
+      stops: [
+        { id: uid(), hex: '#3858E9', a: 1, pos: 0, mid: 0.5 },
+        { id: uid(), hex: '#7F56D9', a: 1, pos: 50, mid: 0.5 },
+        { id: uid(), hex: '#E6A9C8', a: 1, pos: 100, mid: 0.5 }
+      ]
+    };
+    // captured before the merges below, which mutate def with UI-only state
+    this._savedKeys = Object.keys(def);
+    const st = (saved && saved.stops && saved.stops.length >= 2) ? Object.assign(def, saved, { stops: saved.stops.map(function (s) { return { id: uid(), hex: parseHex(s.hex) ? s.hex : '#000000', a: clamp(Number(s.a), 0, 1), pos: clamp(Number(s.pos), 0, 100), mid: clamp(Number(s.mid) || 0.5, 0.05, 0.95) }; }) }) : def;
+    this.state = Object.assign(st, {
+      selected: st.stops[0].id, codeTab: 'css', copied: false,
+      sizeKey: '1920x1080', customW: 1600, customH: 900, scale: 1,
+      pasteText: '', pasteMsg: null, pasteOk: true, exporting: false, gridW: 858,
+      stageW: 1200, stageH: 420, drag: null, hexDraft: null
+    });
+    // Data saved before circles became a length has no rPx; derive it from the
+    // saved percentages once the stage has been measured for real.
+    this._deriveRPx = st.shape === 'circle' && !(saved && typeof saved.rPx === 'number');
+    this.state.rx = Math.min(this.state.rx, this.maxRx(this.state.cx));
+    this.state.ry = Math.min(this.state.ry, this.maxRy(this.state.cy));
+    this._refs = {};
+    this._refCallbacks = {};
+    this._copyTimer = null;
+  }
+
+  componentDidUpdate() {
+    if (this._needsClamp) { const c = this._needsClamp; this._needsClamp = null; this.persist(c); }
+    this._applyTextClip();
+  }
+
+  // The style compiler drops the vendor-prefixed key, and without it the span is
+  // transparent text over an unclipped gradient — i.e. invisible. Set it directly.
+  _applyTextClip() {
+    const el = this._refs.textClip;
+    if (!el) return;
+    el.style.setProperty('-webkit-background-clip', 'text');
+    el.style.setProperty('background-clip', 'text');
+  }
+
+  componentDidMount() {
+    if (this._needsClamp) { const c = this._needsClamp; this._needsClamp = null; this.persist(c); }
+    this._move = (e) => { if (this.state.drag) { e.preventDefault(); this.applyDrag(e); } };
+    this._up = () => { if (this.state.drag) this.setState({ drag: null }); };
+    window.addEventListener('pointermove', this._move, { passive: false });
+    window.addEventListener('pointerup', this._up);
+    window.addEventListener('pointercancel', this._up);
+    this._measure();
+    this._applyTextClip();
+    if (window.ResizeObserver && this._refs.stage) {
+      this._ro = new ResizeObserver(() => this._measure());
+      this._ro.observe(this._refs.stage);
+      if (this._refs.grid) this._ro.observe(this._refs.grid);
+    } else {
+      window.addEventListener('resize', this._measure);
+    }
+  }
+  componentWillUnmount() {
+    window.removeEventListener('pointermove', this._move);
+    window.removeEventListener('pointerup', this._up);
+    window.removeEventListener('pointercancel', this._up);
+    if (this._ro) this._ro.disconnect(); else window.removeEventListener('resize', this._measure);
+    if (this._copyTimer) clearTimeout(this._copyTimer);
+  }
+
+  _measure = () => {
+    const el = this._refs.stage;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (Math.abs(r.width - this.state.stageW) > 1 || Math.abs(r.height - this.state.stageH) > 1) this.setState({ stageW: r.width, stageH: r.height });
+    const g = this._refs.grid;
+    if (g) {
+      const gw = g.getBoundingClientRect().width;
+      if (Math.abs(gw - this.state.gridW) > 1) this.setState({ gridW: gw });
+    }
+    if (this._deriveRPx) {
+      this._deriveRPx = false;
+      const W = Math.max(1, r.width), H = Math.max(1, r.height), s = this.state;
+      this.persist(this.circleFrom(Math.min(s.rx / 100 * W, s.ry / 100 * H)));
+    }
+  };
+
+  getRef(id) { if (!this._refCallbacks[id]) this._refCallbacks[id] = (el) => { this._refs[id] = el; }; return this._refCallbacks[id]; }
+
+  persist(patch) {
+    const next = Object.assign({}, this.state, patch);
+    try {
+      const out = {};
+      (this._savedKeys || []).forEach(function (k) { out[k] = next[k]; });
+      out.stops = next.stops.map(function (s) { return { hex: s.hex, a: s.a, pos: s.pos, mid: s.mid }; });
+      localStorage.setItem('gradient-tool-v1', JSON.stringify(out));
+    } catch (err) { /* ignore */ }
+    this.setState(patch);
+  }
+
+  sorted() { return this.state.stops.slice().sort(function (a, b) { return a.pos - b.pos; }); }
+
+  patchStop(id, patch) {
+    this.persist({ stops: this.state.stops.map(function (s) { return s.id === id ? Object.assign({}, s, patch) : s; }) });
+  }
+
+  // --- geometry -------------------------------------------------------------
+  // The real CSS gradient line runs past the box corners, which would put the 0%
+  // and 100% handles off-screen. The on-canvas axis is a proportional stand-in
+  // that always fits, so every stop stays grabbable at any angle.
+  axisGeom() {
+    const W = Math.max(1, this.state.stageW), H = Math.max(1, this.state.stageH);
+    const a = this.state.angle * Math.PI / 180;
+    const dx = Math.sin(a), dy = -Math.cos(a);
+    // The control card overlaps the bottom of the stage, so that edge reserves more room.
+    const pad = 28, padBottom = 28 + CARD_OVERLAP;
+    const tx = Math.abs(dx) < 1e-6 ? Infinity : (W / 2 - pad) / Math.abs(dx);
+    // the axis is symmetric, so both ends must clear the card — take the larger reserve
+    const ty = Math.abs(dy) < 1e-6 ? Infinity : (H / 2 - padBottom) / Math.abs(dy);
+    const t = Math.max(24, Math.min(tx, ty));
+    return { W: W, H: H, dx: dx, dy: dy, t: t };
+  }
+  // spread < 1 keeps the stop track inside the rotate handles so they never overlap
+  pointAt(p, spread) {
+    const g = this.axisGeom();
+    const off = (p - 0.5) * 2 * g.t * (spread == null ? 0.86 : spread);
+    return { x: (g.W / 2 + g.dx * off) / g.W * 100, y: (g.H / 2 + g.dy * off) / g.H * 100 };
+  }
+
+  applyDrag(e) {
+    const d = this.state.drag;
+    if (!d) return;
+    const s = this.state;
+    if (d.kind === 'sv' || d.kind === 'hue' || d.kind === 'alpha') return this.applyPickerDrag(e, d.kind);
+    if (d.kind === 'dial') {
+      const el = this._refs.dial;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+      let deg = Math.atan2(dx, -dy) * 180 / Math.PI;
+      if (deg < 0) deg += 360;
+      if (s.type === 'conic') this.persist({ from: Math.round(deg) }); else this.persist({ angle: Math.round(deg) });
+      return;
+    }
+    if (d.kind === 'railStop' || d.kind === 'railMid') {
+      const el = this._refs.rail;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const p = clamp((e.clientX - r.left - 8) / Math.max(1, r.width - 16), 0, 1) * 100;
+      if (d.kind === 'railStop') this.patchStop(d.id, { pos: Math.round(p * 10) / 10 });
+      else {
+        const list = this.sorted();
+        const i = list.findIndex(function (x) { return x.id === d.id; });
+        if (i < 0 || i >= list.length - 1) return;
+        const a = list[i].pos, b = list[i + 1].pos;
+        if (b - a < 0.5) return;
+        this.patchStop(d.id, { mid: clamp((p - a) / (b - a), 0.05, 0.95) });
+      }
+      return;
+    }
+    const el = this._refs.stage;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = e.clientX - r.left, py = e.clientY - r.top;
+    if (d.kind === 'axisEnd' || d.kind === 'axisStart') {
+      const dx = px - r.width / 2, dy = py - r.height / 2;
+      let deg = Math.atan2(dx, -dy) * 180 / Math.PI;
+      if (d.kind === 'axisStart') deg += 180;
+      deg = ((Math.round(deg) % 360) + 360) % 360;
+      this.persist({ angle: deg });
+      return;
+    }
+    if (d.kind === 'center') {
+      const cx = clamp(px / r.width * 100, 4, 96), cy = clamp(py / r.height * 100, 4, 96);
+      const cur = this.radii();
+      this.persist(Object.assign({ cx: cx, cy: cy }, s.shape === 'circle' ? null : { rx: Math.min(cur.rx, this.maxRx(cx)), ry: Math.min(cur.ry, this.maxRy(cy)) }));
+      return;
+    }
+    if (d.kind === 'radius') {
+      if (s.shape === 'circle') this.persist(this.circleFrom(Math.abs(px - s.cx / 100 * r.width)));
+      else this.persist({ rx: clamp(Math.abs(px / r.width * 100 - s.cx), 3, this.maxRx(s.cx)) });
+      return;
+    }
+    if (d.kind === 'radiusY') {
+      if (s.shape === 'circle') this.persist(this.circleFrom(Math.abs(py - s.cy / 100 * r.height)));
+      else this.persist({ ry: clamp(Math.abs(py / r.height * 100 - s.cy), 3, this.maxRy(s.cy)) });
+      return;
+    }
+    if (d.kind === 'fromAngle') {
+      const dx = px - s.cx / 100 * r.width, dy = py - s.cy / 100 * r.height;
+      let deg = Math.atan2(dx, -dy) * 180 / Math.PI;
+      this.persist({ from: ((Math.round(deg) % 360) + 360) % 360 });
+      return;
+    }
+    if (d.kind === 'stageStop') {
+      let p;
+      if (s.type === 'radial') {
+        p = clamp((px / r.width * 100 - s.cx) / ((this.radii().rx * 0.86) || 1), 0, 1);
+      } else {
+        const g = this.axisGeom();
+        p = clamp(0.5 + ((px - g.W / 2) * g.dx + (py - g.H / 2) * g.dy) / (2 * g.t * 0.86), 0, 1);
+      }
+      this.patchStop(d.id, { pos: Math.round(p * 1000) / 10 });
+    }
+  }
+
+  maxRx(cx) { return Math.max(6, 100 - cx - 3); }
+  maxRy(cy) {
+    const H = Math.max(1, this.state ? this.state.stageH : 420);
+    return Math.max(6, (H - CARD_OVERLAP - 22) / H * 100 - cy);
+  }
+
+  // A circle is ONE length; an ellipse is two percentages of the box. Storing a
+  // circle as percentages made it round only at the stage's aspect ratio, so every
+  // export at another ratio came out elliptical. CSS accepts 'circle <length>',
+  // which is exactly this representation and independent of any box.
+  stageBox() { return { W: Math.max(1, this.state.stageW), H: Math.max(1, this.state.stageH) }; }
+  maxRPx(cx, cy) {
+    const b = this.stageBox(), s = this.state;
+    const x = cx == null ? s.cx : cx, y = cy == null ? s.cy : cy;
+    return Math.max(8, Math.min(this.maxRx(x) / 100 * b.W, this.maxRy(y) / 100 * b.H));
+  }
+  // Every circle write goes through here, and it keeps the ellipse percentages in
+  // step so the two stores can never drift apart — that drift is what made
+  // switching Circle -> Ellipse fall back to a stale, smaller size.
+  circleFrom(rPx, cx, cy) {
+    const b = this.stageBox(), s = this.state;
+    const x = cx == null ? s.cx : cx, y = cy == null ? s.cy : cy;
+    const r = clamp(rPx, 8, this.maxRPx(x, y));
+    return {
+      rPx: r,
+      rx: clamp(r / b.W * 100, 3, this.maxRx(x)),
+      ry: clamp(r / b.H * 100, 3, this.maxRy(y))
+    };
+  }
+  isCircle() { return this.state.type === 'radial' && this.state.shape === 'circle'; }
+  radii() {
+    const s = this.state, b = this.stageBox();
+    if (this.isCircle()) {
+      const raw = Math.max(8, s.rPx);
+      // the stored length drives every output; only the handle position is clamped
+      // to the stage, so shrinking the stage can never shrink the gradient
+      const shown = Math.min(raw, this.maxRPx());
+      return { circle: true, rPx: raw, rx: shown / b.W * 100, ry: shown / b.H * 100 };
+    }
+    return { circle: false, rx: Math.min(s.rx, this.maxRx(s.cx)), ry: Math.min(s.ry, this.maxRy(s.cy)) };
+  }
+  // radius in the coordinates of an output box, so CSS/SVG/canvas agree
+  circleRadiusFor() { return clamp(Math.max(8, this.state.rPx), 8, 20000); }
+
+  // CSS radial size keywords, resolved against the stage box. Substituting
+  // "the biggest radius that fits" for these silently mis-sized the most common
+  // radial form of all — 'circle at X Y' with no size, which means farthest-corner.
+  radialKeywordSize(g, cx, cy) {
+    const b = this.stageBox();
+    const px = cx / 100 * b.W, py = cy / 100 * b.H;
+    const closest = { rx: Math.min(px, b.W - px), ry: Math.min(py, b.H - py) };
+    const farthest = { rx: Math.max(px, b.W - px), ry: Math.max(py, b.H - py) };
+    const corners = [[0, 0], [b.W, 0], [0, b.H], [b.W, b.H]].map(function (c) { return { dx: Math.abs(c[0] - px), dy: Math.abs(c[1] - py), d: Math.hypot(c[0] - px, c[1] - py) }; });
+    // a corner-sized ellipse keeps the side-sized aspect ratio and passes through the corner
+    const cornerEllipse = (base, pick) => {
+      const ks = corners.map(function (c) { return Math.sqrt(Math.pow(c.dx / Math.max(1, base.rx), 2) + Math.pow(c.dy / Math.max(1, base.ry), 2)); });
+      const k = pick === 'min' ? Math.min.apply(null, ks) : Math.max.apply(null, ks);
+      return { rx: base.rx * k, ry: base.ry * k };
+    };
+    const dists = corners.map(function (c) { return c.d; });
+    if (/closest-side/i.test(g)) return { circleR: Math.min(closest.rx, closest.ry), rx: closest.rx, ry: closest.ry, keyword: 'closest-side' };
+    if (/farthest-side/i.test(g)) return { circleR: Math.max(farthest.rx, farthest.ry), rx: farthest.rx, ry: farthest.ry, keyword: 'farthest-side' };
+    if (/closest-corner/i.test(g)) {
+      const e = cornerEllipse(closest, 'min');
+      return { circleR: Math.min.apply(null, dists), rx: e.rx, ry: e.ry, keyword: 'closest-corner' };
+    }
+    const e = cornerEllipse(farthest, 'max');
+    return { circleR: Math.max.apply(null, dists), rx: e.rx, ry: e.ry, keyword: 'farthest-corner' };
+  }
+
+  // The ONLY place a radial's size is resolved. Both the explicit-geometry form
+  // and the bare 'radial-gradient(colors…)' shorthand call this, so the spec
+  // default cannot drift away from the sized path again.
+  applyRadialSize(patch, sizePart, box) {
+    const vals = (sizePart || '').match(/(-?[\d.]+)\s*(%|px|em|rem)/gi) || [];
+    const kw = this.radialKeywordSize(sizePart || '', patch.cx, patch.cy);
+    const out = { keyword: vals.length ? '' : kw.keyword, clamped: 0 };
+    const num = (t, which) => /px|em|rem/i.test(t) ? parseFloat(t) / (which === 'x' ? box.W : box.H) * 100 : parseFloat(t);
+    const asPx = (t, which) => /em|rem/i.test(t) ? parseFloat(t) * 16 : /px/i.test(t) ? parseFloat(t) : parseFloat(t) / 100 * (which === 'x' ? box.W : box.H);
+    if (patch.shape === 'circle') {
+      const wanted = vals.length ? asPx(vals[0], 'x') : kw.circleR;
+      const fit = this.circleFrom(wanted, patch.cx, patch.cy);
+      if (Math.abs(fit.rPx - wanted) > 1) out.clamped = Math.round(fit.rPx);
+      Object.assign(patch, fit);
+      return out;
+    }
+    if (vals.length >= 2) { patch.rx = num(vals[0], 'x'); patch.ry = num(vals[1], 'y'); }
+    else if (vals.length === 1) { patch.rx = num(vals[0], 'x'); patch.ry = patch.rx; }
+    else { patch.rx = kw.rx / box.W * 100; patch.ry = kw.ry / box.H * 100; }
+    const wx = patch.rx, wy = patch.ry;
+    patch.rx = clamp(patch.rx, 3, this.maxRx(patch.cx));
+    patch.ry = clamp(patch.ry, 3, this.maxRy(patch.cy));
+    if (Math.abs(wx - patch.rx) > 0.5 || Math.abs(wy - patch.ry) > 0.5) out.clamped = -1;
+    return out;
+  }
+
+  // --- parsing pasted CSS ---------------------------------------------------
+  // Color syntax is delegated to the browser rather than hand-parsed, so hex,
+  // rgb(), hsl(), oklch(), color-mix(), named colors and transparent all work.
+  resolveColor(str) {
+    const text = String(str || '').trim();
+    if (!text) return null;
+    if (!this._probe) {
+      const d = document.createElement('div');
+      d.setAttribute('aria-hidden', 'true');
+      d.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:0;height:0;pointer-events:none';
+      document.body.appendChild(d);
+      this._probe = d;
+    }
+    // Validate up front — a sentinel value can't work, since any legal sentinel is
+    // also a value the user might legitimately paste (e.g. #010203).
+    const el = this._probe;
+    if (window.CSS && CSS.supports) {
+      if (!CSS.supports('color', text)) return null;
+    } else {
+      el.style.color = '';
+      el.style.color = text;
+      if (!el.style.color) return null;
+    }
+    el.style.color = text;
+    const computed = getComputedStyle(el).color;
+    // Modern spaces (oklch, lab, color()) compute to themselves, whose numbers are
+    // NOT 0-255 channels — rasterise those through a canvas to get real sRGB bytes.
+    if (/^rgba?\(/i.test(computed)) {
+      const nums = computed.match(/[-\d.]+/g);
+      if (nums && nums.length >= 3) return { hex: toHex([nums[0] / 255, nums[1] / 255, nums[2] / 255]), a: clamp(nums.length > 3 ? parseFloat(nums[3]) : 1, 0, 1) };
+    }
+    try {
+      if (!this._px) {
+        const cv = document.createElement('canvas');
+        cv.width = 1; cv.height = 1;
+        this._px = cv.getContext('2d', { willReadFrequently: true });
+      }
+      const ctx = this._px;
+      ctx.clearRect(0, 0, 1, 1);
+      ctx.fillStyle = '#000000';
+      ctx.fillStyle = computed;
+      ctx.fillRect(0, 0, 1, 1);
+      const d = ctx.getImageData(0, 0, 1, 1).data;
+      const a = d[3] / 255;
+      if (a === 0) return { hex: '#000000', a: 0 };
+      return { hex: toHex([d[0] / 255 / a, d[1] / 255 / a, d[2] / 255 / a]), a: clamp(a, 0, 1) };
+    } catch (err) { return null; }
+  }
+
+  splitTop(str) {
+    const out = [];
+    let depth = 0, cur = '';
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      if (ch === '(') depth++;
+      else if (ch === ')') depth--;
+      if (ch === ',' && depth === 0) { out.push(cur); cur = ''; continue; }
+      cur += ch;
+    }
+    if (cur.trim()) out.push(cur);
+    return out.map(function (x) { return x.trim(); }).filter(Boolean);
+  }
+
+  toDeg(v, unit) {
+    const u = (unit || 'deg').toLowerCase();
+    const d = u === 'turn' ? v * 360 : u === 'rad' ? v * 180 / Math.PI : u === 'grad' ? v * 0.9 : v;
+    return ((Math.round(d) % 360) + 360) % 360;
+  }
+  // basis = length in px that 100% represents, so absolute stop positions keep
+  // their spacing instead of being flattened to an even distribution
+  toPct(v, unit, basis) {
+    const u = (unit || '%').toLowerCase();
+    if (u === '%') return v;
+    if (u === 'deg') return v / 360 * 100;
+    if (u === 'turn') return v * 100;
+    if (u === 'px' || u === 'em' || u === 'rem') {
+      const px = u === 'px' ? v : v * 16;
+      return basis > 0 ? px / basis * 100 : null;
+    }
+    return null;
+  }
+  sideAngle(words) {
+    const w = String(words || '').toLowerCase().trim().split(/\s+/).filter(Boolean).sort().join(' ');
+    const map = { 'top': 0, 'right': 90, 'bottom': 180, 'left': 270, 'right top': 45, 'bottom right': 135, 'bottom left': 225, 'left top': 315 };
+    return map[w] == null ? 180 : map[w];
+  }
+
+  parseGradient(text) {
+    const src = String(text || '').trim().replace(/;+\s*$/, '');
+    if (!src) return { error: 'Paste a gradient first.' };
+    // Accept the tool's own Tailwind output by undoing the underscore escaping.
+    const tw = src.match(/\bbg-\[([^\]]+)\]/);
+    const unwrapped = tw ? tw[1].replace(/_/g, ' ') : src;
+    const body = unwrapped.replace(/^[\s\S]*?background(?:-image)?\s*:\s*/i, '').trim();
+    const head = body.match(/(repeating-)?(linear|radial|conic)-gradient\s*\(/i);
+    if (!head) return { error: 'No linear-gradient(), radial-gradient() or conic-gradient() found in that text.' };
+    const open = body.indexOf('(', head.index);
+    let depth = 0, end = -1;
+    for (let i = open; i < body.length; i++) {
+      if (body[i] === '(') depth++;
+      else if (body[i] === ')') { depth--; if (!depth) { end = i; break; } }
+    }
+    if (end < 0) return { error: 'The gradient is missing a closing bracket.' };
+    const type = head[2].toLowerCase();
+    const repeating = !!head[1];
+    const args = this.splitTop(body.slice(open + 1, end));
+    if (!args.length) return { error: 'That gradient has no color stops.' };
+    const box = this.stageBox();
+    const patch = { type: type, repeating: repeating };
+    let interp = null, idx = 0, radiusClamped = 0, sizeKeyword = '';
+
+    const stripPositions = (arg) => {
+      // the unit is optional because CSS allows a unitless zero
+      const re = /\s+(-?[\d.]+)(%|deg|turn|rad|grad|px|em|rem|vw|vh)?\s*$/i;
+      let work = arg, found = [], m;
+      while ((m = work.match(re))) { found.unshift({ v: parseFloat(m[1]), u: m[2] || '%' }); work = work.slice(0, m.index); }
+      return { color: work.trim(), positions: found };
+    };
+
+    // Only treat arg0 as the geometry prelude when it actually reads as geometry.
+    // Deciding by "the color failed to parse" would swallow a typo'd first color
+    // and report a misleading stop-count error instead of naming the real problem.
+    const isGeometry = /(^|\s)(-?[\d.]+\s*(deg|turn|rad|grad)|to\s+(top|bottom|left|right)|at\s|from\s|circle|ellipse|closest-(side|corner)|farthest-(side|corner)|in\s+(oklab|oklch|srgb|srgb-linear|lab|lch|hsl|hwb))/i.test(args[0]);
+    if (isGeometry) {
+      idx = 1;
+      let g = args[0];
+      const sp = g.match(/\bin\s+(oklab|oklch|srgb|srgb-linear|lab|lch|hsl|hwb)\b/i);
+      if (sp) { interp = sp[1].toLowerCase(); g = g.replace(sp[0], ' '); }
+      if (type === 'linear') {
+        const ang = g.match(/(-?[\d.]+)\s*(deg|turn|rad|grad)\b/i);
+        if (ang) patch.angle = this.toDeg(parseFloat(ang[1]), ang[2]);
+        else {
+          const to = g.match(/\bto\s+([a-z\s]+)/i);
+          patch.angle = to ? this.sideAngle(to[1]) : 180;
+        }
+      } else {
+        const atPart = g.match(/\bat\s+(.+)$/i);
+        const axis = (tok, which) => {
+          if (/%$/.test(tok)) return parseFloat(tok);
+          if (/px$/.test(tok)) return parseFloat(tok) / (which === 'x' ? box.W : box.H) * 100;
+          const k = tok.toLowerCase();
+          if (k === 'center') return 50;
+          if (which === 'x') return k === 'left' ? 0 : k === 'right' ? 100 : null;
+          return k === 'top' ? 0 : k === 'bottom' ? 100 : null;
+        };
+        patch.cx = 50; patch.cy = 50;
+        if (atPart) {
+          const toks = atPart[1].trim().split(/\s+/);
+          const x = axis(toks[0], 'x');
+          const y = toks.length > 1 ? axis(toks[1], 'y') : 50;
+          if (x != null) patch.cx = clamp(x, 0, 100);
+          if (y != null) patch.cy = clamp(y, 0, 100);
+        }
+        if (type === 'radial') {
+          patch.shape = /\bcircle\b/i.test(g) ? 'circle' : 'ellipse';
+          const sizePart = g.replace(/\bat\b[\s\S]*$/i, '');
+          const rs = this.applyRadialSize(patch, sizePart, box);
+          sizeKeyword = rs.keyword; radiusClamped = rs.clamped;
+        } else {
+          const fr = g.match(/\bfrom\s+(-?[\d.]+)\s*(deg|turn|rad|grad)?/i);
+          patch.from = fr ? this.toDeg(parseFloat(fr[1]), fr[2]) : 0;
+        }
+      }
+    } else if (type === 'linear') patch.angle = 180;
+    else if (type === 'conic') { patch.cx = 50; patch.cy = 50; patch.from = 0; }
+    else {
+      patch.cx = 50; patch.cy = 50; patch.shape = 'ellipse';
+      const rs = this.applyRadialSize(patch, '', box);
+      sizeKeyword = rs.keyword; radiusClamped = rs.clamped;
+    }
+
+    let basis = 0;
+    if (type === 'linear') {
+      const a = (patch.angle == null ? 180 : patch.angle) * Math.PI / 180;
+      basis = Math.abs(box.W * Math.sin(a)) + Math.abs(box.H * Math.cos(a));
+    } else if (type === 'radial') basis = (patch.rx == null ? 46 : patch.rx) / 100 * box.W;
+
+    const stops = [], hints = [];
+    let pxConverted = false;
+    for (let i = idx; i < args.length; i++) {
+      const arg = args[i];
+      const solo = arg.match(/^(-?[\d.]+)\s*(%|deg|turn|px|em|rem)?$/i);
+      if (solo && stops.length) { hints.push({ at: stops.length - 1, pos: this.toPct(parseFloat(solo[1]), solo[2], basis) }); continue; }
+      const parsed = stripPositions(arg);
+      const col = this.resolveColor(parsed.color);
+      if (!col) return { error: 'Could not read the color “' + parsed.color.slice(0, 30) + '”.' };
+      if (!parsed.positions.length) stops.push({ hex: col.hex, a: col.a, pos: null });
+      else parsed.positions.forEach((p) => {
+        if (/px|em|rem/i.test(p.u)) pxConverted = true;
+        stops.push({ hex: col.hex, a: col.a, pos: this.toPct(p.v, p.u, basis) });
+      });
+    }
+    if (stops.length < 2) return { error: 'A gradient needs at least two color stops.' };
+
+    if (stops[0].pos == null) stops[0].pos = 0;
+    if (stops[stops.length - 1].pos == null) stops[stops.length - 1].pos = 100;
+    for (let k = 1; k < stops.length - 1; k++) {
+      if (stops[k].pos != null) continue;
+      let next = k + 1;
+      while (next < stops.length && stops[next].pos == null) next++;
+      const prev = stops[k - 1].pos, span = (stops[next].pos - prev) / (next - (k - 1));
+      for (let j = k; j < next; j++) stops[j].pos = prev + span * (j - (k - 1));
+    }
+    stops.forEach(function (st) { st.pos = clamp(st.pos, 0, 100); st.mid = 0.5; });
+    for (let k = 1; k < stops.length; k++) if (stops[k].pos < stops[k - 1].pos) stops[k].pos = stops[k - 1].pos;
+    hints.forEach(function (h) {
+      const A = stops[h.at], B = stops[h.at + 1];
+      if (!A || !B || h.pos == null) return;
+      const span = B.pos - A.pos;
+      if (span > 0.01) A.mid = clamp((h.pos - A.pos) / span, 0.05, 0.95);
+    });
+
+    return { patch: patch, stops: stops, interp: interp, hints: hints.length, pxConverted: pxConverted, radiusClamped: radiusClamped, sizeKeyword: sizeKeyword };
+  }
+
+  applyPickerDrag(e, kind) {
+    const el = this._refs[kind === 'sv' ? 'square' : kind];
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    // must match renderVals' fallback (position-sorted) or the panel would edit a different stop
+    const stop = this.state.stops.find((x) => x.id === this.state.selected) || this.sorted()[0];
+    const hsv = rgbToHsv(parseHex(stop.hex) || [0, 0, 0]);
+    if (kind === 'sv') {
+      const sat = clamp((e.clientX - r.left) / r.width, 0, 1);
+      const v = 1 - clamp((e.clientY - r.top) / r.height, 0, 1);
+      this.patchStop(stop.id, { hex: toHex(hsvToRgb(this._hue == null ? hsv[0] : this._hue, sat, v)) });
+    } else if (kind === 'hue') {
+      const h = clamp((e.clientX - r.left) / r.width, 0, 1) * 360;
+      this._hue = h;
+      this.patchStop(stop.id, { hex: toHex(hsvToRgb(h, hsv[1] || 1, hsv[2] || 1)) });
+    } else {
+      this.patchStop(stop.id, { a: Math.round(clamp((e.clientX - r.left) / r.width, 0, 1) * 100) / 100 });
+    }
+  }
+
+  // --- gradient construction ----------------------------------------------
+  sampled() {
+    const list = this.sorted();
+    const out = [];
+    const useOk = this.state.interp === 'oklab';
+    for (let i = 0; i < list.length - 1; i++) {
+      const A = list[i], B = list[i + 1];
+      const la = rgbToOklab(parseHex(A.hex) || [0, 0, 0]), lb = rgbToOklab(parseHex(B.hex) || [0, 0, 0]);
+      const steps = (useOk || Math.abs(A.mid - 0.5) > 0.001) ? 12 : 1;
+      if (i === 0) out.push({ hex: A.hex, a: A.a, pos: A.pos });
+      for (let k = 1; k <= steps; k++) {
+        const t = k / steps;
+        const tb = biasT(t, A.mid);
+        const pos = A.pos + (B.pos - A.pos) * t;
+        const a = A.a + (B.a - A.a) * tb;
+        let hex;
+        if (useOk) hex = toHex(oklabToRgb([la[0] + (lb[0] - la[0]) * tb, la[1] + (lb[1] - la[1]) * tb, la[2] + (lb[2] - la[2]) * tb]));
+        else {
+          const ca = parseHex(A.hex) || [0, 0, 0], cb = parseHex(B.hex) || [0, 0, 0];
+          hex = toHex([ca[0] + (cb[0] - ca[0]) * tb, ca[1] + (cb[1] - ca[1]) * tb, ca[2] + (cb[2] - ca[2]) * tb]);
+        }
+        out.push({ hex: hex, a: a, pos: pos });
+      }
+    }
+    return out;
+  }
+
+  stopListCss(useNative) {
+    const list = this.sorted();
+    if (useNative) {
+      const parts = [];
+      for (let i = 0; i < list.length; i++) {
+        parts.push(rgbaCss(list[i].hex, list[i].a) + ' ' + fmt(list[i].pos, 1) + '%');
+        if (i < list.length - 1 && Math.abs(list[i].mid - 0.5) > 0.001) {
+          parts.push(fmt(list[i].pos + (list[i + 1].pos - list[i].pos) * list[i].mid, 1) + '%');
+        }
+      }
+      return parts;
+    }
+    return this.sampled().map(function (s) { return rgbaCss(s.hex, s.a) + ' ' + fmt(s.pos, 1) + '%'; });
+  }
+
+  gradientCss(opts) {
+    const s = this.state;
+    const o = opts || {};
+    const native = s.interp === 'srgb' || (s.interp === 'oklab' && s.nativeOklab);
+    const stops = this.stopListCss(native);
+    const space = (s.interp === 'oklab' && s.nativeOklab) ? 'in oklab' : '';
+    const rep = s.repeating ? 'repeating-' : '';
+    const join = o.multiline ? ',\n\t' : ', ';
+    const head = o.multiline ? '\n\t' : '';
+    if (s.type === 'linear') {
+      const pre = [fmt(s.angle, 0) + 'deg'];
+      if (space) pre.push(space);
+      return rep + 'linear-gradient(' + head + pre.join(' ') + join + stops.join(join) + (o.multiline ? '\n' : '') + ')';
+    }
+    if (s.type === 'radial') {
+      const R = this.radii();
+      const geom = R.circle ? 'circle ' + fmt(R.rPx, 0) + 'px' : 'ellipse ' + fmt(R.rx, 1) + '% ' + fmt(R.ry, 1) + '%';
+      const pre = [geom + ' at ' + fmt(s.cx, 1) + '% ' + fmt(s.cy, 1) + '%'];
+      if (space) pre.push(space);
+      return rep + 'radial-gradient(' + head + pre.join(' ') + join + stops.join(join) + (o.multiline ? '\n' : '') + ')';
+    }
+    const pre = ['from ' + fmt(s.from, 0) + 'deg at ' + fmt(s.cx, 1) + '% ' + fmt(s.cy, 1) + '%'];
+    if (space) pre.push(space);
+    return rep + 'conic-gradient(' + head + pre.join(' ') + join + stops.join(join) + (o.multiline ? '\n' : '') + ')';
+  }
+
+  // circle with a % radius is invalid CSS, so circles carry an explicit ellipse pair
+  gradientCssSafe(opts) {
+    const s = this.state;
+    return this.gradientCss(opts);
+  }
+
+  sampleAt(p) {
+    const list = this.sampled();
+    const t = clamp(p, 0, 1) * 100;
+    if (t <= list[0].pos) return list[0];
+    for (let i = 0; i < list.length - 1; i++) {
+      if (t >= list[i].pos && t <= list[i + 1].pos) {
+        const span = list[i + 1].pos - list[i].pos || 1;
+        const k = (t - list[i].pos) / span;
+        const ca = parseHex(list[i].hex), cb = parseHex(list[i + 1].hex);
+        return { hex: toHex([ca[0] + (cb[0] - ca[0]) * k, ca[1] + (cb[1] - ca[1]) * k, ca[2] + (cb[2] - ca[2]) * k]), a: list[i].a + (list[i + 1].a - list[i].a) * k, pos: t };
+      }
+    }
+    return list[list.length - 1];
+  }
+
+  legacyCopy(text) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (err) { return false; }
+  }
+
+  selectNode(el) {
+    try {
+      if (!el) return false;
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      if (!sel) return false;
+      sel.removeAllRanges();
+      sel.addRange(range);
+      return String(sel).length > 0;
+    } catch (err) { return false; }
+  }
+
+  copyDone(ok) {
+    if (this._copyTimer) clearTimeout(this._copyTimer);
+    // Both clipboard paths failed, so hand the user a real selection to copy from.
+    const selected = ok ? false : this.selectNode(this._refs.code);
+    this.setState({ copied: ok ? 'ok' : (selected ? 'fail' : 'blocked') });
+    this._copyTimer = setTimeout(() => this.setState({ copied: false }), ok ? 1500 : 4000);
+  }
+
+  copy(text) {
+    // writeText rejects asynchronously (denied permission, unfocused document),
+    // so the fallback and the label both have to hang off the promise.
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      Promise.resolve(navigator.clipboard.writeText(text))
+        .then(() => this.copyDone(true))
+        .catch(() => this.copyDone(this.legacyCopy(text)));
+      return;
+    }
+    this.copyDone(this.legacyCopy(text));
+  }
+
+  exportSize() {
+    const s = this.state;
+    const found = SIZES.find(function (x) { return x[0] === s.sizeKey; });
+    if (!found || found[0] === 'custom') return [clamp(parseInt(s.customW, 10) || 1600, 1, 8000), clamp(parseInt(s.customH, 10) || 900, 1, 8000)];
+    return [found[2], found[3]];
+  }
+
+  svgMarkup(w, h) {
+    const s = this.state;
+    const list = this.sampled();
+    const stops = list.map(function (st) {
+      const c = parseHex(st.hex) || [0, 0, 0];
+      return '\t\t\t<stop offset="' + fmt(st.pos, 2) + '%" stop-color="' + toHex(c) + '"' + (st.a < 0.999 ? ' stop-opacity="' + fmt(st.a, 3) + '"' : '') + ' />';
+    }).join('\n');
+    let defs;
+    if (s.type === 'linear') {
+      const a = s.angle * Math.PI / 180;
+      const dx = Math.sin(a), dy = -Math.cos(a);
+      const L = Math.abs(dx) + Math.abs(dy);
+      const hx = dx / L / 2, hy = dy / L / 2;
+      defs = '\t\t<linearGradient id="g" x1="' + fmt(0.5 - hx, 4) + '" y1="' + fmt(0.5 - hy, 4) + '" x2="' + fmt(0.5 + hx, 4) + '" y2="' + fmt(0.5 + hy, 4) + '">\n' + stops + '\n\t\t</linearGradient>';
+    } else {
+      const R = this.radii();
+      if (R.circle) {
+        defs = '\t\t<radialGradient id="g" gradientUnits="userSpaceOnUse" cx="' + fmt(s.cx / 100 * w, 2) + '" cy="' + fmt(s.cy / 100 * h, 2) + '" r="' + fmt(this.circleRadiusFor(), 2) + '">\n' + stops + '\n\t\t</radialGradient>';
+      } else {
+        const Rmax = Math.max(R.rx, R.ry);
+        defs = '\t\t<radialGradient id="g" cx="' + fmt(s.cx / 100, 4) + '" cy="' + fmt(s.cy / 100, 4) + '" r="' + fmt(Rmax / 100, 4) + '" gradientTransform="translate(' + fmt(s.cx / 100, 4) + ' ' + fmt(s.cy / 100, 4) + ') scale(' + fmt(R.rx / Rmax, 4) + ' ' + fmt(R.ry / Rmax, 4) + ') translate(' + fmt(-s.cx / 100, 4) + ' ' + fmt(-s.cy / 100, 4) + ')">\n' + stops + '\n\t\t</radialGradient>';
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">\n\t<defs>\n' + defs + '\n\t</defs>\n\t<rect width="' + w + '" height="' + h + '" fill="url(#g)" />\n</svg>';
+  }
+
+  paintCanvas(ctx, w, h) {
+    const s = this.state;
+    let list = this.sampled();
+    if (s.repeating) {
+      const span = list[list.length - 1].pos - list[0].pos;
+      if (span > 0.5 && span < 100) {
+        const tiled = [];
+        for (let off = list[0].pos; off < 100; off += span) {
+          list.forEach(function (st) { const p = off + (st.pos - list[0].pos); if (p <= 100.0001) tiled.push({ hex: st.hex, a: st.a, pos: p }); });
+        }
+        list = tiled;
+      }
+    }
+    const addStops = (grad) => {
+      list.forEach(function (st, i) {
+        const c = parseHex(st.hex) || [0, 0, 0];
+        grad.addColorStop(clamp(st.pos / 100, 0, 1), 'rgba(' + Math.round(c[0] * 255) + ',' + Math.round(c[1] * 255) + ',' + Math.round(c[2] * 255) + ',' + st.a + ')');
+      });
+    };
+    ctx.clearRect(0, 0, w, h);
+    if (s.type === 'linear') {
+      const a = s.angle * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a);
+      const L = Math.abs(w * dx) + Math.abs(h * dy);
+      const g = ctx.createLinearGradient(w / 2 - dx * L / 2, h / 2 - dy * L / 2, w / 2 + dx * L / 2, h / 2 + dy * L / 2);
+      addStops(g); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    } else if (s.type === 'radial') {
+      const cx = s.cx / 100 * w, cy = s.cy / 100 * h;
+      const R = this.radii();
+      const rx = Math.max(1, R.circle ? this.circleRadiusFor() : R.rx / 100 * w);
+      const ry = Math.max(1, R.circle ? this.circleRadiusFor() : R.ry / 100 * h);
+      ctx.save(); ctx.translate(cx, cy); ctx.scale(1, ry / rx); ctx.translate(-cx, -cy);
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rx);
+      addStops(g); ctx.fillStyle = g;
+      ctx.fillRect(-w, -h * (rx / ry) - h, w * 3, h * (rx / ry) * 3 + h * 2);
+      ctx.restore();
+    } else {
+      const cx = s.cx / 100 * w, cy = s.cy / 100 * h;
+      if (ctx.createConicGradient) {
+        const g = ctx.createConicGradient((s.from - 90) * Math.PI / 180, cx, cy);
+        addStops(g); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      } else {
+        const R = Math.hypot(w, h);
+        for (let i = 0; i < 720; i++) {
+          const p = i / 720;
+          const c = this.sampleAt(p);
+          const rgb = parseHex(c.hex) || [0, 0, 0];
+          ctx.beginPath(); ctx.moveTo(cx, cy);
+          const a0 = (s.from - 90 + p * 360) * Math.PI / 180, a1 = (s.from - 90 + (p + 1 / 720) * 360 + 0.3) * Math.PI / 180;
+          ctx.arc(cx, cy, R, a0, a1); ctx.closePath();
+          ctx.fillStyle = 'rgba(' + Math.round(rgb[0] * 255) + ',' + Math.round(rgb[1] * 255) + ',' + Math.round(rgb[2] * 255) + ',' + c.a + ')';
+          ctx.fill();
+        }
+      }
+    }
+    if (s.grainOn) {
+      const amt = s.grain / 100 * 2.2;
+      const img = ctx.getImageData(0, 0, w, h);
+      const d = img.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const n = (Math.random() - 0.5) * 255 * amt;
+        d[i] = clamp(d[i] + n, 0, 255); d[i + 1] = clamp(d[i + 1] + n, 0, 255); d[i + 2] = clamp(d[i + 2] + n, 0, 255);
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+  }
+
+  download(name, blob) {
+    try {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    } catch (err) { /* ignore */ }
+  }
+
+  loadPasted() {
+    const res = this.parseGradient(this.state.pasteText);
+    if (res.error) { this.setState({ pasteMsg: res.error, pasteOk: false }); return; }
+    const stops = res.stops.map(function (x) {
+      return { id: uid(), hex: x.hex, a: Math.round(x.a * 100) / 100, pos: Math.round(x.pos * 10) / 10, mid: x.mid };
+    });
+    const patch = Object.assign({}, res.patch, { stops: stops, selected: stops[0].id });
+    // No keyword in the pasted CSS means sRGB — carrying over a previous OKLab
+    // setting would render the paste differently from its source.
+    if (res.interp === 'oklab' || res.interp === 'oklch') { patch.interp = 'oklab'; patch.nativeOklab = true; }
+    else { patch.interp = 'srgb'; patch.nativeOklab = false; }
+    this.persist(patch);
+    const notes = [];
+    notes.push('Loaded ' + stops.length + ' stops as a ' + (res.patch.repeating ? 'repeating ' : '') + res.patch.type + ' gradient.');
+    if (res.hints) notes.push(res.hints + ' midpoint ' + (res.hints === 1 ? 'hint' : 'hints') + ' kept.');
+    if (res.interp === 'oklab' || res.interp === 'oklch') notes.push('Interpolation set to OKLab.');
+    if (res.pxConverted) notes.push('Pixel stop positions were converted to percentages of the preview size.');
+    if (res.sizeKeyword) notes.push('Size keyword ' + res.sizeKeyword + ' resolved against the preview canvas.');
+    if (res.radiusClamped > 0) notes.push('The circle radius was reduced to ' + res.radiusClamped + 'px to keep its handles on the canvas.');
+    else if (res.radiusClamped < 0) notes.push('The radii were reduced to keep the handles on the canvas.');
+    this.setState({ pasteMsg: notes.join(' '), pasteOk: true });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const list = this.sorted();
+    const sel = s.stops.find((x) => x.id === s.selected) || list[0];
+    const selRgb = parseHex(sel.hex) || [0, 0, 0];
+    const hsv = rgbToHsv(selRgb);
+    const hue = (hsv[1] < 0.02 || hsv[2] < 0.02) && this._hue != null ? this._hue : hsv[0];
+    const isLinear = s.type === 'linear', isRadial = s.type === 'radial', isConic = s.type === 'conic';
+    // Clamp on read: persisted state and presets can hold radii that push handles
+    // off-stage, or a circle that a stage resize has turned into an ellipse.
+    const fit = this.radii(), rx = fit.rx, ry = fit.ry;
+    if (isRadial && !fit.circle && (Math.abs(rx - s.rx) > 0.01 || Math.abs(ry - s.ry) > 0.01)) this._needsClamp = { rx: rx, ry: ry };
+
+    const cssOneLine = this.gradientCssSafe();
+    const grad = cssOneLine;
+    const railGradient = 'linear-gradient(90deg, ' + this.sampled().map(function (x) { return rgbaCss(x.hex, x.a) + ' ' + fmt(x.pos, 1) + '%'; }).join(', ') + ')';
+
+    const handles = [];
+    const push = (kind, id, x, y, opts) => {
+      const o = opts || {};
+      handles.push({
+        kind: kind, id: id || '', left: fmt(x, 3) + '%', top: fmt(y, 3) + '%',
+        size: (o.size || 18) + 'px', offset: '-' + (o.size || 18) / 2 + 'px',
+        fill: o.fill || 'rgba(255,255,255,0.14)', border: o.border || '2.5px solid #FFFFFF',
+        shadow: o.shadow || '0 0 0 1px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.3)',
+        cursor: o.cursor || 'grab', z: o.z || 10,
+        dotSize: (o.dotSize || 0) + 'px', dotFill: o.dotFill || 'transparent',
+        aria: o.aria || 'Drag handle', title: o.title || ''
+      });
+    };
+    if (isLinear) {
+      const a = this.pointAt(0, 1), b = this.pointAt(1, 1);
+      push('axisStart', '', a.x, a.y, { size: 15, fill: 'rgba(20,16,12,0.55)', border: '2px solid rgba(255,255,255,0.9)', cursor: 'grab', z: 12, dotSize: 4, dotFill: 'rgba(255,255,255,0.85)', aria: 'Rotate the gradient axis', title: 'Drag to rotate' });
+      push('axisEnd', '', b.x, b.y, { size: 15, fill: 'rgba(20,16,12,0.55)', border: '2px solid rgba(255,255,255,0.9)', cursor: 'grab', z: 12, dotSize: 4, dotFill: 'rgba(255,255,255,0.85)', aria: 'Rotate the gradient axis', title: 'Drag to rotate' });
+      list.forEach((st) => {
+        const p = this.pointAt(st.pos / 100);
+        push('stageStop', st.id, p.x, p.y, { size: st.id === s.selected ? 24 : 20, fill: rgbaCss(st.hex, st.a), z: st.id === s.selected ? 20 : 14, dotSize: st.id === s.selected ? 6 : 0, dotFill: 'rgba(255,255,255,0.9)', aria: 'Drag stop at ' + fmt(st.pos, 1) + ' percent', title: st.hex.toUpperCase() + ' · ' + fmt(st.pos, 1) + '%' });
+      });
+    } else if (isRadial) {
+      const stopDy = 17 / Math.max(1, s.stageH) * 100;
+      push('center', '', s.cx, s.cy, { size: 18, fill: 'rgba(20,16,12,0.55)', border: '2px solid rgba(255,255,255,0.9)', cursor: 'move', z: 24, dotSize: 5, dotFill: '#FFFFFF', aria: 'Move the gradient center', title: 'Drag to move the center' });
+      push('radius', '', s.cx + rx, s.cy, { size: 15, fill: 'rgba(20,16,12,0.55)', border: '2px solid rgba(255,255,255,0.9)', cursor: 'ew-resize', z: 22, dotSize: 4, dotFill: 'rgba(255,255,255,0.85)', aria: 'Resize the horizontal radius', title: 'Horizontal radius' });
+      push('radiusY', '', s.cx, s.cy + ry, { size: 15, fill: 'rgba(20,16,12,0.55)', border: '2px solid rgba(255,255,255,0.9)', cursor: 'ns-resize', z: 22, dotSize: 4, dotFill: 'rgba(255,255,255,0.85)', aria: 'Resize the vertical radius', title: 'Vertical radius' });
+      list.forEach((st) => {
+        push('stageStop', st.id, s.cx + rx * 0.86 * (st.pos / 100), s.cy + stopDy, { size: st.id === s.selected ? 22 : 18, fill: rgbaCss(st.hex, st.a), z: st.id === s.selected ? 20 : 14, dotSize: st.id === s.selected ? 6 : 0, dotFill: 'rgba(255,255,255,0.9)', aria: 'Drag stop at ' + fmt(st.pos, 1) + ' percent', title: st.hex.toUpperCase() + ' · ' + fmt(st.pos, 1) + '%' });
+      });
+    } else {
+      push('center', '', s.cx, s.cy, { size: 18, fill: 'rgba(20,16,12,0.5)', cursor: 'move', z: 12, dotSize: 5, dotFill: '#FFFFFF', aria: 'Move the gradient center', title: 'Drag to move the center' });
+      const R = Math.min(s.stageW, s.stageH) * 0.3;
+      push('fromAngle', '', s.cx + Math.sin(s.from * Math.PI / 180) * R / Math.max(1, s.stageW) * 100, s.cy - Math.cos(s.from * Math.PI / 180) * R / Math.max(1, s.stageH) * 100, { size: 15, fill: 'rgba(20,16,12,0.5)', cursor: 'grab', z: 12, aria: 'Rotate the start angle', title: 'Start angle' });
+    }
+
+    const axis = isLinear
+      ? (function (self) { const a = self.pointAt(0, 1), b = self.pointAt(1, 1); return { x1: fmt(a.x, 3), y1: fmt(a.y, 3), x2: fmt(b.x, 3), y2: fmt(b.y, 3) }; })(this)
+      : isRadial ? (function (dy) { return { x1: fmt(s.cx, 3), y1: fmt(s.cy + dy, 3), x2: fmt(s.cx + rx * 0.86, 3), y2: fmt(s.cy + dy, 3) }; })(17 / Math.max(1, s.stageH) * 100)
+        : { x1: '0', y1: '0', x2: '0', y2: '0' };
+
+    // inset so the 0% and 100% handles sit fully inside the rail
+    const railLeft = function (p) { return 'calc(' + fmt(p, 2) + '% + ' + fmt(8 - p * 0.16, 2) + 'px)'; };
+    const railStops = list.map(function (st) {
+      return {
+        id: st.id, left: railLeft(st.pos), solid: rgbaCss(st.hex, st.a),
+        border: st.id === s.selected ? '2.5px solid #3858E9' : '2px solid #FFFFFF',
+        z: st.id === s.selected ? 8 : 6, aria: 'Stop at ' + fmt(st.pos, 1) + ' percent, ' + st.hex.toUpperCase()
+      };
+    });
+    const railMids = [];
+    for (let i = 0; i < list.length - 1; i++) {
+      if (list[i + 1].pos - list[i].pos < 6) continue;
+      railMids.push({ id: list[i].id, left: railLeft(list[i].pos + (list[i + 1].pos - list[i].pos) * list[i].mid), aria: 'Midpoint between stop ' + (i + 1) + ' and ' + (i + 2), title: 'Midpoint ' + Math.round(list[i].mid * 100) + '%' });
+    }
+
+    const tab = (active, label, onSelect, title) => ({
+      label: label, onSelect: onSelect, title: title || label,
+      bg: active ? '#FFFFFF' : 'transparent', color: active ? '#1C1A15' : '#6E675B',
+      shadow: active ? '0 1px 3px rgba(24,20,14,0.16)' : 'none'
+    });
+
+    const selIndex = list.findIndex(function (x) { return x.id === sel.id; });
+    const hasMid = selIndex >= 0 && selIndex < list.length - 1;
+
+    const samples = [];
+    for (let i = 0; i <= 12; i++) {
+      const c = this.sampleAt(i / 12);
+      const rgb = parseHex(c.hex) || [0, 0, 0];
+      const over = [rgb[0] * c.a + 1 * (1 - c.a), rgb[1] * c.a + 1 * (1 - c.a), rgb[2] * c.a + 1 * (1 - c.a)];
+      samples.push(over);
+    }
+    let minWhite = 21, minBlack = 21;
+    samples.forEach(function (rgb) {
+      minWhite = Math.min(minWhite, contrast(rgb, [1, 1, 1]));
+      minBlack = Math.min(minBlack, contrast(rgb, [0.07, 0.06, 0.05]));
+    });
+    const ratioColor = (r) => r >= 4.5 ? '#1F8A5F' : r >= 3 ? '#8A6A1F' : '#C4593A';
+    const legibility = [
+      { chipBg: grad, textColor: '#FFFFFF', label: 'White text, worst point on the ramp', ratio: fmt(minWhite, 2) + ':1', ratioColor: ratioColor(minWhite) },
+      { chipBg: grad, textColor: '#120F0C', label: 'Near-black text, worst point on the ramp', ratio: fmt(minBlack, 2) + ':1', ratioColor: ratioColor(minBlack) }
+    ];
+    const better = minWhite >= minBlack ? 'White' : 'Near-black';
+    const bestMin = Math.max(minWhite, minBlack);
+    const heroTextColor = minWhite >= minBlack ? '#FFFFFF' : '#120F0C';
+
+    const [ew, eh] = this.exportSize();
+    const px = (ew * s.scale) + ' × ' + (eh * s.scale) + ' px';
+
+    const cssBlock = '.gradient {\n\tbackground-image: ' + this.gradientCssSafe({ multiline: true }).replace(/\n/g, '\n\t') + ';\n}' +
+      (s.grainOn ? '\n\n/* Dither overlay — kills banding on wide ramps */\n.gradient::after {\n\tcontent: "";\n\tposition: absolute;\n\tinset: 0;\n\tpointer-events: none;\n\tmix-blend-mode: overlay;\n\topacity: ' + fmt(s.grain / 100 * 1.6, 2) + ';\n\tbackground-image: ' + GRAIN_URI + ';\n}' : '');
+    const codeMap = {
+      css: cssBlock,
+      svg: this.svgMarkup(ew, eh),
+      tailwind: 'class="bg-[' + cssOneLine.replace(/\s+/g, '_') + ']"',
+      json: JSON.stringify({ type: s.type + (s.repeating ? '-repeating' : ''), angle: s.type === 'conic' ? s.from : s.angle, center: (isRadial || isConic) ? [s.cx, s.cy] : undefined, radius: isRadial && s.shape === 'circle' ? Math.round(this.circleRadiusFor()) + 'px' : undefined, radii: isRadial && s.shape !== 'circle' ? [s.rx, s.ry] : undefined, interpolation: s.interp, stops: list.map(function (x) { return { color: x.hex.toUpperCase(), alpha: x.a, position: x.pos, midpoint: x.mid }; }) }, null, 2)
+    };
+    const noteMap = {
+      css: s.interp === 'oklab' && !s.nativeOklab ? 'Sampled into 12 steps per pair so OKLab blending works in every browser. Tick “Native in oklab” for the short modern form.' : (s.interp === 'oklab' ? 'The one-line modern syntax. Supported in current Chrome, Safari and Firefox; older browsers fall back to the first color.' : 'Standard sRGB interpolation — bare percentages are color interpolation hints, not stops.'),
+      svg: 'Paste into a file, or use as a data URI. SVG gradients interpolate in sRGB, so OKLab ramps are exported as sampled stops.',
+      tailwind: 'An arbitrary value for Tailwind — underscores stand in for the spaces Tailwind cannot parse in a class name.',
+      json: 'The full stop list, for storing a gradient in a design token file or a CMS field.'
+    };
+
+    return {
+      toolCount: 43, trueVal: true, checkerImage: CHECKER,
+      ...(function (cols, side) {
+        // A border cannot tell whether a grid item landed beside its sibling or
+        // below it, so the divider direction is derived from the real track count.
+        const rule = '1px solid #EFEBE3';
+        // Everything follows from where the item lands in the wrapped grid: a rule
+        // goes on the side that faces a sibling, and padding is dropped on any edge
+        // that meets the card's own content box.
+        const o = {};
+        [0, 1, 2].forEach(function (i) {
+          const k = 'c' + (i + 1);
+          const col = i % cols;
+          const firstInRow = col === 0;
+          const lastInRow = col === cols - 1;
+          const wrapped = i >= cols;
+          o[k + 'Left'] = firstInRow ? 'none' : rule;
+          o[k + 'Top'] = wrapped && firstInRow ? rule : 'none';
+          o[k + 'PadLeft'] = firstInRow ? '0px' : side;
+          o[k + 'PadRight'] = lastInRow ? '0px' : side;
+          o[k + 'PadTop'] = wrapped ? '15px' : '16px';
+        });
+        return o;
+      })(Math.max(1, Math.min(3, Math.floor((s.gridW || 858) / 262))), 'clamp(14px,1.6vw,18px)'),
+      refStage: this.getRef('stage'), refRail: this.getRef('rail'), refDial: this.getRef('dial'), refGrid: this.getRef('grid'),
+      refSquare: this.getRef('square'), refHue: this.getRef('hue'), refAlpha: this.getRef('alpha'),
+      stageGradient: grad, railGradient: railGradient,
+      grainImage: GRAIN_URI, grainOpacity: s.grainOn ? s.grain / 100 * 1.6 : 0,
+      grainOn: s.grainOn, grain: s.grain, grainAmount: s.grain, grainLabel: s.grain <= 5 ? 'subtle' : s.grain <= 9 ? 'medium' : 'heavy',
+      stageCursor: s.drag ? 'grabbing' : 'default',
+      stageHint: isLinear ? 'Drag the dots on the axis · drag either end to rotate' : isRadial ? 'Drag the center, the radius handles, or a stop' : 'Drag the center or the start-angle handle',
+      axis: axis, axisOpacity: isConic ? 0 : 1, stageHandles: handles,
+      railStops: railStops, railMids: railMids,
+      typeTabs: [
+        tab(isLinear, 'Linear', () => this.persist({ type: 'linear' })),
+        tab(isRadial, 'Radial', () => this.persist({ type: 'radial' })),
+        tab(isConic, 'Conic', () => this.persist({ type: 'conic' }))
+      ],
+      repeating: s.repeating,
+      repeatBg: s.repeating ? '#EEF1FE' : '#FFFFFF',
+      repeatBorder: s.repeating ? '#3858E9' : '#E7E2D9',
+      repeatColor: s.repeating ? '#213FD4' : '#4A4438',
+      onRepeatToggle: () => this.persist({ repeating: !s.repeating }),
+      shapeTabs: [
+        tab(s.shape === 'ellipse', 'Ellipse', () => this.persist({ shape: 'ellipse' })),
+        tab(s.shape === 'circle', 'Circle', () => {
+          const b = this.stageBox();
+          this.persist(Object.assign({ shape: 'circle' }, this.circleFrom(Math.min(s.rx / 100 * b.W, s.ry / 100 * b.H))));
+        })
+      ],
+      showRadialControls: isRadial, radialNote: s.shape === 'circle' ? 'Radius handles stay locked together.' : 'Each radius moves independently.',
+      showAngle: isLinear || isConic,
+      angleField: String(Math.round(isConic ? s.from : s.angle)),
+      dialDot: (function (deg) { const r = 13; return { left: fmt(19 + Math.sin(deg * Math.PI / 180) * r, 2) + 'px', top: fmt(19 - Math.cos(deg * Math.PI / 180) * r, 2) + 'px' }; })(isConic ? s.from : s.angle),
+      anglePresets: [
+        { glyph: '↑', title: 'To top (0deg)', onSelect: () => this.persist(isConic ? { from: 0 } : { angle: 0 }), border: (isConic ? s.from : s.angle) === 0 ? '#3858E9' : '#E7E2D9', color: (isConic ? s.from : s.angle) === 0 ? '#3858E9' : '#4A4438' },
+        { glyph: '→', title: 'To right (90deg)', onSelect: () => this.persist(isConic ? { from: 90 } : { angle: 90 }), border: (isConic ? s.from : s.angle) === 90 ? '#3858E9' : '#E7E2D9', color: (isConic ? s.from : s.angle) === 90 ? '#3858E9' : '#4A4438' },
+        { glyph: '↓', title: 'To bottom (180deg)', onSelect: () => this.persist(isConic ? { from: 180 } : { angle: 180 }), border: (isConic ? s.from : s.angle) === 180 ? '#3858E9' : '#E7E2D9', color: (isConic ? s.from : s.angle) === 180 ? '#3858E9' : '#4A4438' },
+        { glyph: '↘', title: 'Diagonal (135deg)', onSelect: () => this.persist(isConic ? { from: 135 } : { angle: 135 }), border: (isConic ? s.from : s.angle) === 135 ? '#3858E9' : '#E7E2D9', color: (isConic ? s.from : s.angle) === 135 ? '#3858E9' : '#4A4438' }
+      ],
+      selectedLabel: sel.hex.toUpperCase() + ' · ' + fmt(sel.pos, 1) + '% · ' + Math.round(sel.a * 100) + '%',
+      selectedSolid: sel.hex, pickerHueCss: 'hsl(' + fmt(hue, 1) + ' 100% 50%)',
+      svDot: { left: fmt(hsv[1] * 100, 2) + '%', top: fmt((1 - hsv[2]) * 100, 2) + '%' },
+      hueDotLeft: fmt(hue / 360 * 100, 2) + '%',
+      alphaDotLeft: fmt(sel.a * 100, 2) + '%',
+      alphaTrack: 'linear-gradient(90deg, ' + rgbaCss(sel.hex, 0) + ', ' + rgbaCss(sel.hex, 1) + ')',
+      hexField: s.hexDraft != null ? s.hexDraft : sel.hex.slice(1).toUpperCase(),
+      alphaField: String(Math.round(sel.a * 100)),
+      hasEyedropper: typeof window !== 'undefined' && !!window.EyeDropper,
+      rgbFields: ['R', 'G', 'B'].map((label, i) => ({
+        label: label, aria: label + ' channel', value: String(Math.round(selRgb[i] * 255)),
+        onChange: (e) => {
+          const v = clamp(parseInt(e.target.value, 10) || 0, 0, 255) / 255;
+          const next = selRgb.slice(); next[i] = v;
+          this.patchStop(sel.id, { hex: toHex(next) });
+        }
+      })).concat([{
+        label: 'A', aria: 'Alpha percentage', value: String(Math.round(sel.a * 100)),
+        onChange: (e) => this.patchStop(sel.id, { a: clamp((parseFloat(e.target.value) || 0) / 100, 0, 1) })
+      }]),
+      stopRows: list.map((st) => ({
+        id: st.id,
+        rowBg: st.id === s.selected ? '#F4F6FE' : '#FCFBF9',
+        rowBorder: st.id === s.selected ? '#C9D2FA' : '#F2EEE7',
+        swatchImage: 'linear-gradient(' + rgbaCss(st.hex, st.a) + ', ' + rgbaCss(st.hex, st.a) + '), ' + CHECKER,
+        hexValue: st.hex.slice(1).toUpperCase(), posValue: fmt(st.pos, 1),
+        selectAria: 'Select stop ' + st.hex.toUpperCase(), hexAria: 'Hex for stop at ' + fmt(st.pos, 1) + ' percent', posAria: 'Position of stop ' + st.hex.toUpperCase(),
+        deleteAria: 'Delete stop ' + st.hex.toUpperCase(),
+        deleteDisabled: list.length <= 2, deleteCursor: list.length <= 2 ? 'not-allowed' : 'pointer', deleteColor: list.length <= 2 ? '#DCD7CE' : '#948C7E',
+        onSelect: () => this.setState({ selected: st.id, hexDraft: null }),
+        onHex: (e) => { const v = e.target.value; if (parseHex(v)) this.patchStop(st.id, { hex: toHex(parseHex(v)) }); },
+        onPos: (e) => this.patchStop(st.id, { pos: clamp(parseFloat(e.target.value) || 0, 0, 100) }),
+        onDelete: () => { if (list.length > 2) this.persist({ stops: s.stops.filter(function (x) { return x.id !== st.id; }), selected: list[0].id === st.id ? list[1].id : list[0].id }); }
+      })),
+      interpTabs: [
+        tab(s.interp === 'srgb', 'sRGB', () => this.persist({ interp: 'srgb' }), 'How every browser blends by default'),
+        tab(s.interp === 'oklab', 'OKLab', () => this.persist({ interp: 'oklab' }), 'Perceptual blending — keeps chroma through the middle')
+      ],
+      interpNote: s.interp === 'oklab' ? 'Blended in OKLab, so the middle of the ramp keeps its chroma instead of drifting toward gray.' : 'The browser default. Fast and predictable, but complementary pairs desaturate halfway.',
+      hasMidControl: hasMid, midValue: String(Math.round(sel.mid * 100)), midLabel: hasMid ? Math.round(sel.mid * 100) + '%' : '—',
+      onMidChange: (e) => this.patchStop(sel.id, { mid: clamp(parseInt(e.target.value, 10) / 100, 0.05, 0.95) }),
+      onResetMid: () => this.patchStop(sel.id, { mid: 0.5 }),
+      presets: PRESETS.map((p) => ({
+        name: p[0], aria: 'Apply the ' + p[0] + ' preset', border: '#E7E2D9',
+        swatch: (p[1] === 'linear' ? 'linear-gradient(' + p[2] + 'deg, ' : p[1] === 'radial' ? 'radial-gradient(ellipse 46% 46% at 50% 50%, ' : 'conic-gradient(from 0deg at 50% 50%, ') + p[3].map(function (x) { return rgbaCss(x[0], x[1]) + ' ' + x[2] + '%'; }).join(', ') + '), ' + CHECKER,
+        onApply: () => {
+          const stops = p[3].map(function (x) { return { id: uid(), hex: x[0], a: x[1], pos: x[2], mid: 0.5 }; });
+          this.persist({
+            type: p[1], angle: p[2], from: p[2], repeating: false, shape: 'ellipse', cx: 50, cy: 50, rx: this.maxRx(50), ry: this.maxRy(50),
+            stops: stops, selected: stops[0].id
+          });
+        }
+      })),
+      codeTabs: [
+        tab(s.codeTab === 'css', 'CSS', () => this.setState({ codeTab: 'css' })),
+        tab(s.codeTab === 'svg', 'SVG', () => this.setState({ codeTab: 'svg' })),
+        tab(s.codeTab === 'tailwind', 'Tailwind', () => this.setState({ codeTab: 'tailwind' })),
+        tab(s.codeTab === 'json', 'JSON', () => this.setState({ codeTab: 'json' }))
+      ],
+      codeText: codeMap[s.codeTab], codeNote: noteMap[s.codeTab],
+      copyLabel: s.copied === 'ok' ? 'Copied' : s.copied === 'fail' ? 'Selected — press ⌘C' : s.copied === 'blocked' ? 'Copy blocked — select the code' : 'Copy',
+      copyBg: (s.copied === 'fail' || s.copied === 'blocked') ? '#8A3A22' : '#26221C',
+      refCode: this.getRef('code'),
+      onCopyCode: () => this.copy(codeMap[s.codeTab]),
+      pasteText: s.pasteText, pasteMsg: s.pasteMsg,
+      pasteBorder: s.pasteMsg && !s.pasteOk ? '#C4593A' : '#E7E2D9',
+      pasteMsgColor: s.pasteOk ? '#1F8A5F' : '#C4593A',
+      onPasteChange: (e) => this.setState({ pasteText: e.target.value, pasteMsg: null }),
+      onPasteKey: (e) => { if (e.key === 'Enter') { e.preventDefault(); this.loadPasted(); } },
+      onPasteApply: () => this.loadPasted(),
+      showNativeToggle: s.interp === 'oklab', nativeOklab: s.nativeOklab,
+      nativeBg: s.nativeOklab ? '#EEF1FE' : '#FFFFFF',
+      nativeBorder: s.nativeOklab ? '#3858E9' : '#E7E2D9',
+      nativeColor: s.nativeOklab ? '#213FD4' : '#4A4438',
+      nativeTrack: s.nativeOklab ? '#3858E9' : '#DCD7CE',
+      nativeKnobSide: s.nativeOklab ? 'flex-end' : 'flex-start',
+      onNativeToggle: () => this.persist({ nativeOklab: !s.nativeOklab }),
+      sizeOptions: SIZES.map(function (x) { return { key: x[0], label: x[1] }; }),
+      sizeKey: s.sizeKey, isCustomSize: s.sizeKey === 'custom', customW: String(s.customW), customH: String(s.customH),
+      exportPixels: px,
+      onSizeChange: (e) => this.setState({ sizeKey: e.target.value }),
+      onCustomW: (e) => this.setState({ customW: clamp(parseInt(e.target.value, 10) || 1, 1, 8000) }),
+      onCustomH: (e) => this.setState({ customH: clamp(parseInt(e.target.value, 10) || 1, 1, 8000) }),
+      scaleTabs: [1, 2, 3].map((k) => tab(s.scale === k, k + '×', () => this.setState({ scale: k }))),
+      onGrainToggle: () => this.persist({ grainOn: !s.grainOn }),
+      onGrainAmount: (e) => this.persist({ grain: parseInt(e.target.value, 10) }),
+      svgDisabled: isConic, svgTitle: isConic ? 'SVG has no conic gradient' : 'Download an SVG file',
+      svgBg: isConic ? '#F7F5F0' : '#FFFFFF', svgColor: isConic ? '#B3ACA0' : '#4A4438', svgCursor: isConic ? 'not-allowed' : 'pointer',
+      legibility: legibility,
+      legibilityNote: bestMin >= 4.5 ? better + ' text clears 4.5:1 everywhere on this gradient, so body copy is safe over the whole ramp.' : bestMin >= 3 ? better + ' text only clears 3:1 at the worst point — large headings are fine, body copy is not. Add a scrim or darken one end.' : 'Neither black nor white text clears 3:1 across this gradient. Overlay a scrim before putting type on it.',
+      heroTextColor: heroTextColor,
+      borderGradient: 'linear-gradient(#FFFFFF, #FFFFFF), ' + grad,
+      textClipGradient: grad, refTextClip: this.getRef('textClip'),
+      onStageDown: (e) => {
+        const t = e.target && e.target.closest ? e.target.closest('[data-handle]') : null;
+        if (!t) return;
+        e.preventDefault();
+        const kind = t.getAttribute('data-handle'), id = t.getAttribute('data-id');
+        if (kind === 'stageStop' && id) this.setState({ selected: id, hexDraft: null });
+        this.setState({ drag: { kind: kind, id: id } });
+      },
+      onRailDown: (e) => {
+        const stopEl = e.target && e.target.closest ? e.target.closest('[data-rail]') : null;
+        const midEl = e.target && e.target.closest ? e.target.closest('[data-mid]') : null;
+        e.preventDefault();
+        if (midEl) { this.setState({ drag: { kind: 'railMid', id: midEl.getAttribute('data-mid') } }); return; }
+        if (stopEl) { const id = stopEl.getAttribute('data-rail'); this.setState({ selected: id, hexDraft: null, drag: { kind: 'railStop', id: id } }); return; }
+        const el = this._refs.rail;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const pos = Math.round(clamp((e.clientX - r.left - 8) / Math.max(1, r.width - 16), 0, 1) * 1000) / 10;
+        const c = this.sampleAt(pos / 100);
+        const id = uid();
+        this.persist({ stops: s.stops.concat([{ id: id, hex: c.hex, a: c.a, pos: pos, mid: 0.5 }]), selected: id });
+        this.setState({ drag: { kind: 'railStop', id: id } });
+      },
+      onDialDown: (e) => { e.preventDefault(); this.setState({ drag: { kind: 'dial' } }); this.applyDrag(e); },
+      onSquareDown: (e) => { e.preventDefault(); this.setState({ drag: { kind: 'sv' } }); this.applyPickerDrag(e, 'sv'); },
+      onHueDown: (e) => { e.preventDefault(); this.setState({ drag: { kind: 'hue' } }); this.applyPickerDrag(e, 'hue'); },
+      onAlphaDown: (e) => { e.preventDefault(); this.setState({ drag: { kind: 'alpha' } }); this.applyPickerDrag(e, 'alpha'); },
+      onHexInput: (e) => {
+        const v = e.target.value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6);
+        this.setState({ hexDraft: v.toUpperCase() });
+        if (parseHex(v)) this.patchStop(sel.id, { hex: toHex(parseHex(v)) });
+      },
+      onHexBlur: () => this.setState({ hexDraft: null }),
+      onAlphaInput: (e) => this.patchStop(sel.id, { a: clamp((parseFloat(e.target.value) || 0) / 100, 0, 1) }),
+      onAngleInput: (e) => {
+        const v = ((Math.round(parseFloat(e.target.value) || 0) % 360) + 360) % 360;
+        this.persist(isConic ? { from: v } : { angle: v });
+      },
+      onEyedropper: () => {
+        if (!window.EyeDropper) return;
+        try {
+          new window.EyeDropper().open().then((res) => { if (res && res.sRGBHex && parseHex(res.sRGBHex)) this.patchStop(sel.id, { hex: toHex(parseHex(res.sRGBHex)) }); }).catch(function () { });
+        } catch (err) { /* ignore */ }
+      },
+      onAddStop: () => {
+        let gapAt = 50, best = -1;
+        for (let i = 0; i < list.length - 1; i++) { const d = list[i + 1].pos - list[i].pos; if (d > best) { best = d; gapAt = list[i].pos + d / 2; } }
+        const c = this.sampleAt(gapAt / 100);
+        const id = uid();
+        this.persist({ stops: s.stops.concat([{ id: id, hex: c.hex, a: c.a, pos: Math.round(gapAt * 10) / 10, mid: 0.5 }]), selected: id });
+      },
+      onReverse: () => this.persist({ stops: s.stops.map(function (x) { return Object.assign({}, x, { pos: Math.round((100 - x.pos) * 10) / 10 }); }) }),
+      onDistribute: () => {
+        const n = list.length;
+        const map = {};
+        list.forEach(function (x, i) { map[x.id] = Math.round((i / (n - 1)) * 1000) / 10; });
+        this.persist({ stops: s.stops.map(function (x) { return Object.assign({}, x, { pos: map[x.id] }); }) });
+      },
+      onRandomize: () => {
+        const baseHue = Math.random() * 360;
+        const n = 2 + Math.floor(Math.random() * 2);
+        const stops = [];
+        for (let i = 0; i < n; i++) {
+          const h = (baseHue + i * (25 + Math.random() * 55)) % 360;
+          const l = 0.32 + (i / Math.max(1, n - 1)) * 0.42 + (Math.random() - 0.5) * 0.1;
+          const c = 0.09 + Math.random() * 0.11;
+          const lab = [clamp(l, 0.12, 0.92), Math.cos(h * Math.PI / 180) * c, Math.sin(h * Math.PI / 180) * c];
+          stops.push({ id: uid(), hex: toHex(oklabToRgb(lab)), a: 1, pos: Math.round((i / (n - 1)) * 100), mid: 0.5 });
+        }
+        this.persist({ stops: stops, selected: stops[0].id, angle: Math.round(Math.random() * 360), type: 'linear', repeating: false });
+      },
+      onKeyDown: (e) => {
+        if (!sel) return;
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          const tag = (e.target && e.target.tagName) || '';
+          if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+          e.preventDefault();
+          const step = (e.shiftKey ? 10 : 1) * (e.key === 'ArrowLeft' ? -1 : 1);
+          this.patchStop(sel.id, { pos: clamp(Math.round((sel.pos + step) * 10) / 10, 0, 100) });
+        }
+      },
+      pngBusy: s.exporting,
+      pngLabel: s.exporting ? 'Rendering…' : 'PNG',
+      pngBg: s.exporting ? '#8E9BC8' : '#3858E9',
+      pngCursor: s.exporting ? 'progress' : 'pointer',
+      onDownloadPng: () => {
+        // Encoding a large grainy PNG takes seconds, so the in-flight state is
+        // recorded and the paint deferred a frame — otherwise the button looks
+        // inert and every impatient click queues another full encode.
+        // instance flag, not the render-time snapshot: clicks in the same tick as
+        // the first one would all still see exporting === false
+        if (this._exporting) return;
+        this._exporting = true;
+        const [w, h] = this.exportSize();
+        const sc = s.scale;
+        const name = 'gradient-' + w * sc + 'x' + h * sc + '.png';
+        const finish = () => { this._exporting = false; this.setState({ exporting: false }); };
+        this.setState({ exporting: true });
+        setTimeout(() => {
+          let cv;
+          try {
+            cv = document.createElement('canvas');
+            cv.width = w * sc; cv.height = h * sc;
+            this.paintCanvas(cv.getContext('2d'), cv.width, cv.height);
+          } catch (err) { finish(); return; }
+          if (cv.toBlob) cv.toBlob((blob) => { if (blob) this.download(name, blob); finish(); }, 'image/png');
+          else {
+            try {
+              const a = document.createElement('a');
+              a.href = cv.toDataURL('image/png'); a.download = name;
+              document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            } catch (err) { /* ignore */ }
+            finish();
+          }
+        }, 40);
+      },
+      onDownloadSvg: () => {
+        if (isConic) return;
+        const [w, h] = this.exportSize();
+        this.download('gradient-' + w + 'x' + h + '.svg', new Blob([this.svgMarkup(w, h)], { type: 'image/svg+xml' }));
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

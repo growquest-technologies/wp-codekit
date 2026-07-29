@@ -65,7 +65,7 @@
     <div style="max-width:1200px; margin:0 auto; padding:9px 28px; display:flex; align-items:center; gap:14px;">
       <div style="display:flex; align-items:center; gap:9px; flex-shrink:0;">
         <span data-hex="{{ baseHex }}" data-key="sticky" role="button" tabIndex="0" aria-label="Copy {{ baseHexUpper }}" style="width:22px; height:22px; border-radius:6px; background:{{ baseHex }}; border:1px solid rgba(28,26,21,0.14); cursor:pointer; display:block;"></span>
-        <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:500; color:#26221C; white-space:nowrap;">{{ readoutHex }}</span>
+        <span ref="{{ refReadout }}" style="font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:500; color:#26221C; white-space:nowrap; user-select:all;">{{ readoutHex }}</span>
       </div>
       <div style="width:1px; height:20px; background:#E7E2D9; flex-shrink:0;"></div>
       <nav style="display:flex; gap:3px; overflow-x:auto; min-width:0;">
@@ -568,7 +568,16 @@ const CVD = {
   tritan: [[1.255528, -0.076749, -0.178779], [-0.078411, 0.930809, 0.147602], [0.004733, 0.691367, 0.303900]]
 };
 
-const HUE_BANDS = [[16, 'red'], [40, 'coral red'], [62, 'orange'], [86, 'amber'], [104, 'yellow'], [128, 'chartreuse'], [152, 'green'], [176, 'emerald'], [198, 'teal'], [224, 'cyan'], [252, 'azure'], [276, 'blue'], [300, 'indigo'], [322, 'violet'], [344, 'magenta'], [361, 'rose']];
+// Bounds are midpoints between MEASURED OKLCH hue angles of the canonical colors:
+// red 29.2, orange 70.7, yellow 109.8, green 142.5, aquamarine 169.0,
+// cyan 194.8, blue 264.1, indigo 301.7, magenta 328.4, pink 352.0.
+// A name only earns a band if its anchor is ~15° or more from its neighbours.
+// Chartreuse (136.0) and spring green (151.0) sit 6.5° and 8.5° from green, and
+// azure (256.3) sits 7.8° from blue — as do teal, emerald and violet, which
+// share a hue with cyan, green and magenta outright. Those are lightness and
+// chroma differences, already reported by chromaWord() and lightWord(); giving
+// them a band would steal range from the hue they belong to.
+const HUE_BANDS = [[50, 'red'], [90, 'orange'], [126, 'yellow'], [162, 'green'], [182, 'aquamarine'], [229, 'cyan'], [283, 'blue'], [315, 'indigo'], [340, 'magenta'], [361, 'pink']];
 
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 function mul(m, v) { return [m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2], m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2], m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2]]; }
@@ -696,9 +705,13 @@ function parseNames(str) {
 }
 const NAMED = parseNames(CSS_NAMES).concat(parseNames(EXTRA_NAMES));
 
+// The pink band straddles 0°: its midpoint with red (352 → 389.2) is 370.6 ≡ 10.6,
+// so it has to be tested before the ascending scan, which cannot express a wrap.
+const PINK_WRAP = 11;
 function hueName(h) {
+  if (h >= 340 || h < PINK_WRAP) return 'pink';
   for (let i = 0; i < HUE_BANDS.length; i++) if (h < HUE_BANDS[i][0]) return HUE_BANDS[i][1];
-  return 'red';
+  return 'pink';
 }
 function titleCase(s) { return s.replace(/\b[a-z]/g, function (m) { return m.toUpperCase(); }); }
 function descriptiveName(L, C, H) {
@@ -733,7 +746,7 @@ class Component extends DCLogic {
       hexField: initial,
       hue: rgbToHsv(parseHex(initial))[0],
       severity: props && props.defaultSeverity != null ? props.defaultSeverity : 100,
-      hover: null, hoverHex: null, copied: null, copiedHex: null
+      hover: null, hoverHex: null, copied: null, copiedHex: null, copyFailed: false
     };
     this._refs = {};
     this._refCallbacks = {};
@@ -787,18 +800,53 @@ class Component extends DCLogic {
     }
   }
 
+  legacyCopy(text) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (err) { return false; }
+  }
+
+  selectNode(el) {
+    try {
+      if (!el) return false;
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      if (!sel) return false;
+      sel.removeAllRanges();
+      sel.addRange(range);
+      return String(sel).length > 0;
+    } catch (err) { return false; }
+  }
+
+  copyDone(text, key, ok) {
+    if (this._copyTimer) clearTimeout(this._copyTimer);
+    // Both clipboard paths failed, so select the readout hex for a manual copy.
+    const selected = ok ? false : this.selectNode(this._refs.readout);
+    this.setState({ copied: key, copiedHex: text, copyFailed: ok ? false : (selected ? 'selected' : 'blocked') });
+    this._copyTimer = setTimeout(() => this.setState({ copied: null, copiedHex: null, copyFailed: false }), ok ? 1400 : 4000);
+  }
+
   copy(hex, key) {
     const text = String(hex || '').toUpperCase();
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text);
-      else {
-        const ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-      }
-    } catch (err) { /* ignore */ }
-    if (this._copyTimer) clearTimeout(this._copyTimer);
-    this.setState({ copied: key, copiedHex: text });
-    this._copyTimer = setTimeout(() => this.setState({ copied: null, copiedHex: null }), 1400);
+    // writeText rejects asynchronously (denied permission, unfocused document),
+    // so the fallback and the label both have to hang off the promise.
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      Promise.resolve(navigator.clipboard.writeText(text))
+        .then(() => this.copyDone(text, key, true))
+        .catch(() => this.copyDone(text, key, this.legacyCopy(text)));
+      return;
+    }
+    this.copyDone(text, key, this.legacyCopy(text));
   }
 
   renderVals() {
@@ -814,12 +862,22 @@ class Component extends DCLogic {
     const bestFg = wcag(rgb, white) >= wcag(rgb, black) ? '#FFFFFF' : '#14100C';
     const fgFor = (hex) => { const r = parseHex(hex) || black; return wcag(r, white) >= wcag(r, black) ? '#FFFFFF' : '#14100C'; };
 
+    // 'copied' only names the clicked element; the label must also know whether
+    // the write succeeded, or it reports success on a failed copy.
+    // 'blocked' means no selection was made either, so never promise a shortcut —
+    // fall back to showing the value the user has to select by hand.
+    const copyLabel = (key, fallback) => {
+      if (s.copied !== key) return fallback;
+      if (s.copyFailed === 'blocked') return fallback;
+      return s.copyFailed ? 'Press ⌘C' : 'Copied';
+    };
+
     const cell = (key, hex, isBase) => {
       const active = s.copied === key || s.hover === key;
       return {
         key: key, hex: hex, hexUpper: hex.toUpperCase(), isBase: !!isBase, fg: fgFor(hex),
         aria: 'Copy ' + hex.toUpperCase(), labelOpacity: active ? 1 : 0,
-        labelText: s.copied === key ? 'Copied' : hex.slice(1).toUpperCase()
+        labelText: copyLabel(key, hex.slice(1).toUpperCase())
       };
     };
 
@@ -906,7 +964,7 @@ class Component extends DCLogic {
         ariaA: 'Copy ' + s.hex.toUpperCase(), ariaB: 'Copy ' + sim.toUpperCase(),
         band: b[0] === 'Near-identical' ? 'No shift' : b[0], bandColor: b[1],
         simLabelOpacity: (s.hover === 'cv' + d[0] + 'b' || s.copied === 'cv' + d[0] + 'b') ? 1 : 0,
-        simLabelText: s.copied === 'cv' + d[0] + 'b' ? 'Copied' : sim.slice(1).toUpperCase(),
+        simLabelText: copyLabel('cv' + d[0] + 'b', sim.slice(1).toUpperCase()),
         deltaNote: 'ΔE OK ' + fmt(dE, 3) + ' from the original'
       };
     });
@@ -920,7 +978,7 @@ class Component extends DCLogic {
           key: key, name: e.n.name, hex: e.n.hex, hexUpper: e.n.hex.toUpperCase(), fg: fgFor(e.n.hex),
           delta: fmt(e.d, 3), band: b[0], bandColor: b[1], aria: 'Copy ' + e.n.hex.toUpperCase(),
           labelOpacity: (s.hover === key || s.copied === key) ? 1 : 0,
-          labelText: s.copied === key ? 'Copied' : e.n.hex.slice(1).toUpperCase()
+          labelText: copyLabel(key, e.n.hex.slice(1).toUpperCase())
         };
       });
 
@@ -969,7 +1027,7 @@ class Component extends DCLogic {
             key: key, token: '--' + r.token, hex: r.hex, hexUpper: r.hex.toUpperCase(), fg: fgFor(r.hex),
             aria: 'Copy ' + r.hex.toUpperCase(),
             labelOpacity: (s.hover === key || s.copied === key) ? 1 : 0,
-            labelText: s.copied === key ? 'Copied' : r.hex.slice(1).toUpperCase(),
+            labelText: copyLabel(key, r.hex.slice(1).toUpperCase()),
             check: pass === null ? 'surface' : fmt(ratio, 1) + ':1',
             checkColor: pass === null ? m[5] : (pass ? '#1F8A5F' : '#C4593A')
           };
@@ -990,7 +1048,7 @@ class Component extends DCLogic {
       ['XYZ', fmt(xyz[0] * 100, 2) + ', ' + fmt(xyz[1] * 100, 2) + ', ' + fmt(xyz[2] * 100, 2), fmt(xyz[0], 4) + ' ' + fmt(xyz[1], 4) + ' ' + fmt(xyz[2], 4)],
       ['CMYK', fmt(cm[0]) + ', ' + fmt(cm[1]) + ', ' + fmt(cm[2]) + ', ' + fmt(cm[3]) + ' (approx.)', fmt(cm[0]) + ', ' + fmt(cm[1]) + ', ' + fmt(cm[2]) + ', ' + fmt(cm[3])]
     ].map((r, i) => ({
-      label: r[0], display: s.copied === 'cv' + i ? 'Copied' : r[1], value: r[2], key: 'cv' + i,
+      label: r[0], display: (s.copied === 'cv' + i && !s.copyFailed) ? 'Copied' : r[1], value: r[2], key: 'cv' + i,
       bg: s.copied === 'cv' + i ? '#EEF1FE' : '#FFFFFF', borderTop: i === 0 || i === 6 ? 'none' : '1px solid #F2EEE7',
       onCopy: () => this.copy(r[2], 'cv' + i)
     }));
@@ -1011,7 +1069,7 @@ class Component extends DCLogic {
           : 'It fails 4.5:1 on both white and black, so keep it for fills and borders rather than text.');
 
     return {
-      toolCount: 42, trueVal: true, baseHex: s.hex, baseHexUpper: s.hex.toUpperCase(), stageFg: bestFg,
+      toolCount: 43, trueVal: true, baseHex: s.hex, baseHexUpper: s.hex.toUpperCase(), stageFg: bestFg,
       colorName: namedExactly ? nearest.name : descriptiveName(L, C, H),
       hasNameNote: !namedExactly,
       nameNote: 'Closest named color: ' + nearest.name + ' · ΔE OK ' + fmt(nearestD, 3),
@@ -1022,8 +1080,9 @@ class Component extends DCLogic {
       satDotLeft: fmt(hsv[1] * 100, 2) + '%', satDotTop: fmt((1 - hsv[2]) * 100, 2) + '%', hueDotLeft: fmt(s.hue / 360 * 100, 2) + '%',
       refSquare: this.getRef('square'), refHue: this.getRef('hue'),
       readoutHex: s.copiedHex || (s.hoverHex ? s.hoverHex.toUpperCase() : s.hex.toUpperCase()),
-      readoutNote: s.copiedHex ? 'Copied to clipboard' : 'Click any color to copy',
-      readoutNoteColor: s.copiedHex ? '#1F8A5F' : '#948C7E',
+      readoutNote: s.copyFailed === 'selected' ? 'Selected — press ⌘C' : s.copyFailed === 'blocked' ? 'Clipboard blocked — select the hex to copy' : s.copiedHex ? 'Copied to clipboard' : 'Click any color to copy',
+      readoutNoteColor: s.copyFailed ? '#C4593A' : s.copiedHex ? '#1F8A5F' : '#948C7E',
+      refReadout: this.getRef('readout'),
       severity: s.severity, severityLabel: s.severity + '%',
       conversionCols: [{ rows: conv.slice(0, 6) }, { rows: conv.slice(6) }],
       ramps: ramps, harmonies: harmonies, contrastCards: contrastCards, accessibleVariants: accessibleVariants,

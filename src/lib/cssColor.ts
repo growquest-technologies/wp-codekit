@@ -153,5 +153,46 @@ export function parseCssColor(input: string): string | null {
   }
 }
 
+/**
+ * The same parse, but keeping the alpha channel.
+ *
+ * The Color Tool works in opaque colour and throws alpha away; gradients cannot —
+ * a fade-to-transparent stop is the single most common thing anyone pastes into
+ * a gradient editor, and dropping its alpha would silently turn the fade into a
+ * flat block.
+ */
+export function parseCssColorAlpha(input: string): { hex: string; a: number } | null {
+  const raw = String(input ?? '').trim().toLowerCase();
+  if (!raw) return null;
+  // `transparent` is transparent *black* per CSS — worth being explicit about,
+  // since fading to it is exactly what makes a fade travel through grey.
+  if (raw === 'transparent') return { hex: '#000000', a: 0 };
+
+  const hex = parseCssColor(raw);
+  if (!hex) return null;
+
+  const bare = raw.replace(/^#/, '');
+  if (/^[0-9a-f]{4}$/.test(bare)) return { hex, a: parseInt(bare[3] + bare[3], 16) / 255 };
+  if (/^[0-9a-f]{8}$/.test(bare)) return { hex, a: parseInt(bare.slice(6, 8), 16) / 255 };
+
+  const fn = raw.match(/^([a-z-]+)\(([^()]*)\)$/);
+  if (!fn) return { hex, a: 1 };
+  const body = fn[2];
+  // Modern syntax puts alpha after a slash; legacy rgba()/hsla() use a 4th argument.
+  const slash = body.split('/');
+  let token: string | undefined;
+  if (slash.length > 1) token = slash[1];
+  else if (/^(rgba?|hsla?)$/.test(fn[1])) {
+    const parts = body.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+    if (parts.length >= 4) token = parts[3];
+  }
+  if (token == null) return { hex, a: 1 };
+  const t = token.trim();
+  if (t === 'none') return { hex, a: 0 };
+  const n = parseFloat(t);
+  if (!isFinite(n)) return { hex, a: 1 };
+  return { hex, a: clamp(t.endsWith('%') ? n / 100 : n, 0, 1) };
+}
+
 /** The formats the input advertises, for the placeholder and help text. */
 export const SUPPORTED_FORMATS = 'hex, rgb, hsl, hwb, lab, lch, oklab, oklch, color(), or a colour name';

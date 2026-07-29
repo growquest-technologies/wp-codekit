@@ -1,8 +1,11 @@
 # Generator for WP
 
-A WordPress code-generator site: 49 tools (Readme Studio + 48 `register_*`/`WP_Query`-style
-generators) that turn a form into copy-pasteable, production-ready PHP. Every generator runs
-entirely client-side — no backend, no accounts, nothing uploaded.
+A WordPress code-generator site: 51 tools. 49 of them (Readme Studio + 48
+`register_*`/`WP_Query`-style generators) turn a form into copy-pasteable, production-ready PHP
+and share `GeneratorShell`. The other two — the **Color Tool** (`/tools/color`) and the
+**Gradient Tool** (`/tools/gradient`) — are design utilities with their own shells; see
+"Standalone tools" below. Everything runs entirely client-side — no backend, no accounts,
+nothing uploaded.
 
 ## Origin
 
@@ -34,7 +37,7 @@ port looks incomplete or wrong, the original logic is there to check against.
 ```
 src/
   data/
-    tools.ts             catalog of all 49 tools (id, name, category, fuzzy-search) — single
+    tools.ts             catalog of all 51 tools (id, name, category, fuzzy-search) — single
                           source of truth for Home/ToolsIndex/SiteHeader/SiteFooter, plus
                           toolPageTitle() for the <title>/<h1> overrides
     toolContentTypes.ts   the ToolContent interface every tool's SEO section satisfies
@@ -187,7 +190,9 @@ editorial content and no `<h2>` at all.
 
 `src/data/afterYouCopy.ts` appends the universal post-click questions (where do I paste this,
 why is it 404ing, can I use it commercially) to every tool's FAQ — interpolated per tool, not
-byte-identical, since 49 pages sharing three verbatim paragraphs is a duplicate-content signal.
+byte-identical, since 51 pages sharing three verbatim paragraphs is a duplicate-content signal.
+Tools that emit no PHP at all (the two colour tools) get bespoke closing questions instead, via
+`NON_CODE_TOOLS` — the standard "where do I paste this" pair would be nonsense for them.
 Add a new tool's id to its `REWRITE_TOOLS` set if the tool registers URLs. Don't restate those
 questions in a tool's own `faqs`.
 
@@ -276,7 +281,7 @@ no copy button at all — check the source's own `onCopy`/`copyCode()` before ad
 a copy button just because a tab exists.
 
 `ValidationList` (the shared Checks-tab panel) has its own severity filter chip row (All/Errors/
-Warnings/Tips counts, local `useState`) — this is automatic for all 49 tools since they all render
+Warnings/Tips counts, local `useState`) — this is automatic for all 49 generators since they all render
 through the same component; don't re-implement filtering per tool.
 
 Every icon-only button (no visible text label) must have a `title` attribute so a native tooltip
@@ -350,11 +355,60 @@ from the source's own IDE-in-a-box height clamp, per explicit user preference, n
 bug.
 
 There is no build-status/roadmap concept anywhere in the app — `Tool` (`src/data/tools.ts`) has no
-`status` field (all 49 tools are equally "done"; the field was removed, not just hidden) and no
+`status` field (all 51 tools are equally "done"; the field was removed, not just hidden) and no
 page shows a "Live"/"In build"/"Planned" badge. Home.tsx's featured section is a plain grid of the
 12 most useful tools (`FEATURED_IDS`) with categories below and a link to all tools — no special
 single-tool spotlight card, no "N live / N in build" hero copy. Don't reintroduce status-based
 filtering, sorting, or badging when adding new tools or editing these pages.
+
+## Standalone tools (Color and Gradient)
+
+Two tools deliberately do **not** use `GeneratorShell`: they have no form/output split, no
+validation panel, no output modes and emit no PHP. They share only the site chrome
+(`RootLayout`) and `ToolContentSection`. Don't try to retrofit them into the generator pattern.
+
+- `src/pages/ColorTool.tsx` + `src/lib/color.ts` / `src/lib/colorAnalysis.ts`
+- `src/pages/GradientTool.tsx` + `src/lib/gradient.ts`
+
+Both are **code-split** in `src/router.tsx` (a `lazy()` + `LazyRoute`
+(`src/components/ui/LazyRoute.tsx`), whose fallback copy matches `GeneratorRoute`'s because the
+prerender crawl waits for that exact text to disappear). They are registered as static routes *before* `tools/:toolId`, so they never reach
+`GeneratorRoute`.
+
+Shared pieces these two established, which any future tool should reuse rather than re-implement:
+
+- `src/lib/cssColor.ts` — `parseCssColor()` (any CSS notation to hex) and `parseCssColorAlpha()`
+  (same, keeping alpha). Verified against Chrome's own rasteriser. The colour inputs on both tools
+  accept hex, `rgb()`, `hsl()`, `hwb()`, `lab()`, `lch()`, `oklab()`, `oklch()`, `color()` and
+  named colours, not just hex.
+- `src/lib/clipboard.ts` — `copyText()` returning `'ok' | 'selected' | 'blocked'`.
+  `navigator.clipboard.writeText` rejects *asynchronously* (denied permission, unfocused
+  document), so fire-and-forget reports success on a copy that never happened. Every copy UI must
+  show all three outcomes; "Copied" on a failed write is the bug this replaced.
+- `src/lib/eyeDropper.ts` — `isEyeDropperSupported()` / `pickScreenColor()`. Chromium-only; the
+  button stays visible but disabled elsewhere so the capability is discoverable.
+
+**The colour-picker HSV rule (applies to any picker added later).** Never derive the picker's
+handle position back from the committed hex. Hex is 8-bit: as V approaches 0 it can no longer
+carry S, and at pure black S and H are undefined entirely, so a hex-derived handle snaps to the
+left edge and loses the hue — the "jumping when dragged to the bottom" bug. Both tools keep the
+live HSV in a ref and trust it *only while it still round-trips to the current hex*, which is
+exactly the span of a drag and invalidates itself on any outside edit.
+
+### Gradient Tool specifics
+
+It works in both directions, and the import half is the differentiator: `parseGradient()` reads
+any `linear`/`radial`/`conic` gradient — full declaration or bare function, side keywords, every
+angle unit, radial size keywords, explicit radii, `px` stop positions, omitted positions, colour
+interpolation hints, and the tool's own Tailwind output — back into editable state. Two
+non-obvious invariants, both load-bearing:
+
+- **A circle is one length (`rPx`), not two percentages.** Storing it as `rx%`/`ry%` makes it
+  round only at the preview's aspect ratio, so every export at another ratio came out elliptical.
+  Every circle write goes through `circleFrom()`, which keeps the ellipse percentages in step.
+- **The on-canvas axis is a proportional stand-in, not the real CSS gradient line.** The real line
+  runs past the box corners, which would put the 0% and 100% handles off-screen at most angles.
+  `axisGeom()`/`pointAt()` own that; don't recompute it inline.
 
 ## Known gaps / follow-ups
 
@@ -418,7 +472,7 @@ crawlers/social scrapers, not a build-config toggle — Google's own guidance fo
 endorses this "static rendering" pattern as an alternative to full SSR.
 
 - `scripts/routes.ts` — the single source of truth for every public route (home, tools index,
-  about, contact, login, pricing, all 6 category hubs, all 49 tool pages), derived directly from
+  about, contact, login, pricing, all 6 category hubs, all 51 tool pages), derived directly from
   `src/data/tools.ts`. Add a tool there and it automatically appears in the sitemap and the
   prerender crawl — nothing else to maintain by hand.
 - `npm run sitemap` — regenerates `public/sitemap.xml` from `routes.ts` (only routes marked
@@ -477,8 +531,10 @@ would have double-fired against the manual tracking below if both were left on).
   `trackPageView`) at the end of its effect, using the exact title/path it just set — every page
   already calls this hook, so there's no separate route-listener component to keep in sync.
 - `src/lib/analytics.ts`'s `trackEvent()` is wired into `GeneratorShell`'s copy/download buttons
-  (`code_copied`/`code_downloaded`) — since all 49 tools share that one component, this covers
-  every generator from a single call site. Add further events here the same way; `window.gtag?.()`
+  (`code_copied`/`code_downloaded`) — since all 49 generators share that one component, this
+  covers every one of them from a single call site. The two standalone colour tools don't use
+  `GeneratorShell`, so they call `trackEvent` directly (`color_copied`, `gradient_imported`, and
+  `code_copied`/`code_downloaded` with a `tool` param). Add further events here the same way; `window.gtag?.()`
   optionally-chains, so calls are always safe even when analytics is off or blocked.
 - The bootstrap script also no-ops whenever `?_prerender=1` is present in the URL — the prerender
   crawl (`scripts/prerender.ts`) appends this to every route it visits so refreshing static

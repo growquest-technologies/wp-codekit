@@ -35,6 +35,18 @@ const NON_SNIPPET: Record<string, string> = {
  * closing questions instead of a nonsensical one about functions.php.
  */
 const NON_CODE_TOOLS: Record<string, FaqItem[]> = {
+  gradient: [
+    {
+      question: 'How do I use this gradient in a real project?',
+      answer:
+        'Copy the CSS tab and paste the `background-image` line into your stylesheet, a block\u2019s Additional CSS, or a theme\u2019s `style.css`. For a block theme, the cleanest home is a `gradients` preset in `theme.json`, which puts it in the editor\u2019s gradient picker for everyone on the site. Use the PNG or SVG export only where CSS cannot reach \u2014 an email background, a social card, or a slide.',
+    },
+    {
+      question: 'Is the gradient I build stored or uploaded anywhere?',
+      answer:
+        'No. Every calculation, including the PNG encode, runs in your browser \u2014 there is no server call at any point, and nothing you paste into the import box leaves the page. Your current gradient is saved in this browser so the tool reopens where you left it; clearing site data removes it.',
+    },
+  ],
   color: [
     {
       question: 'How do I use these colors in a real project?',

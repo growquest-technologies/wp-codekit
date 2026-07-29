@@ -52,11 +52,29 @@ const CVD_MATRICES = {
 
 export type CvdKind = keyof typeof CVD_MATRICES | 'achroma';
 
+/**
+ * Bounds are midpoints between the MEASURED OKLCH hue angles of the canonical
+ * colors: red 29.2, orange 70.7, yellow 109.8, green 142.5, aquamarine 169.0,
+ * cyan 194.8, blue 264.1, indigo 301.7, magenta 328.4, pink 352.0.
+ *
+ * A name only earns a band if its anchor sits ~15 degrees or more from its
+ * neighbours. Chartreuse (136.0) and spring green (151.0) are 6.5 and 8.5 degrees
+ * from green, and azure (256.3) is 7.8 degrees from blue — as are teal, emerald
+ * and violet, which share a hue with cyan, green and magenta outright. Those are
+ * lightness and chroma differences, already reported by chromaWord() and
+ * lightWord(); giving them a band would steal range from the hue they belong to.
+ */
 const HUE_BANDS: [number, string][] = [
-  [16, 'red'], [40, 'coral red'], [62, 'orange'], [86, 'amber'], [104, 'yellow'],
-  [128, 'chartreuse'], [152, 'green'], [176, 'emerald'], [198, 'teal'], [224, 'cyan'],
-  [252, 'azure'], [276, 'blue'], [300, 'indigo'], [322, 'violet'], [344, 'magenta'], [361, 'rose'],
+  [50, 'red'], [90, 'orange'], [126, 'yellow'], [162, 'green'], [182, 'aquamarine'],
+  [229, 'cyan'], [283, 'blue'], [315, 'indigo'], [340, 'magenta'], [361, 'pink'],
 ];
+
+/**
+ * The pink band straddles 0 degrees: its midpoint with red (352 -> 389.2) is
+ * 370.6, i.e. 10.6, so it has to be tested before the ascending scan, which
+ * cannot express a wrap.
+ */
+const PINK_WRAP = 11;
 
 export function clamp(v: number, a: number, b: number): number {
   return v < a ? a : v > b ? b : v;
@@ -347,8 +365,9 @@ export function simulateCVD(rgb: RGB, kind: CvdKind, severity: number): RGB {
 }
 
 export function hueName(h: number): string {
+  if (h >= 340 || h < PINK_WRAP) return 'pink';
   for (const [limit, name] of HUE_BANDS) if (h < limit) return name;
-  return 'red';
+  return 'pink';
 }
 
 function titleCase(s: string): string {

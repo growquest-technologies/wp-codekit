@@ -10,6 +10,7 @@ import { TOOL_MAP } from '../data/tools';
 import { Icon } from '../components/ui/Icon';
 import { isEyeDropperSupported, pickScreenColor } from '../lib/eyeDropper';
 import { parseCssColor } from '../lib/cssColor';
+import { copyText, copyFlashMs, type CopyOutcome } from '../lib/clipboard';
 import { CONTENT_REVIEWED } from '../data/contentMeta';
 
 const BASE_URL = 'https://www.wpcodekit.com';
@@ -61,7 +62,7 @@ export function ColorTool() {
   const hsvRef = useRef(hsv);
   const [severity, setSeverity] = useState(100);
   const [hover, setHover] = useState<{ key: string; hex: string } | null>(null);
-  const [copied, setCopied] = useState<{ key: string; hex: string } | null>(null);
+  const [copied, setCopied] = useState<{ key: string; hex: string; outcome: CopyOutcome } | null>(null);
 
   /** Whether the input still holds a plain hex value, which is what the `#` prefix belongs to. */
   const fieldIsHex = /^[0-9a-fA-F]*$/.test(hexField);
@@ -70,6 +71,8 @@ export function ColorTool() {
   const hueRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<'sq' | 'hue' | null>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** The sticky readout — the selection target when the clipboard is unavailable. */
+  const readoutRef = useRef<HTMLSpanElement | null>(null);
 
   const commit = useCallback((clean: string) => {
     try { localStorage.setItem(STORAGE_KEY, clean); } catch { /* ignore */ }
@@ -147,10 +150,13 @@ export function ColorTool() {
 
   const copy = useCallback((value: string, key: string) => {
     const text = value.toUpperCase();
-    navigator.clipboard?.writeText(text).catch(() => { /* ignore */ });
-    if (copyTimer.current) clearTimeout(copyTimer.current);
-    setCopied({ key, hex: text });
-    copyTimer.current = setTimeout(() => setCopied(null), 1400);
+    // The readout is the fallback selection target: if both clipboard paths are
+    // blocked, the hex the user asked for is at least selected and one keystroke away.
+    copyText(text, readoutRef.current).then((outcome) => {
+      if (copyTimer.current) clearTimeout(copyTimer.current);
+      setCopied({ key, hex: text, outcome });
+      copyTimer.current = setTimeout(() => setCopied(null), copyFlashMs(outcome));
+    });
     trackEvent('color_copied', { value: text });
   }, []);
 
@@ -228,7 +234,9 @@ export function ColorTool() {
 
   const readoutHex = copied?.hex ?? (hover ? hover.hex.toUpperCase() : a.hexUpper);
   const labelFor = (key: string, hexValue: string) =>
-    copied?.key === key ? 'Copied' : hexValue.slice(1).toUpperCase();
+    copied?.key !== key || copied.outcome === 'blocked'
+      ? hexValue.slice(1).toUpperCase()
+      : copied.outcome === 'selected' ? 'Press \u2318C' : 'Copied';
   const showLabel = (key: string) => (hover?.key === key || copied?.key === key ? 1 : 0);
 
   return (
@@ -319,15 +327,17 @@ export function ColorTool() {
           <div className="gfw-container ct-sticky-inner">
             <div className="ct-sticky-swatch">
               <span data-hex={hex} data-key="sticky" role="button" tabIndex={0} aria-label={`Copy ${a.hexUpper}`} style={{ background: hex }} />
-              <span className="gfw-mono">{readoutHex}</span>
+              <span ref={readoutRef} className="gfw-mono" style={{ userSelect: 'all' }}>{readoutHex}</span>
             </div>
             <span className="ct-sticky-sep" />
             <nav className="ct-nav" aria-label="Sections">
               {SECTIONS.map(([id, label]) => <a key={id} href={`#${id}`}>{label}</a>)}
             </nav>
             <div style={{ flex: 1, minWidth: 6 }} />
-            <span className="ct-sticky-note" style={{ color: copied ? '#1F8A5F' : 'var(--gfw-text-mutest)' }}>
-              {copied ? 'Copied to clipboard' : 'Click any color to copy'}
+            <span className="ct-sticky-note" style={{ color: copied?.outcome === 'ok' ? '#1F8A5F' : copied ? '#C4593A' : 'var(--gfw-text-mutest)' }}>
+              {copied?.outcome === 'selected' ? 'Selected \u2014 press \u2318C'
+                : copied?.outcome === 'blocked' ? 'Clipboard blocked \u2014 select the hex to copy'
+                : copied ? 'Copied to clipboard' : 'Click any color to copy'}
             </span>
           </div>
         </div>
@@ -349,7 +359,7 @@ export function ColorTool() {
                       style={{ borderTop: ri === 0 ? 'none' : '1px solid var(--gfw-border-muted)', background: copied?.key === row.key ? 'var(--gfw-accent-tint)' : '#fff' }}
                     >
                       <span className="ct-conv-label">{row.label}</span>
-                      <span className="ct-conv-value gfw-mono">{copied?.key === row.key ? 'Copied' : row.display}</span>
+                      <span className="ct-conv-value gfw-mono">{copied?.key === row.key && copied.outcome === 'ok' ? 'Copied' : row.display}</span>
                     </button>
                   ))}
                 </div>
