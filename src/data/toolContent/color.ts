@@ -145,6 +145,11 @@ OUT  a hex you can paste anywhere`,
         'It is the straight-line distance between two colors in OKLab — the closest simple number to “how different do these look”. Roughly: under 0.02 is effectively the same color, under 0.05 is a difference you would only notice side by side, and past 0.2 they read as separate colors. It is deliberately shown as a raw distance rather than a percentage, because a “95% similar” score is a marketing number, not a unit.',
     },
     {
+      question: 'Can I pick a color from outside the browser window?',
+      answer:
+        'Yes — the dropper button next to the hex field samples any pixel on your screen, including other applications, an image viewer or the desktop, and the cursor becomes a magnified loupe while you aim. That is the browser’s own EyeDropper API doing the work, because a web page cannot read pixels it does not own. It ships in Chrome, Edge and Opera; Firefox and Safari have not implemented it, so the button is disabled there and you can paste a hex code instead.',
+    },
+    {
       question: 'Is color temperature here the same as Kelvin?',
       answer:
         'No, and it is labelled as a heuristic for that reason. Kelvin color temperature describes light sources and white points, not arbitrary surface colors. The temperature ramp above pulls the hue toward a warm target near 55° or a cool target near 250°, which is what designers usually mean by warming or cooling a color.',

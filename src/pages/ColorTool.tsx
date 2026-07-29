@@ -8,6 +8,7 @@ import { ToolContentSection } from '../components/generator/ToolContentSection';
 import { getToolContent } from '../data/toolContent/index';
 import { TOOL_MAP } from '../data/tools';
 import { Icon } from '../components/ui/Icon';
+import { isEyeDropperSupported, pickScreenColor } from '../lib/eyeDropper';
 import { CONTENT_REVIEWED } from '../data/contentMeta';
 
 const BASE_URL = 'https://www.wpcodekit.com';
@@ -159,6 +160,19 @@ export function ColorTool() {
     copy(t.getAttribute('data-hex') || '', t.getAttribute('data-key') || '');
   }, [copy]);
 
+  // Feature-detected once: Chromium ships the EyeDropper API, Firefox and Safari
+  // do not. The button stays visible but disabled elsewhere, so the capability is
+  // discoverable rather than silently missing.
+  const [canEyedrop] = useState(isEyeDropperSupported);
+  const [picking, setPicking] = useState(false);
+
+  const openEyedropper = useCallback(async () => {
+    setPicking(true);
+    const picked = await pickScreenColor();
+    setPicking(false);
+    if (picked) setHex(picked);
+  }, [setHex]);
+
   const a = useMemo(() => analyzeColor(hex, severity, RAMP_STEPS), [hex, severity]);
 
   usePageMeta(
@@ -258,9 +272,23 @@ export function ColorTool() {
                     className="gfw-mono"
                   />
                 </div>
-                <button type="button" onClick={() => setHex(randomHex())} aria-label="Random color" title="Random color" className="ct-random"><Icon name="shuffle" size={16} /></button>
+                <button
+                  type="button"
+                  onClick={openEyedropper}
+                  disabled={!canEyedrop || picking}
+                  aria-label="Pick a color from anywhere on screen"
+                  title={canEyedrop ? 'Pick a color from anywhere on screen' : 'Screen picking needs Chrome, Edge or Opera'}
+                  className={`ct-icon-btn${picking ? ' is-active' : ''}`}
+                >
+                  <Icon name="eyedropper" size={16} />
+                </button>
+                <button type="button" onClick={() => setHex(randomHex())} aria-label="Random color" title="Random color" className="ct-icon-btn"><Icon name="shuffle" size={16} /></button>
               </div>
-              <p className="ct-picker-hint">Click any color on this page to copy it.</p>
+              <p className="ct-picker-hint">
+                {canEyedrop
+                  ? 'Use the dropper to sample any pixel on your screen, or click any color on this page to copy it.'
+                  : 'Click any color on this page to copy it.'}
+              </p>
             </div>
           </div>
         </div>

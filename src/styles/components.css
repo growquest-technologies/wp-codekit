@@ -1325,18 +1325,22 @@ fieldset.field-fieldset legend {
   color: var(--gfw-text);
   padding: 9px 0;
 }
-.ct-random {
+.ct-icon-btn {
   flex-shrink: 0;
   width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--gfw-border);
   border-radius: 8px;
   background: #fff;
   cursor: pointer;
   color: var(--gfw-text-body);
-  font-size: 17px;
-  line-height: 1;
 }
-.ct-random:hover { background: var(--gfw-surface-sunken); }
+.ct-icon-btn:hover:not(:disabled) { background: var(--gfw-surface-sunken); color: var(--gfw-accent); }
+.ct-icon-btn:focus-visible { outline: 2px solid var(--gfw-accent); outline-offset: 1px; }
+.ct-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ct-icon-btn.is-active { border-color: var(--gfw-accent); background: var(--gfw-accent-tint); color: var(--gfw-accent); }
 .ct-picker-hint { margin: 11px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--gfw-text-mutest); }
 
 .ct-sticky {
