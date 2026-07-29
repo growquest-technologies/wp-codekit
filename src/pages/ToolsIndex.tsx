@@ -11,24 +11,23 @@ type SortMode = 'relevance' | 'az';
 
 export function ToolsIndex() {
   usePageMeta(
-    `All ${TOOLS.length} WordPress Code Generators — Free, No Login | WP CodeKit`,
-    `Browse all ${TOOLS.length} WordPress code generators — post types, taxonomies, queries, hooks, admin screens, themes and WooCommerce. Free, no signup.`,
+    'All WordPress Code Generators — Free, No Login | WP CodeKit',
+    'Browse every WordPress code generator — post types, taxonomies, queries, hooks, admin screens, themes and WooCommerce. Free, no signup, nothing uploaded.',
     '/tools',
     { rawTitle: true },
   );
 
   // The full catalogue as one ItemList. This is the page an answer engine reads
   // when asked "what WordPress generators are there" — an explicit, ordered list
-  // of all of them is far more extractable than 49 anchor tags.
+  // of all of them is far more extractable than a page of anchor tags.
   useJsonLd('ld-tools-list', {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: `All ${TOOLS.length} WordPress code generators`,
+    name: 'All WordPress code generators',
     url: `${BASE_URL}/tools`,
     isPartOf: { '@id': `${BASE_URL}/#website` },
     mainEntity: {
       '@type': 'ItemList',
-      numberOfItems: TOOLS.length,
       itemListElement: TOOLS.map((t, i) => ({
         '@type': 'ListItem',
         position: i + 1,
@@ -69,7 +68,10 @@ export function ToolsIndex() {
     return scored.map((r) => r.t);
   }, [query, category, sort]);
 
-  const resultsLabel = `${results.length}${results.length === 1 ? ' generator' : ' generators'}${query ? ` matching “${query}”` : ''}`;
+  const isFiltered = Boolean(query) || category !== 'all';
+  const resultsLabel = isFiltered
+    ? `${results.length}${results.length === 1 ? ' generator' : ' generators'}${query ? ` matching “${query}”` : ''}`
+    : 'All generators';
 
   return (
     <div>
@@ -113,7 +115,7 @@ export function ToolsIndex() {
                 className={`chip${category === c.id ? ' is-active' : ''}`}
               >
                 {c.label}
-                <span className="chip-count">{c.id === 'all' ? TOOLS.length : TOOLS.filter((t) => t.cat === c.id).length}</span>
+                {c.id !== 'all' && <span className="chip-count">{TOOLS.filter((t) => t.cat === c.id).length}</span>}
               </button>
             ))}
           </div>

@@ -1,6 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Icon, GLYPH } from '../components/ui/Icon';
-import { TOOLS } from '../data/tools';
 
 const NAV_LINKS = [
   { label: 'Generators', path: '/tools' },
@@ -10,7 +9,6 @@ const NAV_LINKS = [
 
 export function SiteHeader() {
   const location = useLocation();
-  const toolCount = TOOLS.length;
 
   return (
     <header
@@ -71,7 +69,7 @@ export function SiteHeader() {
           style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 600, color: 'var(--gfw-text-muted)', flexShrink: 0 }}
         >
           <Icon name={GLYPH.search} size={15} />
-          All {toolCount} generators
+          All generators
         </Link>
       </div>
     </header>

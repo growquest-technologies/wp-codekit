@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { TOOLS } from '../data/tools';
 import { usePageMeta } from '../lib/usePageMeta';
 
 const ABOUT_SECTIONS = [
@@ -43,7 +42,6 @@ export function About() {
   );
 
   const stats = [
-    { label: 'Generators', value: String(TOOLS.length) },
     { label: 'Accounts required', value: '0' },
     { label: 'Data sent to us', value: 'None' },
   ];

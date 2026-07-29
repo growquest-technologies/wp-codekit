@@ -24,9 +24,16 @@ export function CategoryHub() {
   const category = CAT_MAP[cat];
   const tools = TOOLS.filter((t) => t.cat === cat);
 
+  // "Free, No Login" is the differentiating claim, but WooCommerce's long label
+  // pushes that form past the 60-char budget — so the longest category drops the
+  // second half of it rather than being truncated by the SERP.
+  const titleBase = category ? `WordPress ${category.label} Generators` : '';
+  const longTitle = `${titleBase} — Free, No Login | WP CodeKit`;
+  const title = longTitle.length <= 60 ? longTitle : `${titleBase} — Free | WP CodeKit`;
+
   usePageMeta(
-    category ? `${tools.length} WordPress ${category.label} Generators — Free | WP CodeKit` : 'Category not found — WP CodeKit',
-    category ? `${INTRO[cat]} ${tools.length} free generators, no signup.` : "That category doesn't exist.",
+    category ? title : 'Category not found — WP CodeKit',
+    category ? `${INTRO[cat]} Free, no signup.` : "That category doesn't exist.",
     `/category/${cat}`,
     { noindex: !category, rawTitle: true },
   );
@@ -43,7 +50,6 @@ export function CategoryHub() {
           isPartOf: { '@id': `${BASE_URL}/#website` },
           mainEntity: {
             '@type': 'ItemList',
-            numberOfItems: tools.length,
             itemListElement: tools.map((t, i) => ({
               '@type': 'ListItem',
               position: i + 1,
@@ -132,7 +138,7 @@ export function CategoryHub() {
           </div>
           <div style={{ flex: 1, minWidth: 12 }} />
           <Link to="/tools" style={{ fontSize: 13, fontWeight: 650 }}>
-            All {TOOLS.length} generators →
+            All generators →
           </Link>
         </div>
       </section>

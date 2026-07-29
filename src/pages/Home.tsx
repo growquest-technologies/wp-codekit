@@ -101,7 +101,7 @@ export function Home() {
             }}
           >
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gfw-success)' }} />
-            {TOOLS.length} generators · nothing behind a login
+            Free generators · nothing behind a login
           </div>
           <h1
             style={{
@@ -272,7 +272,7 @@ export function Home() {
           <h2 className="gfw-eyebrow">Most useful tools</h2>
           <div className="gfw-rule" />
           <Link to="/tools" style={{ fontSize: 13, fontWeight: 650 }}>
-            All {TOOLS.length} generators →
+            All generators →
           </Link>
         </div>
 
@@ -301,7 +301,7 @@ export function Home() {
           <h2 className="gfw-eyebrow">Browse by category</h2>
           <div className="gfw-rule" />
           <Link to="/tools" style={{ fontSize: 13, fontWeight: 650 }}>
-            All {TOOLS.length} generators →
+            All generators →
           </Link>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: 12 }}>
