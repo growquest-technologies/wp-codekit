@@ -9,6 +9,7 @@ import { getToolContent } from '../data/toolContent/index';
 import { TOOL_MAP } from '../data/tools';
 import { Icon } from '../components/ui/Icon';
 import { isEyeDropperSupported, pickScreenColor } from '../lib/eyeDropper';
+import { parseCssColor } from '../lib/cssColor';
 import { CONTENT_REVIEWED } from '../data/contentMeta';
 
 const BASE_URL = 'https://www.wpcodekit.com';
@@ -62,6 +63,9 @@ export function ColorTool() {
   const [hover, setHover] = useState<{ key: string; hex: string } | null>(null);
   const [copied, setCopied] = useState<{ key: string; hex: string } | null>(null);
 
+  /** Whether the input still holds a plain hex value, which is what the `#` prefix belongs to. */
+  const fieldIsHex = /^[0-9a-fA-F]*$/.test(hexField);
+
   const squareRef = useRef<HTMLDivElement | null>(null);
   const hueRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<'sq' | 'hue' | null>(null);
@@ -70,24 +74,35 @@ export function ColorTool() {
   const commit = useCallback((clean: string) => {
     try { localStorage.setItem(STORAGE_KEY, clean); } catch { /* ignore */ }
     setHexState(clean);
-    setHexField(clean.slice(1));
   }, []);
 
-  /** A colour arriving from outside the picker (typed, pasted, random) — resync the picker to it. */
-  const setHex = useCallback((next: string) => {
-    const rgb = parseHex(next);
-    if (!rgb) return;
-    const nextHsv = rgbToHsv(rgb);
+  /**
+   * A colour arriving from outside the picker — typed, pasted, dropper, random,
+   * or a clicked swatch. Accepts any CSS colour notation, not just hex.
+   *
+   * `syncField` is false while you are typing, because a half-finished value can
+   * be perfectly valid (`e17` is a colour) and overwriting the text under the
+   * cursor with its expansion makes the field impossible to type into.
+   * Returns whether the value parsed, so Enter can reject a bad one.
+   */
+  const setHex = useCallback((next: string, syncField = true): boolean => {
+    const clean = parseCssColor(next);
+    if (!clean) return false;
+    const nextHsv = rgbToHsv(parseHex(clean) as RGB);
     hsvRef.current = nextHsv;
     setHsvState(nextHsv);
-    commit(toHex(rgb));
+    commit(clean);
+    if (syncField) setHexField(clean.slice(1));
+    return true;
   }, [commit]);
 
   /** A colour coming from the picker — HSV leads, hex is derived from it. */
   const setFromHsv = useCallback((next: [number, number, number]) => {
     hsvRef.current = next;
     setHsvState(next);
-    commit(toHex(hsvToRgb(next[0], next[1], next[2])));
+    const clean = toHex(hsvToRgb(next[0], next[1], next[2]));
+    commit(clean);
+    setHexField(clean.slice(1));
   }, [commit]);
 
   // Reads HSV from the ref rather than state so the pointermove listener below
@@ -252,23 +267,28 @@ export function ColorTool() {
                 <span className="ct-hue-dot" style={{ left: `${fmt((hsv[0] / 360) * 100, 2)}%`, background: `hsl(${fmt(hsv[0], 1)} 100% 50%)` }} />
               </div>
               <div className="ct-hex-row">
-                <div className="ct-hex-input">
-                  <span aria-hidden="true" className="gfw-mono">#</span>
+                <div className={`ct-hex-input${fieldIsHex ? '' : ' is-freeform'}`}>
+                  {/* The # is chrome, not content — so it is hidden the moment the
+                      field holds something that isn't a bare hex value. */}
+                  {fieldIsHex && <span aria-hidden="true" className="gfw-mono">#</span>}
                   <input
                     value={hexField}
                     onChange={(e) => {
-                      const v = e.target.value.replace(/[^0-9a-fA-F#]/g, '');
-                      setHexField(v.replace(/^#/, ''));
-                      if (parseHex(v)) setHex(v);
+                      const v = e.target.value;
+                      setHexField(/^#[0-9a-fA-F]*$/.test(v) ? v.slice(1) : v);
+                      setHex(v, false);
                     }}
-                    onBlur={() => { if (!parseHex(hexField)) setHexField(hex.slice(1)); }}
+                    // Whatever notation went in, the field settles back to the
+                    // canonical hex — which is also the confirmation that it parsed.
+                    onBlur={() => setHexField(hex.slice(1))}
                     onKeyDown={(e) => {
                       if (e.key !== 'Enter') return;
-                      if (parseHex(hexField)) setHex(hexField);
-                      else setHexField(hex.slice(1));
+                      if (!setHex(hexField)) setHexField(hex.slice(1));
                     }}
                     spellCheck={false}
-                    aria-label="Hex color code"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    aria-label="Color value — hex, rgb, hsl, oklch or a color name"
                     className="gfw-mono"
                   />
                 </div>
@@ -285,8 +305,9 @@ export function ColorTool() {
                 <button type="button" onClick={() => setHex(randomHex())} aria-label="Random color" title="Random color" className="ct-icon-btn"><Icon name="shuffle" size={16} /></button>
               </div>
               <p className="ct-picker-hint">
+                Paste any CSS color — <code>rgb()</code>, <code>hsl()</code>, <code>oklch()</code>, <code>lab()</code> or a name like <code>rebeccapurple</code>.{' '}
                 {canEyedrop
-                  ? 'Use the dropper to sample any pixel on your screen, or click any color on this page to copy it.'
+                  ? 'Or use the dropper to sample any pixel on your screen.'
                   : 'Click any color on this page to copy it.'}
               </p>
             </div>

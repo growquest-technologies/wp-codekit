@@ -1325,6 +1325,9 @@ fieldset.field-fieldset legend {
   color: var(--gfw-text);
   padding: 9px 0;
 }
+/* A pasted rgb()/oklch() value is far longer than a hex code, so the wide
+   letter-spacing that suits six digits has to go for it to fit. */
+.ct-hex-input.is-freeform input { letter-spacing: 0; font-size: 13px; }
 .ct-icon-btn {
   flex-shrink: 0;
   width: 40px;
@@ -1341,7 +1344,15 @@ fieldset.field-fieldset legend {
 .ct-icon-btn:focus-visible { outline: 2px solid var(--gfw-accent); outline-offset: 1px; }
 .ct-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .ct-icon-btn.is-active { border-color: var(--gfw-accent); background: var(--gfw-accent-tint); color: var(--gfw-accent); }
-.ct-picker-hint { margin: 11px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--gfw-text-mutest); }
+.ct-picker-hint { margin: 11px 0 0; font-size: 11.5px; line-height: 1.6; color: var(--gfw-text-mutest); }
+.ct-picker-hint code {
+  font-family: var(--gfw-font-mono);
+  font-size: 11px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--gfw-surface-muted);
+  color: var(--gfw-text-body);
+}
 
 .ct-sticky {
   /* Sits directly under the 64px site header, which is itself sticky at top:0

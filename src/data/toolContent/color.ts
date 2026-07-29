@@ -4,7 +4,7 @@ import type { ToolContent } from '../toolContentTypes';
 export const colorContent: ToolContent = {
   aboutTitle: 'Color Palette Generator Online',
   aboutLead:
-    'Paste a hex code, drag the picker, or hit random, and this tool breaks one color down into everything you need to use it: exact conversions across ten color models, five variation ramps, six harmonies, WCAG and APCA contrast, color-blindness simulation, the closest named colors, and a full light and dark interface palette.',
+    'Paste any CSS color — hex, rgb(), hsl(), oklch(), lab() or a name like rebeccapurple — drag the picker, or hit random, and this tool breaks one color down into everything you need to use it: exact conversions across ten color models, five variation ramps, six harmonies, WCAG and APCA contrast, color-blindness simulation, the closest named colors, and a full light and dark interface palette.',
   aboutSupport:
     'Every calculation happens in OKLCH and OKLab — the perceptual space standardised in CSS Color 4 — then gets gamut-mapped back to sRGB by reducing chroma while lightness and hue hold. That is why the ramps here step evenly to the eye instead of collapsing into mud at the dark end. Free, no account, and nothing leaves your browser.',
   spec: {
@@ -50,7 +50,7 @@ export const colorContent: ToolContent = {
   steps: [
     {
       title: 'Give it a color',
-      body: 'Type or paste a hex code, drag inside the saturation square, or move the hue slider. Three and six digit hex both parse.',
+      body: 'Paste a value in any CSS notation, drag inside the saturation square, move the hue slider, or sample a pixel with the dropper. Whatever goes in is normalised to hex.',
     },
     {
       title: 'It converts to OKLCH',
@@ -143,6 +143,16 @@ OUT  a hex you can paste anywhere`,
       question: 'What does ΔE OK actually measure?',
       answer:
         'It is the straight-line distance between two colors in OKLab — the closest simple number to “how different do these look”. Roughly: under 0.02 is effectively the same color, under 0.05 is a difference you would only notice side by side, and past 0.2 they read as separate colors. It is deliberately shown as a raw distance rather than a percentage, because a “95% similar” score is a marketing number, not a unit.',
+    },
+    {
+      question: 'Can I paste an rgb() or oklch() value instead of hex?',
+      answer:
+        'Yes — the input takes any CSS color notation: hex in three, four, six or eight digits, rgb() and rgba(), hsl() and hsla(), hwb(), lab(), lch(), oklab(), oklch(), color() in the sRGB, linear-sRGB and Display P3 spaces, and the CSS color names. Legacy comma syntax and modern space syntax both work, angles can be given in deg, grad, rad or turn, and an alpha value is accepted and then dropped, because everything on this page is calculated on opaque color. Paste anything and it is converted to hex, which makes this a quick one-way converter in its own right — an oklch() value out of a design token file becomes a hex code you can paste into a theme.',
+    },
+    {
+      question: 'What happens to a color that sRGB cannot display?',
+      answer:
+        'Wide-gamut input — most of Display P3, and a good deal of the lab() and oklch() range — has no exact sRGB equivalent, so a pasted value is brought into range on the way in and you get the nearest color your screen can actually show. That is worth knowing if you are round-tripping P3 design tokens: the hex you get back is a faithful sRGB rendition, not the original wide-gamut color. Everything generated on the page afterwards, though, is gamut-mapped the careful way, holding lightness and hue while chroma comes down.',
     },
     {
       question: 'Can I pick a color from outside the browser window?',

@@ -20,16 +20,16 @@ export type OKLab = [number, number, number];
 export type OKLCH = [number, number, number];
 
 const M_LIN_XYZ = [
-  [0.4124564, 0.3575761, 0.1804375],
-  [0.2126729, 0.7151522, 0.072175],
-  [0.0193339, 0.119192, 0.9503041],
+  [0.41239079926595934, 0.357584339383878, 0.1804807884018343],
+  [0.21263900587151027, 0.715168678767756, 0.07219231536073371],
+  [0.01933081871559182, 0.11919477979462598, 0.9505321522496607],
 ];
 const M_D65_D50 = [
-  [1.0478112, 0.0228866, -0.050127],
-  [0.0295424, 0.9904844, -0.0170491],
-  [-0.0092345, 0.0150436, 0.7521316],
+  [1.0479298208405488, 0.022946793341019088, -0.05019222954313557],
+  [0.029627815688159344, 0.990434484573249, -0.01707382502938514],
+  [-0.009243058152591178, 0.015055144896577895, 0.7518742899580008],
 ];
-const D50 = [0.96422, 1, 0.82521];
+const D50 = [0.3457 / 0.3585, 1, (1 - 0.3457 - 0.3585) / 0.3585];
 
 /** Machado/Oliveira/Fernandes severity-1.0 matrices, applied in linear RGB. */
 const CVD_MATRICES = {
@@ -179,6 +179,72 @@ export function rgbToHsl(rgb: RGB): [number, number, number] {
 export function rgbToHsv(rgb: RGB): [number, number, number] {
   const max = Math.max(...rgb), min = Math.min(...rgb), d = max - min;
   return [rgbToHsl(rgb)[0], max === 0 ? 0 : d / max, max];
+}
+
+/** Inverse matrices, for parsing colours *into* sRGB. From the CSS Color 4 spec. */
+const M_XYZ_LIN = [
+  [3.2409699419045226, -1.5373831775700935, -0.4986107602930034],
+  [-0.9692436362808796, 1.8759675015077204, 0.04155505740717559],
+  [0.05563007969699366, -0.20397695888897652, 1.0569715142428786],
+];
+const M_D50_D65 = [
+  [0.9554734527042182, -0.023098536874261423, 0.0632593086610217],
+  [-0.028369706963208136, 1.0099954580058226, 0.021041398966943008],
+  [0.012314001688319899, -0.020507696433477912, 1.3303659366080753],
+];
+/** Display P3 primaries to XYZ D65. P3 shares sRGB's transfer curve and white point. */
+const M_P3_XYZ = [
+  [0.4865709486482162, 0.26566769316909306, 0.1982172852343625],
+  [0.2289745640697488, 0.6917385218365064, 0.079286914093745],
+  [0.0, 0.04511338185890264, 1.043944368900976],
+];
+
+/** Linear-light sRGB (already in 0-1 linear form) to gamma-encoded sRGB. */
+export function linearToRgb(lin: RGB): RGB {
+  return lin.map(delin) as RGB;
+}
+
+export function xyzD65ToRgb(xyz: RGB): RGB {
+  return linearToRgb(mul(M_XYZ_LIN, xyz));
+}
+
+export function p3ToRgb(p3: RGB): RGB {
+  return xyzD65ToRgb(mul(M_P3_XYZ, p3.map(lin)));
+}
+
+/** CIE Lab (D50) back to sRGB — the inverse of rgbToLabD50. */
+export function labD50ToRgb(lab: RGB): RGB {
+  const fy = (lab[0] + 16) / 116;
+  const fx = fy + lab[1] / 500;
+  const fz = fy - lab[2] / 200;
+  const finv = (t: number) => (t * t * t > 0.008856451679 ? t * t * t : (t - 16 / 116) / 7.787037037);
+  const xyz50: RGB = [finv(fx) * D50[0], finv(fy) * D50[1], finv(fz) * D50[2]];
+  return xyzD65ToRgb(mul(M_D50_D65, xyz50));
+}
+
+/** CIE LCH (D50) back to sRGB. */
+export function lchD50ToRgb(lch: RGB): RGB {
+  const r = (lch[2] * Math.PI) / 180;
+  return labD50ToRgb([lch[0], lch[1] * Math.cos(r), lch[1] * Math.sin(r)]);
+}
+
+/** HSL back to sRGB. */
+export function hslToRgb(h: number, s: number, l: number): RGB {
+  h = ((h % 360) + 360) % 360;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  const t = [[c, x, 0], [x, c, 0], [0, c, x], [0, x, c], [x, 0, c], [c, 0, x]][Math.floor(h / 60) % 6];
+  return [t[0] + m, t[1] + m, t[2] + m];
+}
+
+/** HWB back to sRGB, per the CSS Color 4 definition (w + b >= 1 collapses to grey). */
+export function hwbToRgb(h: number, w: number, b: number): RGB {
+  if (w + b >= 1) {
+    const g = w / (w + b);
+    return [g, g, g];
+  }
+  return hslToRgb(h, 1, 0.5).map((c) => c * (1 - w - b) + w) as RGB;
 }
 
 export function hsvToRgb(h: number, s: number, v: number): RGB {
