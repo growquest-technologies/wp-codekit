@@ -179,7 +179,7 @@ export function ShortcodeGenerator() {
                 >
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 9 }}>
                     <div>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>name</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>name</label>
                       <input
                         className="input gfw-mono"
                         value={a.name}
@@ -188,7 +188,7 @@ export function ShortcodeGenerator() {
                       />
                     </div>
                     <div>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>type</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>type</label>
                       <select
                         className="select"
                         value={a.type}
@@ -204,7 +204,7 @@ export function ShortcodeGenerator() {
                       </select>
                     </div>
                     <div>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>default</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>default</label>
                       <input
                         className="input gfw-mono"
                         value={a.def}
@@ -214,7 +214,7 @@ export function ShortcodeGenerator() {
                     </div>
                     {a.type === 'select' && (
                       <div>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>choices — comma separated</label>
+                        <label className="field-label" style={{ fontSize: 11 }}>choices — comma separated</label>
                         <input
                           className="input gfw-mono"
                           value={a.choices}
@@ -224,7 +224,7 @@ export function ShortcodeGenerator() {
                       </div>
                     )}
                     <div style={{ gridColumn: '1 / -1' }}>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>description — used in the docblock</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>description — used in the docblock</label>
                       <input
                         className="input"
                         value={a.description}

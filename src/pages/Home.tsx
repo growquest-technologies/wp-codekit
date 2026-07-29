@@ -186,7 +186,7 @@ export function Home() {
             <span className="code-panel-badge">GENERATED</span>
           </div>
           <pre className="code-panel-body" style={{ fontSize: 'clamp(10.5px, 1.15vw, 12.5px)' }}>
-            <span style={{ color: '#7C7565' }}>{'// Register the "Recipe" post type\n'}</span>
+            <span style={{ color: 'var(--gfw-dark-text-muted)' }}>{'// Register the "Recipe" post type\n'}</span>
             <span style={{ color: '#8FA9FF' }}>add_action</span>
             {'( '}
             <span style={{ color: '#B7D48A' }}>'init'</span>
@@ -284,7 +284,7 @@ export function Home() {
               className="card-link"
               style={{ borderRadius: 11, border: '1px solid var(--gfw-border)', background: '#fff', padding: '16px 18px' }}
             >
-              <span style={{ fontFamily: 'var(--gfw-font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--gfw-text-faint)', textTransform: 'uppercase' }}>
+              <span style={{ fontFamily: 'var(--gfw-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--gfw-text-faint)', textTransform: 'uppercase' }}>
                 {CAT_MAP[t.cat].label}
               </span>
               <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--gfw-text-strong)' }}>{t.name}</span>

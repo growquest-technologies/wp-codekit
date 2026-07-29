@@ -539,7 +539,7 @@ export function GradientTool() {
   const railLeft = (p: number) => `calc(${fmt(p, 2)}% + ${fmt(8 - p * 0.16, 2)}px)`;
   const selIndex = list.findIndex((x) => x.id === sel.id);
   const hasMid = selIndex >= 0 && selIndex < list.length - 1;
-  const ratioColor = (r: number) => (r >= 4.5 ? '#1F8A5F' : r >= 3 ? '#8A6A1F' : '#C4593A');
+  const ratioColor = (r: number) => (r >= 4.5 ? 'var(--gfw-success)' : r >= 3 ? 'var(--gfw-warning-text)' : 'var(--gfw-danger)');
 
   const handles = buildHandles(g, box, fit, sel.id, list);
   const axis = isLinear
@@ -729,11 +729,11 @@ export function GradientTool() {
                     spellCheck={false}
                     aria-label="Paste a CSS gradient to load it into the editor"
                     className="gfw-mono gt-import-input"
-                    style={{ borderColor: paste && !paste.ok ? '#C4593A' : undefined }}
+                    style={{ borderColor: paste && !paste.ok ? 'var(--gfw-danger)' : undefined }}
                   />
                   <button type="button" className="gt-btn-primary" onClick={loadPasted}>Load</button>
                 </div>
-                {paste && <p className="gt-paste-msg" style={{ color: paste.ok ? '#1F8A5F' : '#C4593A' }}>{paste.msg}</p>}
+                {paste && <p className="gt-paste-msg" style={{ color: paste.ok ? 'var(--gfw-success)' : 'var(--gfw-danger)' }}>{paste.msg}</p>}
               </div>
 
               <div className="gt-grid">

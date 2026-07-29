@@ -175,7 +175,7 @@ export function WcCartFeeGenerator() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(112px, 1fr))', gap: 9 }}>
                 {sampleSelects.slice(0, 1).map((sf) => (
                   <div key={sf.key}>
-                    <label style={{ display: 'block', fontSize: 10.5, color: '#787C82', marginBottom: 3 }}>{sf.label}</label>
+                    <label style={{ display: 'block', fontSize: 11, color: '#787C82', marginBottom: 3 }}>{sf.label}</label>
                     <select
                       value={String(sample[sf.key])}
                       onChange={(e) => setSampleField(sf.key, e.target.value)}
@@ -187,7 +187,7 @@ export function WcCartFeeGenerator() {
                 ))}
                 {sampleInputs.map((sf) => (
                   <div key={sf.key}>
-                    <label style={{ display: 'block', fontSize: 10.5, color: '#787C82', marginBottom: 3 }}>{sf.label}</label>
+                    <label style={{ display: 'block', fontSize: 11, color: '#787C82', marginBottom: 3 }}>{sf.label}</label>
                     <input
                       className="gfw-mono"
                       value={String(sample[sf.key])}
@@ -199,7 +199,7 @@ export function WcCartFeeGenerator() {
                 ))}
                 {sampleSelects.slice(1).map((sf) => (
                   <div key={sf.key}>
-                    <label style={{ display: 'block', fontSize: 10.5, color: '#787C82', marginBottom: 3 }}>{sf.label}</label>
+                    <label style={{ display: 'block', fontSize: 11, color: '#787C82', marginBottom: 3 }}>{sf.label}</label>
                     <select
                       value={String(sample[sf.key])}
                       onChange={(e) => setSampleField(sf.key, e.target.value)}
@@ -275,7 +275,7 @@ export function WcCartFeeGenerator() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 18 }}>
                 {REF_FLOW.map((text, i) => (
                   <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 10.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
                     <span style={{ flex: 1, fontSize: 12.5, lineHeight: 1.55, color: 'var(--gfw-text-strong)' }}>{text}</span>
                   </div>
                 ))}
@@ -421,7 +421,7 @@ export function WcCartFeeGenerator() {
                     </div>
 
                     <div style={{ paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
-                      <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--gfw-text-faint)', marginBottom: 6 }}>Apply only when</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--gfw-text-faint)', marginBottom: 6 }}>Apply only when</div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                         {CONDITIONS.map((c) => (
                           <button
@@ -441,7 +441,7 @@ export function WcCartFeeGenerator() {
                             const c = COND_MAP[k];
                             return (
                               <div key={k}>
-                                <label style={{ display: 'block', fontSize: 10.5, color: 'var(--gfw-text-mutest)', marginBottom: 3 }}>{c.label}</label>
+                                <label style={{ display: 'block', fontSize: 11, color: 'var(--gfw-text-mutest)', marginBottom: 3 }}>{c.label}</label>
                                 <input
                                   className="input gfw-mono"
                                   style={{ width: c.width, fontSize: 11.5, padding: '5px 7px', borderColor: String(r.cond[k] || '').trim() ? undefined : '#B91C1C' }}

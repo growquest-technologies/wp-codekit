@@ -485,12 +485,12 @@ export function ReadmeStudio() {
       primaryTabLabel="Preview"
       primaryTabContent={
         <div style={{ background: '#F0F0F1' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', background: '#FFF6E5', color: '#8A5B00', fontSize: 10.5 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', background: '#FFF6E5', color: '#8A5B00', fontSize: 11 }}>
             <span>Approximate rendering — WordPress.org may differ slightly.</span>
             <button
               type="button"
               onClick={() => setPreviewExpanded(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: 5, border: '1px solid #8A5B00', background: 'none', color: '#8A5B00', borderRadius: 5, padding: '3px 8px', cursor: 'pointer', fontSize: 10.5 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, border: '1px solid #8A5B00', background: 'none', color: '#8A5B00', borderRadius: 5, padding: '3px 8px', cursor: 'pointer', fontSize: 11 }}
             >
               <Icon name="expand" size={11} /> Expand
             </button>

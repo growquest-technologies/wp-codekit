@@ -175,7 +175,7 @@ export function ThemeJsonGenerator() {
               {sizes.map((s) => (
                 <div key={s.slug} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: Math.min(38, Math.max(11, s.px)), fontWeight: 600, lineHeight: 1.1 }}>Aa</div>
-                  <div className="gfw-mono" style={{ fontSize: 10, color: 'var(--gfw-text-faint)', marginTop: 4 }}>{s.slug}</div>
+                  <div className="gfw-mono" style={{ fontSize: 11, color: 'var(--gfw-text-faint)', marginTop: 4 }}>{s.slug}</div>
                 </div>
               ))}
             </div>

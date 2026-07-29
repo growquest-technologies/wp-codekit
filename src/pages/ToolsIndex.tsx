@@ -164,7 +164,7 @@ function ToolCard({ tool }: { tool: Tool }) {
       style={{ background: '#fff', border: '1px solid var(--gfw-accent-tint-border)', borderRadius: 11, padding: '18px 20px' }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontFamily: 'var(--gfw-font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--gfw-text-faint)' }}>
+        <span style={{ fontFamily: 'var(--gfw-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--gfw-text-faint)' }}>
           {CAT_MAP[tool.cat].label}
         </span>
       </div>

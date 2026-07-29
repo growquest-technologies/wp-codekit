@@ -158,19 +158,19 @@ export function DefaultThemeHeadersGenerator() {
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8, paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
                     <div>
-                      <label className="field-label gfw-mono" style={{ fontSize: 10.5 }}>file</label>
+                      <label className="field-label gfw-mono" style={{ fontSize: 11 }}>file</label>
                       <input className="input gfw-mono" style={{ fontSize: 11.5 }} spellCheck={false} placeholder="header.jpg" value={h.file} onChange={(e) => commit((p) => (p.headers[i].file = e.target.value), `header-file-${i}`)} />
                     </div>
                     <div>
-                      <label className="field-label gfw-mono" style={{ fontSize: 10.5 }}>thumbnail</label>
+                      <label className="field-label gfw-mono" style={{ fontSize: 11 }}>thumbnail</label>
                       <input className="input gfw-mono" style={{ fontSize: 11.5 }} spellCheck={false} placeholder="header-thumb.jpg" value={h.thumb} onChange={(e) => commit((p) => (p.headers[i].thumb = e.target.value), `header-thumb-${i}`)} />
                     </div>
                     <div>
-                      <label className="field-label gfw-mono" style={{ fontSize: 10.5 }}>width</label>
+                      <label className="field-label gfw-mono" style={{ fontSize: 11 }}>width</label>
                       <input className="input gfw-mono" style={{ fontSize: 11.5 }} value={h.width} onChange={(e) => commit((p) => (p.headers[i].width = e.target.value), `header-width-${i}`)} />
                     </div>
                     <div>
-                      <label className="field-label gfw-mono" style={{ fontSize: 10.5 }}>height</label>
+                      <label className="field-label gfw-mono" style={{ fontSize: 11 }}>height</label>
                       <input className="input gfw-mono" style={{ fontSize: 11.5 }} value={h.height} onChange={(e) => commit((p) => (p.headers[i].height = e.target.value), `header-height-${i}`)} />
                     </div>
                   </div>

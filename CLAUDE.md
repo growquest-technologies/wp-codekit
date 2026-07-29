@@ -361,6 +361,43 @@ page shows a "Live"/"In build"/"Planned" badge. Home.tsx's featured section is a
 single-tool spotlight card, no "N live / N in build" hero copy. Don't reintroduce status-based
 filtering, sorting, or badging when adding new tools or editing these pages.
 
+## Readability floor (non-negotiable)
+
+Every piece of text the user is meant to read must clear **WCAG AA — 4.5:1**
+(3:1 for large text: >=24px, or >=18.66px bold) against the surface it actually sits
+on, and must be **>=11px**. This was audited across every page type and is expected
+to stay true; re-run the check after any palette or type change.
+
+The muted greys in `tokens.css` are the ones that matter, because `--gfw-text-mutest`
+alone has ~225 uses and carries most labels, hints and help text. They were originally
+2.3-4.0:1 — under the floor, and genuinely hard to read at the 10-12px they are
+usually set in. Each was re-derived in OKLCH by holding its hue and chroma and
+lowering lightness only, so the palette keeps its warm-grey character. Current ramp,
+measured against the darkest surface each sits on (`#EEF1FE`):
+
+```
+text-faint 4.6  ->  text-mutest 5.1  ->  text-label 5.2
+    ->  text-soft 5.7  ->  text-muted 6.5  ->  text-body 8.6  ->  text 14.0
+```
+
+Rules that follow from it:
+
+- **Use the tokens.** Hard-coded greys in inline styles are what let the failures
+  spread — ~30 of them bypassed the palette entirely and had to be swept up.
+  Same for status colours: `--gfw-success` / `--gfw-danger` / `--gfw-warning-text`
+  (note `--gfw-warning` is a 1.8:1 *fill* amber and is unusable as text).
+- **Dark surfaces have their own ramp** (`--gfw-dark-text*`). The footer was reaching
+  for `--gfw-text-faint` on `--gfw-dark` and only passing by accident; darkening the
+  light ramp broke it, which is exactly the bug that mixing the two invites.
+- **The PHP highlighter counts as text.** `PHP_COLORS` in `src/lib/codegen.ts` is
+  checked against the panel's own `#FBFAF7`; `comment` and `punct` were at 2.95:1 and
+  2.51:1, and `punct` is every `=>`, `;` and bracket in the thing people came to copy.
+- **Two things are deliberately exempt** and must not be "fixed": text rendered in the
+  user's *own* chosen colour (the Color Tool's contrast demo — showing you a failing
+  colour is the entire point), and disabled controls (WCAG 1.4.3 exempts inactive
+  components; the wp.org listing mockup's greyed-out "Reviews" tab is a faithful copy
+  of a disabled tab).
+
 ## Standalone tools (Color and Gradient)
 
 Two tools deliberately do **not** use `GeneratorShell`: they have no form/output split, no

@@ -207,7 +207,7 @@ export function SidebarGenerator() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8, paddingTop: 9, borderTop: '1px dashed var(--gfw-border)' }}>
                       {MARKUP_KEYS.map(([key, label]) => (
                         <div key={key}>
-                          <label className="field-label gfw-mono" style={{ fontSize: 10.5 }}>{label}</label>
+                          <label className="field-label gfw-mono" style={{ fontSize: 11 }}>{label}</label>
                           <input
                             className="input gfw-mono"
                             style={{ fontSize: 11.5 }}

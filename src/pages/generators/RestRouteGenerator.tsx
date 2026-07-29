@@ -180,11 +180,11 @@ export function RestRouteGenerator() {
                   >
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 9 }}>
                       <div>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>name</label>
+                        <label className="field-label" style={{ fontSize: 11 }}>name</label>
                         <input className="input gfw-mono" value={a.name} onChange={(e) => commit((p) => (p.args[i].name = e.target.value), 'arg-name-' + i)} placeholder="per_page" spellCheck={false} />
                       </div>
                       <div>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>type</label>
+                        <label className="field-label" style={{ fontSize: 11 }}>type</label>
                         <select className="select" value={a.type} onChange={(e) => commit((p) => (p.args[i].type = e.target.value as ArgType))}>
                           <option value="string">string</option>
                           <option value="integer">integer</option>
@@ -195,7 +195,7 @@ export function RestRouteGenerator() {
                         </select>
                       </div>
                       <div>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>format / enum</label>
+                        <label className="field-label" style={{ fontSize: 11 }}>format / enum</label>
                         <select className="select" value={a.format} onChange={(e) => commit((p) => (p.args[i].format = e.target.value as ArgFormat))}>
                           <option value="">none</option>
                           <option value="email">email</option>
@@ -208,17 +208,17 @@ export function RestRouteGenerator() {
                       </div>
                       {showExtra && (
                         <div>
-                          <label className="field-label" style={{ fontSize: 10.5 }}>{a.format === 'enum' ? 'allowed values' : 'min, max'}</label>
+                          <label className="field-label" style={{ fontSize: 11 }}>{a.format === 'enum' ? 'allowed values' : 'min, max'}</label>
                           <input className="input gfw-mono" value={a.extra} onChange={(e) => commit((p) => (p.args[i].extra = e.target.value), 'arg-extra-' + i)} placeholder={a.format === 'enum' ? 'draft, publish' : '1, 50'} spellCheck={false} />
                         </div>
                       )}
                       <div>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>default</label>
+                        <label className="field-label" style={{ fontSize: 11 }}>default</label>
                         <input className="input gfw-mono" value={a.def} onChange={(e) => commit((p) => (p.args[i].def = e.target.value), 'arg-def-' + i)} placeholder="10" spellCheck={false} />
                       </div>
                       <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 9, alignItems: 'flex-end' }}>
                         <div style={{ flex: 1 }}>
-                          <label className="field-label" style={{ fontSize: 10.5 }}>description</label>
+                          <label className="field-label" style={{ fontSize: 11 }}>description</label>
                           <input className="input" value={a.description} onChange={(e) => commit((p) => (p.args[i].description = e.target.value), 'arg-desc-' + i)} placeholder="How many items to return." />
                         </div>
                         <CheckboxChip active={a.required} onClick={() => commit((p) => (p.args[i].required = !p.args[i].required))}>required</CheckboxChip>

@@ -159,7 +159,7 @@ export function MetaBoxGenerator() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 18 }}>
                 {refFlow.map((text, i) => (
                   <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 10.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
                     <span style={{ flex: 1, fontSize: 12.5, lineHeight: 1.55 }}>{text}</span>
                   </div>
                 ))}

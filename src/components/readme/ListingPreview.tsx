@@ -201,7 +201,7 @@ export function ListingPreview({ project }: ListingPreviewProps) {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12, marginBottom: 10 }}>
                     {screenshots.map((sh, i) => (
                       <div key={i}>
-                        <div style={{ background: '#F0F0F1', border: '1px solid #DCDCDE', borderRadius: 4, aspectRatio: '16 / 10', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A7AAAD', fontSize: 11 }}>
+                        <div style={{ background: '#F0F0F1', border: '1px solid #DCDCDE', borderRadius: 4, aspectRatio: '16 / 10', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#646970', fontSize: 11 }}>
                           Screenshot {i + 1}
                         </div>
                         <div style={{ fontSize: 12, color: '#3C434A', marginTop: 5 }}>

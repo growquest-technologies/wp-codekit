@@ -120,7 +120,7 @@
 }
 .chip-count {
   font-family: var(--gfw-font-mono);
-  font-size: 10.5px;
+  font-size: 11px;
   opacity: 0.6;
 }
 
@@ -532,7 +532,7 @@ fieldset.field-fieldset legend {
 }
 .code-panel-badge {
   font-family: var(--gfw-font-mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--gfw-accent-soft);
@@ -586,7 +586,7 @@ fieldset.field-fieldset legend {
   gap: 5px;
   border-radius: 5px;
   padding: 3px 8px;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -597,7 +597,7 @@ fieldset.field-fieldset legend {
    styling, not the generic (colorless-by-default) `.badge` above. */
 .type-badge {
   display: inline-block;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -843,7 +843,7 @@ fieldset.field-fieldset legend {
 }
 .gen-code-hint {
   padding: 7px 12px;
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--gfw-text-mutest);
   background: var(--gfw-surface-sunken);
   border-bottom: 1px solid var(--gfw-border);
@@ -1206,7 +1206,7 @@ fieldset.field-fieldset legend {
 .tc-related-card:hover { border-color: var(--gfw-accent); color: inherit; }
 .tc-related-cat {
   align-self: flex-start;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1441,7 +1441,7 @@ fieldset.field-fieldset legend {
 }
 .ct-cell-tall { height: 74px; }
 .ct-cell-label {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
   pointer-events: none;
@@ -1516,8 +1516,8 @@ fieldset.field-fieldset legend {
 .ct-vision-cell { height: 72px; align-items: flex-end; padding: 8px; justify-content: space-between; gap: 6px; }
 .ct-vision-cell-l { border-radius: 7px 3px 3px 7px; }
 .ct-vision-cell-r { border-radius: 3px 7px 7px 3px; }
-.ct-vision-tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.75; pointer-events: none; }
-.ct-vision-hex { font-size: 10.5px; font-weight: 600; pointer-events: none; white-space: nowrap; transition: opacity 90ms linear; }
+.ct-vision-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.75; pointer-events: none; }
+.ct-vision-hex { font-size: 11px; font-weight: 600; pointer-events: none; white-space: nowrap; transition: opacity 90ms linear; }
 .ct-vision-delta { margin-top: 9px; font-size: 12px; color: var(--gfw-text-muted); }
 
 .ct-similar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; }
@@ -1834,7 +1834,7 @@ fieldset.field-fieldset legend {
 
 .gt-hex-row { display: flex; gap: 8px; margin-top: 13px; }
 .gt-rgb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 9px; }
-.gt-micro-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #B3ACA0; margin-bottom: 3px; }
+.gt-micro-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--gfw-text-faint); margin-bottom: 3px; }
 .gt-rgb-input {
   width: 100%;
   min-width: 0;
@@ -1898,7 +1898,7 @@ fieldset.field-fieldset legend {
   align-items: center;
   justify-content: center;
 }
-.gt-stop-del:hover:not(:disabled) { background: #F3F1EC; color: #C4593A; }
+.gt-stop-del:hover:not(:disabled) { background: #F3F1EC; color: var(--gfw-danger); }
 .gt-stop-del:disabled { color: #DCD7CE; cursor: not-allowed; }
 
 .gt-mid-label { font-size: 12px; font-weight: 650; color: var(--gfw-text-body); }

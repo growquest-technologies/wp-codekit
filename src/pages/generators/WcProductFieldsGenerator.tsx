@@ -121,7 +121,7 @@ export function WcProductFieldsGenerator() {
         label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px', minWidth: 420 }}>
-            <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, color: '#787C82', marginBottom: 10 }}>
               Product data metabox · {pf.placement === 'custom' ? `“${pf.customTabLabel || 'Untitled'}” tab (new)` : `${PLACEMENT_LABEL[pf.placement]} tab`}
             </div>
             <div style={{ background: '#fff', border: '1px solid #C3C4C7', borderRadius: 2 }}>
@@ -146,7 +146,7 @@ export function WcProductFieldsGenerator() {
                         <div style={{ width: 140, flexShrink: 0, fontSize: 13, fontWeight: 600, color: '#1D2327', paddingTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
                           {f.label || f.id}
                           {f.tooltip && (
-                            <span title={f.description} style={{ width: 15, height: 15, borderRadius: '50%', background: '#DCDCDE', color: '#50575E', fontSize: 10, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, cursor: 'help' }}>?</span>
+                            <span title={f.description} style={{ width: 15, height: 15, borderRadius: '50%', background: '#DCDCDE', color: '#50575E', fontSize: 11, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, cursor: 'help' }}>?</span>
                           )}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -198,7 +198,7 @@ export function WcProductFieldsGenerator() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 18 }}>
                 {REF_FLOW.map((text, i) => (
                   <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 10.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
                     <span style={{ flex: 1, fontSize: 12.5, lineHeight: 1.55, color: 'var(--gfw-text-strong)' }}>{text}</span>
                   </div>
                 ))}

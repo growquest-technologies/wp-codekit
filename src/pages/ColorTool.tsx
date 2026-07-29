@@ -334,7 +334,7 @@ export function ColorTool() {
               {SECTIONS.map(([id, label]) => <a key={id} href={`#${id}`}>{label}</a>)}
             </nav>
             <div style={{ flex: 1, minWidth: 6 }} />
-            <span className="ct-sticky-note" style={{ color: copied?.outcome === 'ok' ? '#1F8A5F' : copied ? '#C4593A' : 'var(--gfw-text-mutest)' }}>
+            <span className="ct-sticky-note" style={{ color: copied?.outcome === 'ok' ? 'var(--gfw-success)' : copied ? 'var(--gfw-danger)' : 'var(--gfw-text-mutest)' }}>
               {copied?.outcome === 'selected' ? 'Selected \u2014 press \u2318C'
                 : copied?.outcome === 'blocked' ? 'Clipboard blocked \u2014 select the hex to copy'
                 : copied ? 'Copied to clipboard' : 'Click any color to copy'}
@@ -563,8 +563,8 @@ export function ColorTool() {
                         <div className="ct-role-body">
                           <div className="gfw-mono ct-role-token" style={{ color: p.shellText }}>{r.token}</div>
                           <div className="ct-role-meta">
-                            <span className="gfw-mono" style={{ color: p.shellMuted, fontSize: 10.5 }}>{r.hexUpper}</span>
-                            <span style={{ color: r.checkColor, fontSize: 10.5, fontWeight: 700 }}>{r.check}</span>
+                            <span className="gfw-mono" style={{ color: p.shellMuted, fontSize: 11 }}>{r.hexUpper}</span>
+                            <span style={{ color: r.checkColor, fontSize: 11, fontWeight: 700 }}>{r.check}</span>
                           </div>
                         </div>
                       </div>

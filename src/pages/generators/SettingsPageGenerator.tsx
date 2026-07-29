@@ -391,7 +391,7 @@ export function SettingsPageGenerator() {
         label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px', minWidth: 420 }}>
-            <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>How the screen renders — {placementLabel}</div>
+            <div style={{ fontSize: 11, color: '#787C82', marginBottom: 10 }}>How the screen renders — {placementLabel}</div>
             <h1 style={{ margin: '0 0 12px', fontSize: 23, fontWeight: 400, color: '#1D2327', lineHeight: 1.3 }}>{sp.pageTitle}</h1>
             {sp.settingsErrors && (
               <div style={{ background: '#fff', border: '1px solid #C3C4C7', borderLeft: '4px solid #00A32A', padding: '9px 12px', marginBottom: 14, fontSize: 13, color: '#1D2327' }}>Settings saved.</div>
@@ -493,7 +493,7 @@ export function SettingsPageGenerator() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 18 }}>
                 {refFlow.map((text, i) => (
                   <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 10.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
                     <span style={{ flex: 1, fontSize: 12.5, lineHeight: 1.55, color: 'var(--gfw-text-strong)' }}>{text}</span>
                   </div>
                 ))}

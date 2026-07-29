@@ -251,7 +251,7 @@ export function DashboardWidgetGenerator() {
         label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px' }}>
-            <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>{screenNote}</div>
+            <div style={{ fontSize: 11, color: '#787C82', marginBottom: 10 }}>{screenNote}</div>
             <div style={{ background: '#fff', border: '1px solid #C3C4C7', borderRadius: 2, marginBottom: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px', borderBottom: '1px solid #F0F0F1' }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#1D2327' }}>{dw.title || 'Widget title'}</span>

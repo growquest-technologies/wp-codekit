@@ -47,7 +47,7 @@ export function SiteHeader() {
             <span style={{ fontSize: 15.5, fontWeight: 700, color: 'var(--gfw-text-strong)', letterSpacing: '-0.015em' }}>
               WP<span style={{ color: 'var(--gfw-accent)' }}>CodeKit</span>
             </span>
-            <span style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--gfw-text-faint)' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--gfw-text-faint)' }}>
               WordPress code generators
             </span>
           </span>

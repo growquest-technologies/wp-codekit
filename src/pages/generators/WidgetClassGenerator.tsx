@@ -87,7 +87,7 @@ export function WidgetClassGenerator() {
         label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px' }}>
-            <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>Appearance → Widgets, expanded</div>
+            <div style={{ fontSize: 11, color: '#787C82', marginBottom: 10 }}>Appearance → Widgets, expanded</div>
             <div style={{ background: '#fff', border: '1px solid #C3C4C7', borderRadius: 2 }}>
               <div style={{ padding: '9px 12px', borderBottom: '1px solid #F0F0F1', display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', background: '#F6F7F7' }}>
                 <span style={{ fontSize: 13.5, fontWeight: 600, color: '#1D2327' }}>{wg.name}</span>

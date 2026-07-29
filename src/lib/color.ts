@@ -401,8 +401,8 @@ export function band(d: number): [string, string] {
   if (d < 0.02) return ['Near-identical', '#0B7A75'];
   if (d < 0.05) return ['Very close', '#0B7A75'];
   if (d < 0.1) return ['Close', '#3858E9'];
-  if (d < 0.2) return ['Related', '#8A6A1F'];
-  return ['Distinct', '#948C7E'];
+  if (d < 0.2) return ['Related', '#88681D'];
+  return ['Distinct', '#6D6558'];
 }
 
 export function fmt(n: number, d = 0): string {

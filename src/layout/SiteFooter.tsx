@@ -32,7 +32,7 @@ export function SiteFooter({ showBrowseRow = true }: SiteFooterProps) {
               </p>
             </div>
             <div style={{ flex: '0 1 300px', minWidth: 0 }}>
-              <p style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--gfw-text-faint)', margin: '0 0 20px' }}>
+              <p style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--gfw-dark-text)', margin: '0 0 20px' }}>
                 One team of veterans across strategy, design and engineering — so nothing gets lost in the handoff.
               </p>
               <a href="https://growquest.io" target="_blank" rel="noopener" className="btn btn-primary">
@@ -45,7 +45,7 @@ export function SiteFooter({ showBrowseRow = true }: SiteFooterProps) {
             {GROWQUEST_SERVICES.map((gs) => (
               <div key={gs.name} style={{ background: 'var(--gfw-dark-raised)', border: '1px solid var(--gfw-dark-border)', borderRadius: 10, padding: '20px 18px' }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 7 }}>{gs.name}</div>
-                <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--gfw-text-faint)', margin: 0 }}>{gs.body}</p>
+                <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--gfw-dark-text)', margin: 0 }}>{gs.body}</p>
               </div>
             ))}
           </div>
@@ -81,7 +81,7 @@ export function SiteFooter({ showBrowseRow = true }: SiteFooterProps) {
           </span>
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--gfw-dark-text-strong)' }}>WPCodeKit</span>
         </Link>
-        <span style={{ fontSize: 12.5, color: '#7C7565', maxWidth: 560 }}>
+        <span style={{ fontSize: 12.5, color: 'var(--gfw-dark-text-muted)', maxWidth: 560 }}>
           Built by{' '}
           <a href="https://growquest.io" target="_blank" rel="noopener" className="footer-link" style={{ color: 'var(--gfw-dark-text)', fontWeight: 600 }}>
             GrowQuest
@@ -93,7 +93,7 @@ export function SiteFooter({ showBrowseRow = true }: SiteFooterProps) {
           <Link to="/tools" className="footer-link" style={{ fontSize: 12.5, color: 'var(--gfw-dark-text)' }}>Generators</Link>
           <Link to="/about" className="footer-link" style={{ fontSize: 12.5, color: 'var(--gfw-dark-text)' }}>About</Link>
           <Link to="/contact" className="footer-link" style={{ fontSize: 12.5, color: 'var(--gfw-dark-text)' }}>Contact</Link>
-          <span style={{ fontSize: 12.5, color: '#7C7565' }}>© 2026</span>
+          <span style={{ fontSize: 12.5, color: 'var(--gfw-dark-text-muted)' }}>© 2026</span>
         </div>
       </div>
     </footer>

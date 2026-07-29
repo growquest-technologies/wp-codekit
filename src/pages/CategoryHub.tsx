@@ -108,7 +108,7 @@ export function CategoryHub() {
               className="card-link"
               style={{ borderRadius: 11, border: '1px solid var(--gfw-border)', background: '#fff', padding: '16px 18px' }}
             >
-              <span style={{ fontFamily: 'var(--gfw-font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--gfw-text-faint)', textTransform: 'uppercase' }}>
+              <span style={{ fontFamily: 'var(--gfw-font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--gfw-text-faint)', textTransform: 'uppercase' }}>
                 {t.fn}
               </span>
               <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--gfw-text-strong)' }}>{t.name}</span>

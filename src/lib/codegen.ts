@@ -44,14 +44,17 @@ export interface PhpToken {
 const TOKEN_RE =
   /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|('(?:[^'\\]|\\.)*')|(\$[A-Za-z_]\w*)|\b(function|array|true|false|null|return|defined|exit|class|extends|new|public|private|protected|static|if|else|foreach|as|use)\b|\b(\d+)\b|([A-Za-z_]\w*)(?=\s*\()|([{}()[\];,]|=>|=)/g;
 
+// Checked against the panel's own #FBFAF7 background. `comment` and `punct` were
+// at 2.95:1 and 2.51:1 — and `punct` is every =>, ; and bracket in the output, so
+// it was the least readable part of the thing people came here to copy.
 const PHP_COLORS = {
-  comment: '#9A9284',
+  comment: '#797164',
   string: '#1F7A4C',
   variable: '#8A5B00',
   keyword: '#B3439A',
   number: '#B45309',
   fn: '#3858E9',
-  punct: '#A79F91',
+  punct: '#736B5E',
   plain: '#3B362D',
 };
 

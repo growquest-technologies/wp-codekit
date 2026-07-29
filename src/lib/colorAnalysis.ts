@@ -289,7 +289,7 @@ export function analyzeColor(hex: string, severityPct: number, steps = 12): Colo
   };
 
   const shells: [('light' | 'dark'), string, string, string, string, string, string][] = [
-    ['light', 'Light theme', '#FFFFFF', '#E7E2D9', '#1C1A15', '#948C7E', '#FCFBF9'],
+    ['light', 'Light theme', '#FFFFFF', '#E7E2D9', '#1C1A15', '#6D6558', '#FCFBF9'],
     ['dark', 'Dark theme', '#1C1A15', '#332F27', '#F0EDE6', '#A79F91', '#221F19'],
   ];
   const uiPalettes: UiPalette[] = shells.map(([mode, title, shellBg, shellBorder, shellText, shellMuted, chipBg]) => {

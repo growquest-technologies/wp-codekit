@@ -57,38 +57,38 @@ export function PostTypeGenerator() {
     rows.push({
       label: 'Single', url: single, state: eff.publiclyQueryable ? 'Reachable' : 'Not queryable',
       stateColor: eff.publiclyQueryable ? '#1F7A4C' : '#B45309', accent: eff.publiclyQueryable ? '#1F7A4C' : '#D9D4C8',
-      bg: eff.publiclyQueryable ? '#fff' : '#FCFBF9', urlColor: eff.publiclyQueryable ? '#26221C' : '#A79F91',
+      bg: eff.publiclyQueryable ? '#fff' : '#FCFBF9', urlColor: eff.publiclyQueryable ? '#26221C' : 'var(--gfw-text-faint)',
       note: !pt.adv.withFront ? 'with_front is off, so the permalink base (e.g. /blog) is not prepended.' : undefined,
     });
 
     rows.push({
       label: 'Archive', url: pt.hasArchive ? `https://${sampleDomain}/${eff.archiveSlug}/` : '— has_archive is off',
       state: pt.hasArchive ? (eff.rewriteOn ? 'Enabled' : 'Query string only') : 'Disabled',
-      stateColor: pt.hasArchive ? (eff.rewriteOn ? '#1F7A4C' : '#B45309') : '#948C7E',
+      stateColor: pt.hasArchive ? (eff.rewriteOn ? '#1F7A4C' : '#B45309') : 'var(--gfw-text-mutest)',
       accent: pt.hasArchive ? '#1F7A4C' : '#D9D4C8', bg: pt.hasArchive ? '#fff' : '#FCFBF9',
-      urlColor: pt.hasArchive ? '#26221C' : '#A79F91',
+      urlColor: pt.hasArchive ? '#26221C' : 'var(--gfw-text-faint)',
       note: pt.hasArchive && !eff.rewriteOn ? `Reachable at ?post_type=${key} while rewrite is false.` : undefined,
     });
 
     rows.push({
       label: 'Query var', url: eff.queryVar === false ? '— query_var is false' : `https://${sampleDomain}/?${eff.queryVar}=sample-${key}`,
-      state: eff.queryVar === false ? 'Disabled' : 'Enabled', stateColor: eff.queryVar === false ? '#948C7E' : '#1F7A4C',
+      state: eff.queryVar === false ? 'Disabled' : 'Enabled', stateColor: eff.queryVar === false ? 'var(--gfw-text-mutest)' : '#1F7A4C',
       accent: eff.queryVar === false ? '#D9D4C8' : '#1F7A4C', bg: eff.queryVar === false ? '#FCFBF9' : '#fff',
-      urlColor: eff.queryVar === false ? '#A79F91' : '#26221C',
+      urlColor: eff.queryVar === false ? 'var(--gfw-text-faint)' : '#26221C',
     });
 
     rows.push({
       label: 'REST', url: pt.showInRest ? `https://${sampleDomain}/wp-json/${eff.restNamespace}/${eff.restBase}` : '— show_in_rest is false',
       state: pt.showInRest ? 'Block editor ready' : 'Classic editor only', stateColor: pt.showInRest ? '#1F7A4C' : '#B45309',
       accent: pt.showInRest ? '#1F7A4C' : '#D9D4C8', bg: pt.showInRest ? '#fff' : '#FCFBF9',
-      urlColor: pt.showInRest ? '#26221C' : '#A79F91',
+      urlColor: pt.showInRest ? '#26221C' : 'var(--gfw-text-faint)',
     });
 
     rows.push({
       label: 'Admin', url: eff.showUi ? `https://${sampleDomain}/wp-admin/edit.php?post_type=${key}` : '— show_ui is false',
       state: eff.showUi ? 'Listed in admin' : 'No admin screen', stateColor: eff.showUi ? '#1F7A4C' : '#B45309',
       accent: eff.showUi ? '#1F7A4C' : '#D9D4C8', bg: eff.showUi ? '#fff' : '#FCFBF9',
-      urlColor: eff.showUi ? '#26221C' : '#A79F91',
+      urlColor: eff.showUi ? '#26221C' : 'var(--gfw-text-faint)',
       note: pt.adv.showInMenuString ? `Nested under ${pt.adv.showInMenuString} rather than a top-level menu.` : undefined,
     });
 
@@ -154,18 +154,18 @@ export function PostTypeGenerator() {
         label: 'Permalinks',
         content: (
           <div>
-            <div style={{ fontSize: 11.5, color: '#948C7E', lineHeight: 1.5, marginBottom: 12 }}>
+            <div style={{ fontSize: 11.5, color: 'var(--gfw-text-mutest)', lineHeight: 1.5, marginBottom: 12 }}>
               URLs this registration produces on <span className="gfw-mono" style={{ fontSize: 11 }}>{sampleDomain}</span>. Flush rewrite rules once after registering.
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {permalinkRows.map((pl) => (
                 <div key={pl.label} style={{ border: '1px solid #E7E2D9', borderLeft: `3px solid ${pl.accent}`, borderRadius: 6, padding: '10px 12px', background: pl.bg }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: '#948C7E' }}>{pl.label}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: pl.stateColor }}>{pl.state}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--gfw-text-mutest)' }}>{pl.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: pl.stateColor }}>{pl.state}</span>
                   </div>
                   <div className="gfw-mono" style={{ fontSize: 12, lineHeight: 1.5, color: pl.urlColor, wordBreak: 'break-all' }}>{pl.url}</div>
-                  {pl.note && <div style={{ fontSize: 11, color: '#948C7E', marginTop: 5, lineHeight: 1.45 }}>{pl.note}</div>}
+                  {pl.note && <div style={{ fontSize: 11, color: 'var(--gfw-text-mutest)', marginTop: 5, lineHeight: 1.45 }}>{pl.note}</div>}
                 </div>
               ))}
             </div>

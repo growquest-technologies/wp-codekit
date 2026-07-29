@@ -97,16 +97,16 @@ export function TaxonomyGenerator() {
       state: e.publiclyQueryable ? (e.rewriteOn ? 'Pretty permalink' : 'Query string only') : 'Not queryable',
       stateColor: e.publiclyQueryable ? (e.rewriteOn ? '#1F7A4C' : '#B45309') : '#B45309',
       accent: e.publiclyQueryable ? '#1F7A4C' : '#D9D4C8', bg: e.publiclyQueryable ? '#fff' : '#FCFBF9',
-      urlColor: e.publiclyQueryable ? '#26221C' : '#A79F91',
+      urlColor: e.publiclyQueryable ? '#26221C' : 'var(--gfw-text-faint)',
       note: e.rewriteOn && tx.adv.hierarchicalUrls ? 'Hierarchical URLs on: children resolve at /' + e.slug + '/parent/' + sampleTerm + '/.' : undefined,
     },
     {
       label: 'Query var',
       url: e.queryVar === false ? '— query_var is false' : 'https://' + domain + '/?' + e.queryVar + '=' + sampleTerm,
       state: e.queryVar === false ? 'Disabled' : 'Enabled',
-      stateColor: e.queryVar === false ? '#948C7E' : '#1F7A4C',
+      stateColor: e.queryVar === false ? 'var(--gfw-text-mutest)' : '#1F7A4C',
       accent: e.queryVar === false ? '#D9D4C8' : '#1F7A4C', bg: e.queryVar === false ? '#FCFBF9' : '#fff',
-      urlColor: e.queryVar === false ? '#A79F91' : '#26221C',
+      urlColor: e.queryVar === false ? 'var(--gfw-text-faint)' : '#26221C',
       note: e.queryVar === false ? 'WP_Query can still target it with taxonomy and term arguments.' : undefined,
     },
     {
@@ -115,7 +115,7 @@ export function TaxonomyGenerator() {
       state: tx.showInRest ? 'Block editor ready' : 'Classic editor only',
       stateColor: tx.showInRest ? '#1F7A4C' : '#B45309',
       accent: tx.showInRest ? '#1F7A4C' : '#D9D4C8', bg: tx.showInRest ? '#fff' : '#FCFBF9',
-      urlColor: tx.showInRest ? '#26221C' : '#A79F91',
+      urlColor: tx.showInRest ? '#26221C' : 'var(--gfw-text-faint)',
     },
     {
       label: 'Admin',
@@ -123,7 +123,7 @@ export function TaxonomyGenerator() {
       state: e.showUi ? 'Terms screen' : 'No admin screen',
       stateColor: e.showUi ? '#1F7A4C' : '#B45309',
       accent: e.showUi ? '#1F7A4C' : '#D9D4C8', bg: e.showUi ? '#fff' : '#FCFBF9',
-      urlColor: e.showUi ? '#26221C' : '#A79F91',
+      urlColor: e.showUi ? '#26221C' : 'var(--gfw-text-faint)',
       note: tx.showAdminColumn ? 'A ' + (tx.plural || 'terms') + ' column also appears in the post list table.' : undefined,
     },
   ];
@@ -150,18 +150,18 @@ export function TaxonomyGenerator() {
         label: 'Permalinks',
         content: (
           <div>
-            <div style={{ fontSize: 11.5, color: '#948C7E', lineHeight: 1.5, marginBottom: 12 }}>
+            <div style={{ fontSize: 11.5, color: 'var(--gfw-text-mutest)', lineHeight: 1.5, marginBottom: 12 }}>
               Term URLs on <span className="gfw-mono" style={{ fontSize: 11 }}>{domain}</span>, using <span className="gfw-mono" style={{ fontSize: 11 }}>{sampleTerm}</span> as an example term.
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {permalinkRows.map((row) => (
                 <div key={row.label} style={{ border: '1px solid #E7E2D9', borderLeft: `3px solid ${row.accent}`, borderRadius: 6, padding: '10px 12px', background: row.bg }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#948C7E' }}>{row.label}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: row.stateColor }}>{row.state}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--gfw-text-mutest)' }}>{row.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: row.stateColor }}>{row.state}</span>
                   </div>
                   <div className="gfw-mono" style={{ fontSize: 12, lineHeight: 1.5, color: row.urlColor, wordBreak: 'break-all' }}>{row.url}</div>
-                  {row.note && <div style={{ fontSize: 11, color: '#948C7E', marginTop: 5, lineHeight: 1.45 }}>{row.note}</div>}
+                  {row.note && <div style={{ fontSize: 11, color: 'var(--gfw-text-mutest)', marginTop: 5, lineHeight: 1.45 }}>{row.note}</div>}
                 </div>
               ))}
             </div>

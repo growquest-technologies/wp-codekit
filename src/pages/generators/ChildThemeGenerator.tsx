@@ -260,7 +260,7 @@ export function ChildThemeGenerator() {
         label: 'Preview',
         content: (
           <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px' }}>
-            <div style={{ fontSize: 10.5, color: '#787C82', marginBottom: 10 }}>Appearance › Themes, after the .zip is uploaded and activated</div>
+            <div style={{ fontSize: 11, color: '#787C82', marginBottom: 10 }}>Appearance › Themes, after the .zip is uploaded and activated</div>
             {!d.parentSlug && (
               <div style={{ background: '#fff', borderLeft: '4px solid #D63638', padding: '10px 12px', marginBottom: 14, fontSize: 13, color: '#1D2327', lineHeight: 1.5 }}>
                 The parent theme is missing. Please install the “{d.parentSlug}” parent theme.
@@ -319,7 +319,7 @@ export function ChildThemeGenerator() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 18 }}>
                 {INSTALL_STEPS_TEMPLATE(d).map((text, i) => (
                   <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 10.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
+                    <span style={{ flexShrink: 0, width: 19, height: 19, borderRadius: '50%', background: 'var(--gfw-accent-tint)', color: 'var(--gfw-accent-strong)', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</span>
                     <span style={{ flex: 1, fontSize: 12.5, lineHeight: 1.55, color: 'var(--gfw-text-strong)' }}>{text}</span>
                   </div>
                 ))}
@@ -407,7 +407,7 @@ export function ChildThemeGenerator() {
                           </div>
                           <div style={{ fontSize: 11.5, color: 'var(--gfw-text-mutest)', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{formatMeta(t)}</div>
                         </div>
-                        {sel && <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--gfw-success)', flexShrink: 0 }}>Selected</span>}
+                        {sel && <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--gfw-success)', flexShrink: 0 }}>Selected</span>}
                       </button>
                     );
                   })}

@@ -160,22 +160,22 @@ export function EnqueueGenerator() {
                 >
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 9 }}>
                     <div>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>kind</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>kind</label>
                       <select className="select" value={a.kind} onChange={(e) => commit((p) => (p.assets[i].kind = e.target.value as AssetKind))}>
                         <option value="script">script — .js</option>
                         <option value="style">style — .css</option>
                       </select>
                     </div>
                     <div>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>handle</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>handle</label>
                       <input className="input gfw-mono" value={a.handle} onChange={(e) => commit((p) => (p.assets[i].handle = e.target.value), 'asset-handle-' + i)} placeholder="main" spellCheck={false} />
                     </div>
                     <div>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>file</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>file</label>
                       <input className="input gfw-mono" value={a.file} onChange={(e) => commit((p) => (p.assets[i].file = e.target.value), 'asset-file-' + i)} placeholder={a.kind === 'script' ? 'js/main.js' : 'css/main.css'} spellCheck={false} />
                     </div>
                     <div>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>context</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>context</label>
                       <select className="select" value={a.context} onChange={(e) => commit((p) => (p.assets[i].context = e.target.value))}>
                         {CONTEXTS.map(([id, label]) => (
                           <option key={id} value={id}>{label}</option>
@@ -183,12 +183,12 @@ export function EnqueueGenerator() {
                       </select>
                     </div>
                     <div>
-                      <label className="field-label" style={{ fontSize: 10.5 }}>dependencies</label>
+                      <label className="field-label" style={{ fontSize: 11 }}>dependencies</label>
                       <input className="input gfw-mono" value={a.deps} onChange={(e) => commit((p) => (p.assets[i].deps = e.target.value), 'asset-deps-' + i)} placeholder={a.kind === 'script' ? 'wp-element, jquery' : 'another-handle'} spellCheck={false} />
                     </div>
                     {a.kind === 'script' ? (
                       <div>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>loading</label>
+                        <label className="field-label" style={{ fontSize: 11 }}>loading</label>
                         <select className="select" value={a.strategy} onChange={(e) => commit((p) => (p.assets[i].strategy = e.target.value as Asset['strategy']))}>
                           <option value="defer">footer + defer</option>
                           <option value="async">footer + async</option>
@@ -198,7 +198,7 @@ export function EnqueueGenerator() {
                       </div>
                     ) : (
                       <div>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>media</label>
+                        <label className="field-label" style={{ fontSize: 11 }}>media</label>
                         <select className="select" value={a.media} onChange={(e) => commit((p) => (p.assets[i].media = e.target.value))}>
                           <option value="all">all</option>
                           <option value="screen">screen</option>
@@ -225,7 +225,7 @@ export function EnqueueGenerator() {
                   {a.localize && (
                     <div style={{ borderTop: '1px dashed var(--gfw-border)', paddingTop: 10 }}>
                       <div style={{ marginBottom: 8 }}>
-                        <label className="field-label" style={{ fontSize: 10.5 }}>JS object name</label>
+                        <label className="field-label" style={{ fontSize: 11 }}>JS object name</label>
                         <input className="input gfw-mono" value={a.localizeName} onChange={(e) => commit((p) => (p.assets[i].localizeName = e.target.value), 'asset-localizeName-' + i)} placeholder="mythemeData" spellCheck={false} />
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

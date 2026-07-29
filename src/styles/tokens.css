@@ -15,9 +15,17 @@
   --gfw-text: #26221C;
   --gfw-text-strong: #1C1A15;
   --gfw-text-muted: #5C564B;
-  --gfw-text-mutest: #948C7E;
-  --gfw-text-faint: #A79F91;
-  --gfw-text-soft: #7E7668;
+  /* The three quiet greys below carry almost every label, hint and help line on
+     the site (text-mutest alone has ~225 uses). They used to sit at 2.3-4.0:1 on
+     a near-white surface — under the 4.5:1 WCAG AA floor, and visibly hard to
+     read at the 10-12px they are usually set in. Each was re-derived in OKLCH by
+     holding its hue and chroma and lowering lightness only, so the palette keeps
+     its warm-grey character and only the legibility changes. The ramp still
+     ascends: faint 4.6 -> mutest 5.1 -> soft 5.7 -> muted 6.5 -> body 8.6,
+     measured against the darkest surface any of them sits on (#EEF1FE). */
+  --gfw-text-mutest: #6D6558;
+  --gfw-text-faint: #746C5F;
+  --gfw-text-soft: #655E50;
   --gfw-text-label: #6B6459;
   --gfw-text-body: #4A4438;
 
@@ -46,6 +54,9 @@
   --gfw-success-text: #14532D;
   --gfw-success-text-soft: #1F5136;
   --gfw-warning: #F0A82E;
+  /* --gfw-warning is a fill/border amber at 1.8:1 — unreadable as text. This is
+     the text-safe counterpart, for "passes at large sizes only" style verdicts. */
+  --gfw-warning-text: #88681D;
   --gfw-danger: #B4451F;
 
   /* Radii / shadow */
