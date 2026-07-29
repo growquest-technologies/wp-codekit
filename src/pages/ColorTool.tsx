@@ -46,7 +46,17 @@ export function ColorTool() {
     return DEFAULT_HEX;
   });
   const [hexField, setHexField] = useState(() => hex.slice(1));
-  const [hue, setHue] = useState(() => rgbToHsv(parseHex(hex) as RGB)[0]);
+  /**
+   * The picker's own H/S/V, and the source of truth while you drag.
+   *
+   * Deriving it back from the committed hex is what made the handle jump: hex is
+   * 8-bit, so near the bottom of the square (V -> 0) it can no longer carry
+   * enough precision to reconstruct S, and at pure black S and H are undefined
+   * entirely — so the dot snapped to the left edge and the hue was lost. Keeping
+   * HSV here means dragging is smooth and hue survives a trip through black.
+   */
+  const [hsv, setHsvState] = useState<[number, number, number]>(() => rgbToHsv(parseHex(hex) as RGB));
+  const hsvRef = useRef(hsv);
   const [severity, setSeverity] = useState(100);
   const [hover, setHover] = useState<{ key: string; hex: string } | null>(null);
   const [copied, setCopied] = useState<{ key: string; hex: string } | null>(null);
@@ -56,32 +66,49 @@ export function ColorTool() {
   const dragRef = useRef<'sq' | 'hue' | null>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const setHex = useCallback((next: string, keepHue = false) => {
-    const rgb = parseHex(next);
-    if (!rgb) return;
-    const clean = toHex(rgb);
+  const commit = useCallback((clean: string) => {
     try { localStorage.setItem(STORAGE_KEY, clean); } catch { /* ignore */ }
     setHexState(clean);
     setHexField(clean.slice(1));
-    if (!keepHue) setHue(rgbToHsv(rgb)[0]);
   }, []);
 
+  /** A colour arriving from outside the picker (typed, pasted, random) — resync the picker to it. */
+  const setHex = useCallback((next: string) => {
+    const rgb = parseHex(next);
+    if (!rgb) return;
+    const nextHsv = rgbToHsv(rgb);
+    hsvRef.current = nextHsv;
+    setHsvState(nextHsv);
+    commit(toHex(rgb));
+  }, [commit]);
+
+  /** A colour coming from the picker — HSV leads, hex is derived from it. */
+  const setFromHsv = useCallback((next: [number, number, number]) => {
+    hsvRef.current = next;
+    setHsvState(next);
+    commit(toHex(hsvToRgb(next[0], next[1], next[2])));
+  }, [commit]);
+
+  // Reads HSV from the ref rather than state so the pointermove listener below
+  // never needs re-registering mid-drag.
   const applyDrag = useCallback((e: { clientX: number; clientY: number }) => {
     const which = dragRef.current;
     const el = which === 'sq' ? squareRef.current : hueRef.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
+    const [h, s, v] = hsvRef.current;
     if (which === 'sq') {
-      const s = clamp((e.clientX - r.left) / r.width, 0, 1);
-      const v = 1 - clamp((e.clientY - r.top) / r.height, 0, 1);
-      setHex(toHex(hsvToRgb(hue, s, v)), true);
+      setFromHsv([
+        h,
+        clamp((e.clientX - r.left) / r.width, 0, 1),
+        1 - clamp((e.clientY - r.top) / r.height, 0, 1),
+      ]);
     } else {
-      const h = clamp((e.clientX - r.left) / r.width, 0, 1) * 360;
-      const hsv = rgbToHsv(parseHex(hex) as RGB);
-      setHue(h);
-      setHex(toHex(hsvToRgb(h, hsv[1] || 1, hsv[2] || 1)), true);
+      // Falling back to 1 keeps the slider useful when the colour is currently
+      // black or fully desaturated, where a hue change would otherwise be invisible.
+      setFromHsv([clamp((e.clientX - r.left) / r.width, 0, 1) * 360, s || 1, v || 1]);
     }
-  }, [hue, hex, setHex]);
+  }, [setFromHsv]);
 
   useEffect(() => {
     function onMove(e: PointerEvent) {
@@ -133,7 +160,6 @@ export function ColorTool() {
   }, [copy]);
 
   const a = useMemo(() => analyzeColor(hex, severity, RAMP_STEPS), [hex, severity]);
-  const hsv = useMemo(() => rgbToHsv(parseHex(hex) as RGB), [hex]);
 
   usePageMeta(
     'Color Palette Generator — Conversions, Contrast & Harmonies | WP CodeKit',
@@ -196,7 +222,7 @@ export function ColorTool() {
                 ref={squareRef}
                 onPointerDown={(e) => { dragRef.current = 'sq'; applyDrag(e); }}
                 className="ct-sat"
-                style={{ background: `linear-gradient(to top, #000, rgba(0,0,0,0)), linear-gradient(to right, #fff, rgba(255,255,255,0)), hsl(${fmt(hue, 1)} 100% 50%)` }}
+                style={{ background: `linear-gradient(to top, #000, rgba(0,0,0,0)), linear-gradient(to right, #fff, rgba(255,255,255,0)), hsl(${fmt(hsv[0], 1)} 100% 50%)` }}
                 role="application"
                 aria-label="Saturation and brightness picker"
               >
@@ -209,7 +235,7 @@ export function ColorTool() {
                 role="application"
                 aria-label="Hue slider"
               >
-                <span className="ct-hue-dot" style={{ left: `${fmt((hue / 360) * 100, 2)}%`, background: `hsl(${fmt(hue, 1)} 100% 50%)` }} />
+                <span className="ct-hue-dot" style={{ left: `${fmt((hsv[0] / 360) * 100, 2)}%`, background: `hsl(${fmt(hsv[0], 1)} 100% 50%)` }} />
               </div>
               <div className="ct-hex-row">
                 <div className="ct-hex-input">
