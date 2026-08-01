@@ -95,6 +95,70 @@
   background: #F0EDE6;
 }
 
+.site-nav,
+.site-header-cta {
+  display: flex;
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid var(--gfw-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--gfw-text-strong);
+  cursor: pointer;
+}
+.nav-toggle:hover {
+  border-color: var(--gfw-accent);
+  color: var(--gfw-accent);
+}
+
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 780px) {
+  .site-nav,
+  .site-header-cta {
+    display: none;
+  }
+  .nav-toggle {
+    display: flex;
+  }
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 16px 16px;
+    border-top: 1px solid var(--gfw-border);
+    background: var(--gfw-bg);
+  }
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 550;
+    color: var(--gfw-text-muted);
+    padding: 11px 10px;
+    border-radius: 7px;
+  }
+  .mobile-nav-link:hover {
+    background: #F0EDE6;
+    color: var(--gfw-text-strong);
+  }
+  .mobile-nav-link.is-active {
+    font-weight: 700;
+    color: var(--gfw-text-strong);
+    background: #F0EDE6;
+  }
+}
+
 /* Chips (toggle-style filter pills) */
 .chip {
   display: inline-flex;
@@ -767,6 +831,7 @@ fieldset.field-fieldset legend {
 .gen-form-col {
   padding: 20px 24px 80px;
   border-right: 1px solid var(--gfw-border);
+  min-width: 0;
 }
 .gen-workspace-body.is-resizable .gen-form-col {
   flex: 1 1 auto;
@@ -792,6 +857,7 @@ fieldset.field-fieldset legend {
   flex-direction: column;
   background: #fff;
   flex-shrink: 0;
+  min-width: 0;
 }
 .gen-tabbar {
   display: flex;

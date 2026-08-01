@@ -28,6 +28,7 @@ import {
   ArrowsPointingOutIcon,
   PlayIcon,
   Bars3BottomLeftIcon,
+  Bars3Icon,
   H1Icon,
   ListBulletIcon,
   NumberedListIcon,
@@ -67,7 +68,8 @@ export type IconName =
   | 'bulleted'
   | 'numbered'
   | 'quote'
-  | 'brace';
+  | 'brace'
+  | 'menu';
 
 type HeroIcon = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -115,6 +117,7 @@ const ICONS: Record<IconName, HeroIcon> = {
   numbered: NumberedListIcon,
   quote: ChatBubbleBottomCenterTextIcon,
   brace: CodeBracketIcon,
+  menu: Bars3Icon,
 };
 
 export function Icon({ name, size = 15, style }: { name: IconName; size?: number; style?: CSSProperties }) {
@@ -148,4 +151,5 @@ export const GLYPH = {
   file: 'file',
   expand: 'expand',
   play: 'play',
+  menu: 'menu',
 } as const satisfies Record<string, IconName>;

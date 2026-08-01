@@ -390,7 +390,8 @@ export function SettingsPageGenerator() {
       secondaryTab={{
         label: 'Preview',
         content: (
-          <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px', minWidth: 420 }}>
+          <div style={{ overflowX: 'auto', margin: '-14px -16px -18px' }}>
+          <div style={{ background: '#F0F0F1', padding: '16px 18px 40px', minWidth: 420 }}>
             <div style={{ fontSize: 11, color: '#787C82', marginBottom: 10 }}>How the screen renders — {placementLabel}</div>
             <h1 style={{ margin: '0 0 12px', fontSize: 23, fontWeight: 400, color: '#1D2327', lineHeight: 1.3 }}>{sp.pageTitle}</h1>
             {sp.settingsErrors && (
@@ -477,6 +478,7 @@ export function SettingsPageGenerator() {
                 <button style={{ background: '#F6F7F7', border: '1px solid #2271B1', color: '#2271B1', fontSize: 13, padding: '6px 14px', borderRadius: 3, cursor: 'pointer' }}>Reset to defaults</button>
               )}
             </div>
+          </div>
           </div>
         ),
       }}

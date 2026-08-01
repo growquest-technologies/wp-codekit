@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon, GLYPH } from '../components/ui/Icon';
 
@@ -9,6 +10,11 @@ const NAV_LINKS = [
 
 export function SiteHeader() {
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header
@@ -51,7 +57,7 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 6 }}>
+        <nav className="site-nav" style={{ alignItems: 'center', gap: 4, marginLeft: 6 }}>
           {NAV_LINKS.map((nl) => {
             const on = location.pathname === nl.path || (nl.path === '/tools' && location.pathname.startsWith('/tools'));
             return (
@@ -64,14 +70,39 @@ export function SiteHeader() {
 
         <div style={{ flex: 1, minWidth: 8 }} />
 
-        <Link
-          to="/tools"
-          style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 600, color: 'var(--gfw-text-muted)', flexShrink: 0 }}
-        >
+        <Link to="/tools" className="site-header-cta" style={{ alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 600, color: 'var(--gfw-text-muted)', flexShrink: 0 }}>
           <Icon name={GLYPH.search} size={15} />
           All generators
         </Link>
+
+        <button
+          type="button"
+          className="nav-toggle"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          title={menuOpen ? 'Close menu' : 'Open menu'}
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <Icon name={menuOpen ? GLYPH.close : GLYPH.menu} size={20} />
+        </button>
       </div>
+
+      {menuOpen && (
+        <div className="mobile-nav">
+          {NAV_LINKS.map((nl) => {
+            const on = location.pathname === nl.path || (nl.path === '/tools' && location.pathname.startsWith('/tools'));
+            return (
+              <Link key={nl.path} to={nl.path} className={`mobile-nav-link${on ? ' is-active' : ''}`}>
+                {nl.label}
+              </Link>
+            );
+          })}
+          <Link to="/tools" className="mobile-nav-link">
+            <Icon name={GLYPH.search} size={15} />
+            All generators
+          </Link>
+        </div>
+      )}
     </header>
   );
 }

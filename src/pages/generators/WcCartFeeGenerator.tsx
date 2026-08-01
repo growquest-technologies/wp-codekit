@@ -169,7 +169,8 @@ export function WcCartFeeGenerator() {
       secondaryTab={{
         label: 'Preview',
         content: (
-          <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px', minWidth: 380 }}>
+          <div style={{ overflowX: 'auto', margin: '-14px -16px -18px' }}>
+          <div style={{ background: '#F0F0F1', padding: '16px 18px 40px', minWidth: 380 }}>
             <div style={{ background: '#fff', border: '1px solid #C3C4C7', borderRadius: 2, padding: '12px 14px', marginBottom: 14 }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: '#787C82', marginBottom: 9 }}>Sample cart</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(112px, 1fr))', gap: 9 }}>
@@ -259,6 +260,7 @@ export function WcCartFeeGenerator() {
             <div style={{ marginTop: 12, fontSize: 11.5, color: '#787C82', lineHeight: 1.6 }}>
               Basis for percentages: {fmt(basis)} ({BASIS_LABEL[cf.basis]}). Tax is shown on fees only — item and shipping tax depend on your store’s rates and the customer address.
             </div>
+          </div>
           </div>
         ),
       }}

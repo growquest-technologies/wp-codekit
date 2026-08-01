@@ -237,6 +237,7 @@ export function RoleCapabilityGenerator() {
         content: (
           <div>
             <div style={{ fontSize: 11, color: 'var(--gfw-text-mutest)', marginBottom: 11 }}>Your role against the three core roles it sits between. ✓ granted, · not granted.</div>
+            <div style={{ overflowX: 'auto' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 340 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(4, 46px)', gap: 4, paddingBottom: 7, borderBottom: '1px solid var(--gfw-border)' }}>
                 <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--gfw-text-mutest)' }}>Capability</span>
@@ -252,6 +253,7 @@ export function RoleCapabilityGenerator() {
                   ))}
                 </div>
               ))}
+            </div>
             </div>
           </div>
         ),

@@ -120,7 +120,8 @@ export function WcProductFieldsGenerator() {
       secondaryTab={{
         label: 'Preview',
         content: (
-          <div style={{ background: '#F0F0F1', margin: '-14px -16px -18px', padding: '16px 18px 40px', minWidth: 420 }}>
+          <div style={{ overflowX: 'auto', margin: '-14px -16px -18px' }}>
+          <div style={{ background: '#F0F0F1', padding: '16px 18px 40px', minWidth: 420 }}>
             <div style={{ fontSize: 11, color: '#787C82', marginBottom: 10 }}>
               Product data metabox · {pf.placement === 'custom' ? `“${pf.customTabLabel || 'Untitled'}” tab (new)` : `${PLACEMENT_LABEL[pf.placement]} tab`}
             </div>
@@ -182,6 +183,7 @@ export function WcProductFieldsGenerator() {
                 ? `Shown on the single product page, ${pf.frontendPlacement === 'after_summary' ? 'after the short description (priority 25)' : 'in the meta row under Add to cart'}${pf.hideIfEmpty ? ', only when a value is set.' : ', even when empty.'}`
                 : 'Admin-only for now — turn on “Show on the single product page” to add a frontend hook.'}
             </div>
+          </div>
           </div>
         ),
       }}
